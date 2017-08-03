@@ -1,0 +1,6 @@
+package gnu;
+
+public class Version
+{
+    public static final String VERSION="GNU-CRYPTO 0.99a"; 
+}
