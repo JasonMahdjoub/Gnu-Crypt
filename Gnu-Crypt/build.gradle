@@ -42,13 +42,13 @@ version = '1.1.0'
 task sourcesJar(type: Jar, dependsOn: classes) {
     classifier = 'sources'
     from sourceSets.main.allSource
-    from "LICENSE"
+    from "../LICENSE"
 }
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
     classifier = 'javadoc'
     from javadoc.destinationDir
-    from "LICENSE"
+    from "../LICENSE"
 }
 
 artifacts {
@@ -61,7 +61,7 @@ jar {
         attributes('Implementation-Title': project.name,
                    'Implementation-Version': project.version)
     }
-    from "LICENSE"
+    from "../LICENSE"
 
 }
 
