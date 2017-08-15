@@ -45,69 +45,62 @@ import java.util.Date;
  * A binary data entry is a primitive entry that simply contains some amount of
  * arbitrary binary data and an optional content type.
  */
-public class BinaryDataEntry extends PrimitiveEntry
-{
-    public static final int TYPE = 9;
+public class BinaryDataEntry extends PrimitiveEntry {
+	public static final int TYPE = 9;
 
-    public static BinaryDataEntry decode(DataInputStream in) throws IOException
-    {
-	BinaryDataEntry entry = new BinaryDataEntry();
-	entry.defaultDecode(in);
-	return entry;
-    }
+	public static BinaryDataEntry decode(DataInputStream in) throws IOException {
+		BinaryDataEntry entry = new BinaryDataEntry();
+		entry.defaultDecode(in);
+		return entry;
+	}
 
-    private BinaryDataEntry()
-    {
-	super(TYPE);
-    }
+	private BinaryDataEntry() {
+		super(TYPE);
+	}
 
-    /**
-     * Creates a new binary data entry.
-     *
-     * @param contentType
-     *            The content type of this entry. This parameter can be
-     *            <code>null</code> if no content type is needed.
-     * @param data
-     *            The data.
-     * @param creationDate
-     *            The creation date.
-     * @param properties
-     *            This entry's properties.
-     */
-    public BinaryDataEntry(String contentType, byte[] data, Date creationDate, Properties properties)
-    {
-	super(TYPE, creationDate, properties);
-	if (data == null)
-	    throw new IllegalArgumentException("no data");
-	payload = data.clone();
-	if (contentType != null)
-	    this.properties.put("content-type", contentType);
-    }
+	/**
+	 * Creates a new binary data entry.
+	 *
+	 * @param contentType
+	 *            The content type of this entry. This parameter can be
+	 *            <code>null</code> if no content type is needed.
+	 * @param data
+	 *            The data.
+	 * @param creationDate
+	 *            The creation date.
+	 * @param properties
+	 *            This entry's properties.
+	 */
+	public BinaryDataEntry(String contentType, byte[] data, Date creationDate, Properties properties) {
+		super(TYPE, creationDate, properties);
+		if (data == null)
+			throw new IllegalArgumentException("no data");
+		payload = data.clone();
+		if (contentType != null)
+			this.properties.put("content-type", contentType);
+	}
 
-    @Override
-    protected void encodePayload()
-    {
-	// Empty.
-    }
+	@Override
+	protected void encodePayload() {
+		// Empty.
+	}
 
-    /**
-     * Returns the content type of this entry, or <code>null</code> if this
-     * property is not set.
-     *
-     * @return The content type.
-     */
-    public String getContentType()
-    {
-	return properties.get("content-type");
-    }
+	/**
+	 * Returns the content type of this entry, or <code>null</code> if this property
+	 * is not set.
+	 *
+	 * @return The content type.
+	 */
+	public String getContentType() {
+		return properties.get("content-type");
+	}
 
-    /**
-     * Returns this object's data field.
-     *
-     * @return The data.
-     */
-    public byte[] getData()
-    {
-	return getPayload();
-    }
+	/**
+	 * Returns this object's data field.
+	 *
+	 * @return The data.
+	 */
+	public byte[] getData() {
+		return getPayload();
+	}
 }

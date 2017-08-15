@@ -37,9 +37,7 @@ exception statement from your version.  */
 
 package gnu.jgnux.crypto.jce.key;
 
-public class BlowfishSecretKeyFactoryImpl extends SecretKeyFactoryImpl
-{
-    public BlowfishSecretKeyFactoryImpl()
-    {
-    }
+public class BlowfishSecretKeyFactoryImpl extends SecretKeyFactoryImpl {
+	public BlowfishSecretKeyFactoryImpl() {
+	}
 }

@@ -47,49 +47,45 @@ import java.io.IOException;
  *
  * @since 1.4
  */
-public class SSLException extends IOException
-{
-    private static final long serialVersionUID = 4511006460650708967L;
+public class SSLException extends IOException {
+	private static final long serialVersionUID = 4511006460650708967L;
 
-    // Constructor.
-    // ------------------------------------------------------------------
+	// Constructor.
+	// ------------------------------------------------------------------
 
-    /**
-     * Create a new instance with a descriptive error message.
-     *
-     * @param message
-     *            the descriptive error message
-     */
-    public SSLException(String message)
-    {
-	super(message);
-    }
+	/**
+	 * Create a new instance with a descriptive error message.
+	 *
+	 * @param message
+	 *            the descriptive error message
+	 */
+	public SSLException(String message) {
+		super(message);
+	}
 
-    /**
-     * Create a new instance with a descriptive error message and a cause.
-     * 
-     * @param message
-     *            the descriptive error message
-     * @param cause
-     *            the cause
-     * @since 1.5
-     */
-    public SSLException(String message, Throwable cause)
-    {
-	super(message);
-	initCause(cause);
-    }
+	/**
+	 * Create a new instance with a descriptive error message and a cause.
+	 * 
+	 * @param message
+	 *            the descriptive error message
+	 * @param cause
+	 *            the cause
+	 * @since 1.5
+	 */
+	public SSLException(String message, Throwable cause) {
+		super(message);
+		initCause(cause);
+	}
 
-    /**
-     * Create a new instance with a cause.
-     * 
-     * @param cause
-     *            the cause
-     * @since 1.5
-     */
-    public SSLException(Throwable cause)
-    {
-	super(cause == null ? null : cause.toString());
-	initCause(cause);
-    }
+	/**
+	 * Create a new instance with a cause.
+	 * 
+	 * @param cause
+	 *            the cause
+	 * @since 1.5
+	 */
+	public SSLException(Throwable cause) {
+		super(cause == null ? null : cause.toString());
+		initCause(cause);
+	}
 }

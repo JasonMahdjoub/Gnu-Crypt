@@ -46,41 +46,38 @@ import gnu.vm.jgnu.security.spec.KeySpec;
  * 
  * @author Mark Benvenuto
  */
-public abstract class EncodedKeySpec implements KeySpec
-{
+public abstract class EncodedKeySpec implements KeySpec {
 
-    private byte[] encodedKey;
+	private byte[] encodedKey;
 
-    /**
-     * Constructs a new EncodedKeySpec with the specified encoded key.
-     * 
-     * @param encodedKey
-     *            A key to store
-     */
-    public EncodedKeySpec(byte[] encodedKey)
-    {
-	this.encodedKey = encodedKey;
-    }
+	/**
+	 * Constructs a new EncodedKeySpec with the specified encoded key.
+	 * 
+	 * @param encodedKey
+	 *            A key to store
+	 */
+	public EncodedKeySpec(byte[] encodedKey) {
+		this.encodedKey = encodedKey;
+	}
 
-    /**
-     * Gets the encoded key in byte format.
-     * 
-     * @returns the encoded key
-     */
-    public byte[] getEncoded()
-    {
-	return this.encodedKey;
-    }
+	/**
+	 * Gets the encoded key in byte format.
+	 * 
+	 * @returns the encoded key
+	 */
+	public byte[] getEncoded() {
+		return this.encodedKey;
+	}
 
-    /**
-     * Returns the name of the key format used.
-     * 
-     * This name is the format such as "PKCS#8" or "X.509" which if it matches a
-     * Key class name of the same type can be transformed using the apporiate
-     * KeyFactory.
-     * 
-     * @return a string representing the name
-     */
-    public abstract String getFormat();
+	/**
+	 * Returns the name of the key format used.
+	 * 
+	 * This name is the format such as "PKCS#8" or "X.509" which if it matches a Key
+	 * class name of the same type can be transformed using the apporiate
+	 * KeyFactory.
+	 * 
+	 * @return a string representing the name
+	 */
+	public abstract String getFormat();
 
 }

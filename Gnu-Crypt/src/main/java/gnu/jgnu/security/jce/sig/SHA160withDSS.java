@@ -43,10 +43,8 @@ import gnu.jgnu.security.sig.dss.DSSSignatureX509Codec;
 /**
  * A JCE Adapter for providing X.509 formatted DSS with SHA1 signatures.
  */
-public class SHA160withDSS extends SignatureAdapter
-{
-    public SHA160withDSS()
-    {
-	super(Registry.DSS_SIG, new DSSSignatureX509Codec());
-    }
+public class SHA160withDSS extends SignatureAdapter {
+	public SHA160withDSS() {
+		super(Registry.DSS_SIG, new DSSSignatureX509Codec());
+	}
 }

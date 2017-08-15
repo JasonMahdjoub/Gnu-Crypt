@@ -42,60 +42,50 @@ import gnu.vm.jgnu.security.DummyMessageDigest;
 import gnu.vm.jgnu.security.MessageDigest;
 import gnu.vm.jgnu.security.MessageDigestSpi;
 
-final class DummyMessageDigest extends MessageDigest
-{
-    private MessageDigestSpi mdSpi = null;
+final class DummyMessageDigest extends MessageDigest {
+	private MessageDigestSpi mdSpi = null;
 
-    public DummyMessageDigest(MessageDigestSpi mdSpi, String algorithm)
-    {
-	super(algorithm);
-	this.mdSpi = mdSpi;
-    }
+	public DummyMessageDigest(MessageDigestSpi mdSpi, String algorithm) {
+		super(algorithm);
+		this.mdSpi = mdSpi;
+	}
 
-    @Override
-    public Object clone() throws CloneNotSupportedException
-    {
-	MessageDigest result = new DummyMessageDigest(
-		(MessageDigestSpi) mdSpi.clone(), this.getAlgorithm());
-	result.provider = this.getProvider();
-	return result;
-    }
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+		MessageDigest result = new DummyMessageDigest((MessageDigestSpi) mdSpi.clone(), this.getAlgorithm());
+		result.provider = this.getProvider();
+		return result;
+	}
 
-    // java.security.MessageDigestSpi abstract methods implementation ---------
+	// java.security.MessageDigestSpi abstract methods implementation ---------
 
-    @Override
-    public byte[] engineDigest()
-    {
-	return mdSpi.engineDigest();
-    }
+	@Override
+	public byte[] engineDigest() {
+		return mdSpi.engineDigest();
+	}
 
-    @Override
-    public int engineDigest(byte[] buf, int offset, int len) throws DigestException
-    {
-	return mdSpi.engineDigest(buf, offset, len);
-    }
+	@Override
+	public int engineDigest(byte[] buf, int offset, int len) throws DigestException {
+		return mdSpi.engineDigest(buf, offset, len);
+	}
 
-    @Override
-    public int engineGetDigestLength()
-    {
-	return mdSpi.engineGetDigestLength();
-    }
+	@Override
+	public int engineGetDigestLength() {
+		return mdSpi.engineGetDigestLength();
+	}
 
-    @Override
-    public void engineReset()
-    {
-	mdSpi.engineReset();
-    }
+	@Override
+	public void engineReset() {
+		mdSpi.engineReset();
+	}
 
-    @Override
-    public void engineUpdate(byte input)
-    {
-	mdSpi.engineUpdate(input);
-    }
+	@Override
+	public void engineUpdate(byte input) {
+		mdSpi.engineUpdate(input);
+	}
 
-    @Override
-    public void engineUpdate(byte[] input, int offset, int len)
-    {
-	mdSpi.engineUpdate(input, offset, len);
-    }
+	@Override
+	public void engineUpdate(byte[] input, int offset, int len) {
+		mdSpi.engineUpdate(input, offset, len);
+	}
 }

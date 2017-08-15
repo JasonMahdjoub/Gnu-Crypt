@@ -72,297 +72,271 @@ import gnu.vm.jgnu.security.InvalidKeyException;
  * Menezes, A., van Oorschot, P. and S. Vanstone.</li>
  * </ol>
  */
-public class Cascade
-{
-    public static final String DIRECTION = "gnu.crypto.assembly.cascade.direction";
+public class Cascade {
+	public static final String DIRECTION = "gnu.crypto.assembly.cascade.direction";
 
-    /**
-     * Returns the Least Common Multiple of two integers.
-     *
-     * @param a
-     *            the first integer.
-     * @param b
-     *            the second integer.
-     * @return the LCM of <code>abs(a)</code> and <code>abs(b)</code>.
-     */
-    private static final int lcm(int a, int b)
-    {
-	BigInteger A = BigInteger.valueOf(a * 1L);
-	BigInteger B = BigInteger.valueOf(b * 1L);
-	return A.multiply(B).divide(A.gcd(B)).abs().intValue();
-    }
-
-    /** The map of Stages chained in this cascade. */
-    protected HashMap<Object, Stage> stages;
-
-    /** The ordered list of Stage UIDs to their attribute maps. */
-    protected LinkedList<Object> stageKeys;
-
-    /** The current operational direction of this instance. */
-    protected Direction wired;
-
-    /** The curently set block-size for this instance. */
-    protected int blockSize;
-
-    public Cascade()
-    {
-	super();
-
-	stages = new HashMap<>(3);
-	stageKeys = new LinkedList<>();
-	wired = null;
-	blockSize = 0;
-    }
-
-    /**
-     * Adds to the end of the current chain, a designated {@link Stage}.
-     *
-     * @param stage
-     *            the {@link Stage} to append to the chain.
-     * @return a unique identifier for this stage, within this cascade.
-     * @throws IllegalStateException
-     *             if the instance is already initialised.
-     * @throws IllegalArgumentException
-     *             if the designated stage is already in the chain, or it has
-     *             incompatible characteristics with the current elements
-     *             already in the chain.
-     */
-    public Object append(Stage stage) throws IllegalArgumentException
-    {
-	return insert(size(), stage);
-    }
-
-    /**
-     * Returns the {@link Set} of supported block sizes for this
-     * <code>Cascade</code> that are common to all of its chained stages. Each
-     * element in the returned {@link Set} is an instance of {@link Integer}.
-     *
-     * @return a {@link Set} of supported block sizes common to all the stages
-     *         of the chain.
-     */
-    public Set<Integer> blockSizes()
-    {
-	HashSet<Integer> result = null;
-	for (Iterator<Stage> it = stages.values().iterator(); it.hasNext();)
-	{
-	    Stage aStage = it.next();
-	    if (result == null) // first time
-		result = new HashSet<Integer>(aStage.blockSizes());
-	    else
-		result.retainAll(aStage.blockSizes());
+	/**
+	 * Returns the Least Common Multiple of two integers.
+	 *
+	 * @param a
+	 *            the first integer.
+	 * @param b
+	 *            the second integer.
+	 * @return the LCM of <code>abs(a)</code> and <code>abs(b)</code>.
+	 */
+	private static final int lcm(int a, int b) {
+		BigInteger A = BigInteger.valueOf(a * 1L);
+		BigInteger B = BigInteger.valueOf(b * 1L);
+		return A.multiply(B).divide(A.gcd(B)).abs().intValue();
 	}
-	return result == null ? new HashSet<Integer>() : result;
-    }
 
-    /**
-     * Returns the currently set block size for the chain.
-     *
-     * @return the current block size for the chain.
-     * @throws IllegalStateException
-     *             if the instance is not initialised.
-     */
-    public int currentBlockSize()
-    {
-	if (wired == null)
-	    throw new IllegalStateException();
-	return blockSize;
-    }
+	/** The map of Stages chained in this cascade. */
+	protected HashMap<Object, Stage> stages;
 
-    /**
-     * Initialises the chain for operation with specific characteristics.
-     *
-     * @param attributes
-     *            a set of name-value pairs that describes the desired future
-     *            behaviour of this instance.
-     * @throws IllegalStateException
-     *             if the chain, or any of its stages, is already initialised.
-     * @throws InvalidKeyException
-     *             if the intialisation data provided with the stage is
-     *             incorrect or causes an invalid key to be generated.
-     * @see Direction#FORWARD
-     * @see Direction#REVERSED
-     */
-    public void init(Map<Object, Object> attributes) throws InvalidKeyException
-    {
-	if (wired != null)
-	    throw new IllegalStateException();
-	Direction flow = (Direction) attributes.get(DIRECTION);
-	if (flow == null)
-	    flow = Direction.FORWARD;
-	int optimalSize = 0;
-	for (Iterator<Object> it = stageKeys.listIterator(); it.hasNext();)
-	{
-	    Object id = it.next();
-	    @SuppressWarnings("unchecked")
-	    Map<Object, Object> attr = (Map<Object, Object>) attributes.get(id);
-	    attr.put(Stage.DIRECTION, flow);
-	    Stage stage = stages.get(id);
-	    stage.init(attr);
-	    optimalSize = optimalSize == 0 ? stage.currentBlockSize()
-		    : lcm(optimalSize, stage.currentBlockSize());
+	/** The ordered list of Stage UIDs to their attribute maps. */
+	protected LinkedList<Object> stageKeys;
+
+	/** The current operational direction of this instance. */
+	protected Direction wired;
+
+	/** The curently set block-size for this instance. */
+	protected int blockSize;
+
+	public Cascade() {
+		super();
+
+		stages = new HashMap<>(3);
+		stageKeys = new LinkedList<>();
+		wired = null;
+		blockSize = 0;
 	}
-	if (flow == Direction.REVERSED) // reverse order
-	    Collections.reverse(stageKeys);
-	wired = flow;
-	blockSize = optimalSize;
-    }
 
-    /**
-     * Inserts a {@link Stage} into the current chain, at the specified index
-     * (zero-based) position.
-     *
-     * @param stage
-     *            the {@link Stage} to insert into the chain.
-     * @return a unique identifier for this stage, within this cascade.
-     * @throws IllegalArgumentException
-     *             if the designated stage is already in the chain, or it has
-     *             incompatible characteristics with the current elements
-     *             already in the chain.
-     * @throws IllegalStateException
-     *             if the instance is already initialised.
-     * @throws IndexOutOfBoundsException
-     *             if <code>index</code> is less than <code>0</code> or greater
-     *             than the current size of this cascade.
-     */
-    public Object insert(int index, Stage stage) throws IllegalArgumentException, IndexOutOfBoundsException
-    {
-	if (stages.containsValue(stage))
-	    throw new IllegalArgumentException();
-	if (wired != null || stage == null)
-	    throw new IllegalStateException();
-	if (index < 0 || index > size())
-	    throw new IndexOutOfBoundsException();
-	// check that there is a non-empty set of common block-sizes
-	Set<Integer> set = stage.blockSizes();
-	if (stages.isEmpty())
-	{
-	    if (set.isEmpty())
-		throw new IllegalArgumentException(
-			"1st stage with no block sizes");
+	/**
+	 * Adds to the end of the current chain, a designated {@link Stage}.
+	 *
+	 * @param stage
+	 *            the {@link Stage} to append to the chain.
+	 * @return a unique identifier for this stage, within this cascade.
+	 * @throws IllegalStateException
+	 *             if the instance is already initialised.
+	 * @throws IllegalArgumentException
+	 *             if the designated stage is already in the chain, or it has
+	 *             incompatible characteristics with the current elements already in
+	 *             the chain.
+	 */
+	public Object append(Stage stage) throws IllegalArgumentException {
+		return insert(size(), stage);
 	}
-	else
-	{
-	    Set<Integer> common = this.blockSizes();
-	    common.retainAll(set);
-	    if (common.isEmpty())
-		throw new IllegalArgumentException(
-			"no common block sizes found");
+
+	/**
+	 * Returns the {@link Set} of supported block sizes for this
+	 * <code>Cascade</code> that are common to all of its chained stages. Each
+	 * element in the returned {@link Set} is an instance of {@link Integer}.
+	 *
+	 * @return a {@link Set} of supported block sizes common to all the stages of
+	 *         the chain.
+	 */
+	public Set<Integer> blockSizes() {
+		HashSet<Integer> result = null;
+		for (Iterator<Stage> it = stages.values().iterator(); it.hasNext();) {
+			Stage aStage = it.next();
+			if (result == null) // first time
+				result = new HashSet<Integer>(aStage.blockSizes());
+			else
+				result.retainAll(aStage.blockSizes());
+		}
+		return result == null ? new HashSet<Integer>() : result;
 	}
-	Object result = new Object();
-	stageKeys.add(index, result);
-	stages.put(result, stage);
-	return result;
-    }
 
-    /**
-     * Adds to the begining of the current chain, a designated {@link Stage}.
-     *
-     * @param stage
-     *            the {@link Stage} to prepend to the chain.
-     * @return a unique identifier for this stage, within this cascade.
-     * @throws IllegalStateException
-     *             if the instance is already initialised.
-     * @throws IllegalArgumentException
-     *             if the designated stage is already in the chain, or it has
-     *             incompatible characteristics with the current elements
-     *             already in the chain.
-     */
-    public Object prepend(Stage stage) throws IllegalArgumentException
-    {
-	return insert(0, stage);
-    }
-
-    /**
-     * Resets the chain for re-initialisation and use with other
-     * characteristics. This method always succeeds.
-     */
-    public void reset()
-    {
-	for (Iterator<Object> it = stageKeys.listIterator(); it.hasNext();)
-	    stages.get(it.next()).reset();
-	if (wired == Direction.REVERSED) // reverse it back
-	    Collections.reverse(stageKeys);
-	wired = null;
-	blockSize = 0;
-    }
-
-    /**
-     * Conducts a simple <i>correctness</i> test that consists of basic
-     * symmetric encryption / decryption test(s) for all supported block and key
-     * sizes of underlying block cipher(s) wrapped by Mode leafs. The test also
-     * includes one (1) variable key Known Answer Test (KAT) for each block
-     * cipher.
-     *
-     * @return <code>true</code> if the implementation passes simple
-     *         <i>correctness</i> tests. Returns <code>false</code> otherwise.
-     */
-    public boolean selfTest()
-    {
-	for (Iterator<Object> it = stageKeys.listIterator(); it.hasNext();)
-	{
-	    if (!stages.get(it.next()).selfTest())
-		return false;
+	/**
+	 * Returns the currently set block size for the chain.
+	 *
+	 * @return the current block size for the chain.
+	 * @throws IllegalStateException
+	 *             if the instance is not initialised.
+	 */
+	public int currentBlockSize() {
+		if (wired == null)
+			throw new IllegalStateException();
+		return blockSize;
 	}
-	return true;
-    }
 
-    /**
-     * Returns the current number of stages in this chain.
-     *
-     * @return the current count of stages in this chain.
-     */
-    public int size()
-    {
-	return stages.size();
-    }
-
-    /**
-     * Returns an {@link Iterator} over the stages contained in this instance.
-     * Each element of this iterator is a concrete implementation of a
-     * {@link Stage}.
-     *
-     * @return an {@link Iterator} over the stages contained in this instance.
-     *         Each element of the returned iterator is a concrete instance of a
-     *         {@link Stage}.
-     */
-    public Iterator<Stage> stages()
-    {
-	LinkedList<Stage> result = new LinkedList<>();
-	for (Iterator<Object> it = stageKeys.listIterator(); it.hasNext();)
-	    result.addLast(stages.get(it.next()));
-	return result.listIterator();
-    }
-
-    /**
-     * Processes exactly one block of <i>plaintext</i> (if initialised in the
-     * {@link Direction#FORWARD} state) or <i>ciphertext</i> (if initialised in
-     * the {@link Direction#REVERSED} state).
-     *
-     * @param in
-     *            the plaintext.
-     * @param inOffset
-     *            index of <code>in</code> from which to start considering data.
-     * @param out
-     *            the ciphertext.
-     * @param outOffset
-     *            index of <code>out</code> from which to store result.
-     * @throws IllegalStateException
-     *             if the instance is not initialised.
-     */
-    public void update(byte[] in, int inOffset, byte[] out, int outOffset)
-    {
-	if (wired == null)
-	    throw new IllegalStateException();
-	int stageBlockSize, j, i = stages.size();
-	for (Iterator<Object> it = stageKeys.listIterator(); it.hasNext();)
-	{
-	    Stage stage = stages.get(it.next());
-	    stageBlockSize = stage.currentBlockSize();
-	    for (j = 0; j < blockSize; j += stageBlockSize)
-		stage.update(in, inOffset + j, out, outOffset + j);
-	    i--;
-	    if (i > 0)
-		System.arraycopy(out, outOffset, in, inOffset, blockSize);
+	/**
+	 * Initialises the chain for operation with specific characteristics.
+	 *
+	 * @param attributes
+	 *            a set of name-value pairs that describes the desired future
+	 *            behaviour of this instance.
+	 * @throws IllegalStateException
+	 *             if the chain, or any of its stages, is already initialised.
+	 * @throws InvalidKeyException
+	 *             if the intialisation data provided with the stage is incorrect or
+	 *             causes an invalid key to be generated.
+	 * @see Direction#FORWARD
+	 * @see Direction#REVERSED
+	 */
+	public void init(Map<Object, Object> attributes) throws InvalidKeyException {
+		if (wired != null)
+			throw new IllegalStateException();
+		Direction flow = (Direction) attributes.get(DIRECTION);
+		if (flow == null)
+			flow = Direction.FORWARD;
+		int optimalSize = 0;
+		for (Iterator<Object> it = stageKeys.listIterator(); it.hasNext();) {
+			Object id = it.next();
+			@SuppressWarnings("unchecked")
+			Map<Object, Object> attr = (Map<Object, Object>) attributes.get(id);
+			attr.put(Stage.DIRECTION, flow);
+			Stage stage = stages.get(id);
+			stage.init(attr);
+			optimalSize = optimalSize == 0 ? stage.currentBlockSize() : lcm(optimalSize, stage.currentBlockSize());
+		}
+		if (flow == Direction.REVERSED) // reverse order
+			Collections.reverse(stageKeys);
+		wired = flow;
+		blockSize = optimalSize;
 	}
-    }
+
+	/**
+	 * Inserts a {@link Stage} into the current chain, at the specified index
+	 * (zero-based) position.
+	 *
+	 * @param stage
+	 *            the {@link Stage} to insert into the chain.
+	 * @return a unique identifier for this stage, within this cascade.
+	 * @throws IllegalArgumentException
+	 *             if the designated stage is already in the chain, or it has
+	 *             incompatible characteristics with the current elements already in
+	 *             the chain.
+	 * @throws IllegalStateException
+	 *             if the instance is already initialised.
+	 * @throws IndexOutOfBoundsException
+	 *             if <code>index</code> is less than <code>0</code> or greater than
+	 *             the current size of this cascade.
+	 */
+	public Object insert(int index, Stage stage) throws IllegalArgumentException, IndexOutOfBoundsException {
+		if (stages.containsValue(stage))
+			throw new IllegalArgumentException();
+		if (wired != null || stage == null)
+			throw new IllegalStateException();
+		if (index < 0 || index > size())
+			throw new IndexOutOfBoundsException();
+		// check that there is a non-empty set of common block-sizes
+		Set<Integer> set = stage.blockSizes();
+		if (stages.isEmpty()) {
+			if (set.isEmpty())
+				throw new IllegalArgumentException("1st stage with no block sizes");
+		} else {
+			Set<Integer> common = this.blockSizes();
+			common.retainAll(set);
+			if (common.isEmpty())
+				throw new IllegalArgumentException("no common block sizes found");
+		}
+		Object result = new Object();
+		stageKeys.add(index, result);
+		stages.put(result, stage);
+		return result;
+	}
+
+	/**
+	 * Adds to the begining of the current chain, a designated {@link Stage}.
+	 *
+	 * @param stage
+	 *            the {@link Stage} to prepend to the chain.
+	 * @return a unique identifier for this stage, within this cascade.
+	 * @throws IllegalStateException
+	 *             if the instance is already initialised.
+	 * @throws IllegalArgumentException
+	 *             if the designated stage is already in the chain, or it has
+	 *             incompatible characteristics with the current elements already in
+	 *             the chain.
+	 */
+	public Object prepend(Stage stage) throws IllegalArgumentException {
+		return insert(0, stage);
+	}
+
+	/**
+	 * Resets the chain for re-initialisation and use with other characteristics.
+	 * This method always succeeds.
+	 */
+	public void reset() {
+		for (Iterator<Object> it = stageKeys.listIterator(); it.hasNext();)
+			stages.get(it.next()).reset();
+		if (wired == Direction.REVERSED) // reverse it back
+			Collections.reverse(stageKeys);
+		wired = null;
+		blockSize = 0;
+	}
+
+	/**
+	 * Conducts a simple <i>correctness</i> test that consists of basic symmetric
+	 * encryption / decryption test(s) for all supported block and key sizes of
+	 * underlying block cipher(s) wrapped by Mode leafs. The test also includes one
+	 * (1) variable key Known Answer Test (KAT) for each block cipher.
+	 *
+	 * @return <code>true</code> if the implementation passes simple
+	 *         <i>correctness</i> tests. Returns <code>false</code> otherwise.
+	 */
+	public boolean selfTest() {
+		for (Iterator<Object> it = stageKeys.listIterator(); it.hasNext();) {
+			if (!stages.get(it.next()).selfTest())
+				return false;
+		}
+		return true;
+	}
+
+	/**
+	 * Returns the current number of stages in this chain.
+	 *
+	 * @return the current count of stages in this chain.
+	 */
+	public int size() {
+		return stages.size();
+	}
+
+	/**
+	 * Returns an {@link Iterator} over the stages contained in this instance. Each
+	 * element of this iterator is a concrete implementation of a {@link Stage}.
+	 *
+	 * @return an {@link Iterator} over the stages contained in this instance. Each
+	 *         element of the returned iterator is a concrete instance of a
+	 *         {@link Stage}.
+	 */
+	public Iterator<Stage> stages() {
+		LinkedList<Stage> result = new LinkedList<>();
+		for (Iterator<Object> it = stageKeys.listIterator(); it.hasNext();)
+			result.addLast(stages.get(it.next()));
+		return result.listIterator();
+	}
+
+	/**
+	 * Processes exactly one block of <i>plaintext</i> (if initialised in the
+	 * {@link Direction#FORWARD} state) or <i>ciphertext</i> (if initialised in the
+	 * {@link Direction#REVERSED} state).
+	 *
+	 * @param in
+	 *            the plaintext.
+	 * @param inOffset
+	 *            index of <code>in</code> from which to start considering data.
+	 * @param out
+	 *            the ciphertext.
+	 * @param outOffset
+	 *            index of <code>out</code> from which to store result.
+	 * @throws IllegalStateException
+	 *             if the instance is not initialised.
+	 */
+	public void update(byte[] in, int inOffset, byte[] out, int outOffset) {
+		if (wired == null)
+			throw new IllegalStateException();
+		int stageBlockSize, j, i = stages.size();
+		for (Iterator<Object> it = stageKeys.listIterator(); it.hasNext();) {
+			Stage stage = stages.get(it.next());
+			stageBlockSize = stage.currentBlockSize();
+			for (j = 0; j < blockSize; j += stageBlockSize)
+				stage.update(in, inOffset + j, out, outOffset + j);
+			i--;
+			if (i > 0)
+				System.arraycopy(out, outOffset, in, inOffset, blockSize);
+		}
+	}
 }

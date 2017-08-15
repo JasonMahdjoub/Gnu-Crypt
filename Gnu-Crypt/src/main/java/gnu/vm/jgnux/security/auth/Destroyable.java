@@ -41,24 +41,22 @@ package gnu.vm.jgnux.security.auth;
  * An interface for objects that are immutable but whose sensitive data may be
  * wiped out.
  */
-public interface Destroyable
-{
+public interface Destroyable {
 
-    /**
-     * Destroy this object, clearing all sensitive fields appropriately.
-     *
-     * @throws DestroyFailedException
-     *             If this object could not be destroyed.
-     * @throws SecurityException
-     *             If the caller does not have permission to destroy this
-     *             object.
-     */
-    void destroy() throws DestroyFailedException;
+	/**
+	 * Destroy this object, clearing all sensitive fields appropriately.
+	 *
+	 * @throws DestroyFailedException
+	 *             If this object could not be destroyed.
+	 * @throws SecurityException
+	 *             If the caller does not have permission to destroy this object.
+	 */
+	void destroy() throws DestroyFailedException;
 
-    /**
-     * Tells whether or not this object has been destroyed.
-     *
-     * @return True if this object has been destroyed.
-     */
-    boolean isDestroyed();
+	/**
+	 * Tells whether or not this object has been destroyed.
+	 *
+	 * @return True if this object has been destroyed.
+	 */
+	boolean isDestroyed();
 }

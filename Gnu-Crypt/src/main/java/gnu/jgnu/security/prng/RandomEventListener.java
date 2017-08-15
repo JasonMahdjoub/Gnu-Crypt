@@ -42,7 +42,6 @@ import java.util.EventListener;
 /**
  * An interface for entropy accumulators that will be notified of random events.
  */
-public interface RandomEventListener extends EventListener
-{
-    void addRandomEvent(RandomEvent event);
+public interface RandomEventListener extends EventListener {
+	void addRandomEvent(RandomEvent event);
 }

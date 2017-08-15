@@ -45,60 +45,57 @@ package gnu.vm.jgnu.security.cert;
  * @see CertPathBuilder
  * @see CertPathBuilderResult
  */
-public class PKIXCertPathBuilderResult extends PKIXCertPathValidatorResult implements CertPathBuilderResult
-{
+public class PKIXCertPathBuilderResult extends PKIXCertPathValidatorResult implements CertPathBuilderResult {
 
-    // Fields.
-    // ------------------------------------------------------------------------
+	// Fields.
+	// ------------------------------------------------------------------------
 
-    /** The certificate path. */
-    private CertPath certPath;
+	/** The certificate path. */
+	private CertPath certPath;
 
-    // Constructor.
-    // ------------------------------------------------------------------------
+	// Constructor.
+	// ------------------------------------------------------------------------
 
-    /**
-     * Creates a new PKIXCertPathBuilderResult.
-     *
-     * @param certPath
-     *            The certificate path.
-     * @param trustAnchor
-     *            The trust anchor.
-     * @param policyTree
-     *            The root node of the policy tree.
-     * @param subjectPublicKey
-     *            The public key.
-     * @throws NullPointerException
-     *             If <i>certPath</i>, <i>trustAnchor</i> or
-     *             <i>subjectPublicKey</i> is null.
-     */
-    public PKIXCertPathBuilderResult(CertPath certPath, TrustAnchor trustAnchor, PolicyNode policyTree, gnu.vm.jgnu.security.PublicKey subjectPublicKey)
-    {
-	super(trustAnchor, policyTree, subjectPublicKey);
-	if (certPath == null)
-	    throw new NullPointerException();
-	this.certPath = certPath;
-    }
+	/**
+	 * Creates a new PKIXCertPathBuilderResult.
+	 *
+	 * @param certPath
+	 *            The certificate path.
+	 * @param trustAnchor
+	 *            The trust anchor.
+	 * @param policyTree
+	 *            The root node of the policy tree.
+	 * @param subjectPublicKey
+	 *            The public key.
+	 * @throws NullPointerException
+	 *             If <i>certPath</i>, <i>trustAnchor</i> or <i>subjectPublicKey</i>
+	 *             is null.
+	 */
+	public PKIXCertPathBuilderResult(CertPath certPath, TrustAnchor trustAnchor, PolicyNode policyTree,
+			gnu.vm.jgnu.security.PublicKey subjectPublicKey) {
+		super(trustAnchor, policyTree, subjectPublicKey);
+		if (certPath == null)
+			throw new NullPointerException();
+		this.certPath = certPath;
+	}
 
-    // Instance methods.
-    // ------------------------------------------------------------------------
+	// Instance methods.
+	// ------------------------------------------------------------------------
 
-    /**
-     * Returns the certificate path that was built.
-     *
-     * @return The certificate path that was built.
-     */
-    @Override
-    public CertPath getCertPath()
-    {
-	return certPath;
-    }
+	/**
+	 * Returns the certificate path that was built.
+	 *
+	 * @return The certificate path that was built.
+	 */
+	@Override
+	public CertPath getCertPath() {
+		return certPath;
+	}
 
-    @Override
-    public String toString()
-    {
-	StringBuilder buf = new StringBuilder(super.toString());
-	buf.insert(buf.length() - 2, "; CertPath=" + certPath);
-	return buf.toString();
-    }
+	@Override
+	public String toString() {
+		StringBuilder buf = new StringBuilder(super.toString());
+		buf.insert(buf.length() - 2, "; CertPath=" + certPath);
+		return buf.toString();
+	}
 }

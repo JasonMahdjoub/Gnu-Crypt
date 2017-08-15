@@ -73,104 +73,90 @@ import gnu.jgnux.crypto.cipher.IBlockCipher;
  * Techniques</a>, Morris Dworkin.</li>
  * </ol>
  */
-public class CTR extends BaseMode implements Cloneable
-{
-    private int off;
+public class CTR extends BaseMode implements Cloneable {
+	private int off;
 
-    private byte[] counter, enc;
+	private byte[] counter, enc;
 
-    /**
-     * Private constructor for cloning purposes.
-     *
-     * @param that
-     *            the instance to clone.
-     */
-    private CTR(CTR that)
-    {
-	this((IBlockCipher) that.cipher.clone(), that.cipherBlockSize);
-    }
-
-    /**
-     * Trivial package-private constructor for use by the Factory class.
-     *
-     * @param underlyingCipher
-     *            the underlying cipher implementation.
-     * @param cipherBlockSize
-     *            the underlying cipher block size to use.
-     */
-    CTR(IBlockCipher underlyingCipher, int cipherBlockSize)
-    {
-	super(Registry.CTR_MODE, underlyingCipher, cipherBlockSize);
-    }
-
-    @Override
-    public Iterator<Integer> blockSizes()
-    {
-	return new Sequence(1, cipherBlockSize).iterator();
-    }
-
-    @Override
-    public Object clone()
-    {
-	return new CTR(this);
-    }
-
-    private void ctr(byte[] in, int inOffset, byte[] out, int outOffset)
-    {
-	for (int i = 0; i < modeBlockSize; i++)
-	{
-	    out[outOffset++] = (byte) (in[inOffset++] ^ enc[off++]);
-	    if (off == cipherBlockSize)
-	    {
-		int j;
-		for (j = cipherBlockSize - 1; j >= 0; j--)
-		{
-		    counter[j]++;
-		    if ((counter[j] & 0xFF) != 0)
-			break;
-		}
-		if (j == 0)
-		    counter[cipherBlockSize - 1]++;
-		off = 0;
-		cipher.encryptBlock(counter, 0, enc, 0);
-	    }
+	/**
+	 * Private constructor for cloning purposes.
+	 *
+	 * @param that
+	 *            the instance to clone.
+	 */
+	private CTR(CTR that) {
+		this((IBlockCipher) that.cipher.clone(), that.cipherBlockSize);
 	}
-    }
 
-    @Override
-    public void decryptBlock(byte[] in, int i, byte[] out, int o)
-    {
-	ctr(in, i, out, o);
-    }
+	/**
+	 * Trivial package-private constructor for use by the Factory class.
+	 *
+	 * @param underlyingCipher
+	 *            the underlying cipher implementation.
+	 * @param cipherBlockSize
+	 *            the underlying cipher block size to use.
+	 */
+	CTR(IBlockCipher underlyingCipher, int cipherBlockSize) {
+		super(Registry.CTR_MODE, underlyingCipher, cipherBlockSize);
+	}
 
-    @Override
-    public void encryptBlock(byte[] in, int i, byte[] out, int o)
-    {
-	ctr(in, i, out, o);
-    }
+	@Override
+	public Iterator<Integer> blockSizes() {
+		return new Sequence(1, cipherBlockSize).iterator();
+	}
 
-    @Override
-    public void setup()
-    {
-	if (modeBlockSize > cipherBlockSize)
-	    throw new IllegalArgumentException(
-		    "mode size exceeds cipher block size");
-	off = 0;
-	counter = new byte[cipherBlockSize];
-	int i = cipherBlockSize - 1;
-	int j = iv.length - 1;
-	while (i >= 0 && j >= 0)
-	    counter[i--] = iv[j--];
-	enc = new byte[cipherBlockSize];
-	cipher.encryptBlock(counter, 0, enc, 0);
-    }
+	@Override
+	public Object clone() {
+		return new CTR(this);
+	}
 
-    @Override
-    public void teardown()
-    {
-	if (counter != null)
-	    Arrays.fill(counter, (byte) 0);
-	if (enc != null)
-	    Arrays.fill(enc, (byte) 0);
-    }
+	private void ctr(byte[] in, int inOffset, byte[] out, int outOffset) {
+		for (int i = 0; i < modeBlockSize; i++) {
+			out[outOffset++] = (byte) (in[inOffset++] ^ enc[off++]);
+			if (off == cipherBlockSize) {
+				int j;
+				for (j = cipherBlockSize - 1; j >= 0; j--) {
+					counter[j]++;
+					if ((counter[j] & 0xFF) != 0)
+						break;
+				}
+				if (j == 0)
+					counter[cipherBlockSize - 1]++;
+				off = 0;
+				cipher.encryptBlock(counter, 0, enc, 0);
+			}
+		}
+	}
+
+	@Override
+	public void decryptBlock(byte[] in, int i, byte[] out, int o) {
+		ctr(in, i, out, o);
+	}
+
+	@Override
+	public void encryptBlock(byte[] in, int i, byte[] out, int o) {
+		ctr(in, i, out, o);
+	}
+
+	@Override
+	public void setup() {
+		if (modeBlockSize > cipherBlockSize)
+			throw new IllegalArgumentException("mode size exceeds cipher block size");
+		off = 0;
+		counter = new byte[cipherBlockSize];
+		int i = cipherBlockSize - 1;
+		int j = iv.length - 1;
+		while (i >= 0 && j >= 0)
+			counter[i--] = iv[j--];
+		enc = new byte[cipherBlockSize];
+		cipher.encryptBlock(counter, 0, enc, 0);
+	}
+
+	@Override
+	public void teardown() {
+		if (counter != null)
+			Arrays.fill(counter, (byte) 0);
+		if (enc != null)
+			Arrays.fill(enc, (byte) 0);
+	}
 }

@@ -55,50 +55,49 @@ import gnu.vm.jgnu.security.InvalidAlgorithmParameterException;
  * @see CollectionCertStoreParameters
  * @see LDAPCertStoreParameters
  */
-public abstract class CertStoreSpi
-{
+public abstract class CertStoreSpi {
 
-    // Constructors.
-    // ------------------------------------------------------------------------
+	// Constructors.
+	// ------------------------------------------------------------------------
 
-    /**
-     * Creates a new CertStoreSpi.
-     *
-     * @param params
-     *            The parameters to initialize this instance with, or null if no
-     *            parameters are required.
-     * @throws InvalidAlgorithmParameterException
-     *             If the specified parameters are inappropriate for this class.
-     */
-    public CertStoreSpi(CertStoreParameters params) throws InvalidAlgorithmParameterException
-    {
-	super();
-    }
+	/**
+	 * Creates a new CertStoreSpi.
+	 *
+	 * @param params
+	 *            The parameters to initialize this instance with, or null if no
+	 *            parameters are required.
+	 * @throws InvalidAlgorithmParameterException
+	 *             If the specified parameters are inappropriate for this class.
+	 */
+	public CertStoreSpi(CertStoreParameters params) throws InvalidAlgorithmParameterException {
+		super();
+	}
 
-    // Abstract methods.
-    // ------------------------------------------------------------------------
+	// Abstract methods.
+	// ------------------------------------------------------------------------
 
-    /**
-     * Get the certificates from this store, filtering them through the
-     * specified CertSelector.
-     *
-     * @param selector
-     *            The CertSelector to filter certificates.
-     * @return A (non-null) collection of certificates.
-     * @throws CertStoreException
-     *             If the certificates cannot be retrieved.
-     */
-    public abstract Collection<? extends Certificate> engineGetCertificates(CertSelector selector) throws CertStoreException;
+	/**
+	 * Get the certificates from this store, filtering them through the specified
+	 * CertSelector.
+	 *
+	 * @param selector
+	 *            The CertSelector to filter certificates.
+	 * @return A (non-null) collection of certificates.
+	 * @throws CertStoreException
+	 *             If the certificates cannot be retrieved.
+	 */
+	public abstract Collection<? extends Certificate> engineGetCertificates(CertSelector selector)
+			throws CertStoreException;
 
-    /**
-     * Get the certificate revocation list from this store, filtering them
-     * through the specified CRLSelector.
-     *
-     * @param selector
-     *            The CRLSelector to filter certificate revocation lists.
-     * @return A (non-null) collection of certificate revocation list.
-     * @throws CertStoreException
-     *             If the CRLs cannot be retrieved.
-     */
-    public abstract Collection<? extends CRL> engineGetCRLs(CRLSelector selector) throws CertStoreException;
+	/**
+	 * Get the certificate revocation list from this store, filtering them through
+	 * the specified CRLSelector.
+	 *
+	 * @param selector
+	 *            The CRLSelector to filter certificate revocation lists.
+	 * @return A (non-null) collection of certificate revocation list.
+	 * @throws CertStoreException
+	 *             If the CRLs cannot be retrieved.
+	 */
+	public abstract Collection<? extends CRL> engineGetCRLs(CRLSelector selector) throws CertStoreException;
 }

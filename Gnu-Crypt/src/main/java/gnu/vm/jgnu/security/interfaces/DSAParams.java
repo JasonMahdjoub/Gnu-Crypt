@@ -47,26 +47,25 @@ import java.math.BigInteger;
  *
  * @author Aaron M. Renn (arenn@urbanophile.com)
  */
-public interface DSAParams
-{
-    /**
-     * Returns the base, or 'g' value
-     *
-     * @return The DSA base value
-     */
-    BigInteger getG();
+public interface DSAParams {
+	/**
+	 * Returns the base, or 'g' value
+	 *
+	 * @return The DSA base value
+	 */
+	BigInteger getG();
 
-    /**
-     * Returns the prime, or 'p' value
-     *
-     * @return The DSA prime value
-     */
-    BigInteger getP();
+	/**
+	 * Returns the prime, or 'p' value
+	 *
+	 * @return The DSA prime value
+	 */
+	BigInteger getP();
 
-    /**
-     * Returns the subprime, or 'q' value
-     *
-     * @return The DSA subprime value
-     */
-    BigInteger getQ();
+	/**
+	 * Returns the subprime, or 'q' value
+	 *
+	 * @return The DSA subprime value
+	 */
+	BigInteger getQ();
 }

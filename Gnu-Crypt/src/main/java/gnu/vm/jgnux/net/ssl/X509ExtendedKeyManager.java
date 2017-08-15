@@ -48,55 +48,51 @@ import javax.net.ssl.X509KeyManager;
  * @since 1.5
  * @author Casey Marshall (csm@gnu.org)
  */
-public abstract class X509ExtendedKeyManager implements X509KeyManager
-{
+public abstract class X509ExtendedKeyManager implements X509KeyManager {
 
-    /**
-     * Default constructor.
-     */
-    protected X509ExtendedKeyManager()
-    {
-    }
+	/**
+	 * Default constructor.
+	 */
+	protected X509ExtendedKeyManager() {
+	}
 
-    /**
-     * Return a client alias given a list of key types, a list of allowable
-     * issuers, and the SSLEngine being used.
-     *
-     * <p>
-     * This implementation always returns <code>null</code>.
-     *
-     * @param keyTypes
-     *            The list of desired key types.
-     * @param issuers
-     *            The list of desired key issuers.
-     * @param engine
-     *            This client's SSLEngine.
-     * @return A key alias that matches the given parameters, or
-     *         <code>null</code> if the parameters were not matched.
-     */
-    public String chooseEngineClientAlias(final String[] keyTypes, final Principal[] issuers, final SSLEngine engine)
-    {
-	return null;
-    }
+	/**
+	 * Return a client alias given a list of key types, a list of allowable issuers,
+	 * and the SSLEngine being used.
+	 *
+	 * <p>
+	 * This implementation always returns <code>null</code>.
+	 *
+	 * @param keyTypes
+	 *            The list of desired key types.
+	 * @param issuers
+	 *            The list of desired key issuers.
+	 * @param engine
+	 *            This client's SSLEngine.
+	 * @return A key alias that matches the given parameters, or <code>null</code>
+	 *         if the parameters were not matched.
+	 */
+	public String chooseEngineClientAlias(final String[] keyTypes, final Principal[] issuers, final SSLEngine engine) {
+		return null;
+	}
 
-    /**
-     * Return a server alias given a key type, a list of allowable issuers, and
-     * the SSLEngine being used.
-     *
-     * <p>
-     * This implementation always returns <code>null</code>.
-     *
-     * @param keyType
-     *            The desired key type.
-     * @param issuers
-     *            The list of desired key issuers.
-     * @param engine
-     *            The server's SSLEngine.
-     * @return A key alias that matches the given parameters, or
-     *         <code>null</code> if the parameters were not matched.
-     */
-    public String chooseEngineServerAlias(final String keyType, final Principal[] issuers, final SSLEngine engine)
-    {
-	return null;
-    }
+	/**
+	 * Return a server alias given a key type, a list of allowable issuers, and the
+	 * SSLEngine being used.
+	 *
+	 * <p>
+	 * This implementation always returns <code>null</code>.
+	 *
+	 * @param keyType
+	 *            The desired key type.
+	 * @param issuers
+	 *            The list of desired key issuers.
+	 * @param engine
+	 *            The server's SSLEngine.
+	 * @return A key alias that matches the given parameters, or <code>null</code>
+	 *         if the parameters were not matched.
+	 */
+	public String chooseEngineServerAlias(final String keyType, final Principal[] issuers, final SSLEngine engine) {
+		return null;
+	}
 }

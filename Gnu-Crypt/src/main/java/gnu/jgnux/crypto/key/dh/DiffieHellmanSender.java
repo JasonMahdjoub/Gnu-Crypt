@@ -53,69 +53,61 @@ import gnu.vm.jgnux.crypto.interfaces.DHPrivateKey;
  *
  * @see DiffieHellmanKeyAgreement
  */
-public class DiffieHellmanSender extends DiffieHellmanKeyAgreement
-{
-    private BigInteger x; // the sender's random secret
+public class DiffieHellmanSender extends DiffieHellmanKeyAgreement {
+	private BigInteger x; // the sender's random secret
 
-    // default 0-arguments constructor
+	// default 0-arguments constructor
 
-    private OutgoingMessage computeSharedSecret(IncomingMessage in) throws KeyAgreementException
-    {
-	BigInteger m1 = in.readMPI();
-	if (m1 == null)
-	    throw new KeyAgreementException("missing message (2)");
-	BigInteger p = ownerKey.getParams().getP();
-	ZZ = m1.modPow(x, p); // ZZ = (yb ^ xa) mod p
-	complete = true;
-	return null;
-    }
-
-    @Override
-    protected void engineInit(Map<String, Object> attributes) throws KeyAgreementException
-    {
-	Object random = attributes.get(SOURCE_OF_RANDOMNESS);
-	rnd = null;
-	irnd = null;
-	if (random instanceof SecureRandom)
-	    rnd = (SecureRandom) random;
-	else if (random instanceof IRandom)
-	    irnd = (IRandom) random;
-	ownerKey = (DHPrivateKey) attributes
-		.get(KA_DIFFIE_HELLMAN_OWNER_PRIVATE_KEY);
-	if (ownerKey == null)
-	    throw new KeyAgreementException("missing owner's private key");
-    }
-
-    @Override
-    protected OutgoingMessage engineProcessMessage(IncomingMessage in) throws KeyAgreementException
-    {
-	switch (step)
-	{
-	    case 0:
-		return sendRandomSecret(in);
-	    case 1:
-		return computeSharedSecret(in);
-	    default:
-		throw new IllegalStateException("unexpected state");
+	private OutgoingMessage computeSharedSecret(IncomingMessage in) throws KeyAgreementException {
+		BigInteger m1 = in.readMPI();
+		if (m1 == null)
+			throw new KeyAgreementException("missing message (2)");
+		BigInteger p = ownerKey.getParams().getP();
+		ZZ = m1.modPow(x, p); // ZZ = (yb ^ xa) mod p
+		complete = true;
+		return null;
 	}
-    }
 
-    private OutgoingMessage sendRandomSecret(IncomingMessage in) throws KeyAgreementException
-    {
-	BigInteger p = ownerKey.getParams().getP();
-	BigInteger g = ownerKey.getParams().getG();
-	// A chooses a random integer x, 1 <= x <= p-2
-	// rfc-2631 restricts x to only be in [2, p-1]
-	BigInteger p_minus_2 = p.subtract(TWO);
-	byte[] xBytes = new byte[(p_minus_2.bitLength() + 7) / 8];
-	do
-	{
-	    nextRandomBytes(xBytes);
-	    x = new BigInteger(1, xBytes);
-	} while (!(x.compareTo(TWO) >= 0 && x.compareTo(p_minus_2) <= 0));
-	// A sends B the message: g^x mod p
-	OutgoingMessage result = new OutgoingMessage();
-	result.writeMPI(g.modPow(x, p));
-	return result;
-    }
+	@Override
+	protected void engineInit(Map<String, Object> attributes) throws KeyAgreementException {
+		Object random = attributes.get(SOURCE_OF_RANDOMNESS);
+		rnd = null;
+		irnd = null;
+		if (random instanceof SecureRandom)
+			rnd = (SecureRandom) random;
+		else if (random instanceof IRandom)
+			irnd = (IRandom) random;
+		ownerKey = (DHPrivateKey) attributes.get(KA_DIFFIE_HELLMAN_OWNER_PRIVATE_KEY);
+		if (ownerKey == null)
+			throw new KeyAgreementException("missing owner's private key");
+	}
+
+	@Override
+	protected OutgoingMessage engineProcessMessage(IncomingMessage in) throws KeyAgreementException {
+		switch (step) {
+		case 0:
+			return sendRandomSecret(in);
+		case 1:
+			return computeSharedSecret(in);
+		default:
+			throw new IllegalStateException("unexpected state");
+		}
+	}
+
+	private OutgoingMessage sendRandomSecret(IncomingMessage in) throws KeyAgreementException {
+		BigInteger p = ownerKey.getParams().getP();
+		BigInteger g = ownerKey.getParams().getG();
+		// A chooses a random integer x, 1 <= x <= p-2
+		// rfc-2631 restricts x to only be in [2, p-1]
+		BigInteger p_minus_2 = p.subtract(TWO);
+		byte[] xBytes = new byte[(p_minus_2.bitLength() + 7) / 8];
+		do {
+			nextRandomBytes(xBytes);
+			x = new BigInteger(1, xBytes);
+		} while (!(x.compareTo(TWO) >= 0 && x.compareTo(p_minus_2) <= 0));
+		// A sends B the message: g^x mod p
+		OutgoingMessage result = new OutgoingMessage();
+		result.writeMPI(g.modPow(x, p));
+		return result;
+	}
 }

@@ -49,6 +49,5 @@ import gnu.jgnux.crypto.mac.IMac;
  * via the {@link IMac#digest()} method, and header updating (if supported by
  * the mode) is done via the {@link IMac#update(byte[],int,int)} method.
  */
-public interface IAuthenticatedMode extends IMode, IMac
-{
+public interface IAuthenticatedMode extends IMode, IMac {
 }

@@ -47,17 +47,15 @@ import gnu.vm.jgnux.crypto.NullCipherImpl;
  *
  * @author Casey Marshall (csm@gnu.org)
  */
-public class NullCipher extends Cipher
-{
+public class NullCipher extends Cipher {
 
-    // Constructor.
-    // ------------------------------------------------------------------------
+	// Constructor.
+	// ------------------------------------------------------------------------
 
-    /**
-     * Create a new identity cipher.
-     */
-    public NullCipher()
-    {
-	super(new NullCipherImpl(), null, "NULL");
-    }
+	/**
+	 * Create a new identity cipher.
+	 */
+	public NullCipher() {
+		super(new NullCipherImpl(), null, "NULL");
+	}
 }

@@ -39,10 +39,8 @@ package gnu.jgnux.crypto.jce.key;
 
 import gnu.jgnu.security.Registry;
 
-public class AnubisKeyGeneratorImpl extends SecretKeyGeneratorImpl
-{
-    public AnubisKeyGeneratorImpl()
-    {
-	super(Registry.ANUBIS_CIPHER);
-    }
+public class AnubisKeyGeneratorImpl extends SecretKeyGeneratorImpl {
+	public AnubisKeyGeneratorImpl() {
+		super(Registry.ANUBIS_CIPHER);
+	}
 }

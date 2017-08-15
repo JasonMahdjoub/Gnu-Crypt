@@ -63,112 +63,107 @@ import gnu.vm.jgnu.security.spec.AlgorithmParameterSpec;
  * @author Casey Marshall (csm@gnu.org)
  * @since 1.4
  */
-public abstract class MacSpi
-{
+public abstract class MacSpi {
 
-    // Constructor.
-    // ------------------------------------------------------------------------
+	// Constructor.
+	// ------------------------------------------------------------------------
 
-    /**
-     * Create a new MacSpi instance.
-     */
-    public MacSpi()
-    {
-    }
-
-    // Instance methods.
-    // ------------------------------------------------------------------------
-
-    /**
-     * Returns a clone of this instance if cloning is supported.
-     *
-     * @return A clone of this instance.
-     * @throws java.lang.CloneNotSupportedException
-     *             If this instance does not support cloneing.
-     */
-    @Override
-    public Object clone() throws CloneNotSupportedException
-    {
-	return super.clone();
-    }
-
-    // Abstract instance methods.
-    // ------------------------------------------------------------------------
-
-    /**
-     * Finalize the computation of this MAC and return the result as a byte
-     * array.
-     *
-     * @return The MAC.
-     */
-    protected abstract byte[] engineDoFinal();
-
-    /**
-     * Return the total length, in bytes, of the computed MAC (the length of the
-     * byte array returned by {@link #doFinal()}.
-     *
-     * @return The MAC length.
-     */
-    protected abstract int engineGetMacLength();
-
-    /**
-     * Initialize (or re-initialize) this instance.
-     *
-     * @param key
-     *            The key to use.
-     * @param params
-     *            The parameters to use.
-     * @throws java.security.InvalidAlgorithmParameterException
-     *             If this instance rejects the specified parameters.
-     * @throws java.security.InvalidKeyException
-     *             If this instance rejects the specified key.
-     */
-    protected abstract void engineInit(Key key, AlgorithmParameterSpec params) throws InvalidAlgorithmParameterException, InvalidKeyException;
-
-    /**
-     * Reset this instance. After this method succeeds, the state of this
-     * instance should be the same as it was before any data was input (possibly
-     * after a call to
-     * {@link #init(java.security.Key,java.security.spec.AlgorithmParameterSpec)},
-     * possibly not).
-     */
-    protected abstract void engineReset();
-
-    /**
-     * Update this MAC with a single byte.
-     *
-     * @param input
-     *            The next byte.
-     */
-    protected abstract void engineUpdate(byte input);
-
-    /**
-     * Update this MAC with a portion of a byte array.
-     *
-     * @param input
-     *            The next bytes.
-     * @param offset
-     *            The index in <code>input</code> at which to start.
-     * @param length
-     *            The number of bytes to update.
-     */
-    protected abstract void engineUpdate(byte[] input, int offset, int length);
-
-    /**
-     * Update this MAC with the remaining bytes of a buffer.
-     *
-     * @param buffer
-     *            The input buffer.
-     * @since 1.5
-     */
-    protected void engineUpdate(final ByteBuffer buffer)
-    {
-	byte[] buf = new byte[1024];
-	while (buffer.hasRemaining())
-	{
-	    int n = Math.min(buffer.remaining(), buf.length);
-	    buffer.get(buf, 0, n);
-	    engineUpdate(buf, 0, n);
+	/**
+	 * Create a new MacSpi instance.
+	 */
+	public MacSpi() {
 	}
-    }
+
+	// Instance methods.
+	// ------------------------------------------------------------------------
+
+	/**
+	 * Returns a clone of this instance if cloning is supported.
+	 *
+	 * @return A clone of this instance.
+	 * @throws java.lang.CloneNotSupportedException
+	 *             If this instance does not support cloneing.
+	 */
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+		return super.clone();
+	}
+
+	// Abstract instance methods.
+	// ------------------------------------------------------------------------
+
+	/**
+	 * Finalize the computation of this MAC and return the result as a byte array.
+	 *
+	 * @return The MAC.
+	 */
+	protected abstract byte[] engineDoFinal();
+
+	/**
+	 * Return the total length, in bytes, of the computed MAC (the length of the
+	 * byte array returned by {@link #doFinal()}.
+	 *
+	 * @return The MAC length.
+	 */
+	protected abstract int engineGetMacLength();
+
+	/**
+	 * Initialize (or re-initialize) this instance.
+	 *
+	 * @param key
+	 *            The key to use.
+	 * @param params
+	 *            The parameters to use.
+	 * @throws java.security.InvalidAlgorithmParameterException
+	 *             If this instance rejects the specified parameters.
+	 * @throws java.security.InvalidKeyException
+	 *             If this instance rejects the specified key.
+	 */
+	protected abstract void engineInit(Key key, AlgorithmParameterSpec params)
+			throws InvalidAlgorithmParameterException, InvalidKeyException;
+
+	/**
+	 * Reset this instance. After this method succeeds, the state of this instance
+	 * should be the same as it was before any data was input (possibly after a call
+	 * to
+	 * {@link #init(java.security.Key,java.security.spec.AlgorithmParameterSpec)},
+	 * possibly not).
+	 */
+	protected abstract void engineReset();
+
+	/**
+	 * Update this MAC with a single byte.
+	 *
+	 * @param input
+	 *            The next byte.
+	 */
+	protected abstract void engineUpdate(byte input);
+
+	/**
+	 * Update this MAC with a portion of a byte array.
+	 *
+	 * @param input
+	 *            The next bytes.
+	 * @param offset
+	 *            The index in <code>input</code> at which to start.
+	 * @param length
+	 *            The number of bytes to update.
+	 */
+	protected abstract void engineUpdate(byte[] input, int offset, int length);
+
+	/**
+	 * Update this MAC with the remaining bytes of a buffer.
+	 *
+	 * @param buffer
+	 *            The input buffer.
+	 * @since 1.5
+	 */
+	protected void engineUpdate(final ByteBuffer buffer) {
+		byte[] buf = new byte[1024];
+		while (buffer.hasRemaining()) {
+			int n = Math.min(buffer.remaining(), buf.length);
+			buffer.get(buf, 0, n);
+			engineUpdate(buf, 0, n);
+		}
+	}
 }

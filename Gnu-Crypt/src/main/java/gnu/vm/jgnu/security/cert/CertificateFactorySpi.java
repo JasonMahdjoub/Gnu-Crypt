@@ -55,164 +55,155 @@ import java.util.List;
  * 
  * @author Mark Benvenuto
  */
-public abstract class CertificateFactorySpi
-{
+public abstract class CertificateFactorySpi {
 
-    // Constructor.
-    // ------------------------------------------------------------------------
+	// Constructor.
+	// ------------------------------------------------------------------------
 
-    /**
-     * Constructs a new CertificateFactorySpi
-     */
-    public CertificateFactorySpi()
-    {
-    }
+	/**
+	 * Constructs a new CertificateFactorySpi
+	 */
+	public CertificateFactorySpi() {
+	}
 
-    // Abstract methods.
-    // ------------------------------------------------------------------------
+	// Abstract methods.
+	// ------------------------------------------------------------------------
 
-    /**
-     * Generates a Certificate based on the encoded data read from the
-     * InputStream.
-     * 
-     * The input stream must contain only one certificate.
-     * 
-     * If there exists a specialized certificate class for the certificate
-     * format handled by the certificate factory then the return Ceritificate
-     * should be a typecast of it. Ex: A X.509 CertificateFactory should return
-     * X509Certificate.
-     * 
-     * For X.509 certificates, the certificate in inStream must be DER encoded
-     * and supplied in binary or printable (Base64) encoding. If the certificate
-     * is in Base64 encoding, it must be bounded by -----BEGIN CERTIFICATE-----,
-     * and -----END CERTIFICATE-----.
-     * 
-     * @param inStream
-     *            an input stream containing the certificate data
-     * 
-     * @return a certificate initialized with InputStream data.
-     * 
-     * @throws CertificateException
-     *             Certificate parsing error
-     */
-    public abstract Certificate engineGenerateCertificate(InputStream inStream) throws CertificateException;
+	/**
+	 * Generates a Certificate based on the encoded data read from the InputStream.
+	 * 
+	 * The input stream must contain only one certificate.
+	 * 
+	 * If there exists a specialized certificate class for the certificate format
+	 * handled by the certificate factory then the return Ceritificate should be a
+	 * typecast of it. Ex: A X.509 CertificateFactory should return X509Certificate.
+	 * 
+	 * For X.509 certificates, the certificate in inStream must be DER encoded and
+	 * supplied in binary or printable (Base64) encoding. If the certificate is in
+	 * Base64 encoding, it must be bounded by -----BEGIN CERTIFICATE-----, and
+	 * -----END CERTIFICATE-----.
+	 * 
+	 * @param inStream
+	 *            an input stream containing the certificate data
+	 * 
+	 * @return a certificate initialized with InputStream data.
+	 * 
+	 * @throws CertificateException
+	 *             Certificate parsing error
+	 */
+	public abstract Certificate engineGenerateCertificate(InputStream inStream) throws CertificateException;
 
-    /**
-     * Returns a collection of certificates that were read from the input
-     * stream. It may be empty, have only one, or have multiple certificates.
-     * 
-     * For a X.509 certificate factory, the stream may contain a single DER
-     * encoded certificate or a PKCS#7 certificate chain. This is a PKCS#7
-     * <I>SignedData</I> object with the most significant field being
-     * <I>certificates</I>. If no CRLs are present, then an empty collection is
-     * returned.
-     * 
-     * @param inStream
-     *            an input stream containing the certificates
-     * 
-     * @return a collection of certificates initialized with the InputStream
-     *         data.
-     * 
-     * @throws CertificateException
-     *             Certificate parsing error
-     */
-    public abstract Collection<? extends Certificate> engineGenerateCertificates(InputStream inStream) throws CertificateException;
+	/**
+	 * Returns a collection of certificates that were read from the input stream. It
+	 * may be empty, have only one, or have multiple certificates.
+	 * 
+	 * For a X.509 certificate factory, the stream may contain a single DER encoded
+	 * certificate or a PKCS#7 certificate chain. This is a PKCS#7 <I>SignedData</I>
+	 * object with the most significant field being <I>certificates</I>. If no CRLs
+	 * are present, then an empty collection is returned.
+	 * 
+	 * @param inStream
+	 *            an input stream containing the certificates
+	 * 
+	 * @return a collection of certificates initialized with the InputStream data.
+	 * 
+	 * @throws CertificateException
+	 *             Certificate parsing error
+	 */
+	public abstract Collection<? extends Certificate> engineGenerateCertificates(InputStream inStream)
+			throws CertificateException;
 
-    /**
-     * Generate a {@link CertPath} and initialize it with data parsed from the
-     * input stream. The default encoding of this factory is used.
-     *
-     * @param inStream
-     *            The InputStream containing the CertPath data.
-     * @return A CertPath initialized from the input stream data.
-     * @throws CertificateException
-     *             If an error occurs decoding the CertPath.
-     */
-    public CertPath engineGenerateCertPath(InputStream inStream) throws CertificateException
-    {
-	throw new UnsupportedOperationException("not implemented");
-    }
+	/**
+	 * Generate a {@link CertPath} and initialize it with data parsed from the input
+	 * stream. The default encoding of this factory is used.
+	 *
+	 * @param inStream
+	 *            The InputStream containing the CertPath data.
+	 * @return A CertPath initialized from the input stream data.
+	 * @throws CertificateException
+	 *             If an error occurs decoding the CertPath.
+	 */
+	public CertPath engineGenerateCertPath(InputStream inStream) throws CertificateException {
+		throw new UnsupportedOperationException("not implemented");
+	}
 
-    /**
-     * Generate a {@link CertPath} and initialize it with data parsed from the
-     * input stream, using the specified encoding.
-     *
-     * @param inStream
-     *            The InputStream containing the CertPath data.
-     * @param encoding
-     *            The encoding of the InputStream data.
-     * @return A CertPath initialized from the input stream data.
-     * @throws CertificateException
-     *             If an error occurs decoding the CertPath.
-     */
-    public CertPath engineGenerateCertPath(InputStream inStream, String encoding) throws CertificateException
-    {
-	throw new UnsupportedOperationException("not implemented");
-    }
+	/**
+	 * Generate a {@link CertPath} and initialize it with data parsed from the input
+	 * stream, using the specified encoding.
+	 *
+	 * @param inStream
+	 *            The InputStream containing the CertPath data.
+	 * @param encoding
+	 *            The encoding of the InputStream data.
+	 * @return A CertPath initialized from the input stream data.
+	 * @throws CertificateException
+	 *             If an error occurs decoding the CertPath.
+	 */
+	public CertPath engineGenerateCertPath(InputStream inStream, String encoding) throws CertificateException {
+		throw new UnsupportedOperationException("not implemented");
+	}
 
-    // 1.4 instance methods.
-    // ------------------------------------------------------------------------
+	// 1.4 instance methods.
+	// ------------------------------------------------------------------------
 
-    /**
-     * Generate a {@link CertPath} and initialize it with the certificates in
-     * the {@link java.util.List} argument.
-     *
-     * @param certificates
-     *            The list of certificates with which to create the CertPath.
-     * @return A CertPath initialized from the certificates.
-     * @throws CertificateException
-     *             If an error occurs generating the CertPath.
-     */
-    public CertPath engineGenerateCertPath(List<? extends Certificate> certificates) throws CertificateException
-    {
-	throw new UnsupportedOperationException("not implemented");
-    }
+	/**
+	 * Generate a {@link CertPath} and initialize it with the certificates in the
+	 * {@link java.util.List} argument.
+	 *
+	 * @param certificates
+	 *            The list of certificates with which to create the CertPath.
+	 * @return A CertPath initialized from the certificates.
+	 * @throws CertificateException
+	 *             If an error occurs generating the CertPath.
+	 */
+	public CertPath engineGenerateCertPath(List<? extends Certificate> certificates) throws CertificateException {
+		throw new UnsupportedOperationException("not implemented");
+	}
 
-    /**
-     * Generates a CRL based on the encoded data read from the InputStream.
-     * 
-     * The input stream must contain only one CRL.
-     * 
-     * If there exists a specialized CRL class for the CRL format handled by the
-     * certificate factory then the return CRL should be a typecast of it. Ex: A
-     * X.509 CertificateFactory should return X509CRL.
-     * 
-     * @param inStream
-     *            an input stream containing the CRL data
-     * 
-     * @return a CRL initialized with InputStream data.
-     * 
-     * @throws CRLException
-     *             CRL parsing error
-     */
-    public abstract CRL engineGenerateCRL(InputStream inStream) throws CRLException;
+	/**
+	 * Generates a CRL based on the encoded data read from the InputStream.
+	 * 
+	 * The input stream must contain only one CRL.
+	 * 
+	 * If there exists a specialized CRL class for the CRL format handled by the
+	 * certificate factory then the return CRL should be a typecast of it. Ex: A
+	 * X.509 CertificateFactory should return X509CRL.
+	 * 
+	 * @param inStream
+	 *            an input stream containing the CRL data
+	 * 
+	 * @return a CRL initialized with InputStream data.
+	 * 
+	 * @throws CRLException
+	 *             CRL parsing error
+	 */
+	public abstract CRL engineGenerateCRL(InputStream inStream) throws CRLException;
 
-    /**
-     * Generates CRLs based on the encoded data read from the InputStream.
-     * 
-     * For a X.509 certificate factory, the stream may contain a single DER
-     * encoded CRL or a PKCS#7 CRL set. This is a PKCS#7 <I>SignedData</I>
-     * object with the most significant field being <I>crls</I>. If no CRLs are
-     * present, then an empty collection is returned.
-     * 
-     * @param inStream
-     *            an input stream containing the CRLs
-     * 
-     * @return a collection of CRLs initialized with the InputStream data.
-     * 
-     * @throws CRLException
-     *             CRL parsing error
-     */
-    public abstract Collection<? extends CRL> engineGenerateCRLs(InputStream inStream) throws CRLException;
+	/**
+	 * Generates CRLs based on the encoded data read from the InputStream.
+	 * 
+	 * For a X.509 certificate factory, the stream may contain a single DER encoded
+	 * CRL or a PKCS#7 CRL set. This is a PKCS#7 <I>SignedData</I> object with the
+	 * most significant field being <I>crls</I>. If no CRLs are present, then an
+	 * empty collection is returned.
+	 * 
+	 * @param inStream
+	 *            an input stream containing the CRLs
+	 * 
+	 * @return a collection of CRLs initialized with the InputStream data.
+	 * 
+	 * @throws CRLException
+	 *             CRL parsing error
+	 */
+	public abstract Collection<? extends CRL> engineGenerateCRLs(InputStream inStream) throws CRLException;
 
-    /**
-     * Returns an Iterator of CertPath encodings supported by this factory, with
-     * the default encoding first. The returned Iterator cannot be modified.
-     *
-     * @return The Iterator of supported encodings.
-     */
-    public Iterator<String> engineGetCertPathEncodings()
-    {
-	throw new UnsupportedOperationException("not implemented");
-    }
+	/**
+	 * Returns an Iterator of CertPath encodings supported by this factory, with the
+	 * default encoding first. The returned Iterator cannot be modified.
+	 *
+	 * @return The Iterator of supported encodings.
+	 */
+	public Iterator<String> engineGetCertPathEncodings() {
+		throw new UnsupportedOperationException("not implemented");
+	}
 }

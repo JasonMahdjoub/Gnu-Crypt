@@ -46,13 +46,12 @@ package gnu.vm.jgnu.security.cert;
  * @see LDAPCertStoreParameters
  * @see CollectionCertStoreParameters
  */
-public interface CertStoreParameters extends Cloneable
-{
+public interface CertStoreParameters extends Cloneable {
 
-    /**
-     * Create a copy of these parameters.
-     *
-     * @return The copy.
-     */
-    Object clone();
+	/**
+	 * Create a copy of these parameters.
+	 *
+	 * @return The copy.
+	 */
+	Object clone();
 }

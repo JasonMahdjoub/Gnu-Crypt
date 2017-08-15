@@ -41,20 +41,17 @@ package gnu.jgnu.security.prng;
  * A checked exception that indicates that a pseudo random number generated has
  * reached its theoretical limit in generating random bytes.
  */
-public class LimitReachedException extends Exception
-{
-    /**
-     * 
-     */
-    private static final long serialVersionUID = 6859108040075545065L;
+public class LimitReachedException extends Exception {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 6859108040075545065L;
 
-    public LimitReachedException()
-    {
-	super();
-    }
+	public LimitReachedException() {
+		super();
+	}
 
-    public LimitReachedException(String msg)
-    {
-	super(msg);
-    }
+	public LimitReachedException(String msg) {
+		super(msg);
+	}
 }

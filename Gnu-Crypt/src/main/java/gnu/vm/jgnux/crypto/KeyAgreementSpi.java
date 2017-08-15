@@ -63,104 +63,105 @@ import gnu.vm.jgnu.security.spec.AlgorithmParameterSpec;
  * @see KeyAgreement
  * @see SecretKey
  */
-public abstract class KeyAgreementSpi
-{
+public abstract class KeyAgreementSpi {
 
-    // Constructor.
-    // ------------------------------------------------------------------------
+	// Constructor.
+	// ------------------------------------------------------------------------
 
-    /**
-     * Create a new KeyAgreementSpi instance.
-     */
-    public KeyAgreementSpi()
-    {
-    }
+	/**
+	 * Create a new KeyAgreementSpi instance.
+	 */
+	public KeyAgreementSpi() {
+	}
 
-    // Abstract instance methods.
-    // ------------------------------------------------------------------------
+	// Abstract instance methods.
+	// ------------------------------------------------------------------------
 
-    /**
-     * Do a phase in the key agreement.
-     *
-     * @param key
-     *            The key to use for this phase.
-     * @param lastPhase
-     *            <code>true</code> if this call should be the last phase.
-     * @return The intermediate result, or <code>null</code> if there is no
-     *         intermediate result.
-     * @throws java.lang.IllegalStateException
-     *             If this instance has not been initialized.
-     * @throws java.security.InvalidKeyException
-     *             If the supplied key is not appropriate.
-     */
-    protected abstract Key engineDoPhase(Key key, boolean lastPhase) throws IllegalStateException, InvalidKeyException;
+	/**
+	 * Do a phase in the key agreement.
+	 *
+	 * @param key
+	 *            The key to use for this phase.
+	 * @param lastPhase
+	 *            <code>true</code> if this call should be the last phase.
+	 * @return The intermediate result, or <code>null</code> if there is no
+	 *         intermediate result.
+	 * @throws java.lang.IllegalStateException
+	 *             If this instance has not been initialized.
+	 * @throws java.security.InvalidKeyException
+	 *             If the supplied key is not appropriate.
+	 */
+	protected abstract Key engineDoPhase(Key key, boolean lastPhase) throws IllegalStateException, InvalidKeyException;
 
-    /**
-     * Generate the shared secret in a new byte array.
-     *
-     * @return The shared secret in a new byte array.
-     * @throws java.lang.IllegalStateException
-     *             If this key agreement is not ready to generate the secret.
-     */
-    protected abstract byte[] engineGenerateSecret() throws IllegalStateException;
+	/**
+	 * Generate the shared secret in a new byte array.
+	 *
+	 * @return The shared secret in a new byte array.
+	 * @throws java.lang.IllegalStateException
+	 *             If this key agreement is not ready to generate the secret.
+	 */
+	protected abstract byte[] engineGenerateSecret() throws IllegalStateException;
 
-    /**
-     * Generate the shared secret, storing it into the specified array.
-     *
-     * @param sharedSecret
-     *            The byte array in which to store the secret.
-     * @param offset
-     *            The offset into the byte array to start.
-     * @return The size of the shared secret.
-     * @throws java.lang.IllegalStateException
-     *             If this key agreement is not ready to generate the secret.
-     * @throws gnu.vm.jgnux.crypto.ShortBufferException
-     *             If there is not enough space in the supplied array for the
-     *             shared secret.
-     */
-    protected abstract int engineGenerateSecret(byte[] sharedSecret, int offset) throws IllegalStateException, ShortBufferException;
+	/**
+	 * Generate the shared secret, storing it into the specified array.
+	 *
+	 * @param sharedSecret
+	 *            The byte array in which to store the secret.
+	 * @param offset
+	 *            The offset into the byte array to start.
+	 * @return The size of the shared secret.
+	 * @throws java.lang.IllegalStateException
+	 *             If this key agreement is not ready to generate the secret.
+	 * @throws gnu.vm.jgnux.crypto.ShortBufferException
+	 *             If there is not enough space in the supplied array for the shared
+	 *             secret.
+	 */
+	protected abstract int engineGenerateSecret(byte[] sharedSecret, int offset)
+			throws IllegalStateException, ShortBufferException;
 
-    /**
-     * Generate the shared secret and return it as a {@link SecretKey}.
-     *
-     * @param algorithm
-     *            The algorithm with which to generate the secret key.
-     * @return The shared secret as a secret key.
-     * @throws java.lang.IllegalStateException
-     *             If this key agreement is not ready to generate the secret.
-     * @throws java.security.InvalidKeyException
-     *             If the shared secret cannot be made into a {@link SecretKey}.
-     * @throws java.security.NoSuchAlgorithmException
-     *             If <code>algorithm</code> cannot be found.
-     */
-    protected abstract SecretKey engineGenerateSecret(String algorithm) throws IllegalStateException, InvalidKeyException, NoSuchAlgorithmException;
+	/**
+	 * Generate the shared secret and return it as a {@link SecretKey}.
+	 *
+	 * @param algorithm
+	 *            The algorithm with which to generate the secret key.
+	 * @return The shared secret as a secret key.
+	 * @throws java.lang.IllegalStateException
+	 *             If this key agreement is not ready to generate the secret.
+	 * @throws java.security.InvalidKeyException
+	 *             If the shared secret cannot be made into a {@link SecretKey}.
+	 * @throws java.security.NoSuchAlgorithmException
+	 *             If <code>algorithm</code> cannot be found.
+	 */
+	protected abstract SecretKey engineGenerateSecret(String algorithm)
+			throws IllegalStateException, InvalidKeyException, NoSuchAlgorithmException;
 
-    /**
-     * Initialize this key agreement with a key, parameters, and source of
-     * randomness.
-     *
-     * @param key
-     *            The key to initialize with, usually a private key.
-     * @param params
-     *            The parameters to initialize with.
-     * @param random
-     *            The source of randomness to use.
-     * @throws java.security.InvalidAlgorithmParameterException
-     *             If the supplied parameters are inappropriate.
-     * @throws java.security.InvalidKeyException
-     *             If the supplied key is inappropriate.
-     */
-    protected abstract void engineInit(Key key, AlgorithmParameterSpec params, SecureRandom random) throws InvalidAlgorithmParameterException, InvalidKeyException;
+	/**
+	 * Initialize this key agreement with a key, parameters, and source of
+	 * randomness.
+	 *
+	 * @param key
+	 *            The key to initialize with, usually a private key.
+	 * @param params
+	 *            The parameters to initialize with.
+	 * @param random
+	 *            The source of randomness to use.
+	 * @throws java.security.InvalidAlgorithmParameterException
+	 *             If the supplied parameters are inappropriate.
+	 * @throws java.security.InvalidKeyException
+	 *             If the supplied key is inappropriate.
+	 */
+	protected abstract void engineInit(Key key, AlgorithmParameterSpec params, SecureRandom random)
+			throws InvalidAlgorithmParameterException, InvalidKeyException;
 
-    /**
-     * Initialize this key agreement with a key and source of randomness.
-     *
-     * @param key
-     *            The key to initialize with, usually a private key.
-     * @param random
-     *            The source of randomness to use.
-     * @throws java.security.InvalidKeyException
-     *             If the supplied key is inappropriate.
-     */
-    protected abstract void engineInit(Key key, SecureRandom random) throws InvalidKeyException;
+	/**
+	 * Initialize this key agreement with a key and source of randomness.
+	 *
+	 * @param key
+	 *            The key to initialize with, usually a private key.
+	 * @param random
+	 *            The source of randomness to use.
+	 * @throws java.security.InvalidKeyException
+	 *             If the supplied key is inappropriate.
+	 */
+	protected abstract void engineInit(Key key, SecureRandom random) throws InvalidKeyException;
 }

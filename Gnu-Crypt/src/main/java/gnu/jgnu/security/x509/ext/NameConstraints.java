@@ -72,95 +72,74 @@ import gnu.jgnu.security.x509.ext.Extension.Value;
  *
  * @author csm
  */
-public class NameConstraints extends Value
-{
-    public static final OID ID = new OID("2.5.29.30");
+public class NameConstraints extends Value {
+	public static final OID ID = new OID("2.5.29.30");
 
-    private List<GeneralSubtree> permittedSubtrees;
+	private List<GeneralSubtree> permittedSubtrees;
 
-    private List<GeneralSubtree> excludedSubtrees;
+	private List<GeneralSubtree> excludedSubtrees;
 
-    public NameConstraints(byte[] encoded) throws IOException
-    {
-	super(encoded);
+	public NameConstraints(byte[] encoded) throws IOException {
+		super(encoded);
 
-	DERReader der = new DERReader(encoded);
-	DERValue value = der.read();
-	if (!value.isConstructed())
-	{
-	    throw new IOException("malformed NameConstraints");
+		DERReader der = new DERReader(encoded);
+		DERValue value = der.read();
+		if (!value.isConstructed()) {
+			throw new IOException("malformed NameConstraints");
+		}
+
+		permittedSubtrees = new LinkedList<GeneralSubtree>();
+		excludedSubtrees = new LinkedList<GeneralSubtree>();
+		int len = 0;
+		if (len < value.getLength()) {
+			DERValue subtrees = der.read();
+			if (subtrees.getTag() == 0) {
+				int len2 = 0;
+				while (len2 < subtrees.getLength()) {
+					DERValue subtree = der.read();
+					permittedSubtrees.add(new GeneralSubtree(subtree.getEncoded()));
+					der.skip(subtree.getLength());
+					len2 += subtree.getEncodedLength();
+				}
+				len += subtrees.getEncodedLength();
+
+				if (len < value.getLength()) {
+					subtrees = der.read();
+					if (subtrees.getTag() != 1)
+						throw new IOException(
+								"unexpected tag " + subtrees.getTag() + " (expecting 1 for excludedSubtrees)");
+					len2 = 0;
+					while (len2 < subtrees.getLength()) {
+						DERValue subtree = der.read();
+						excludedSubtrees.add(new GeneralSubtree(subtree.getEncoded()));
+						der.skip(subtree.getLength());
+						len2 += subtree.getEncodedLength();
+					}
+				}
+			} else if (subtrees.getTag() == 1) {
+				int len2 = 0;
+				while (len2 < subtrees.getLength()) {
+					DERValue subtree = der.read();
+					excludedSubtrees.add(new GeneralSubtree(subtree.getEncoded()));
+					der.skip(subtree.getLength());
+					len2 += subtree.getEncodedLength();
+				}
+			} else
+				throw new IOException("unexpected tag " + subtrees.getTag() + " (expecting 0 or 1)");
+		}
 	}
 
-	permittedSubtrees = new LinkedList<GeneralSubtree>();
-	excludedSubtrees = new LinkedList<GeneralSubtree>();
-	int len = 0;
-	if (len < value.getLength())
-	{
-	    DERValue subtrees = der.read();
-	    if (subtrees.getTag() == 0)
-	    {
-		int len2 = 0;
-		while (len2 < subtrees.getLength())
-		{
-		    DERValue subtree = der.read();
-		    permittedSubtrees
-			    .add(new GeneralSubtree(subtree.getEncoded()));
-		    der.skip(subtree.getLength());
-		    len2 += subtree.getEncodedLength();
-		}
-		len += subtrees.getEncodedLength();
-
-		if (len < value.getLength())
-		{
-		    subtrees = der.read();
-		    if (subtrees.getTag() != 1)
-			throw new IOException("unexpected tag "
-				+ subtrees.getTag()
-				+ " (expecting 1 for excludedSubtrees)");
-		    len2 = 0;
-		    while (len2 < subtrees.getLength())
-		    {
-			DERValue subtree = der.read();
-			excludedSubtrees
-				.add(new GeneralSubtree(subtree.getEncoded()));
-			der.skip(subtree.getLength());
-			len2 += subtree.getEncodedLength();
-		    }
-		}
-	    }
-	    else if (subtrees.getTag() == 1)
-	    {
-		int len2 = 0;
-		while (len2 < subtrees.getLength())
-		{
-		    DERValue subtree = der.read();
-		    excludedSubtrees
-			    .add(new GeneralSubtree(subtree.getEncoded()));
-		    der.skip(subtree.getLength());
-		    len2 += subtree.getEncodedLength();
-		}
-	    }
-	    else
-		throw new IOException("unexpected tag " + subtrees.getTag()
-			+ " (expecting 0 or 1)");
+	public List<GeneralSubtree> excludedSubtrees() {
+		return Collections.unmodifiableList(excludedSubtrees);
 	}
-    }
 
-    public List<GeneralSubtree> excludedSubtrees()
-    {
-	return Collections.unmodifiableList(excludedSubtrees);
-    }
+	public List<GeneralSubtree> permittedSubtrees() {
+		return Collections.unmodifiableList(permittedSubtrees);
+	}
 
-    public List<GeneralSubtree> permittedSubtrees()
-    {
-	return Collections.unmodifiableList(permittedSubtrees);
-    }
-
-    @Override
-    public String toString()
-    {
-	return NameConstraints.class.getName() + " [ permittedSubtrees="
-		+ permittedSubtrees + "; excludedSubtrees=" + excludedSubtrees
-		+ " ]";
-    }
+	@Override
+	public String toString() {
+		return NameConstraints.class.getName() + " [ permittedSubtrees=" + permittedSubtrees + "; excludedSubtrees="
+				+ excludedSubtrees + " ]";
+	}
 }

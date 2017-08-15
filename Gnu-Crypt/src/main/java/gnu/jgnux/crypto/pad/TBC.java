@@ -56,54 +56,48 @@ import gnu.jgnu.security.Registry;
  * Techniques</a>, Morris Dworkin.</li>
  * </ol>
  */
-public final class TBC extends BasePad
-{
+public final class TBC extends BasePad {
 
-    /**
-     * Trivial package-private constructor for use by the <i>Factory</i> class.
-     *
-     * @see PadFactory
-     */
-    TBC()
-    {
-	super(Registry.TBC_PAD);
-    }
-
-    @Override
-    public byte[] pad(byte[] in, int offset, int length)
-    {
-	int padLength = blockSize;
-	if (length % blockSize != 0)
-	    padLength = blockSize - length % blockSize;
-	byte[] result = new byte[padLength];
-	int lastBit = in[offset + length - 1] & 0x01;
-	if (lastBit == 0)
-	    for (int i = 0; i < padLength;)
-		result[i++] = 0x01;
-	// else it's already set to zeroes by virtue of initialisation
-	return result;
-    }
-
-    @Override
-    public void setup()
-    {
-	if (blockSize < 1 || blockSize > 256)
-	    throw new IllegalArgumentException();
-    }
-
-    @Override
-    public int unpad(byte[] in, int offset, int length) throws WrongPaddingException
-    {
-	int limit = offset + length - 1;
-	int lastBit = in[limit] & 0xFF;
-	int result = 0;
-	while (lastBit == (in[limit] & 0xFF))
-	{
-	    result++;
-	    limit--;
+	/**
+	 * Trivial package-private constructor for use by the <i>Factory</i> class.
+	 *
+	 * @see PadFactory
+	 */
+	TBC() {
+		super(Registry.TBC_PAD);
 	}
-	if (result > length)
-	    throw new WrongPaddingException();
-	return result;
-    }
+
+	@Override
+	public byte[] pad(byte[] in, int offset, int length) {
+		int padLength = blockSize;
+		if (length % blockSize != 0)
+			padLength = blockSize - length % blockSize;
+		byte[] result = new byte[padLength];
+		int lastBit = in[offset + length - 1] & 0x01;
+		if (lastBit == 0)
+			for (int i = 0; i < padLength;)
+				result[i++] = 0x01;
+		// else it's already set to zeroes by virtue of initialisation
+		return result;
+	}
+
+	@Override
+	public void setup() {
+		if (blockSize < 1 || blockSize > 256)
+			throw new IllegalArgumentException();
+	}
+
+	@Override
+	public int unpad(byte[] in, int offset, int length) throws WrongPaddingException {
+		int limit = offset + length - 1;
+		int lastBit = in[limit] & 0xFF;
+		int result = 0;
+		while (lastBit == (in[limit] & 0xFF)) {
+			result++;
+			limit--;
+		}
+		if (result > length)
+			throw new WrongPaddingException();
+		return result;
+	}
 }

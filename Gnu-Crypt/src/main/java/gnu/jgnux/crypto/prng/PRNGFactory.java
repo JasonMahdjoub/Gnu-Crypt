@@ -51,67 +51,59 @@ import gnu.jgnux.crypto.mac.MacFactory;
 /**
  * A Factory to instantiate pseudo random number generators.
  */
-public class PRNGFactory implements Registry
-{
-    /**
-     * Returns an instance of a padding algorithm given its name.
-     *
-     * @param prng
-     *            the case-insensitive name of the PRNG.
-     * @return an instance of the pseudo-random number generator.
-     * @exception InternalError
-     *                if the implementation does not pass its self- test.
-     */
-    public static IRandom getInstance(String prng)
-    {
-	if (prng == null)
-	    return null;
-	prng = prng.trim();
-	IRandom result = null;
-	if (prng.equalsIgnoreCase(ARCFOUR_PRNG)
-		|| prng.equalsIgnoreCase(RC4_PRNG))
-	    result = new ARCFour();
-	else if (prng.equalsIgnoreCase(ICM_PRNG))
-	    result = new ICMGenerator();
-	else if (prng.equalsIgnoreCase(UMAC_PRNG))
-	    result = new UMacGenerator();
-	else if (prng.toLowerCase().startsWith(PBKDF2_PRNG_PREFIX))
-	{
-	    String macName = prng.substring(PBKDF2_PRNG_PREFIX.length());
-	    IMac mac = MacFactory.getInstance(macName);
-	    if (mac == null)
-		return null;
-	    result = new PBKDF2(mac);
+public class PRNGFactory implements Registry {
+	/**
+	 * Returns an instance of a padding algorithm given its name.
+	 *
+	 * @param prng
+	 *            the case-insensitive name of the PRNG.
+	 * @return an instance of the pseudo-random number generator.
+	 * @exception InternalError
+	 *                if the implementation does not pass its self- test.
+	 */
+	public static IRandom getInstance(String prng) {
+		if (prng == null)
+			return null;
+		prng = prng.trim();
+		IRandom result = null;
+		if (prng.equalsIgnoreCase(ARCFOUR_PRNG) || prng.equalsIgnoreCase(RC4_PRNG))
+			result = new ARCFour();
+		else if (prng.equalsIgnoreCase(ICM_PRNG))
+			result = new ICMGenerator();
+		else if (prng.equalsIgnoreCase(UMAC_PRNG))
+			result = new UMacGenerator();
+		else if (prng.toLowerCase().startsWith(PBKDF2_PRNG_PREFIX)) {
+			String macName = prng.substring(PBKDF2_PRNG_PREFIX.length());
+			IMac mac = MacFactory.getInstance(macName);
+			if (mac == null)
+				return null;
+			result = new PBKDF2(mac);
+		}
+
+		if (result != null)
+			return result;
+
+		return gnu.jgnu.security.prng.PRNGFactory.getInstance(prng);
 	}
 
-	if (result != null)
-	    return result;
+	/**
+	 * Returns a {@link Set} of names of padding algorithms supported by this
+	 * <i>Factory</i>.
+	 *
+	 * @return a {@link Set} of pseudo-random number generator algorithm names
+	 *         (Strings).
+	 */
+	public static Set<String> getNames() {
+		HashSet<String> hs = new HashSet<>(gnu.jgnu.security.prng.PRNGFactory.getNames());
+		hs.add(ICM_PRNG);
+		hs.add(UMAC_PRNG);
+		// add all hmac implementations as candidate PBKDF2 ones too
+		for (Iterator<String> it = HMacFactory.getNames().iterator(); it.hasNext();)
+			hs.add(PBKDF2_PRNG_PREFIX + it.next());
+		return Collections.unmodifiableSet(hs);
+	}
 
-	return gnu.jgnu.security.prng.PRNGFactory.getInstance(prng);
-    }
-
-    /**
-     * Returns a {@link Set} of names of padding algorithms supported by this
-     * <i>Factory</i>.
-     *
-     * @return a {@link Set} of pseudo-random number generator algorithm names
-     *         (Strings).
-     */
-    public static Set<String> getNames()
-    {
-	HashSet<String> hs = new HashSet<>(
-		gnu.jgnu.security.prng.PRNGFactory.getNames());
-	hs.add(ICM_PRNG);
-	hs.add(UMAC_PRNG);
-	// add all hmac implementations as candidate PBKDF2 ones too
-	for (Iterator<String> it = HMacFactory.getNames().iterator(); it
-		.hasNext();)
-	    hs.add(PBKDF2_PRNG_PREFIX + it.next());
-	return Collections.unmodifiableSet(hs);
-    }
-
-    /** Trivial constructor to enforce <i>Singleton</i> pattern. */
-    private PRNGFactory()
-    {
-    }
+	/** Trivial constructor to enforce <i>Singleton</i> pattern. */
+	private PRNGFactory() {
+	}
 }

@@ -49,129 +49,115 @@ import gnu.vm.jgnu.security.SecureRandom;
  * A base abstract class to facilitate implementations of concrete key agreement
  * protocol handlers.
  */
-public abstract class BaseKeyAgreementParty implements IKeyAgreementParty
-{
-    protected static final BigInteger TWO = BigInteger.valueOf(2L);
+public abstract class BaseKeyAgreementParty implements IKeyAgreementParty {
+	protected static final BigInteger TWO = BigInteger.valueOf(2L);
 
-    /** The canonical name of the protocol. */
-    protected String name;
+	/** The canonical name of the protocol. */
+	protected String name;
 
-    /** Whether the instance is initialised or not. */
-    protected boolean initialised = false;
+	/** Whether the instance is initialised or not. */
+	protected boolean initialised = false;
 
-    /** The current step index of the protocol exchange. */
-    protected int step = -1;
+	/** The current step index of the protocol exchange. */
+	protected int step = -1;
 
-    /** Whether the exchange has concluded or not. */
-    protected boolean complete = false;
+	/** Whether the exchange has concluded or not. */
+	protected boolean complete = false;
 
-    /** The optional {@link SecureRandom} instance to use. */
-    protected SecureRandom rnd = null;
+	/** The optional {@link SecureRandom} instance to use. */
+	protected SecureRandom rnd = null;
 
-    /** The optional {@link IRandom} instance to use. */
-    protected IRandom irnd = null;
+	/** The optional {@link IRandom} instance to use. */
+	protected IRandom irnd = null;
 
-    /** Our default source of randomness. */
-    private PRNG prng = null;
+	/** Our default source of randomness. */
+	private PRNG prng = null;
 
-    protected BaseKeyAgreementParty(String name)
-    {
-	super();
+	protected BaseKeyAgreementParty(String name) {
+		super();
 
-	this.name = name;
-    }
-
-    protected abstract void engineInit(Map<String, Object> attributes) throws KeyAgreementException;
-
-    protected abstract OutgoingMessage engineProcessMessage(IncomingMessage in) throws KeyAgreementException;
-
-    protected abstract void engineReset();
-
-    protected abstract byte[] engineSharedSecret() throws KeyAgreementException;
-
-    private PRNG getDefaultPRNG()
-    {
-	if (prng == null)
-	    prng = PRNG.getInstance();
-
-	return prng;
-    }
-
-    @Override
-    public byte[] getSharedSecret() throws KeyAgreementException
-    {
-	if (!initialised)
-	    throw new KeyAgreementException("not yet initialised");
-	if (!isComplete())
-	    throw new KeyAgreementException("not yet computed");
-	return engineSharedSecret();
-    }
-
-    @Override
-    public void init(Map<String, Object> attributes) throws KeyAgreementException
-    {
-	if (initialised)
-	    throw new IllegalStateException("already initialised");
-	this.engineInit(attributes);
-	initialised = true;
-	this.step = -1;
-	this.complete = false;
-    }
-
-    @Override
-    public boolean isComplete()
-    {
-	return complete;
-    }
-
-    @Override
-    public String name()
-    {
-	return name;
-    }
-
-    /**
-     * Fills the designated byte array with random data.
-     *
-     * @param buffer
-     *            the byte array to fill with random data.
-     */
-    protected void nextRandomBytes(byte[] buffer)
-    {
-	if (rnd != null)
-	    rnd.nextBytes(buffer);
-	else if (irnd != null)
-	    try
-	    {
-		irnd.nextBytes(buffer, 0, buffer.length);
-	    }
-	    catch (LimitReachedException lre)
-	    {
-		irnd = null;
-		getDefaultPRNG().nextBytes(buffer);
-	    }
-	else
-	    getDefaultPRNG().nextBytes(buffer);
-    }
-
-    @Override
-    public OutgoingMessage processMessage(IncomingMessage in) throws KeyAgreementException
-    {
-	if (!initialised)
-	    throw new IllegalStateException("not initialised");
-	if (complete)
-	    throw new IllegalStateException("exchange has already concluded");
-	step++;
-	return this.engineProcessMessage(in);
-    }
-
-    @Override
-    public void reset()
-    {
-	if (initialised)
-	{
-	    this.engineReset();
-	    initialised = false;
+		this.name = name;
 	}
-    }
+
+	protected abstract void engineInit(Map<String, Object> attributes) throws KeyAgreementException;
+
+	protected abstract OutgoingMessage engineProcessMessage(IncomingMessage in) throws KeyAgreementException;
+
+	protected abstract void engineReset();
+
+	protected abstract byte[] engineSharedSecret() throws KeyAgreementException;
+
+	private PRNG getDefaultPRNG() {
+		if (prng == null)
+			prng = PRNG.getInstance();
+
+		return prng;
+	}
+
+	@Override
+	public byte[] getSharedSecret() throws KeyAgreementException {
+		if (!initialised)
+			throw new KeyAgreementException("not yet initialised");
+		if (!isComplete())
+			throw new KeyAgreementException("not yet computed");
+		return engineSharedSecret();
+	}
+
+	@Override
+	public void init(Map<String, Object> attributes) throws KeyAgreementException {
+		if (initialised)
+			throw new IllegalStateException("already initialised");
+		this.engineInit(attributes);
+		initialised = true;
+		this.step = -1;
+		this.complete = false;
+	}
+
+	@Override
+	public boolean isComplete() {
+		return complete;
+	}
+
+	@Override
+	public String name() {
+		return name;
+	}
+
+	/**
+	 * Fills the designated byte array with random data.
+	 *
+	 * @param buffer
+	 *            the byte array to fill with random data.
+	 */
+	protected void nextRandomBytes(byte[] buffer) {
+		if (rnd != null)
+			rnd.nextBytes(buffer);
+		else if (irnd != null)
+			try {
+				irnd.nextBytes(buffer, 0, buffer.length);
+			} catch (LimitReachedException lre) {
+				irnd = null;
+				getDefaultPRNG().nextBytes(buffer);
+			}
+		else
+			getDefaultPRNG().nextBytes(buffer);
+	}
+
+	@Override
+	public OutgoingMessage processMessage(IncomingMessage in) throws KeyAgreementException {
+		if (!initialised)
+			throw new IllegalStateException("not initialised");
+		if (complete)
+			throw new IllegalStateException("exchange has already concluded");
+		step++;
+		return this.engineProcessMessage(in);
+	}
+
+	@Override
+	public void reset() {
+		if (initialised) {
+			this.engineReset();
+			initialised = false;
+		}
+	}
 }

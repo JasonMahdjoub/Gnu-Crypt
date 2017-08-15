@@ -49,54 +49,49 @@ import gnu.vm.jgnu.security.spec.KeySpec;
  * @since 1.2
  * @status updated to 1.5
  */
-public class InvalidKeySpecException extends GeneralSecurityException
-{
-    /**
-     * Compatible with JDK 1.2+.
-     */
-    private static final long serialVersionUID = 3546139293998810778L;
+public class InvalidKeySpecException extends GeneralSecurityException {
+	/**
+	 * Compatible with JDK 1.2+.
+	 */
+	private static final long serialVersionUID = 3546139293998810778L;
 
-    /**
-     * Constructs an InvalidKeySpecException without a message string.
-     */
-    public InvalidKeySpecException()
-    {
-    }
+	/**
+	 * Constructs an InvalidKeySpecException without a message string.
+	 */
+	public InvalidKeySpecException() {
+	}
 
-    /**
-     * Constructs an InvalidKeySpecException with a message string.
-     *
-     * @param msg
-     *            a message to display with exception
-     */
-    public InvalidKeySpecException(String msg)
-    {
-	super(msg);
-    }
+	/**
+	 * Constructs an InvalidKeySpecException with a message string.
+	 *
+	 * @param msg
+	 *            a message to display with exception
+	 */
+	public InvalidKeySpecException(String msg) {
+		super(msg);
+	}
 
-    /**
-     * Create a new instance with a descriptive error message and a cause.
-     * 
-     * @param s
-     *            the descriptive error message
-     * @param cause
-     *            the cause
-     * @since 1.5
-     */
-    public InvalidKeySpecException(String s, Throwable cause)
-    {
-	super(s, cause);
-    }
+	/**
+	 * Create a new instance with a descriptive error message and a cause.
+	 * 
+	 * @param s
+	 *            the descriptive error message
+	 * @param cause
+	 *            the cause
+	 * @since 1.5
+	 */
+	public InvalidKeySpecException(String s, Throwable cause) {
+		super(s, cause);
+	}
 
-    /**
-     * Create a new instance with a cause.
-     * 
-     * @param cause
-     *            the cause
-     * @since 1.5
-     */
-    public InvalidKeySpecException(Throwable cause)
-    {
-	super(cause);
-    }
+	/**
+	 * Create a new instance with a cause.
+	 * 
+	 * @param cause
+	 *            the cause
+	 * @since 1.5
+	 */
+	public InvalidKeySpecException(Throwable cause) {
+		super(cause);
+	}
 }

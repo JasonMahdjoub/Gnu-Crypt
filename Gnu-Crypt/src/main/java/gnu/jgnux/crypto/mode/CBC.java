@@ -55,75 +55,67 @@ import gnu.jgnux.crypto.cipher.IBlockCipher;
  *  P<sub>i</sub> = C<sub>i-1</sub> &circ; D<sub>K</sub>(C<sub>i</sub>)
  * </pre>
  */
-public class CBC extends BaseMode implements Cloneable
-{
-    /** The last (de|en)crypted block */
-    private byte[] lastBlock;
+public class CBC extends BaseMode implements Cloneable {
+	/** The last (de|en)crypted block */
+	private byte[] lastBlock;
 
-    /** An intermediate buffer. */
-    private byte[] scratch;
+	/** An intermediate buffer. */
+	private byte[] scratch;
 
-    /** Our constructor for cloning. */
-    private CBC(CBC that)
-    {
-	this((IBlockCipher) that.cipher.clone(), that.cipherBlockSize);
-    }
+	/** Our constructor for cloning. */
+	private CBC(CBC that) {
+		this((IBlockCipher) that.cipher.clone(), that.cipherBlockSize);
+	}
 
-    /**
-     * Package-private constructor for the factory class.
-     *
-     * @param underlyingCipher
-     *            The cipher implementation.
-     * @param cipherBlockSize
-     *            The cipher's block size.
-     */
-    CBC(IBlockCipher underlyingCipher, int cipherBlockSize)
-    {
-	super(Registry.CBC_MODE, underlyingCipher, cipherBlockSize);
-    }
+	/**
+	 * Package-private constructor for the factory class.
+	 *
+	 * @param underlyingCipher
+	 *            The cipher implementation.
+	 * @param cipherBlockSize
+	 *            The cipher's block size.
+	 */
+	CBC(IBlockCipher underlyingCipher, int cipherBlockSize) {
+		super(Registry.CBC_MODE, underlyingCipher, cipherBlockSize);
+	}
 
-    @Override
-    public Object clone()
-    {
-	return new CBC(this);
-    }
+	@Override
+	public Object clone() {
+		return new CBC(this);
+	}
 
-    @Override
-    public void decryptBlock(byte[] in, int i, byte[] out, int o)
-    {
-	byte[] buf = new byte[cipherBlockSize];
-	System.arraycopy(in, i, buf, 0, cipherBlockSize);
-	cipher.decryptBlock(in, i, scratch, 0);
-	for (int k = 0; k < scratch.length; k++)
-	    out[o + k] = (byte) (lastBlock[k] ^ scratch[k]);
-	System.arraycopy(buf, 0, lastBlock, 0, cipherBlockSize);
-    }
+	@Override
+	public void decryptBlock(byte[] in, int i, byte[] out, int o) {
+		byte[] buf = new byte[cipherBlockSize];
+		System.arraycopy(in, i, buf, 0, cipherBlockSize);
+		cipher.decryptBlock(in, i, scratch, 0);
+		for (int k = 0; k < scratch.length; k++)
+			out[o + k] = (byte) (lastBlock[k] ^ scratch[k]);
+		System.arraycopy(buf, 0, lastBlock, 0, cipherBlockSize);
+	}
 
-    @Override
-    public void encryptBlock(byte[] in, int i, byte[] out, int o)
-    {
-	for (int k = 0; k < scratch.length; k++)
-	    scratch[k] = (byte) (lastBlock[k] ^ in[k + i]);
-	cipher.encryptBlock(scratch, 0, out, o);
-	System.arraycopy(out, o, lastBlock, 0, cipherBlockSize);
-    }
+	@Override
+	public void encryptBlock(byte[] in, int i, byte[] out, int o) {
+		for (int k = 0; k < scratch.length; k++)
+			scratch[k] = (byte) (lastBlock[k] ^ in[k + i]);
+		cipher.encryptBlock(scratch, 0, out, o);
+		System.arraycopy(out, o, lastBlock, 0, cipherBlockSize);
+	}
 
-    @Override
-    public void setup()
-    {
-	if (modeBlockSize != cipherBlockSize)
-	    throw new IllegalArgumentException();
-	scratch = new byte[cipherBlockSize];
-	lastBlock = new byte[cipherBlockSize];
-	// lastBlock gets initialized to the initialization vector.
-	for (int i = 0; i < lastBlock.length && i < iv.length; i++)
-	    lastBlock[i] = iv[i];
-    }
+	@Override
+	public void setup() {
+		if (modeBlockSize != cipherBlockSize)
+			throw new IllegalArgumentException();
+		scratch = new byte[cipherBlockSize];
+		lastBlock = new byte[cipherBlockSize];
+		// lastBlock gets initialized to the initialization vector.
+		for (int i = 0; i < lastBlock.length && i < iv.length; i++)
+			lastBlock[i] = iv[i];
+	}
 
-    @Override
-    public void teardown()
-    {
-	lastBlock = null;
-	scratch = null;
-    }
+	@Override
+	public void teardown() {
+		lastBlock = null;
+		scratch = null;
+	}
 }

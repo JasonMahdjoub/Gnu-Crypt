@@ -52,46 +52,41 @@ import gnu.vm.jgnux.crypto.interfaces.DHPrivateKey;
  *
  * @see ElGamalKeyAgreement
  */
-public class ElGamalReceiver extends ElGamalKeyAgreement
-{
-    /** The recipient's private key. */
-    private DHPrivateKey B;
+public class ElGamalReceiver extends ElGamalKeyAgreement {
+	/** The recipient's private key. */
+	private DHPrivateKey B;
 
-    // default 0-arguments constructor
+	// default 0-arguments constructor
 
-    private OutgoingMessage computeSharedSecret(IncomingMessage in) throws KeyAgreementException
-    {
-	// (b) B computes the same key on receipt of message (1) as
-	// K = (g^x)^xb mod p
-	BigInteger m1 = in.readMPI();
-	if (m1 == null)
-	    throw new KeyAgreementException("missing message (1)");
-	ZZ = m1.modPow(B.getX(), B.getParams().getP()); // ZZ = (ya ^ xb) mod p
-	complete = true;
-	return null;
-    }
-
-    @Override
-    protected void engineInit(Map<String, Object> attributes) throws KeyAgreementException
-    {
-	rnd = (SecureRandom) attributes.get(SOURCE_OF_RANDOMNESS);
-	// One-time setup (key generation and publication). Each user B
-	// generates
-	// a keypair and publishes its public key
-	B = (DHPrivateKey) attributes.get(KA_ELGAMAL_RECIPIENT_PRIVATE_KEY);
-	if (B == null)
-	    throw new KeyAgreementException("missing recipient private key");
-    }
-
-    @Override
-    protected OutgoingMessage engineProcessMessage(IncomingMessage in) throws KeyAgreementException
-    {
-	switch (step)
-	{
-	    case 0:
-		return computeSharedSecret(in);
-	    default:
-		throw new IllegalStateException("unexpected state");
+	private OutgoingMessage computeSharedSecret(IncomingMessage in) throws KeyAgreementException {
+		// (b) B computes the same key on receipt of message (1) as
+		// K = (g^x)^xb mod p
+		BigInteger m1 = in.readMPI();
+		if (m1 == null)
+			throw new KeyAgreementException("missing message (1)");
+		ZZ = m1.modPow(B.getX(), B.getParams().getP()); // ZZ = (ya ^ xb) mod p
+		complete = true;
+		return null;
 	}
-    }
+
+	@Override
+	protected void engineInit(Map<String, Object> attributes) throws KeyAgreementException {
+		rnd = (SecureRandom) attributes.get(SOURCE_OF_RANDOMNESS);
+		// One-time setup (key generation and publication). Each user B
+		// generates
+		// a keypair and publishes its public key
+		B = (DHPrivateKey) attributes.get(KA_ELGAMAL_RECIPIENT_PRIVATE_KEY);
+		if (B == null)
+			throw new KeyAgreementException("missing recipient private key");
+	}
+
+	@Override
+	protected OutgoingMessage engineProcessMessage(IncomingMessage in) throws KeyAgreementException {
+		switch (step) {
+		case 0:
+			return computeSharedSecret(in);
+		default:
+			throw new IllegalStateException("unexpected state");
+		}
+	}
 }

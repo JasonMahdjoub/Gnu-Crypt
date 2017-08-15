@@ -47,86 +47,71 @@ import gnu.jgnu.security.der.DER;
 import gnu.jgnu.security.der.DERReader;
 import gnu.jgnu.security.der.DERValue;
 
-public class BasicConstraints extends Extension.Value
-{
+public class BasicConstraints extends Extension.Value {
 
-    // Constants and fields.
-    // -------------------------------------------------------------------------
+	// Constants and fields.
+	// -------------------------------------------------------------------------
 
-    public static final OID ID = new OID("2.5.29.19");
+	public static final OID ID = new OID("2.5.29.19");
 
-    private final boolean ca;
+	private final boolean ca;
 
-    private final int pathLenConstraint;
+	private final int pathLenConstraint;
 
-    // Constructor.
-    // -------------------------------------------------------------------------
+	// Constructor.
+	// -------------------------------------------------------------------------
 
-    public BasicConstraints(final boolean ca, final int pathLenConstraint)
-    {
-	this.ca = ca;
-	this.pathLenConstraint = pathLenConstraint;
-    }
-
-    public BasicConstraints(final byte[] encoded) throws IOException
-    {
-	super(encoded);
-	DERReader der = new DERReader(encoded);
-	DERValue bc = der.read();
-	if (!bc.isConstructed())
-	    throw new IOException("malformed BasicConstraints");
-	DERValue val = bc;
-	if (bc.getLength() > 0)
-	    val = der.read();
-	if (val.getTag() == DER.BOOLEAN)
-	{
-	    ca = ((Boolean) val.getValue()).booleanValue();
-	    if (val.getEncodedLength() < bc.getLength())
-		val = der.read();
+	public BasicConstraints(final boolean ca, final int pathLenConstraint) {
+		this.ca = ca;
+		this.pathLenConstraint = pathLenConstraint;
 	}
-	else
-	    ca = false;
-	if (val.getTag() == DER.INTEGER)
-	{
-	    pathLenConstraint = ((BigInteger) val.getValue()).intValue();
+
+	public BasicConstraints(final byte[] encoded) throws IOException {
+		super(encoded);
+		DERReader der = new DERReader(encoded);
+		DERValue bc = der.read();
+		if (!bc.isConstructed())
+			throw new IOException("malformed BasicConstraints");
+		DERValue val = bc;
+		if (bc.getLength() > 0)
+			val = der.read();
+		if (val.getTag() == DER.BOOLEAN) {
+			ca = ((Boolean) val.getValue()).booleanValue();
+			if (val.getEncodedLength() < bc.getLength())
+				val = der.read();
+		} else
+			ca = false;
+		if (val.getTag() == DER.INTEGER) {
+			pathLenConstraint = ((BigInteger) val.getValue()).intValue();
+		} else
+			pathLenConstraint = -1;
 	}
-	else
-	    pathLenConstraint = -1;
-    }
 
-    // Instance methods.
-    // -------------------------------------------------------------------------
+	// Instance methods.
+	// -------------------------------------------------------------------------
 
-    @Override
-    public byte[] getEncoded()
-    {
-	if (encoded == null)
-	{
-	    List<DERValue> bc = new ArrayList<>(2);
-	    bc.add(new DERValue(DER.BOOLEAN, Boolean.valueOf(ca)));
-	    if (pathLenConstraint >= 0)
-		bc.add(new DERValue(DER.INTEGER,
-			BigInteger.valueOf(pathLenConstraint)));
-	    encoded = new DERValue(DER.CONSTRUCTED | DER.SEQUENCE, bc)
-		    .getEncoded();
+	@Override
+	public byte[] getEncoded() {
+		if (encoded == null) {
+			List<DERValue> bc = new ArrayList<>(2);
+			bc.add(new DERValue(DER.BOOLEAN, Boolean.valueOf(ca)));
+			if (pathLenConstraint >= 0)
+				bc.add(new DERValue(DER.INTEGER, BigInteger.valueOf(pathLenConstraint)));
+			encoded = new DERValue(DER.CONSTRUCTED | DER.SEQUENCE, bc).getEncoded();
+		}
+		return encoded.clone();
 	}
-	return encoded.clone();
-    }
 
-    public int getPathLengthConstraint()
-    {
-	return pathLenConstraint;
-    }
+	public int getPathLengthConstraint() {
+		return pathLenConstraint;
+	}
 
-    public boolean isCA()
-    {
-	return ca;
-    }
+	public boolean isCA() {
+		return ca;
+	}
 
-    @Override
-    public String toString()
-    {
-	return BasicConstraints.class.getName() + " [ isCA=" + ca + " pathLen="
-		+ pathLenConstraint + " ]";
-    }
+	@Override
+	public String toString() {
+		return BasicConstraints.class.getName() + " [ isCA=" + ca + " pathLen=" + pathLenConstraint + " ]";
+	}
 }

@@ -62,72 +62,71 @@ import gnu.vm.jgnu.security.spec.KeySpec;
  * @since JDK 1.2
  * @author Mark Benvenuto
  */
-public abstract class KeyFactorySpi
-{
-    /**
-     * Constucts a new KeyFactorySpi.
-     */
-    public KeyFactorySpi()
-    {
-    }
+public abstract class KeyFactorySpi {
+	/**
+	 * Constucts a new KeyFactorySpi.
+	 */
+	public KeyFactorySpi() {
+	}
 
-    /**
-     * Generates a private key from the provided key specification.
-     *
-     * @param keySpec
-     *            key specification
-     *
-     * @return the private key
-     *
-     * @throws InvalidKeySpecException
-     *             invalid key specification for this key factory to produce a
-     *             private key
-     */
-    protected abstract PrivateKey engineGeneratePrivate(KeySpec keySpec) throws InvalidKeySpecException;
+	/**
+	 * Generates a private key from the provided key specification.
+	 *
+	 * @param keySpec
+	 *            key specification
+	 *
+	 * @return the private key
+	 *
+	 * @throws InvalidKeySpecException
+	 *             invalid key specification for this key factory to produce a
+	 *             private key
+	 */
+	protected abstract PrivateKey engineGeneratePrivate(KeySpec keySpec) throws InvalidKeySpecException;
 
-    /**
-     * Generates a public key from the provided key specification.
-     *
-     * @param keySpec
-     *            key specification
-     *
-     * @return the public key
-     *
-     * @throws InvalidKeySpecException
-     *             invalid key specification for this key factory to produce a
-     *             public key
-     */
-    protected abstract PublicKey engineGeneratePublic(KeySpec keySpec) throws InvalidKeySpecException;
+	/**
+	 * Generates a public key from the provided key specification.
+	 *
+	 * @param keySpec
+	 *            key specification
+	 *
+	 * @return the public key
+	 *
+	 * @throws InvalidKeySpecException
+	 *             invalid key specification for this key factory to produce a
+	 *             public key
+	 */
+	protected abstract PublicKey engineGeneratePublic(KeySpec keySpec) throws InvalidKeySpecException;
 
-    /**
-     * Returns a key specification for the given key. keySpec identifies the
-     * specification class to return the key material in.
-     *
-     * @param key
-     *            the key
-     * @param keySpec
-     *            the specification class to return the key material in.
-     *
-     * @return the key specification in an instance of the requested
-     *         specification class
-     *
-     * @throws InvalidKeySpecException
-     *             the requested key specification is inappropriate for this key
-     *             or the key is unrecognized.
-     */
-    protected abstract KeySpec engineGetKeySpec(Key key, Class<? extends KeySpec> keySpec) throws InvalidKeySpecException;
+	/**
+	 * Returns a key specification for the given key. keySpec identifies the
+	 * specification class to return the key material in.
+	 *
+	 * @param key
+	 *            the key
+	 * @param keySpec
+	 *            the specification class to return the key material in.
+	 *
+	 * @return the key specification in an instance of the requested specification
+	 *         class
+	 *
+	 * @throws InvalidKeySpecException
+	 *             the requested key specification is inappropriate for this key or
+	 *             the key is unrecognized.
+	 */
+	protected abstract KeySpec engineGetKeySpec(Key key, Class<? extends KeySpec> keySpec)
+			throws InvalidKeySpecException;
 
-    /**
-     * Translates the key from an unknown or untrusted provider into a key for
-     * this key factory.
-     *
-     * @param key
-     *            key from an unknown or untrusted provider
-     *
-     * @return the translated key
-     *
-     * @throws InvalidKeyException
-     *             if the key cannot be processed by this key factory
-     */
-    protected abstract Key engineTranslateKey(Key key) throws InvalidKeyException;
+	/**
+	 * Translates the key from an unknown or untrusted provider into a key for this
+	 * key factory.
+	 *
+	 * @param key
+	 *            key from an unknown or untrusted provider
+	 *
+	 * @return the translated key
+	 *
+	 * @throws InvalidKeyException
+	 *             if the key cannot be processed by this key factory
+	 */
+	protected abstract Key engineTranslateKey(Key key) throws InvalidKeyException;
 }

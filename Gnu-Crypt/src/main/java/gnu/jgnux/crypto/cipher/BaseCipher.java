@@ -47,208 +47,179 @@ import gnu.vm.jgnu.security.InvalidKeyException;
  * A basic abstract class to facilitate implementing symmetric key block
  * ciphers.
  */
-public abstract class BaseCipher implements IBlockCipher, IBlockCipherSpi
-{
-    /** The canonical name prefix of the cipher. */
-    protected String name;
+public abstract class BaseCipher implements IBlockCipher, IBlockCipherSpi {
+	/** The canonical name prefix of the cipher. */
+	protected String name;
 
-    /** The default block size, in bytes. */
-    protected int defaultBlockSize;
+	/** The default block size, in bytes. */
+	protected int defaultBlockSize;
 
-    /** The default key size, in bytes. */
-    protected int defaultKeySize;
+	/** The default key size, in bytes. */
+	protected int defaultKeySize;
 
-    /** The current block size, in bytes. */
-    protected int currentBlockSize;
+	/** The current block size, in bytes. */
+	protected int currentBlockSize;
 
-    /** The session key for this instance. */
-    protected transient Object currentKey;
+	/** The session key for this instance. */
+	protected transient Object currentKey;
 
-    /** The instance lock. */
-    protected Object lock = new Object();
+	/** The instance lock. */
+	protected Object lock = new Object();
 
-    /**
-     * Trivial constructor for use by concrete subclasses.
-     *
-     * @param name
-     *            the canonical name prefix of this instance.
-     * @param defaultBlockSize
-     *            the default block size in bytes.
-     * @param defaultKeySize
-     *            the default key size in bytes.
-     */
-    protected BaseCipher(String name, int defaultBlockSize, int defaultKeySize)
-    {
-	super();
+	/**
+	 * Trivial constructor for use by concrete subclasses.
+	 *
+	 * @param name
+	 *            the canonical name prefix of this instance.
+	 * @param defaultBlockSize
+	 *            the default block size in bytes.
+	 * @param defaultKeySize
+	 *            the default key size in bytes.
+	 */
+	protected BaseCipher(String name, int defaultBlockSize, int defaultKeySize) {
+		super();
 
-	this.name = name;
-	this.defaultBlockSize = defaultBlockSize;
-	this.defaultKeySize = defaultKeySize;
-    }
-
-    @Override
-    public abstract Object clone();
-
-    @Override
-    public int currentBlockSize()
-    {
-	if (currentKey == null)
-	    throw new IllegalStateException();
-	return currentBlockSize;
-    }
-
-    @Override
-    public void decryptBlock(byte[] in, int inOffset, byte[] out, int outOffset) throws IllegalStateException
-    {
-	synchronized (lock)
-	{
-	    if (currentKey == null)
-		throw new IllegalStateException();
-	    decrypt(in, inOffset, out, outOffset, currentKey, currentBlockSize);
+		this.name = name;
+		this.defaultBlockSize = defaultBlockSize;
+		this.defaultKeySize = defaultKeySize;
 	}
-    }
 
-    @Override
-    public int defaultBlockSize()
-    {
-	return defaultBlockSize;
-    }
+	@Override
+	public abstract Object clone();
 
-    @Override
-    public int defaultKeySize()
-    {
-	return defaultKeySize;
-    }
-
-    @Override
-    public void encryptBlock(byte[] in, int inOffset, byte[] out, int outOffset) throws IllegalStateException
-    {
-	synchronized (lock)
-	{
-	    if (currentKey == null)
-		throw new IllegalStateException();
-	    encrypt(in, inOffset, out, outOffset, currentKey, currentBlockSize);
+	@Override
+	public int currentBlockSize() {
+		if (currentKey == null)
+			throw new IllegalStateException();
+		return currentBlockSize;
 	}
-    }
 
-    @Override
-    public void init(Map<Object, Object> attributes) throws InvalidKeyException
-    {
-	synchronized (lock)
-	{
-	    if (currentKey != null)
-		throw new IllegalStateException();
-	    Integer bs = (Integer) attributes.get(CIPHER_BLOCK_SIZE);
-	    if (bs == null) // no block size was specified
-	    {
-		if (currentBlockSize == 0) // happy birthday
-		    currentBlockSize = defaultBlockSize;
-		// else it's a clone. use as is
-	    }
-	    else
-	    {
-		currentBlockSize = bs.intValue();
-		// ensure that value is valid
-		Iterator<Integer> it;
-		boolean ok = false;
-		for (it = blockSizes(); it.hasNext();)
-		{
-		    ok = (currentBlockSize == it.next().intValue());
-		    if (ok)
-			break;
+	@Override
+	public void decryptBlock(byte[] in, int inOffset, byte[] out, int outOffset) throws IllegalStateException {
+		synchronized (lock) {
+			if (currentKey == null)
+				throw new IllegalStateException();
+			decrypt(in, inOffset, out, outOffset, currentKey, currentBlockSize);
 		}
-		if (!ok)
-		    throw new IllegalArgumentException(
-			    IBlockCipher.CIPHER_BLOCK_SIZE);
-	    }
-	    byte[] k = (byte[]) attributes.get(KEY_MATERIAL);
-	    currentKey = makeKey(k, currentBlockSize);
 	}
-    }
 
-    @Override
-    public String name()
-    {
-	StringBuilder sb = new StringBuilder(name).append('-');
-	if (currentKey == null)
-	    sb.append(String.valueOf(8 * defaultBlockSize));
-	else
-	    sb.append(String.valueOf(8 * currentBlockSize));
-	return sb.toString();
-    }
+	@Override
+	public int defaultBlockSize() {
+		return defaultBlockSize;
+	}
 
-    @Override
-    public void reset()
-    {
-	synchronized (lock)
-	{
-	    currentKey = null;
+	@Override
+	public int defaultKeySize() {
+		return defaultKeySize;
 	}
-    }
 
-    @Override
-    public boolean selfTest()
-    {
-	int ks;
-	Iterator<Integer> bit;
-	// do symmetry tests for all block-size/key-size combos
-	for (Iterator<Integer> kit = keySizes(); kit.hasNext();)
-	{
-	    ks = kit.next().intValue();
-	    for (bit = blockSizes(); bit.hasNext();)
-		if (!testSymmetry(ks, bit.next().intValue()))
-		    return false;
+	@Override
+	public void encryptBlock(byte[] in, int inOffset, byte[] out, int outOffset) throws IllegalStateException {
+		synchronized (lock) {
+			if (currentKey == null)
+				throw new IllegalStateException();
+			encrypt(in, inOffset, out, outOffset, currentKey, currentBlockSize);
+		}
 	}
-	return true;
-    }
 
-    protected boolean testKat(byte[] kb, byte[] ct)
-    {
-	return testKat(kb, ct, new byte[ct.length]); // all-zero plaintext
-    }
+	@Override
+	public void init(Map<Object, Object> attributes) throws InvalidKeyException {
+		synchronized (lock) {
+			if (currentKey != null)
+				throw new IllegalStateException();
+			Integer bs = (Integer) attributes.get(CIPHER_BLOCK_SIZE);
+			if (bs == null) // no block size was specified
+			{
+				if (currentBlockSize == 0) // happy birthday
+					currentBlockSize = defaultBlockSize;
+				// else it's a clone. use as is
+			} else {
+				currentBlockSize = bs.intValue();
+				// ensure that value is valid
+				Iterator<Integer> it;
+				boolean ok = false;
+				for (it = blockSizes(); it.hasNext();) {
+					ok = (currentBlockSize == it.next().intValue());
+					if (ok)
+						break;
+				}
+				if (!ok)
+					throw new IllegalArgumentException(IBlockCipher.CIPHER_BLOCK_SIZE);
+			}
+			byte[] k = (byte[]) attributes.get(KEY_MATERIAL);
+			currentKey = makeKey(k, currentBlockSize);
+		}
+	}
 
-    protected boolean testKat(byte[] kb, byte[] ct, byte[] pt)
-    {
-	try
-	{
-	    int bs = pt.length;
-	    byte[] t = new byte[bs];
-	    Object k = makeKey(kb, bs);
-	    // test encryption
-	    encrypt(pt, 0, t, 0, k, bs);
-	    if (!Arrays.equals(t, ct))
-		return false;
-	    // test decryption
-	    decrypt(t, 0, t, 0, k, bs);
-	    return Arrays.equals(t, pt);
+	@Override
+	public String name() {
+		StringBuilder sb = new StringBuilder(name).append('-');
+		if (currentKey == null)
+			sb.append(String.valueOf(8 * defaultBlockSize));
+		else
+			sb.append(String.valueOf(8 * currentBlockSize));
+		return sb.toString();
 	}
-	catch (Exception x)
-	{
-	    return false;
-	}
-    }
 
-    private boolean testSymmetry(int ks, int bs)
-    {
-	try
-	{
-	    byte[] kb = new byte[ks];
-	    byte[] pt = new byte[bs];
-	    byte[] ct = new byte[bs];
-	    byte[] cpt = new byte[bs];
-	    int i;
-	    for (i = 0; i < ks; i++)
-		kb[i] = (byte) i;
-	    for (i = 0; i < bs; i++)
-		pt[i] = (byte) i;
-	    Object k = makeKey(kb, bs);
-	    encrypt(pt, 0, ct, 0, k, bs);
-	    decrypt(ct, 0, cpt, 0, k, bs);
-	    return Arrays.equals(pt, cpt);
+	@Override
+	public void reset() {
+		synchronized (lock) {
+			currentKey = null;
+		}
 	}
-	catch (Exception x)
-	{
-	    return false;
+
+	@Override
+	public boolean selfTest() {
+		int ks;
+		Iterator<Integer> bit;
+		// do symmetry tests for all block-size/key-size combos
+		for (Iterator<Integer> kit = keySizes(); kit.hasNext();) {
+			ks = kit.next().intValue();
+			for (bit = blockSizes(); bit.hasNext();)
+				if (!testSymmetry(ks, bit.next().intValue()))
+					return false;
+		}
+		return true;
 	}
-    }
+
+	protected boolean testKat(byte[] kb, byte[] ct) {
+		return testKat(kb, ct, new byte[ct.length]); // all-zero plaintext
+	}
+
+	protected boolean testKat(byte[] kb, byte[] ct, byte[] pt) {
+		try {
+			int bs = pt.length;
+			byte[] t = new byte[bs];
+			Object k = makeKey(kb, bs);
+			// test encryption
+			encrypt(pt, 0, t, 0, k, bs);
+			if (!Arrays.equals(t, ct))
+				return false;
+			// test decryption
+			decrypt(t, 0, t, 0, k, bs);
+			return Arrays.equals(t, pt);
+		} catch (Exception x) {
+			return false;
+		}
+	}
+
+	private boolean testSymmetry(int ks, int bs) {
+		try {
+			byte[] kb = new byte[ks];
+			byte[] pt = new byte[bs];
+			byte[] ct = new byte[bs];
+			byte[] cpt = new byte[bs];
+			int i;
+			for (i = 0; i < ks; i++)
+				kb[i] = (byte) i;
+			for (i = 0; i < bs; i++)
+				pt[i] = (byte) i;
+			Object k = makeKey(kb, bs);
+			encrypt(pt, 0, ct, 0, k, bs);
+			decrypt(ct, 0, cpt, 0, k, bs);
+			return Arrays.equals(pt, cpt);
+		} catch (Exception x) {
+			return false;
+		}
+	}
 }

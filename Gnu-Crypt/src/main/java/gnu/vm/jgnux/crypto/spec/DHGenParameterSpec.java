@@ -47,55 +47,51 @@ import gnu.vm.jgnu.security.spec.AlgorithmParameterSpec;
  * @since 1.4
  * @see DHParameterSpec
  */
-public class DHGenParameterSpec implements AlgorithmParameterSpec
-{
+public class DHGenParameterSpec implements AlgorithmParameterSpec {
 
-    // Variables.
-    // ------------------------------------------------------------------------
+	// Variables.
+	// ------------------------------------------------------------------------
 
-    /** The length of the prime, in bits. */
-    private int primeSize;
+	/** The length of the prime, in bits. */
+	private int primeSize;
 
-    /** The length of the exponent, in bits. */
-    private int exponentSize;
+	/** The length of the exponent, in bits. */
+	private int exponentSize;
 
-    // Constructor.
-    // ------------------------------------------------------------------------
+	// Constructor.
+	// ------------------------------------------------------------------------
 
-    /**
-     * Create a new Diffie-Hellman parameter generator spec.
-     *
-     * @param primeSize
-     *            The size of the prime, in bits.
-     * @param exponentSize
-     *            The size of the exponent, in bits.
-     */
-    public DHGenParameterSpec(int primeSize, int exponentSize)
-    {
-	this.primeSize = primeSize;
-	this.exponentSize = exponentSize;
-    }
+	/**
+	 * Create a new Diffie-Hellman parameter generator spec.
+	 *
+	 * @param primeSize
+	 *            The size of the prime, in bits.
+	 * @param exponentSize
+	 *            The size of the exponent, in bits.
+	 */
+	public DHGenParameterSpec(int primeSize, int exponentSize) {
+		this.primeSize = primeSize;
+		this.exponentSize = exponentSize;
+	}
 
-    // Intance methods.
-    // ------------------------------------------------------------------------
+	// Intance methods.
+	// ------------------------------------------------------------------------
 
-    /**
-     * Get the size of the exponent, in bits.
-     *
-     * @return The exponent size.
-     */
-    public int getExponentSize()
-    {
-	return exponentSize;
-    }
+	/**
+	 * Get the size of the exponent, in bits.
+	 *
+	 * @return The exponent size.
+	 */
+	public int getExponentSize() {
+		return exponentSize;
+	}
 
-    /**
-     * Get the size of the prime, in bits.
-     *
-     * @return The prime size.
-     */
-    public int getPrimeSize()
-    {
-	return primeSize;
-    }
+	/**
+	 * Get the size of the prime, in bits.
+	 *
+	 * @return The prime size.
+	 */
+	public int getPrimeSize() {
+		return primeSize;
+	}
 }

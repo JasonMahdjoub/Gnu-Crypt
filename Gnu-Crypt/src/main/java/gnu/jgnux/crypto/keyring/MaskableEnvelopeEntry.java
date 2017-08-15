@@ -45,95 +45,83 @@ import java.util.List;
  * envelope's contents cannot be accessed, due to the envelope not being fully
  * decoded, for example.
  */
-public abstract class MaskableEnvelopeEntry extends EnvelopeEntry
-{
-    /** The masked state. */
-    protected boolean masked;
+public abstract class MaskableEnvelopeEntry extends EnvelopeEntry {
+	/** The masked state. */
+	protected boolean masked;
 
-    protected MaskableEnvelopeEntry(int type)
-    {
-	super(type);
-    }
+	protected MaskableEnvelopeEntry(int type) {
+		super(type);
+	}
 
-    public MaskableEnvelopeEntry(int type, Properties properties)
-    {
-	super(type, properties);
-    }
+	public MaskableEnvelopeEntry(int type, Properties properties) {
+		super(type, properties);
+	}
 
-    @Override
-    public void add(Entry entry)
-    {
-	if (isMasked())
-	    throw new IllegalStateException("masked envelope");
-	super.add(entry);
-    }
+	@Override
+	public void add(Entry entry) {
+		if (isMasked())
+			throw new IllegalStateException("masked envelope");
+		super.add(entry);
+	}
 
-    @Override
-    public boolean containsEntry(Entry entry)
-    {
-	if (isMasked())
-	    throw new IllegalStateException("masked envelope");
-	return super.containsEntry(entry);
-    }
+	@Override
+	public boolean containsEntry(Entry entry) {
+		if (isMasked())
+			throw new IllegalStateException("masked envelope");
+		return super.containsEntry(entry);
+	}
 
-    @Override
-    public List<Entry> get(String alias)
-    {
-	if (isMasked())
-	    throw new IllegalStateException("masked envelope");
-	return super.get(alias);
-    }
+	@Override
+	public List<Entry> get(String alias) {
+		if (isMasked())
+			throw new IllegalStateException("masked envelope");
+		return super.get(alias);
+	}
 
-    @Override
-    public List<Entry> getEntries()
-    {
-	if (isMasked())
-	    throw new IllegalStateException("masked envelope");
-	return new ArrayList<>(entries);
-    }
+	@Override
+	public List<Entry> getEntries() {
+		if (isMasked())
+			throw new IllegalStateException("masked envelope");
+		return new ArrayList<>(entries);
+	}
 
-    /**
-     * Gets the masked state of this object. Certain operations on this object
-     * will fail if it is masked.
-     *
-     * @return The current masked state.
-     */
-    public boolean isMasked()
-    {
-	return masked;
-    }
+	/**
+	 * Gets the masked state of this object. Certain operations on this object will
+	 * fail if it is masked.
+	 *
+	 * @return The current masked state.
+	 */
+	public boolean isMasked() {
+		return masked;
+	}
 
-    @Override
-    public boolean remove(Entry entry)
-    {
-	if (isMasked())
-	    throw new IllegalStateException("masked envelope");
-	return super.remove(entry);
-    }
+	@Override
+	public boolean remove(Entry entry) {
+		if (isMasked())
+			throw new IllegalStateException("masked envelope");
+		return super.remove(entry);
+	}
 
-    @Override
-    public boolean remove(String alias)
-    {
-	if (isMasked())
-	    throw new IllegalStateException("masked envelope");
-	return super.remove(alias);
-    }
+	@Override
+	public boolean remove(String alias) {
+		if (isMasked())
+			throw new IllegalStateException("masked envelope");
+		return super.remove(alias);
+	}
 
-    /**
-     * Sets the masked state to the specified value.
-     *
-     * @param masked
-     *            The new masked state.
-     */
-    protected final void setMasked(boolean masked)
-    {
-	this.masked = masked;
-    }
+	/**
+	 * Sets the masked state to the specified value.
+	 *
+	 * @param masked
+	 *            The new masked state.
+	 */
+	protected final void setMasked(boolean masked) {
+		this.masked = masked;
+	}
 
-    @Override
-    public String toString()
-    {
-	return new StringBuilder("MaskableEnvelope{").append(super.toString())
-		.append(", masked=").append(masked).append("}").toString();
-    }
+	@Override
+	public String toString() {
+		return new StringBuilder("MaskableEnvelope{").append(super.toString()).append(", masked=").append(masked)
+				.append("}").toString();
+	}
 }

@@ -39,10 +39,8 @@ package gnu.jgnux.crypto.jce.mac;
 
 import gnu.jgnu.security.Registry;
 
-public class OMacTwofishImpl extends MacAdapter
-{
-    public OMacTwofishImpl()
-    {
-	super(Registry.OMAC_PREFIX + Registry.TWOFISH_CIPHER);
-    }
+public class OMacTwofishImpl extends MacAdapter {
+	public OMacTwofishImpl() {
+		super(Registry.OMAC_PREFIX + Registry.TWOFISH_CIPHER);
+	}
 }

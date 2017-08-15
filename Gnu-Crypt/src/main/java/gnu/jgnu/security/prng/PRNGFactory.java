@@ -46,46 +46,42 @@ import gnu.jgnu.security.Registry;
 /**
  * A Factory to instantiate pseudo random number generators.
  */
-public class PRNGFactory implements Registry
-{
-    /**
-     * Returns an instance of a padding algorithm given its name.
-     *
-     * @param prng
-     *            the case-insensitive name of the PRNG.
-     * @return an instance of the pseudo-random number generator.
-     * @exception InternalError
-     *                if the implementation does not pass its self- test.
-     */
-    public static final IRandom getInstance(String prng)
-    {
-	if (prng == null)
-	    return null;
+public class PRNGFactory implements Registry {
+	/**
+	 * Returns an instance of a padding algorithm given its name.
+	 *
+	 * @param prng
+	 *            the case-insensitive name of the PRNG.
+	 * @return an instance of the pseudo-random number generator.
+	 * @exception InternalError
+	 *                if the implementation does not pass its self- test.
+	 */
+	public static final IRandom getInstance(String prng) {
+		if (prng == null)
+			return null;
 
-	prng = prng.trim();
-	IRandom result = null;
-	if (prng.equalsIgnoreCase(MD_PRNG))
-	    result = new MDGenerator();
+		prng = prng.trim();
+		IRandom result = null;
+		if (prng.equalsIgnoreCase(MD_PRNG))
+			result = new MDGenerator();
 
-	return result;
-    }
+		return result;
+	}
 
-    /**
-     * Returns a {@link Set} of names of padding algorithms supported by this
-     * <i>Factory</i>.
-     *
-     * @return a {@link Set} of pseudo-random number generator algorithm names
-     *         (Strings).
-     */
-    public static final Set<String> getNames()
-    {
-	HashSet<String> hs = new HashSet<>();
-	hs.add(MD_PRNG);
-	return Collections.unmodifiableSet(hs);
-    }
+	/**
+	 * Returns a {@link Set} of names of padding algorithms supported by this
+	 * <i>Factory</i>.
+	 *
+	 * @return a {@link Set} of pseudo-random number generator algorithm names
+	 *         (Strings).
+	 */
+	public static final Set<String> getNames() {
+		HashSet<String> hs = new HashSet<>();
+		hs.add(MD_PRNG);
+		return Collections.unmodifiableSet(hs);
+	}
 
-    /** Trivial constructor to enforce <i>Singleton</i> pattern. */
-    protected PRNGFactory()
-    {
-    }
+	/** Trivial constructor to enforce <i>Singleton</i> pattern. */
+	protected PRNGFactory() {
+	}
 }

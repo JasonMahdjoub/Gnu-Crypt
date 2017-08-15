@@ -46,25 +46,22 @@ import java.security.GeneralSecurityException;
  * @author Casey Marshall (csm@gnu.org)
  * @since 1.4
  */
-public class NoSuchPaddingException extends GeneralSecurityException
-{
+public class NoSuchPaddingException extends GeneralSecurityException {
 
-    // Constant.
-    // ------------------------------------------------------------------------
+	// Constant.
+	// ------------------------------------------------------------------------
 
-    /** Serialization constant. */
-    private static final long serialVersionUID = -4572885201200175466L;
+	/** Serialization constant. */
+	private static final long serialVersionUID = -4572885201200175466L;
 
-    // Constructors.
-    // ------------------------------------------------------------------------
+	// Constructors.
+	// ------------------------------------------------------------------------
 
-    public NoSuchPaddingException()
-    {
-	super();
-    }
+	public NoSuchPaddingException() {
+		super();
+	}
 
-    public NoSuchPaddingException(String message)
-    {
-	super(message);
-    }
+	public NoSuchPaddingException(String message) {
+		super(message);
+	}
 }

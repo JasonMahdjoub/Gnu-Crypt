@@ -51,21 +51,18 @@ import gnu.vm.jgnu.security.Policy;
  * reads the policy configuration from a file, like
  * $JAVA_HOME/jre/lib/security/java.security.
  */
-public class DefaultPolicy extends Policy
-{
-    static Permission allPermission = new AllPermission();
+public class DefaultPolicy extends Policy {
+	static Permission allPermission = new AllPermission();
 
-    @Override
-    public PermissionCollection getPermissions(CodeSource codesource)
-    {
-	Permissions perms = new Permissions();
-	perms.add(allPermission);
-	return perms;
-    }
+	@Override
+	public PermissionCollection getPermissions(CodeSource codesource) {
+		Permissions perms = new Permissions();
+		perms.add(allPermission);
+		return perms;
+	}
 
-    @Override
-    public void refresh()
-    {
-	// Nothing.
-    }
+	@Override
+	public void refresh() {
+		// Nothing.
+	}
 }

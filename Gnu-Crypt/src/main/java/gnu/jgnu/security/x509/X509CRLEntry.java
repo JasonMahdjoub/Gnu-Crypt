@@ -59,216 +59,184 @@ import gnu.vm.jgnu.security.cert.CRLException;
  * @see X509CRL
  * @author Casey Marshall
  */
-class X509CRLEntry extends gnu.vm.jgnu.security.cert.X509CRLEntry implements GnuPKIExtension
-{
+class X509CRLEntry extends gnu.vm.jgnu.security.cert.X509CRLEntry implements GnuPKIExtension {
 
-    /** The DER encoded form of this CRL entry. */
-    private byte[] encoded;
+	/** The DER encoded form of this CRL entry. */
+	private byte[] encoded;
 
-    /** The revoked certificate's serial number. */
-    private BigInteger serialNo;
+	/** The revoked certificate's serial number. */
+	private BigInteger serialNo;
 
-    /** The date the certificate was revoked. */
-    private Date revocationDate;
+	/** The date the certificate was revoked. */
+	private Date revocationDate;
 
-    /** The CRL entry extensions. */
-    private HashMap<OID, Extension> extensions;
+	/** The CRL entry extensions. */
+	private HashMap<OID, Extension> extensions;
 
-    // Constructor.
-    // ------------------------------------------------------------------------
+	// Constructor.
+	// ------------------------------------------------------------------------
 
-    /**
-     * Create a new X.509 certificate revocation list entry from the given input
-     * stream and CRL version number.
-     *
-     * @param version
-     *            The CRL version.
-     * @param encoded
-     *            The stream of DER bytes.
-     * @throws CRLException
-     *             If the ASN.1 structure is invalid.
-     * @throws IOException
-     *             If the bytes cannot be read.
-     */
-    X509CRLEntry(int version, DERReader encoded) throws CRLException, IOException
-    {
-	super();
-	extensions = new HashMap<>();
-	try
-	{
-	    parse(version, encoded);
+	/**
+	 * Create a new X.509 certificate revocation list entry from the given input
+	 * stream and CRL version number.
+	 *
+	 * @param version
+	 *            The CRL version.
+	 * @param encoded
+	 *            The stream of DER bytes.
+	 * @throws CRLException
+	 *             If the ASN.1 structure is invalid.
+	 * @throws IOException
+	 *             If the bytes cannot be read.
+	 */
+	X509CRLEntry(int version, DERReader encoded) throws CRLException, IOException {
+		super();
+		extensions = new HashMap<>();
+		try {
+			parse(version, encoded);
+		} catch (IOException ioe) {
+			throw ioe;
+		} catch (Exception x) {
+			throw new CRLException(x.toString());
+		}
 	}
-	catch (IOException ioe)
-	{
-	    throw ioe;
+
+	// X509CRLEntry methods.
+	// ------------------------------------------------------------------------
+
+	@Override
+	public boolean equals(Object o) {
+		if (!(o instanceof X509CRLEntry))
+			return false;
+		return ((X509CRLEntry) o).getSerialNumber().equals(serialNo)
+				&& ((X509CRLEntry) o).getRevocationDate().equals(revocationDate);
 	}
-	catch (Exception x)
-	{
-	    throw new CRLException(x.toString());
+
+	@Override
+	public Set<String> getCriticalExtensionOIDs() {
+		HashSet<String> s = new HashSet<>();
+		for (Iterator<Extension> it = extensions.values().iterator(); it.hasNext();) {
+			Extension e = it.next();
+			if (e.isCritical())
+				s.add(e.getOid().toString());
+		}
+		return Collections.unmodifiableSet(s);
 	}
-    }
 
-    // X509CRLEntry methods.
-    // ------------------------------------------------------------------------
-
-    @Override
-    public boolean equals(Object o)
-    {
-	if (!(o instanceof X509CRLEntry))
-	    return false;
-	return ((X509CRLEntry) o).getSerialNumber().equals(serialNo)
-		&& ((X509CRLEntry) o).getRevocationDate()
-			.equals(revocationDate);
-    }
-
-    @Override
-    public Set<String> getCriticalExtensionOIDs()
-    {
-	HashSet<String> s = new HashSet<>();
-	for (Iterator<Extension> it = extensions.values().iterator(); it
-		.hasNext();)
-	{
-	    Extension e = it.next();
-	    if (e.isCritical())
-		s.add(e.getOid().toString());
+	@Override
+	public byte[] getEncoded() {
+		return encoded.clone();
 	}
-	return Collections.unmodifiableSet(s);
-    }
 
-    @Override
-    public byte[] getEncoded()
-    {
-	return encoded.clone();
-    }
-
-    @Override
-    public Extension getExtension(OID oid)
-    {
-	return extensions.get(oid);
-    }
-
-    @Override
-    public Collection<Extension> getExtensions()
-    {
-	return extensions.values();
-    }
-
-    @Override
-    public byte[] getExtensionValue(String oid)
-    {
-	Extension e = getExtension(new OID(oid));
-	if (e != null)
-	{
-	    return e.getValue().getEncoded();
+	@Override
+	public Extension getExtension(OID oid) {
+		return extensions.get(oid);
 	}
-	return null;
-    }
 
-    @Override
-    public Set<String> getNonCriticalExtensionOIDs()
-    {
-	HashSet<String> s = new HashSet<>();
-	for (Iterator<Extension> it = extensions.values().iterator(); it
-		.hasNext();)
-	{
-	    Extension e = it.next();
-	    if (!e.isCritical())
-		s.add(e.getOid().toString());
+	@Override
+	public Collection<Extension> getExtensions() {
+		return extensions.values();
 	}
-	return Collections.unmodifiableSet(s);
-    }
 
-    // X509Extension methods.
-    // -------------------------------------------------------------------------
-
-    @Override
-    public Date getRevocationDate()
-    {
-	return (Date) revocationDate.clone();
-    }
-
-    @Override
-    public BigInteger getSerialNumber()
-    {
-	return serialNo;
-    }
-
-    @Override
-    public boolean hasExtensions()
-    {
-	return !extensions.isEmpty();
-    }
-
-    @Override
-    public int hashCode()
-    {
-	return serialNo.hashCode();
-    }
-
-    // GnuPKIExtension method.
-    // -------------------------------------------------------------------------
-
-    @Override
-    public boolean hasUnsupportedCriticalExtension()
-    {
-	for (Iterator<Extension> it = extensions.values().iterator(); it
-		.hasNext();)
-	{
-	    Extension e = it.next();
-	    if (e.isCritical() && !e.isSupported())
-		return true;
+	@Override
+	public byte[] getExtensionValue(String oid) {
+		Extension e = getExtension(new OID(oid));
+		if (e != null) {
+			return e.getValue().getEncoded();
+		}
+		return null;
 	}
-	return false;
-    }
 
-    private void parse(int version, DERReader der) throws Exception
-    {
-	// RevokedCertificate ::= SEQUENCE {
-	DERValue entry = der.read();
-	if (!entry.isConstructed())
-	    throw new IOException("malformed revokedCertificate");
-	encoded = entry.getEncoded();
-	int len = 0;
+	@Override
+	public Set<String> getNonCriticalExtensionOIDs() {
+		HashSet<String> s = new HashSet<>();
+		for (Iterator<Extension> it = extensions.values().iterator(); it.hasNext();) {
+			Extension e = it.next();
+			if (!e.isCritical())
+				s.add(e.getOid().toString());
+		}
+		return Collections.unmodifiableSet(s);
+	}
 
-	// userCertificate CertificateSerialNumber,
-	DERValue val = der.read();
-	serialNo = (BigInteger) val.getValue();
-	len += val.getEncodedLength();
+	// X509Extension methods.
+	// -------------------------------------------------------------------------
 
-	// revocationDate Time,
-	val = der.read();
-	revocationDate = (Date) val.getValue();
-	len += val.getEncodedLength();
-	// crlEntryExtensions Extensions OPTIONAL
-	// -- if present MUST be v2
-	if (len < entry.getLength())
-	{
-	    if (version < 2)
-		throw new IOException("extra data in CRL entry");
-	    DERValue exts = der.read();
-	    if (!exts.isConstructed())
-		throw new IOException("malformed Extensions");
-	    len = 0;
-	    while (len < exts.getLength())
-	    {
-		val = der.read();
-		if (!val.isConstructed())
-		    throw new IOException("malformed Extension");
-		Extension e = new Extension(val.getEncoded());
-		extensions.put(e.getOid(), e);
-		der.skip(val.getLength());
+	@Override
+	public Date getRevocationDate() {
+		return (Date) revocationDate.clone();
+	}
+
+	@Override
+	public BigInteger getSerialNumber() {
+		return serialNo;
+	}
+
+	@Override
+	public boolean hasExtensions() {
+		return !extensions.isEmpty();
+	}
+
+	@Override
+	public int hashCode() {
+		return serialNo.hashCode();
+	}
+
+	// GnuPKIExtension method.
+	// -------------------------------------------------------------------------
+
+	@Override
+	public boolean hasUnsupportedCriticalExtension() {
+		for (Iterator<Extension> it = extensions.values().iterator(); it.hasNext();) {
+			Extension e = it.next();
+			if (e.isCritical() && !e.isSupported())
+				return true;
+		}
+		return false;
+	}
+
+	private void parse(int version, DERReader der) throws Exception {
+		// RevokedCertificate ::= SEQUENCE {
+		DERValue entry = der.read();
+		if (!entry.isConstructed())
+			throw new IOException("malformed revokedCertificate");
+		encoded = entry.getEncoded();
+		int len = 0;
+
+		// userCertificate CertificateSerialNumber,
+		DERValue val = der.read();
+		serialNo = (BigInteger) val.getValue();
 		len += val.getEncodedLength();
-	    }
+
+		// revocationDate Time,
+		val = der.read();
+		revocationDate = (Date) val.getValue();
+		len += val.getEncodedLength();
+		// crlEntryExtensions Extensions OPTIONAL
+		// -- if present MUST be v2
+		if (len < entry.getLength()) {
+			if (version < 2)
+				throw new IOException("extra data in CRL entry");
+			DERValue exts = der.read();
+			if (!exts.isConstructed())
+				throw new IOException("malformed Extensions");
+			len = 0;
+			while (len < exts.getLength()) {
+				val = der.read();
+				if (!val.isConstructed())
+					throw new IOException("malformed Extension");
+				Extension e = new Extension(val.getEncoded());
+				extensions.put(e.getOid(), e);
+				der.skip(val.getLength());
+				len += val.getEncodedLength();
+			}
+		}
 	}
-    }
 
-    // Own methods.
-    // -------------------------------------------------------------------------
+	// Own methods.
+	// -------------------------------------------------------------------------
 
-    @Override
-    public String toString()
-    {
-	return "X509CRLEntry serial=" + serialNo + " revocation date="
-		+ revocationDate + " ext=" + extensions;
-    }
+	@Override
+	public String toString() {
+		return "X509CRLEntry serial=" + serialNo + " revocation date=" + revocationDate + " ext=" + extensions;
+	}
 }

@@ -43,10 +43,8 @@ import gnu.jgnu.security.Registry;
  * The implementation of the SHA-2-3 (512-bit) <i>Service Provider Interface</i>
  * (<b>SPI</b>) adapter.
  */
-public class Sha512Spi extends MessageDigestAdapter
-{
-    public Sha512Spi()
-    {
-	super(Registry.SHA512_HASH);
-    }
+public class Sha512Spi extends MessageDigestAdapter {
+	public Sha512Spi() {
+		super(Registry.SHA512_HASH);
+	}
 }

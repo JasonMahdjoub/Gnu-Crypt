@@ -45,18 +45,16 @@ package gnu.vm.jgnu.security.acl;
  * @author Aaron M. Renn (arenn@urbanophile.com)
  * @status updated to 1.4
  */
-public class NotOwnerException extends Exception
-{
-    /**
-     * Compatible with JDK 1.1+.
-     */
-    private static final long serialVersionUID = -5555597911163362399L;
+public class NotOwnerException extends Exception {
+	/**
+	 * Compatible with JDK 1.1+.
+	 */
+	private static final long serialVersionUID = -5555597911163362399L;
 
-    /**
-     * Initializes a new instance of <code>NotOwnerException</code> that does
-     * not have a descriptive message.
-     */
-    public NotOwnerException()
-    {
-    }
+	/**
+	 * Initializes a new instance of <code>NotOwnerException</code> that does not
+	 * have a descriptive message.
+	 */
+	public NotOwnerException() {
+	}
 }

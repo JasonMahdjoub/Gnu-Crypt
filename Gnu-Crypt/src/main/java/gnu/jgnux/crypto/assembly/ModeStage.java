@@ -53,63 +53,53 @@ import gnu.vm.jgnu.security.InvalidKeyException;
  * ({@link IMode}) to allow inclusion of such an instance in a cascade of block
  * ciphers.
  */
-class ModeStage extends Stage
-{
-    private IMode delegate;
+class ModeStage extends Stage {
+	private IMode delegate;
 
-    private transient Set<Integer> cachedBlockSizes;
+	private transient Set<Integer> cachedBlockSizes;
 
-    ModeStage(IMode mode, Direction forwardDirection)
-    {
-	super(forwardDirection);
+	ModeStage(IMode mode, Direction forwardDirection) {
+		super(forwardDirection);
 
-	delegate = mode;
-	cachedBlockSizes = null;
-    }
-
-    @Override
-    public Set<Integer> blockSizes()
-    {
-	if (cachedBlockSizes == null)
-	{
-	    HashSet<Integer> result = new HashSet<>();
-	    for (Iterator<Integer> it = delegate.blockSizes(); it.hasNext();)
-		result.add(it.next());
-	    cachedBlockSizes = Collections.unmodifiableSet(result);
+		delegate = mode;
+		cachedBlockSizes = null;
 	}
-	return cachedBlockSizes;
-    }
 
-    @Override
-    public int currentBlockSize() throws IllegalStateException
-    {
-	return delegate.currentBlockSize();
-    }
+	@Override
+	public Set<Integer> blockSizes() {
+		if (cachedBlockSizes == null) {
+			HashSet<Integer> result = new HashSet<>();
+			for (Iterator<Integer> it = delegate.blockSizes(); it.hasNext();)
+				result.add(it.next());
+			cachedBlockSizes = Collections.unmodifiableSet(result);
+		}
+		return cachedBlockSizes;
+	}
 
-    @Override
-    void initDelegate(Map<Object, Object> attributes) throws InvalidKeyException
-    {
-	Direction flow = (Direction) attributes.get(DIRECTION);
-	attributes.put(IMode.STATE, Integer.valueOf(
-		flow.equals(forward) ? IMode.ENCRYPTION : IMode.DECRYPTION));
-	delegate.init(attributes);
-    }
+	@Override
+	public int currentBlockSize() throws IllegalStateException {
+		return delegate.currentBlockSize();
+	}
 
-    @Override
-    void resetDelegate()
-    {
-	delegate.reset();
-    }
+	@Override
+	void initDelegate(Map<Object, Object> attributes) throws InvalidKeyException {
+		Direction flow = (Direction) attributes.get(DIRECTION);
+		attributes.put(IMode.STATE, Integer.valueOf(flow.equals(forward) ? IMode.ENCRYPTION : IMode.DECRYPTION));
+		delegate.init(attributes);
+	}
 
-    @Override
-    public boolean selfTest()
-    {
-	return delegate.selfTest();
-    }
+	@Override
+	void resetDelegate() {
+		delegate.reset();
+	}
 
-    @Override
-    void updateDelegate(byte[] in, int inOffset, byte[] out, int outOffset)
-    {
-	delegate.update(in, inOffset, out, outOffset);
-    }
+	@Override
+	public boolean selfTest() {
+		return delegate.selfTest();
+	}
+
+	@Override
+	void updateDelegate(byte[] in, int inOffset, byte[] out, int outOffset) {
+		delegate.update(in, inOffset, out, outOffset);
+	}
 }

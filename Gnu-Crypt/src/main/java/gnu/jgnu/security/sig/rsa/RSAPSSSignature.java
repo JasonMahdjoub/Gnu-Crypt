@@ -68,191 +68,172 @@ import gnu.vm.jgnu.security.interfaces.RSAPublicKey;
  * Jakob Jonsson and Burt Kaliski.</li>
  * </ol>
  */
-public class RSAPSSSignature extends BaseSignature
-{
+public class RSAPSSSignature extends BaseSignature {
 
-    /** The underlying EMSA-PSS instance for this object. */
-    private EMSA_PSS pss;
+	/** The underlying EMSA-PSS instance for this object. */
+	private EMSA_PSS pss;
 
-    /** The desired length in octets of the EMSA-PSS salt. */
-    private int sLen;
+	/** The desired length in octets of the EMSA-PSS salt. */
+	private int sLen;
 
-    /**
-     * Default 0-arguments constructor. Uses SHA-1 as the default hash and a
-     * 0-octet <i>salt</i>.
-     */
-    public RSAPSSSignature()
-    {
-	this(Registry.SHA160_HASH, 0);
-    }
-
-    public RSAPSSSignature(IMessageDigest md, int sLen)
-    {
-	super(Registry.RSA_PSS_SIG, md);
-
-	pss = EMSA_PSS.getInstance(md.name());
-	this.sLen = sLen;
-    }
-
-    /** Private constructor for cloning purposes. */
-    private RSAPSSSignature(RSAPSSSignature that)
-    {
-	this(that.md.name(), that.sLen);
-
-	this.publicKey = that.publicKey;
-	this.privateKey = that.privateKey;
-	this.md = (IMessageDigest) that.md.clone();
-	this.pss = (EMSA_PSS) that.pss.clone();
-    }
-
-    /**
-     * Constructs an instance of this object using the designated message digest
-     * algorithm as its underlying hash function, and having 0-octet
-     * <i>salt</i>.
-     *
-     * @param mdName
-     *            the canonical name of the underlying hash function.
-     */
-    public RSAPSSSignature(String mdName)
-    {
-	this(mdName, 0);
-    }
-
-    /**
-     * Constructs an instance of this object using the designated message digest
-     * algorithm as its underlying hash function.
-     *
-     * @param mdName
-     *            the canonical name of the underlying hash function.
-     * @param sLen
-     *            the desired length in octets of the salt to use for encoding /
-     *            decoding signatures.
-     */
-    public RSAPSSSignature(String mdName, int sLen)
-    {
-	this(HashFactory.getInstance(mdName), sLen);
-    }
-
-    @Override
-    public Object clone()
-    {
-	return new RSAPSSSignature(this);
-    }
-
-    @Override
-    protected Object generateSignature() throws IllegalStateException
-    {
-	// 1. Apply the EMSA-PSS encoding operation to the message M to produce
-	// an
-	// encoded message EM of length CEILING((modBits ? 1)/8) octets such
-	// that the bit length of the integer OS2IP(EM) is at most modBits ? 1:
-	// EM = EMSA-PSS-Encode(M,modBits ? 1).
-	// Note that the octet length of EM will be one less than k if
-	// modBits ? 1 is divisible by 8. If the encoding operation outputs
-	// 'message too long' or 'encoding error,' then output 'message too
-	// long' or 'encoding error' and stop.
-	int modBits = ((RSAPrivateKey) privateKey).getModulus().bitLength();
-	byte[] salt = new byte[sLen];
-	this.nextRandomBytes(salt);
-	byte[] EM = pss.encode(md.digest(), modBits - 1, salt);
-	// 2. Convert the encoded message EM to an integer message
-	// representative
-	// m (see Section 1.2.2): m = OS2IP(EM).
-	BigInteger m = new BigInteger(1, EM);
-	// 3. Apply the RSASP signature primitive to the public key K and the
-	// message representative m to produce an integer signature
-	// representative s: s = RSASP(K,m).
-	BigInteger s = RSA.sign(privateKey, m);
-	// 4. Convert the signature representative s to a signature S of length
-	// k
-	// octets (see Section 1.2.1): S = I2OSP(s, k).
-	// 5. Output the signature S.
-	int k = (modBits + 7) / 8;
-	// return encodeSignature(s, k);
-	return RSA.I2OSP(s, k);
-    }
-
-    @Override
-    protected void setupForSigning(PrivateKey k) throws IllegalArgumentException
-    {
-	if (!(k instanceof RSAPrivateKey))
-	    throw new IllegalArgumentException();
-
-	privateKey = k;
-    }
-
-    @Override
-    protected void setupForVerification(PublicKey k) throws IllegalArgumentException
-    {
-	if (!(k instanceof RSAPublicKey))
-	    throw new IllegalArgumentException();
-
-	publicKey = k;
-    }
-
-    @Override
-    protected boolean verifySignature(Object sig) throws IllegalStateException
-    {
-	if (publicKey == null)
-	    throw new IllegalStateException();
-	// byte[] S = decodeSignature(sig);
-	byte[] S = (byte[]) sig;
-	// 1. If the length of the signature S is not k octets, output
-	// 'signature
-	// invalid' and stop.
-	int modBits = ((RSAPublicKey) publicKey).getModulus().bitLength();
-	int k = (modBits + 7) / 8;
-	if (S.length != k)
-	    return false;
-	// 2. Convert the signature S to an integer signature representative s:
-	// s = OS2IP(S).
-	BigInteger s = new BigInteger(1, S);
-	// 3. Apply the RSAVP verification primitive to the public key (n, e)
-	// and
-	// the signature representative s to produce an integer message
-	// representative m: m = RSAVP((n, e), s).
-	// If RSAVP outputs 'signature representative out of range,' then
-	// output 'signature invalid' and stop.
-	BigInteger m = null;
-	try
-	{
-	    m = RSA.verify(publicKey, s);
+	/**
+	 * Default 0-arguments constructor. Uses SHA-1 as the default hash and a 0-octet
+	 * <i>salt</i>.
+	 */
+	public RSAPSSSignature() {
+		this(Registry.SHA160_HASH, 0);
 	}
-	catch (IllegalArgumentException x)
-	{
-	    return false;
+
+	public RSAPSSSignature(IMessageDigest md, int sLen) {
+		super(Registry.RSA_PSS_SIG, md);
+
+		pss = EMSA_PSS.getInstance(md.name());
+		this.sLen = sLen;
 	}
-	// 4. Convert the message representative m to an encoded message EM of
-	// length emLen = CEILING((modBits - 1)/8) octets, where modBits is
-	// equal to the bit length of the modulus: EM = I2OSP(m, emLen).
-	// Note that emLen will be one less than k if modBits - 1 is divisible
-	// by 8. If I2OSP outputs 'integer too large,' then output 'signature
-	// invalid' and stop.
-	int emBits = modBits - 1;
-	int emLen = (emBits + 7) / 8;
-	byte[] EM = m.toByteArray();
-	if (EM.length > emLen)
-	    return false;
-	else if (EM.length < emLen)
-	{
-	    byte[] newEM = new byte[emLen];
-	    System.arraycopy(EM, 0, newEM, emLen - EM.length, EM.length);
-	    EM = newEM;
+
+	/** Private constructor for cloning purposes. */
+	private RSAPSSSignature(RSAPSSSignature that) {
+		this(that.md.name(), that.sLen);
+
+		this.publicKey = that.publicKey;
+		this.privateKey = that.privateKey;
+		this.md = (IMessageDigest) that.md.clone();
+		this.pss = (EMSA_PSS) that.pss.clone();
 	}
-	// 5. Apply the EMSA-PSS decoding operation to the message M and the
-	// encoded message EM: Result = EMSA-PSS-Decode(M, EM, emBits). If
-	// Result = 'consistent,' output 'signature verified.' Otherwise,
-	// output 'signature invalid.'
-	byte[] mHash = md.digest();
-	boolean result = false;
-	try
-	{
-	    result = pss.decode(mHash, EM, emBits, sLen);
+
+	/**
+	 * Constructs an instance of this object using the designated message digest
+	 * algorithm as its underlying hash function, and having 0-octet <i>salt</i>.
+	 *
+	 * @param mdName
+	 *            the canonical name of the underlying hash function.
+	 */
+	public RSAPSSSignature(String mdName) {
+		this(mdName, 0);
 	}
-	catch (IllegalArgumentException x)
-	{
-	    result = false;
+
+	/**
+	 * Constructs an instance of this object using the designated message digest
+	 * algorithm as its underlying hash function.
+	 *
+	 * @param mdName
+	 *            the canonical name of the underlying hash function.
+	 * @param sLen
+	 *            the desired length in octets of the salt to use for encoding /
+	 *            decoding signatures.
+	 */
+	public RSAPSSSignature(String mdName, int sLen) {
+		this(HashFactory.getInstance(mdName), sLen);
 	}
-	return result;
-    }
+
+	@Override
+	public Object clone() {
+		return new RSAPSSSignature(this);
+	}
+
+	@Override
+	protected Object generateSignature() throws IllegalStateException {
+		// 1. Apply the EMSA-PSS encoding operation to the message M to produce
+		// an
+		// encoded message EM of length CEILING((modBits ? 1)/8) octets such
+		// that the bit length of the integer OS2IP(EM) is at most modBits ? 1:
+		// EM = EMSA-PSS-Encode(M,modBits ? 1).
+		// Note that the octet length of EM will be one less than k if
+		// modBits ? 1 is divisible by 8. If the encoding operation outputs
+		// 'message too long' or 'encoding error,' then output 'message too
+		// long' or 'encoding error' and stop.
+		int modBits = ((RSAPrivateKey) privateKey).getModulus().bitLength();
+		byte[] salt = new byte[sLen];
+		this.nextRandomBytes(salt);
+		byte[] EM = pss.encode(md.digest(), modBits - 1, salt);
+		// 2. Convert the encoded message EM to an integer message
+		// representative
+		// m (see Section 1.2.2): m = OS2IP(EM).
+		BigInteger m = new BigInteger(1, EM);
+		// 3. Apply the RSASP signature primitive to the public key K and the
+		// message representative m to produce an integer signature
+		// representative s: s = RSASP(K,m).
+		BigInteger s = RSA.sign(privateKey, m);
+		// 4. Convert the signature representative s to a signature S of length
+		// k
+		// octets (see Section 1.2.1): S = I2OSP(s, k).
+		// 5. Output the signature S.
+		int k = (modBits + 7) / 8;
+		// return encodeSignature(s, k);
+		return RSA.I2OSP(s, k);
+	}
+
+	@Override
+	protected void setupForSigning(PrivateKey k) throws IllegalArgumentException {
+		if (!(k instanceof RSAPrivateKey))
+			throw new IllegalArgumentException();
+
+		privateKey = k;
+	}
+
+	@Override
+	protected void setupForVerification(PublicKey k) throws IllegalArgumentException {
+		if (!(k instanceof RSAPublicKey))
+			throw new IllegalArgumentException();
+
+		publicKey = k;
+	}
+
+	@Override
+	protected boolean verifySignature(Object sig) throws IllegalStateException {
+		if (publicKey == null)
+			throw new IllegalStateException();
+		// byte[] S = decodeSignature(sig);
+		byte[] S = (byte[]) sig;
+		// 1. If the length of the signature S is not k octets, output
+		// 'signature
+		// invalid' and stop.
+		int modBits = ((RSAPublicKey) publicKey).getModulus().bitLength();
+		int k = (modBits + 7) / 8;
+		if (S.length != k)
+			return false;
+		// 2. Convert the signature S to an integer signature representative s:
+		// s = OS2IP(S).
+		BigInteger s = new BigInteger(1, S);
+		// 3. Apply the RSAVP verification primitive to the public key (n, e)
+		// and
+		// the signature representative s to produce an integer message
+		// representative m: m = RSAVP((n, e), s).
+		// If RSAVP outputs 'signature representative out of range,' then
+		// output 'signature invalid' and stop.
+		BigInteger m = null;
+		try {
+			m = RSA.verify(publicKey, s);
+		} catch (IllegalArgumentException x) {
+			return false;
+		}
+		// 4. Convert the message representative m to an encoded message EM of
+		// length emLen = CEILING((modBits - 1)/8) octets, where modBits is
+		// equal to the bit length of the modulus: EM = I2OSP(m, emLen).
+		// Note that emLen will be one less than k if modBits - 1 is divisible
+		// by 8. If I2OSP outputs 'integer too large,' then output 'signature
+		// invalid' and stop.
+		int emBits = modBits - 1;
+		int emLen = (emBits + 7) / 8;
+		byte[] EM = m.toByteArray();
+		if (EM.length > emLen)
+			return false;
+		else if (EM.length < emLen) {
+			byte[] newEM = new byte[emLen];
+			System.arraycopy(EM, 0, newEM, emLen - EM.length, EM.length);
+			EM = newEM;
+		}
+		// 5. Apply the EMSA-PSS decoding operation to the message M and the
+		// encoded message EM: Result = EMSA-PSS-Decode(M, EM, emBits). If
+		// Result = 'consistent,' output 'signature verified.' Otherwise,
+		// output 'signature invalid.'
+		byte[] mHash = md.digest();
+		boolean result = false;
+		try {
+			result = pss.decode(mHash, EM, emBits, sLen);
+		} catch (IllegalArgumentException x) {
+			result = false;
+		}
+		return result;
+	}
 }

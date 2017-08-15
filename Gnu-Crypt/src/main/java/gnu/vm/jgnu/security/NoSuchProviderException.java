@@ -46,28 +46,25 @@ import gnu.vm.jgnu.security.GeneralSecurityException;
  * @author Aaron M. Renn (arenn@urbanophile.com)
  * @status updated to 1.4
  */
-public class NoSuchProviderException extends GeneralSecurityException
-{
-    /**
-     * Compatible with JDK 1.1+.
-     */
-    private static final long serialVersionUID = 8488111756688534474L;
+public class NoSuchProviderException extends GeneralSecurityException {
+	/**
+	 * Compatible with JDK 1.1+.
+	 */
+	private static final long serialVersionUID = 8488111756688534474L;
 
-    /**
-     * Create a new instance with no descriptive error message.
-     */
-    public NoSuchProviderException()
-    {
-    }
+	/**
+	 * Create a new instance with no descriptive error message.
+	 */
+	public NoSuchProviderException() {
+	}
 
-    /**
-     * Create a new instance with a descriptive error message.
-     *
-     * @param msg
-     *            the descriptive error message
-     */
-    public NoSuchProviderException(String msg)
-    {
-	super(msg);
-    }
+	/**
+	 * Create a new instance with a descriptive error message.
+	 *
+	 * @param msg
+	 *            the descriptive error message
+	 */
+	public NoSuchProviderException(String msg) {
+		super(msg);
+	}
 }

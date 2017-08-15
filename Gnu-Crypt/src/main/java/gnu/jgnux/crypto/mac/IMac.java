@@ -81,110 +81,109 @@ import gnu.vm.jgnu.security.InvalidKeyException;
  * T. Krovetz, J. Black, S. Halevi, A. Hevia, H. Krawczyk, and P. Rogaway.</li>
  * </ol>
  */
-public interface IMac
-{
-    /**
-     * Property name of the user-supplied key material. The value associated to
-     * this property name is taken to be a byte array.
-     */
-    String MAC_KEY_MATERIAL = "gnu.crypto.mac.key.material";
+public interface IMac {
+	/**
+	 * Property name of the user-supplied key material. The value associated to this
+	 * property name is taken to be a byte array.
+	 */
+	String MAC_KEY_MATERIAL = "gnu.crypto.mac.key.material";
 
-    /**
-     * Property name of the desired truncated output size in bytes. The value
-     * associated to this property name is taken to be an integer. If no value
-     * is specified in the attributes map at initialisation time, then all bytes
-     * of the underlying hash algorithm's output are emitted.
-     * <p>
-     * This implementation, follows the recommendation of the <i>RFC 2104</i>
-     * authors; specifically:
-     * 
-     * <pre>
-     *     We recommend that the output length t be not less than half the
-     *     length of the hash output (to match the birthday attack bound)
-     *     and not less than 80 bits (a suitable lower bound on the number
-     *     of bits that need to be predicted by an attacker).
-     * </pre>
-     */
-    String TRUNCATED_SIZE = "gnu.crypto.mac.truncated.size";
+	/**
+	 * Property name of the desired truncated output size in bytes. The value
+	 * associated to this property name is taken to be an integer. If no value is
+	 * specified in the attributes map at initialisation time, then all bytes of the
+	 * underlying hash algorithm's output are emitted.
+	 * <p>
+	 * This implementation, follows the recommendation of the <i>RFC 2104</i>
+	 * authors; specifically:
+	 * 
+	 * <pre>
+	 *     We recommend that the output length t be not less than half the
+	 *     length of the hash output (to match the birthday attack bound)
+	 *     and not less than 80 bits (a suitable lower bound on the number
+	 *     of bits that need to be predicted by an attacker).
+	 * </pre>
+	 */
+	String TRUNCATED_SIZE = "gnu.crypto.mac.truncated.size";
 
-    /**
-     * Returns a clone copy of this instance.
-     *
-     * @return a clone copy of this instance.
-     */
-    Object clone() throws CloneNotSupportedException;
+	/**
+	 * Returns a clone copy of this instance.
+	 *
+	 * @return a clone copy of this instance.
+	 */
+	Object clone() throws CloneNotSupportedException;
 
-    /**
-     * Completes the <i>MAC</i> by performing final operations such as padding
-     * and resetting the instance.
-     *
-     * @return the array of bytes representing the <i>MAC</i> value.
-     */
-    byte[] digest();
+	/**
+	 * Completes the <i>MAC</i> by performing final operations such as padding and
+	 * resetting the instance.
+	 *
+	 * @return the array of bytes representing the <i>MAC</i> value.
+	 */
+	byte[] digest();
 
-    /**
-     * Initialises the algorithm with designated attributes. Permissible names
-     * and values are described in the class documentation above.
-     *
-     * @param attributes
-     *            a set of name-value pairs that describe the desired future
-     *            instance behaviour.
-     * @exception InvalidKeyException
-     *                if the key data is invalid.
-     * @exception IllegalStateException
-     *                if the instance is already initialised.
-     * @see #MAC_KEY_MATERIAL
-     */
-    void init(Map<Object, Object> attributes) throws InvalidKeyException, IllegalStateException;
+	/**
+	 * Initialises the algorithm with designated attributes. Permissible names and
+	 * values are described in the class documentation above.
+	 *
+	 * @param attributes
+	 *            a set of name-value pairs that describe the desired future
+	 *            instance behaviour.
+	 * @exception InvalidKeyException
+	 *                if the key data is invalid.
+	 * @exception IllegalStateException
+	 *                if the instance is already initialised.
+	 * @see #MAC_KEY_MATERIAL
+	 */
+	void init(Map<Object, Object> attributes) throws InvalidKeyException, IllegalStateException;
 
-    /**
-     * Returns the output length in bytes of this <i>MAC</i> algorithm.
-     *
-     * @return the output length in bytes of this <i>MAC</i> algorithm.
-     */
-    int macSize();
+	/**
+	 * Returns the output length in bytes of this <i>MAC</i> algorithm.
+	 *
+	 * @return the output length in bytes of this <i>MAC</i> algorithm.
+	 */
+	int macSize();
 
-    /**
-     * Returns the canonical name of this algorithm.
-     *
-     * @return the canonical name of this algorithm.
-     */
-    String name();
+	/**
+	 * Returns the canonical name of this algorithm.
+	 *
+	 * @return the canonical name of this algorithm.
+	 */
+	String name();
 
-    /**
-     * Resets the algorithm instance for re-initialisation and use with other
-     * characteristics. This method always succeeds.
-     */
-    void reset();
+	/**
+	 * Resets the algorithm instance for re-initialisation and use with other
+	 * characteristics. This method always succeeds.
+	 */
+	void reset();
 
-    /**
-     * A basic test. Ensures that the MAC of a pre-determined message is equal
-     * to a known pre-computed value.
-     *
-     * @return <code>true</code> if the implementation passes a basic self-test.
-     *         Returns <code>false</code> otherwise.
-     */
-    boolean selfTest();
+	/**
+	 * A basic test. Ensures that the MAC of a pre-determined message is equal to a
+	 * known pre-computed value.
+	 *
+	 * @return <code>true</code> if the implementation passes a basic self-test.
+	 *         Returns <code>false</code> otherwise.
+	 */
+	boolean selfTest();
 
-    /**
-     * Continues a <i>MAC</i> operation using the input byte.
-     *
-     * @param b
-     *            the input byte to digest.
-     */
-    void update(byte b);
+	/**
+	 * Continues a <i>MAC</i> operation using the input byte.
+	 *
+	 * @param b
+	 *            the input byte to digest.
+	 */
+	void update(byte b);
 
-    /**
-     * Continues a <i>MAC</i> operation, by filling the buffer, processing data
-     * in the algorithm's MAC_SIZE-bit block(s), updating the context and count,
-     * and buffering the remaining bytes in buffer for the next operation.
-     *
-     * @param in
-     *            the input block.
-     * @param offset
-     *            start of meaningful bytes in input block.
-     * @param length
-     *            number of bytes, in input block, to consider.
-     */
-    void update(byte[] in, int offset, int length);
+	/**
+	 * Continues a <i>MAC</i> operation, by filling the buffer, processing data in
+	 * the algorithm's MAC_SIZE-bit block(s), updating the context and count, and
+	 * buffering the remaining bytes in buffer for the next operation.
+	 *
+	 * @param in
+	 *            the input block.
+	 * @param offset
+	 *            start of meaningful bytes in input block.
+	 * @param length
+	 *            number of bytes, in input block, to consider.
+	 */
+	void update(byte[] in, int offset, int length);
 }

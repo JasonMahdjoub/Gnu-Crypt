@@ -48,45 +48,41 @@ import gnu.vm.jgnu.security.spec.KeySpec;
  * 
  * @author Mark Benvenuto
  */
-public class RSAPublicKeySpec implements KeySpec
-{
-    private BigInteger modulus;
+public class RSAPublicKeySpec implements KeySpec {
+	private BigInteger modulus;
 
-    private BigInteger publicExponent;
+	private BigInteger publicExponent;
 
-    /**
-     * Constructs a new RSAPublicKeySpec with the specified modulus and
-     * publicExponent.
-     * 
-     * @param modulus
-     *            the RSA modulus
-     * @param publicExponent
-     *            the public key exponent
-     */
-    public RSAPublicKeySpec(BigInteger modulus, BigInteger publicExponent)
-    {
-	this.modulus = modulus;
-	this.publicExponent = publicExponent;
-    }
+	/**
+	 * Constructs a new RSAPublicKeySpec with the specified modulus and
+	 * publicExponent.
+	 * 
+	 * @param modulus
+	 *            the RSA modulus
+	 * @param publicExponent
+	 *            the public key exponent
+	 */
+	public RSAPublicKeySpec(BigInteger modulus, BigInteger publicExponent) {
+		this.modulus = modulus;
+		this.publicExponent = publicExponent;
+	}
 
-    /**
-     * Gets the RSA modulus.
-     * 
-     * @return the RSA modulus
-     */
-    public BigInteger getModulus()
-    {
-	return this.modulus;
-    }
+	/**
+	 * Gets the RSA modulus.
+	 * 
+	 * @return the RSA modulus
+	 */
+	public BigInteger getModulus() {
+		return this.modulus;
+	}
 
-    /**
-     * Gets the RSA public exponent.
-     * 
-     * @return the RSA public exponent
-     */
-    public BigInteger getPublicExponent()
-    {
-	return this.publicExponent;
-    }
+	/**
+	 * Gets the RSA public exponent.
+	 * 
+	 * @return the RSA public exponent
+	 */
+	public BigInteger getPublicExponent() {
+		return this.publicExponent;
+	}
 
 }

@@ -50,21 +50,18 @@ import javax.security.cert.CertificateException;
  * be used in new applications.</b>
  * </p>
  */
-public class CertificateEncodingException extends CertificateException
-{
+public class CertificateEncodingException extends CertificateException {
 
-    /**
-     * 
-     */
-    private static final long serialVersionUID = 320832777521094879L;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 320832777521094879L;
 
-    public CertificateEncodingException()
-    {
-	super();
-    }
+	public CertificateEncodingException() {
+		super();
+	}
 
-    public CertificateEncodingException(String msg)
-    {
-	super(msg);
-    }
+	public CertificateEncodingException(String msg) {
+		super(msg);
+	}
 }

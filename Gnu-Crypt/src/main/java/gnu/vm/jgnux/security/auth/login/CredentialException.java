@@ -44,25 +44,22 @@ import javax.security.auth.login.LoginException;
  * 
  * @since 1.5
  */
-public class CredentialException extends LoginException
-{
-    private static final long serialVersionUID = -4772893876810601859L;
+public class CredentialException extends LoginException {
+	private static final long serialVersionUID = -4772893876810601859L;
 
-    /**
-     * Create a new exception object.
-     */
-    public CredentialException()
-    {
-    }
+	/**
+	 * Create a new exception object.
+	 */
+	public CredentialException() {
+	}
 
-    /**
-     * Create a new exception with the given detail message.
-     * 
-     * @param message
-     *            the detail message
-     */
-    public CredentialException(String message)
-    {
-	super(message);
-    }
+	/**
+	 * Create a new exception with the given detail message.
+	 * 
+	 * @param message
+	 *            the detail message
+	 */
+	public CredentialException(String message) {
+		super(message);
+	}
 }

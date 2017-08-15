@@ -53,11 +53,10 @@ import java.security.Permission;
 @Documented
 @Retention(CLASS)
 @Target(METHOD)
-public @interface Requires
-{
-    String action();
+public @interface Requires {
+	String action();
 
-    Class<? extends Permission> permissionClass();
+	Class<? extends Permission> permissionClass();
 
-    String target();
+	String target();
 }

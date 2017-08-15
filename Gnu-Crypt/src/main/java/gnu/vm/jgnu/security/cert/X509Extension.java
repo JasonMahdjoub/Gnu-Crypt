@@ -65,40 +65,39 @@ import java.util.Set;
  * 
  * @since 1.2
  */
-public interface X509Extension
-{
+public interface X509Extension {
 
-    /**
-     * Returns a set of the CRITICAL extension OIDs from the certificate/CRL
-     * that the object implementing this interface manages.
-     * 
-     * @return A Set containing the OIDs. If there are no CRITICAL extensions or
-     *         extensions at all this returns null.
-     */
-    Set<String> getCriticalExtensionOIDs();
+	/**
+	 * Returns a set of the CRITICAL extension OIDs from the certificate/CRL that
+	 * the object implementing this interface manages.
+	 * 
+	 * @return A Set containing the OIDs. If there are no CRITICAL extensions or
+	 *         extensions at all this returns null.
+	 */
+	Set<String> getCriticalExtensionOIDs();
 
-    /**
-     * Returns the DER encoded OCTET string for the specified extension value
-     * identified by a OID. The OID is a string of number separated by periods.
-     * Ex: 12.23.45.67
-     */
-    byte[] getExtensionValue(String oid);
+	/**
+	 * Returns the DER encoded OCTET string for the specified extension value
+	 * identified by a OID. The OID is a string of number separated by periods. Ex:
+	 * 12.23.45.67
+	 */
+	byte[] getExtensionValue(String oid);
 
-    /**
-     * Returns a set of the NON-CRITICAL extension OIDs from the certificate/CRL
-     * that the object implementing this interface manages.
-     * 
-     * @return A Set containing the OIDs. If there are no NON-CRITICAL
-     *         extensions or extensions at all this returns null.
-     */
-    Set<String> getNonCriticalExtensionOIDs();
+	/**
+	 * Returns a set of the NON-CRITICAL extension OIDs from the certificate/CRL
+	 * that the object implementing this interface manages.
+	 * 
+	 * @return A Set containing the OIDs. If there are no NON-CRITICAL extensions or
+	 *         extensions at all this returns null.
+	 */
+	Set<String> getNonCriticalExtensionOIDs();
 
-    /**
-     * Returns true if the certificate contains a critical extension that is not
-     * supported.
-     * 
-     * @return true if has unsupported extension, false otherwise
-     */
-    boolean hasUnsupportedCriticalExtension();
+	/**
+	 * Returns true if the certificate contains a critical extension that is not
+	 * supported.
+	 * 
+	 * @return true if has unsupported extension, false otherwise
+	 */
+	boolean hasUnsupportedCriticalExtension();
 
 }

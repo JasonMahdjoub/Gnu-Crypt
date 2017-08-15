@@ -44,31 +44,30 @@ import gnu.vm.jgnu.security.KeyPair;
 /**
  * The visible methods of every asymmetric keypair generator.
  */
-public interface IKeyPairGenerator
-{
-    /**
-     * Generates a new keypair based on the attributes used to configure the
-     * instance.
-     *
-     * @return a new keypair.
-     */
-    KeyPair generate();
+public interface IKeyPairGenerator {
+	/**
+	 * Generates a new keypair based on the attributes used to configure the
+	 * instance.
+	 *
+	 * @return a new keypair.
+	 */
+	KeyPair generate();
 
-    /**
-     * Returns the canonical name of this keypair generator.
-     *
-     * @return the canonical name of this instance.
-     */
-    String name();
+	/**
+	 * Returns the canonical name of this keypair generator.
+	 *
+	 * @return the canonical name of this instance.
+	 */
+	String name();
 
-    /**
-     * [Re]-initialises this instance for use with a given set of attributes.
-     *
-     * @param attributes
-     *            a map of name/value pairs to use for setting up the instance.
-     * @exception IllegalArgumentException
-     *                if at least one of the mandatory attributes is missing or
-     *                an invalid value was specified.
-     */
-    void setup(Map<String, ?> attributes);
+	/**
+	 * [Re]-initialises this instance for use with a given set of attributes.
+	 *
+	 * @param attributes
+	 *            a map of name/value pairs to use for setting up the instance.
+	 * @exception IllegalArgumentException
+	 *                if at least one of the mandatory attributes is missing or an
+	 *                invalid value was specified.
+	 */
+	void setup(Map<String, ?> attributes);
 }

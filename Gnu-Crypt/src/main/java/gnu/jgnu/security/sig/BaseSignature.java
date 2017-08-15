@@ -50,177 +50,158 @@ import gnu.vm.jgnu.security.PublicKey;
 /**
  * A base abstract class to facilitate implementations of concrete Signatures.
  */
-public abstract class BaseSignature implements ISignature
-{
-    /** The canonical name of this signature scheme. */
-    protected String schemeName;
+public abstract class BaseSignature implements ISignature {
+	/** The canonical name of this signature scheme. */
+	protected String schemeName;
 
-    /** The underlying message digest instance for this signature scheme. */
-    protected IMessageDigest md;
+	/** The underlying message digest instance for this signature scheme. */
+	protected IMessageDigest md;
 
-    /** The public key to use when verifying signatures. */
-    protected PublicKey publicKey;
+	/** The public key to use when verifying signatures. */
+	protected PublicKey publicKey;
 
-    /** The private key to use when generating signatures (signing). */
-    protected PrivateKey privateKey;
+	/** The private key to use when generating signatures (signing). */
+	protected PrivateKey privateKey;
 
-    /** The optional {@link Random} instance to use. */
-    private Random rnd;
+	/** The optional {@link Random} instance to use. */
+	private Random rnd;
 
-    /** The optional {@link IRandom} instance to use. */
-    private IRandom irnd;
+	/** The optional {@link IRandom} instance to use. */
+	private IRandom irnd;
 
-    /** Our default source of randomness. */
-    private PRNG prng = null;
+	/** Our default source of randomness. */
+	private PRNG prng = null;
 
-    /**
-     * Trivial constructor.
-     *
-     * @param schemeName
-     *            the name of this signature scheme.
-     * @param md
-     *            the underlying instance of the message digest algorithm.
-     * @throws IllegalArgumentException
-     *             if the designated hash instance is <code>null</code>.
-     */
-    protected BaseSignature(String schemeName, IMessageDigest md)
-    {
-	super();
+	/**
+	 * Trivial constructor.
+	 *
+	 * @param schemeName
+	 *            the name of this signature scheme.
+	 * @param md
+	 *            the underlying instance of the message digest algorithm.
+	 * @throws IllegalArgumentException
+	 *             if the designated hash instance is <code>null</code>.
+	 */
+	protected BaseSignature(String schemeName, IMessageDigest md) {
+		super();
 
-	this.schemeName = schemeName;
-	if (md == null)
-	    throw new IllegalArgumentException(
-		    "Message digest MUST NOT be null");
+		this.schemeName = schemeName;
+		if (md == null)
+			throw new IllegalArgumentException("Message digest MUST NOT be null");
 
-	this.md = md;
-    }
+		this.md = md;
+	}
 
-    @Override
-    public abstract Object clone();
+	@Override
+	public abstract Object clone();
 
-    protected abstract Object generateSignature() throws IllegalStateException;
+	protected abstract Object generateSignature() throws IllegalStateException;
 
-    private PRNG getDefaultPRNG()
-    {
-	if (prng == null)
-	    prng = PRNG.getInstance();
+	private PRNG getDefaultPRNG() {
+		if (prng == null)
+			prng = PRNG.getInstance();
 
-	return prng;
-    }
+		return prng;
+	}
 
-    /** Initialises the internal fields of this instance. */
-    protected void init()
-    {
-	md.reset();
-	rnd = null;
-	irnd = null;
-	publicKey = null;
-	privateKey = null;
-    }
+	/** Initialises the internal fields of this instance. */
+	protected void init() {
+		md.reset();
+		rnd = null;
+		irnd = null;
+		publicKey = null;
+		privateKey = null;
+	}
 
-    @Override
-    public String name()
-    {
-	return schemeName + "-" + md.name();
-    }
+	@Override
+	public String name() {
+		return schemeName + "-" + md.name();
+	}
 
-    /**
-     * Fills the designated byte array with random data.
-     *
-     * @param buffer
-     *            the byte array to fill with random data.
-     */
-    protected void nextRandomBytes(byte[] buffer)
-    {
-	if (rnd != null)
-	    rnd.nextBytes(buffer);
-	else if (irnd != null)
-	    try
-	    {
-		irnd.nextBytes(buffer, 0, buffer.length);
-	    }
-	    catch (IllegalStateException x)
-	    {
-		throw new RuntimeException("nextRandomBytes(): " + x);
-	    }
-	    catch (LimitReachedException x)
-	    {
-		throw new RuntimeException("nextRandomBytes(): " + x);
-	    }
-	else
-	    getDefaultPRNG().nextBytes(buffer);
-    }
+	/**
+	 * Fills the designated byte array with random data.
+	 *
+	 * @param buffer
+	 *            the byte array to fill with random data.
+	 */
+	protected void nextRandomBytes(byte[] buffer) {
+		if (rnd != null)
+			rnd.nextBytes(buffer);
+		else if (irnd != null)
+			try {
+				irnd.nextBytes(buffer, 0, buffer.length);
+			} catch (IllegalStateException x) {
+				throw new RuntimeException("nextRandomBytes(): " + x);
+			} catch (LimitReachedException x) {
+				throw new RuntimeException("nextRandomBytes(): " + x);
+			}
+		else
+			getDefaultPRNG().nextBytes(buffer);
+	}
 
-    private void setup(Map<String, ?> attributes)
-    {
-	init();
-	// do we have a Random or SecureRandom, or should we use our own?
-	Object obj = attributes.get(SOURCE_OF_RANDOMNESS);
-	if (obj instanceof Random)
-	    rnd = (Random) obj;
-	else if (obj instanceof IRandom)
-	    irnd = (IRandom) obj;
-    }
+	private void setup(Map<String, ?> attributes) {
+		init();
+		// do we have a Random or SecureRandom, or should we use our own?
+		Object obj = attributes.get(SOURCE_OF_RANDOMNESS);
+		if (obj instanceof Random)
+			rnd = (Random) obj;
+		else if (obj instanceof IRandom)
+			irnd = (IRandom) obj;
+	}
 
-    protected abstract void setupForSigning(PrivateKey key) throws IllegalArgumentException;
+	protected abstract void setupForSigning(PrivateKey key) throws IllegalArgumentException;
 
-    protected abstract void setupForVerification(PublicKey key) throws IllegalArgumentException;
+	protected abstract void setupForVerification(PublicKey key) throws IllegalArgumentException;
 
-    @Override
-    public void setupSign(Map<String, ?> attributes) throws IllegalArgumentException
-    {
-	setup(attributes);
-	// do we have a private key?
-	PrivateKey key = (PrivateKey) attributes.get(SIGNER_KEY);
-	if (key != null)
-	    setupForSigning(key);
-    }
+	@Override
+	public void setupSign(Map<String, ?> attributes) throws IllegalArgumentException {
+		setup(attributes);
+		// do we have a private key?
+		PrivateKey key = (PrivateKey) attributes.get(SIGNER_KEY);
+		if (key != null)
+			setupForSigning(key);
+	}
 
-    @Override
-    public void setupVerify(Map<String, ?> attributes) throws IllegalArgumentException
-    {
-	setup(attributes);
-	// do we have a public key?
-	PublicKey key = (PublicKey) attributes.get(VERIFIER_KEY);
-	if (key != null)
-	    setupForVerification(key);
-    }
+	@Override
+	public void setupVerify(Map<String, ?> attributes) throws IllegalArgumentException {
+		setup(attributes);
+		// do we have a public key?
+		PublicKey key = (PublicKey) attributes.get(VERIFIER_KEY);
+		if (key != null)
+			setupForVerification(key);
+	}
 
-    @Override
-    public Object sign()
-    {
-	if (md == null || privateKey == null)
-	    throw new IllegalStateException();
+	@Override
+	public Object sign() {
+		if (md == null || privateKey == null)
+			throw new IllegalStateException();
 
-	return generateSignature();
-    }
+		return generateSignature();
+	}
 
-    @Override
-    public void update(byte b)
-    {
-	if (md == null)
-	    throw new IllegalStateException();
+	@Override
+	public void update(byte b) {
+		if (md == null)
+			throw new IllegalStateException();
 
-	md.update(b);
-    }
+		md.update(b);
+	}
 
-    @Override
-    public void update(byte[] b, int off, int len)
-    {
-	if (md == null)
-	    throw new IllegalStateException();
+	@Override
+	public void update(byte[] b, int off, int len) {
+		if (md == null)
+			throw new IllegalStateException();
 
-	md.update(b, off, len);
-    }
+		md.update(b, off, len);
+	}
 
-    @Override
-    public boolean verify(Object sig)
-    {
-	if (md == null || publicKey == null)
-	    throw new IllegalStateException();
+	@Override
+	public boolean verify(Object sig) {
+		if (md == null || publicKey == null)
+			throw new IllegalStateException();
 
-	return verifySignature(sig);
-    }
+		return verifySignature(sig);
+	}
 
-    protected abstract boolean verifySignature(Object signature) throws IllegalStateException;
+	protected abstract boolean verifySignature(Object signature) throws IllegalStateException;
 }

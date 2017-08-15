@@ -64,36 +64,35 @@ import gnu.vm.jgnu.security.PublicKey;
  * @since 1.1
  * @status updated to 1.4
  */
-public interface Key extends Serializable
-{
-    /**
-     * The version identifier used for serialization.
-     */
-    long serialVersionUID = 6603384152749567654L;
+public interface Key extends Serializable {
+	/**
+	 * The version identifier used for serialization.
+	 */
+	long serialVersionUID = 6603384152749567654L;
 
-    /**
-     * This method returns the name of the algorithm for this key. This is a
-     * <code>String</code> such as "RSA".
-     *
-     * @return the name of the algorithm in use
-     */
-    String getAlgorithm();
+	/**
+	 * This method returns the name of the algorithm for this key. This is a
+	 * <code>String</code> such as "RSA".
+	 *
+	 * @return the name of the algorithm in use
+	 */
+	String getAlgorithm();
 
-    /**
-     * This method returns the encoded form of the key. If this key does not
-     * support encoding, this method returns <code>null</code>.
-     *
-     * @return the encoded form of the key, or null
-     */
-    byte[] getEncoded();
+	/**
+	 * This method returns the encoded form of the key. If this key does not support
+	 * encoding, this method returns <code>null</code>.
+	 *
+	 * @return the encoded form of the key, or null
+	 */
+	byte[] getEncoded();
 
-    /**
-     * This method returns the name of the encoding format for this key. This is
-     * the name of the ASN.1 data format used for this key, such as "X.509" or
-     * "PKCS#8". This method returns <code>null</code> if this key does not have
-     * an encoding format.
-     *
-     * @return the name of the encoding format for this key, or null
-     */
-    String getFormat();
+	/**
+	 * This method returns the name of the encoding format for this key. This is the
+	 * name of the ASN.1 data format used for this key, such as "X.509" or "PKCS#8".
+	 * This method returns <code>null</code> if this key does not have an encoding
+	 * format.
+	 *
+	 * @return the name of the encoding format for this key, or null
+	 */
+	String getFormat();
 } // interface Key

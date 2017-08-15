@@ -42,16 +42,14 @@ import javax.net.ssl.SSLException;
 /**
  * An exception thrown when the remote peer could not be verified.
  */
-public class SSLPeerUnverifiedException extends SSLException
-{
+public class SSLPeerUnverifiedException extends SSLException {
 
-    /**
-     * 
-     */
-    private static final long serialVersionUID = 4530770569288622369L;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 4530770569288622369L;
 
-    public SSLPeerUnverifiedException(String message)
-    {
-	super(message);
-    }
+	public SSLPeerUnverifiedException(String message) {
+		super(message);
+	}
 }

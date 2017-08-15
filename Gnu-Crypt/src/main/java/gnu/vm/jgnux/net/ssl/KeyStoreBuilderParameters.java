@@ -46,6 +46,5 @@ import javax.net.ssl.ManagerFactoryParameters;
  * </p>
  * .
  */
-public class KeyStoreBuilderParameters implements ManagerFactoryParameters
-{
+public class KeyStoreBuilderParameters implements ManagerFactoryParameters {
 }

@@ -43,10 +43,8 @@ import gnu.jgnu.security.Registry;
  * The implementation of the Anubis <i>Service Provider Interface</i>
  * (<b>SPI</b>) adapter.
  */
-public final class AnubisSpi extends CipherAdapter
-{
-    public AnubisSpi()
-    {
-	super(Registry.ANUBIS_CIPHER);
-    }
+public final class AnubisSpi extends CipherAdapter {
+	public AnubisSpi() {
+		super(Registry.ANUBIS_CIPHER);
+	}
 }

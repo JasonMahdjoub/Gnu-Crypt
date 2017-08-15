@@ -43,15 +43,13 @@ import gnu.jgnu.security.Registry;
  * The implementation of the SHA-512 based SecureRandom <i>Service Provider
  * Interface</i> (<b>SPI</b>) adapter.
  */
-public class Sha512RandomSpi extends SecureRandomAdapter
-{
-    /**
-     * 
-     */
-    private static final long serialVersionUID = 3471561597377786188L;
+public class Sha512RandomSpi extends SecureRandomAdapter {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 3471561597377786188L;
 
-    public Sha512RandomSpi()
-    {
-	super(Registry.SHA512_HASH);
-    }
+	public Sha512RandomSpi() {
+		super(Registry.SHA512_HASH);
+	}
 }

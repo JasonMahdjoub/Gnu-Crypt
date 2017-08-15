@@ -58,80 +58,70 @@ import gnu.vm.jgnu.security.MessageDigestSpi;
  * All the implementations which subclass this object, and which are serviced by
  * the GNU provider implement the {@link Cloneable} interface.
  */
-class MessageDigestAdapter extends MessageDigestSpi implements Cloneable
-{
-    /** Our underlying hash instance. */
-    private IMessageDigest adaptee;
+class MessageDigestAdapter extends MessageDigestSpi implements Cloneable {
+	/** Our underlying hash instance. */
+	private IMessageDigest adaptee;
 
-    /**
-     * Private constructor for cloning purposes.
-     *
-     * @param adaptee
-     *            a clone of the underlying hash algorithm instance.
-     */
-    private MessageDigestAdapter(IMessageDigest adaptee)
-    {
-	super();
+	/**
+	 * Private constructor for cloning purposes.
+	 *
+	 * @param adaptee
+	 *            a clone of the underlying hash algorithm instance.
+	 */
+	private MessageDigestAdapter(IMessageDigest adaptee) {
+		super();
 
-	this.adaptee = adaptee;
-    }
+		this.adaptee = adaptee;
+	}
 
-    /**
-     * Trivial protected constructor.
-     *
-     * @param mdName
-     *            the canonical name of the hash algorithm.
-     */
-    protected MessageDigestAdapter(String mdName)
-    {
-	this(HashFactory.getInstance(mdName));
-    }
+	/**
+	 * Trivial protected constructor.
+	 *
+	 * @param mdName
+	 *            the canonical name of the hash algorithm.
+	 */
+	protected MessageDigestAdapter(String mdName) {
+		this(HashFactory.getInstance(mdName));
+	}
 
-    @Override
-    public Object clone()
-    {
-	return new MessageDigestAdapter((IMessageDigest) adaptee.clone());
-    }
+	@Override
+	public Object clone() {
+		return new MessageDigestAdapter((IMessageDigest) adaptee.clone());
+	}
 
-    @Override
-    public byte[] engineDigest()
-    {
-	return adaptee.digest();
-    }
+	@Override
+	public byte[] engineDigest() {
+		return adaptee.digest();
+	}
 
-    @Override
-    public int engineDigest(byte[] buf, int offset, int len) throws DigestException
-    {
-	int result = adaptee.hashSize();
-	if (len < result)
-	    throw new DigestException();
+	@Override
+	public int engineDigest(byte[] buf, int offset, int len) throws DigestException {
+		int result = adaptee.hashSize();
+		if (len < result)
+			throw new DigestException();
 
-	byte[] md = adaptee.digest();
-	System.arraycopy(md, 0, buf, offset, result);
-	return result;
-    }
+		byte[] md = adaptee.digest();
+		System.arraycopy(md, 0, buf, offset, result);
+		return result;
+	}
 
-    @Override
-    public int engineGetDigestLength()
-    {
-	return adaptee.hashSize();
-    }
+	@Override
+	public int engineGetDigestLength() {
+		return adaptee.hashSize();
+	}
 
-    @Override
-    public void engineReset()
-    {
-	adaptee.reset();
-    }
+	@Override
+	public void engineReset() {
+		adaptee.reset();
+	}
 
-    @Override
-    public void engineUpdate(byte input)
-    {
-	adaptee.update(input);
-    }
+	@Override
+	public void engineUpdate(byte input) {
+		adaptee.update(input);
+	}
 
-    @Override
-    public void engineUpdate(byte[] input, int offset, int len)
-    {
-	adaptee.update(input, offset, len);
-    }
+	@Override
+	public void engineUpdate(byte[] input, int offset, int len) {
+		adaptee.update(input, offset, len);
+	}
 }

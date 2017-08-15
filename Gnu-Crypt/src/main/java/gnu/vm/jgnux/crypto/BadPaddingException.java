@@ -45,34 +45,31 @@ import java.security.GeneralSecurityException;
  *
  * @author Casey Marshall (csm@gnu.org)
  */
-public class BadPaddingException extends GeneralSecurityException
-{
+public class BadPaddingException extends GeneralSecurityException {
 
-    // Constant.
-    // ------------------------------------------------------------------------
+	// Constant.
+	// ------------------------------------------------------------------------
 
-    /** Serialization constant. */
-    private static final long serialVersionUID = -5315033893984728443L;
+	/** Serialization constant. */
+	private static final long serialVersionUID = -5315033893984728443L;
 
-    // Constructors.
-    // ------------------------------------------------------------------------
+	// Constructors.
+	// ------------------------------------------------------------------------
 
-    /**
-     * Creates a new bad padding exception with no detail message.
-     */
-    public BadPaddingException()
-    {
-	super();
-    }
+	/**
+	 * Creates a new bad padding exception with no detail message.
+	 */
+	public BadPaddingException() {
+		super();
+	}
 
-    /**
-     * Creates a new bad padding exception with a detail message.
-     *
-     * @param message
-     *            The detail message.
-     */
-    public BadPaddingException(String message)
-    {
-	super(message);
-    }
+	/**
+	 * Creates a new bad padding exception with a detail message.
+	 *
+	 * @param message
+	 *            The detail message.
+	 */
+	public BadPaddingException(String message) {
+		super(message);
+	}
 }

@@ -47,170 +47,157 @@ import gnu.vm.jgnu.security.Principal;
  *
  * @since 1.4
  */
-public final class KerberosPrincipal implements Serializable, Principal
-{
-    // Uncomment when serialization is correct.
-    // private static final long serialVersionUID = -7374788026156829911L;
+public final class KerberosPrincipal implements Serializable, Principal {
+	// Uncomment when serialization is correct.
+	// private static final long serialVersionUID = -7374788026156829911L;
 
-    /**
-     * 
-     */
-    private static final long serialVersionUID = 6369254842188475757L;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 6369254842188475757L;
 
-    /**
-     * Constant from the RFC: "Just the name of the principal as in DCE, or for
-     * users".
-     */
-    public static final int KRB_NT_PRINCIPAL = 1;
+	/**
+	 * Constant from the RFC: "Just the name of the principal as in DCE, or for
+	 * users".
+	 */
+	public static final int KRB_NT_PRINCIPAL = 1;
 
-    /**
-     * Constant from the RFC: "Service and other unique instance (krbtgt)".
-     */
-    public static final int KRB_NT_SRV_HST = 3;
+	/**
+	 * Constant from the RFC: "Service and other unique instance (krbtgt)".
+	 */
+	public static final int KRB_NT_SRV_HST = 3;
 
-    /**
-     * Constant from the RFC: "Service with host name as instance (telnet,
-     * rcommands)".
-     */
-    public static final int KRB_NT_SRV_INST = 2;
+	/**
+	 * Constant from the RFC: "Service with host name as instance (telnet,
+	 * rcommands)".
+	 */
+	public static final int KRB_NT_SRV_INST = 2;
 
-    /**
-     * Constant from the RFC: "Service with host as remaining components".
-     */
-    public static final int KRB_NT_SRV_XHST = 4;
+	/**
+	 * Constant from the RFC: "Service with host as remaining components".
+	 */
+	public static final int KRB_NT_SRV_XHST = 4;
 
-    /**
-     * Constant from the RFC: "Unique ID".
-     */
-    public static final int KRB_NT_UID = 5;
+	/**
+	 * Constant from the RFC: "Unique ID".
+	 */
+	public static final int KRB_NT_UID = 5;
 
-    /**
-     * Constant from the RFC: "Name type not known".
-     */
-    public static final int KRB_NT_UNKNOWN = 0;
+	/**
+	 * Constant from the RFC: "Name type not known".
+	 */
+	public static final int KRB_NT_UNKNOWN = 0;
 
-    private String name;
+	private String name;
 
-    private int type;
+	private int type;
 
-    private String realm;
+	private String realm;
 
-    /**
-     * Create a new instance with the given name and a type of
-     * {@link #KRB_NT_PRINCIPAL}.
-     * 
-     * @param name
-     *            the principal's name
-     */
-    public KerberosPrincipal(String name)
-    {
-	this(name, KRB_NT_PRINCIPAL);
-    }
-
-    /**
-     * Create a new instance with the given name and type. The name is parsed
-     * according to the rules in the RFC. If there is no realm, then the local
-     * realm is used instead.
-     *
-     * @param name
-     *            the principal's name
-     * @param type
-     *            the principal's type
-     */
-    public KerberosPrincipal(String name, int type)
-    // Marked as unimplemented because we don't look for the realm as needed.
-    {
-	if (type < KRB_NT_UNKNOWN || type > KRB_NT_UID)
-	    throw new IllegalArgumentException("unknown type: " + type);
-	this.name = name;
-	this.type = type;
-	this.realm = parseRealm();
-    }
-
-    @Override
-    public boolean equals(Object other)
-    {
-	if (!(other instanceof KerberosPrincipal))
-	    return false;
-	KerberosPrincipal kp = (KerberosPrincipal) other;
-	return name.equals(kp.name) && type == kp.type;
-    }
-
-    /**
-     * Return the name of this principal.
-     */
-    @Override
-    public String getName()
-    {
-	return name;
-    }
-
-    /**
-     * Return the type of this principal.
-     */
-    public int getNameType()
-    {
-	return type;
-    }
-
-    /**
-     * Return the realm of this principal.
-     */
-    public String getRealm()
-    {
-	return realm;
-    }
-
-    @Override
-    public int hashCode()
-    {
-	return name.hashCode();
-    }
-
-    private String parseRealm()
-    {
-	// Handle quoting as specified by the Kerberos RFC.
-	int i, len = name.length();
-	boolean quoted = false;
-	for (i = 0; i < len; ++i)
-	{
-	    if (quoted)
-	    {
-		quoted = false;
-		continue;
-	    }
-	    char c = name.charAt(i);
-	    if (c == '\\')
-	    {
-		quoted = true;
-		continue;
-	    }
-	    if (c == '@')
-		break;
+	/**
+	 * Create a new instance with the given name and a type of
+	 * {@link #KRB_NT_PRINCIPAL}.
+	 * 
+	 * @param name
+	 *            the principal's name
+	 */
+	public KerberosPrincipal(String name) {
+		this(name, KRB_NT_PRINCIPAL);
 	}
-	if (quoted || i == len - 1)
-	    throw new IllegalArgumentException("malformed principal: " + name);
-	if (i < len)
-	{
-	    // We have the realm. FIXME: verify its syntax?
-	    return name.substring(i + 1);
-	}
-	// Try to find the default realm.
-	String def = System.getProperty("java.security.krb5.realm");
-	if (def != null)
-	    return def;
-	// Now ask the system.
-	// FIXME: use java.security.krb5.conf,
-	// or $JAVA_HOME/lib/security/krb5.conf to find the krb config file.
-	// Then pass to native code using krb5_set_config_files() and
-	// krb5_get_default_realm(). But... what about /etc/krb5.conf?
-	throw new IllegalArgumentException("default realm can't be found");
-    }
 
-    @Override
-    public String toString()
-    {
-	// This is what came to mind.
-	return name + ":" + type;
-    }
+	/**
+	 * Create a new instance with the given name and type. The name is parsed
+	 * according to the rules in the RFC. If there is no realm, then the local realm
+	 * is used instead.
+	 *
+	 * @param name
+	 *            the principal's name
+	 * @param type
+	 *            the principal's type
+	 */
+	public KerberosPrincipal(String name, int type)
+	// Marked as unimplemented because we don't look for the realm as needed.
+	{
+		if (type < KRB_NT_UNKNOWN || type > KRB_NT_UID)
+			throw new IllegalArgumentException("unknown type: " + type);
+		this.name = name;
+		this.type = type;
+		this.realm = parseRealm();
+	}
+
+	@Override
+	public boolean equals(Object other) {
+		if (!(other instanceof KerberosPrincipal))
+			return false;
+		KerberosPrincipal kp = (KerberosPrincipal) other;
+		return name.equals(kp.name) && type == kp.type;
+	}
+
+	/**
+	 * Return the name of this principal.
+	 */
+	@Override
+	public String getName() {
+		return name;
+	}
+
+	/**
+	 * Return the type of this principal.
+	 */
+	public int getNameType() {
+		return type;
+	}
+
+	/**
+	 * Return the realm of this principal.
+	 */
+	public String getRealm() {
+		return realm;
+	}
+
+	@Override
+	public int hashCode() {
+		return name.hashCode();
+	}
+
+	private String parseRealm() {
+		// Handle quoting as specified by the Kerberos RFC.
+		int i, len = name.length();
+		boolean quoted = false;
+		for (i = 0; i < len; ++i) {
+			if (quoted) {
+				quoted = false;
+				continue;
+			}
+			char c = name.charAt(i);
+			if (c == '\\') {
+				quoted = true;
+				continue;
+			}
+			if (c == '@')
+				break;
+		}
+		if (quoted || i == len - 1)
+			throw new IllegalArgumentException("malformed principal: " + name);
+		if (i < len) {
+			// We have the realm. FIXME: verify its syntax?
+			return name.substring(i + 1);
+		}
+		// Try to find the default realm.
+		String def = System.getProperty("java.security.krb5.realm");
+		if (def != null)
+			return def;
+		// Now ask the system.
+		// FIXME: use java.security.krb5.conf,
+		// or $JAVA_HOME/lib/security/krb5.conf to find the krb config file.
+		// Then pass to native code using krb5_set_config_files() and
+		// krb5_get_default_realm(). But... what about /etc/krb5.conf?
+		throw new IllegalArgumentException("default realm can't be found");
+	}
+
+	@Override
+	public String toString() {
+		// This is what came to mind.
+		return name + ":" + type;
+	}
 }

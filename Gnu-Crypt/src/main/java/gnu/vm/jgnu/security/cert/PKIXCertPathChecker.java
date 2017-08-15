@@ -62,78 +62,72 @@ import java.util.Set;
  * @see PKIXParameters
  * @since 1.4
  */
-public abstract class PKIXCertPathChecker implements Cloneable
-{
+public abstract class PKIXCertPathChecker implements Cloneable {
 
-    // Constructor.
-    // ------------------------------------------------------------------------
+	// Constructor.
+	// ------------------------------------------------------------------------
 
-    /** Default constructor. */
-    protected PKIXCertPathChecker()
-    {
-	super();
-    }
-
-    // Cloneable interface.
-    // ------------------------------------------------------------------------
-
-    /**
-     * Checks a certificate, removing any critical extensions that are resolved
-     * in this check.
-     *
-     * @param cert
-     *            The certificate to check.
-     * @param unresolvedCritExts
-     *            The (mutable) collection of as-of-yet unresolved critical
-     *            extensions, as OID strings.
-     * @throws CertPathValidatorException
-     *             If this certificate fails this check.
-     */
-    public abstract void check(Certificate cert, Collection<String> unresolvedCritExts) throws CertPathValidatorException;
-
-    // Abstract methods.
-    // ------------------------------------------------------------------------
-
-    @Override
-    public Object clone()
-    {
-	try
-	{
-	    return super.clone();
+	/** Default constructor. */
+	protected PKIXCertPathChecker() {
+		super();
 	}
-	catch (CloneNotSupportedException cnse)
-	{
-	    throw new InternalError(cnse.getMessage());
+
+	// Cloneable interface.
+	// ------------------------------------------------------------------------
+
+	/**
+	 * Checks a certificate, removing any critical extensions that are resolved in
+	 * this check.
+	 *
+	 * @param cert
+	 *            The certificate to check.
+	 * @param unresolvedCritExts
+	 *            The (mutable) collection of as-of-yet unresolved critical
+	 *            extensions, as OID strings.
+	 * @throws CertPathValidatorException
+	 *             If this certificate fails this check.
+	 */
+	public abstract void check(Certificate cert, Collection<String> unresolvedCritExts)
+			throws CertPathValidatorException;
+
+	// Abstract methods.
+	// ------------------------------------------------------------------------
+
+	@Override
+	public Object clone() {
+		try {
+			return super.clone();
+		} catch (CloneNotSupportedException cnse) {
+			throw new InternalError(cnse.getMessage());
+		}
 	}
-    }
 
-    /**
-     * Returns an immutable set of X.509 extension object identifiers (OIDs)
-     * supported by this PKIXCertPathChecker.
-     *
-     * @return An immutable set of Strings of the supported X.509 OIDs, or null
-     *         if no extensions are supported.
-     */
-    public abstract Set<String> getSupportedExtensions();
+	/**
+	 * Returns an immutable set of X.509 extension object identifiers (OIDs)
+	 * supported by this PKIXCertPathChecker.
+	 *
+	 * @return An immutable set of Strings of the supported X.509 OIDs, or null if
+	 *         no extensions are supported.
+	 */
+	public abstract Set<String> getSupportedExtensions();
 
-    /**
-     * Initialize this PKIXCertPathChecker. If subclasses support forward
-     * checking, a value of true can be passed to this method, and certificates
-     * can be validated from the target certificate to the most-trusted
-     * certifcate.
-     *
-     * @param forward
-     *            The direction of this PKIXCertPathChecker.
-     * @throws CertPathValidatorException
-     *             If <i>forward</i> is true and this class does not support
-     *             forward checking.
-     */
-    public abstract void init(boolean forward) throws CertPathValidatorException;
+	/**
+	 * Initialize this PKIXCertPathChecker. If subclasses support forward checking,
+	 * a value of true can be passed to this method, and certificates can be
+	 * validated from the target certificate to the most-trusted certifcate.
+	 *
+	 * @param forward
+	 *            The direction of this PKIXCertPathChecker.
+	 * @throws CertPathValidatorException
+	 *             If <i>forward</i> is true and this class does not support forward
+	 *             checking.
+	 */
+	public abstract void init(boolean forward) throws CertPathValidatorException;
 
-    /**
-     * Returns whether or not this class supports forward checking.
-     *
-     * @return Whether or not this class supports forward checking.
-     */
-    public abstract boolean isForwardCheckingSupported();
+	/**
+	 * Returns whether or not this class supports forward checking.
+	 *
+	 * @return Whether or not this class supports forward checking.
+	 */
+	public abstract boolean isForwardCheckingSupported();
 }

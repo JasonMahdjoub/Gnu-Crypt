@@ -60,78 +60,76 @@ import gnu.vm.jgnu.security.PublicKey;
  * @status updated to 1.4
  */
 @Deprecated
-public interface Certificate
-{
-    /**
-     * This method reads an encoded certificate from an
-     * <code>InputStream</code>.
-     *
-     * @param in
-     *            the <code>InputStream</code> to read from
-     * @throws KeyException
-     *             if there is a problem with the certificate data
-     * @throws IOException
-     *             if an error occurs reading from the stream
-     * @see #encode(OutputStream)
-     * @see #getFormat()
-     */
-    void decode(InputStream in) throws KeyException, IOException;
+public interface Certificate {
+	/**
+	 * This method reads an encoded certificate from an <code>InputStream</code>.
+	 *
+	 * @param in
+	 *            the <code>InputStream</code> to read from
+	 * @throws KeyException
+	 *             if there is a problem with the certificate data
+	 * @throws IOException
+	 *             if an error occurs reading from the stream
+	 * @see #encode(OutputStream)
+	 * @see #getFormat()
+	 */
+	void decode(InputStream in) throws KeyException, IOException;
 
-    /**
-     * This method writes the certificate to an <code>OutputStream</code> in a
-     * format that can be understood by the <code>decode</code> method.
-     *
-     * @param out
-     *            the <code>OutputStream</code> to write to
-     * @throws KeyException
-     *             if there is a problem with the certificate
-     * @throws IOException
-     *             if an error occurs writing to the stream
-     * @see #decode(InputStream)
-     * @see #getFormat()
-     */
-    void encode(OutputStream out) throws KeyException, IOException;
+	/**
+	 * This method writes the certificate to an <code>OutputStream</code> in a
+	 * format that can be understood by the <code>decode</code> method.
+	 *
+	 * @param out
+	 *            the <code>OutputStream</code> to write to
+	 * @throws KeyException
+	 *             if there is a problem with the certificate
+	 * @throws IOException
+	 *             if an error occurs writing to the stream
+	 * @see #decode(InputStream)
+	 * @see #getFormat()
+	 */
+	void encode(OutputStream out) throws KeyException, IOException;
 
-    /**
-     * This method returns the encoding format of the certificate (e.g., "PGP",
-     * "X.509"). This format is used by the <code>encode</code> and
-     * <code>decode</code> methods.
-     *
-     * @return the encoding format being used
-     */
-    String getFormat();
+	/**
+	 * This method returns the encoding format of the certificate (e.g., "PGP",
+	 * "X.509"). This format is used by the <code>encode</code> and
+	 * <code>decode</code> methods.
+	 *
+	 * @return the encoding format being used
+	 */
+	String getFormat();
 
-    /**
-     * This method returns the <code>Principal</code> that is guaranteeing this
-     * certificate.
-     *
-     * @return the <code>Principal</code> guaranteeing the certificate
-     */
-    Principal getGuarantor();
+	/**
+	 * This method returns the <code>Principal</code> that is guaranteeing this
+	 * certificate.
+	 *
+	 * @return the <code>Principal</code> guaranteeing the certificate
+	 */
+	Principal getGuarantor();
 
-    /**
-     * This method returns the <code>Principal</code> being guaranteed by this
-     * certificate.
-     *
-     * @return the <code>Principal</code> guaranteed by this certificate
-     */
-    Principal getPrincipal();
+	/**
+	 * This method returns the <code>Principal</code> being guaranteed by this
+	 * certificate.
+	 *
+	 * @return the <code>Principal</code> guaranteed by this certificate
+	 */
+	Principal getPrincipal();
 
-    /**
-     * This method returns the public key for the <code>Principal</code> that is
-     * being guaranteed.
-     *
-     * @return the <code>PublicKey</code> of the Principal being guaranteed
-     */
-    PublicKey getPublicKey();
+	/**
+	 * This method returns the public key for the <code>Principal</code> that is
+	 * being guaranteed.
+	 *
+	 * @return the <code>PublicKey</code> of the Principal being guaranteed
+	 */
+	PublicKey getPublicKey();
 
-    /**
-     * This method returns a <code>String</code> representation of the contents
-     * of this certificate.
-     *
-     * @param detail
-     *            true to provided more detailed information
-     * @return the string representation
-     */
-    String toString(boolean detail);
+	/**
+	 * This method returns a <code>String</code> representation of the contents of
+	 * this certificate.
+	 *
+	 * @param detail
+	 *            true to provided more detailed information
+	 * @return the string representation
+	 */
+	String toString(boolean detail);
 } // interface Certificate

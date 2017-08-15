@@ -51,55 +51,47 @@ import gnu.jgnux.crypto.prng.PRNGFactory;
  * Implementation of the <i>Service Provider Interface</i> (<b>SPI</b>) for the
  * ARCFOUR keystream generator.
  */
-public class ARCFourRandomSpi extends SecureRandomSpi
-{
-    /**
-     * 
-     */
-    private static final long serialVersionUID = 8580069890977866839L;
+public class ARCFourRandomSpi extends SecureRandomSpi {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 8580069890977866839L;
 
-    /** Our underlying prng instance. */
-    private IRandom adaptee;
+	/** Our underlying prng instance. */
+	private IRandom adaptee;
 
-    /** Have we been initialized? */
-    private boolean virgin;
+	/** Have we been initialized? */
+	private boolean virgin;
 
-    /**
-     * Default 0-arguments constructor.
-     */
-    public ARCFourRandomSpi()
-    {
-	super();
-	adaptee = PRNGFactory.getInstance(Registry.ARCFOUR_PRNG);
-	virgin = true;
-    }
-
-    @Override
-    public byte[] engineGenerateSeed(int numBytes)
-    {
-	return SecureRandomAdapter.getSeed(numBytes);
-    }
-
-    @Override
-    public void engineNextBytes(byte[] bytes)
-    {
-	if (virgin)
-	    this.engineSetSeed(engineGenerateSeed(32));
-	try
-	{
-	    adaptee.nextBytes(bytes, 0, bytes.length);
+	/**
+	 * Default 0-arguments constructor.
+	 */
+	public ARCFourRandomSpi() {
+		super();
+		adaptee = PRNGFactory.getInstance(Registry.ARCFOUR_PRNG);
+		virgin = true;
 	}
-	catch (LimitReachedException ignored)
-	{
-	}
-    }
 
-    @Override
-    public void engineSetSeed(byte[] seed)
-    {
-	HashMap<Object, Object> attributes = new HashMap<>();
-	attributes.put(ARCFour.ARCFOUR_KEY_MATERIAL, seed);
-	adaptee.init(attributes);
-	virgin = false;
-    }
+	@Override
+	public byte[] engineGenerateSeed(int numBytes) {
+		return SecureRandomAdapter.getSeed(numBytes);
+	}
+
+	@Override
+	public void engineNextBytes(byte[] bytes) {
+		if (virgin)
+			this.engineSetSeed(engineGenerateSeed(32));
+		try {
+			adaptee.nextBytes(bytes, 0, bytes.length);
+		} catch (LimitReachedException ignored) {
+		}
+	}
+
+	@Override
+	public void engineSetSeed(byte[] seed) {
+		HashMap<Object, Object> attributes = new HashMap<>();
+		attributes.put(ARCFour.ARCFOUR_KEY_MATERIAL, seed);
+		adaptee.init(attributes);
+		virgin = false;
+	}
 }

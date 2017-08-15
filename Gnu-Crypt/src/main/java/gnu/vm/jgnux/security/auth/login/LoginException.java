@@ -42,23 +42,20 @@ import gnu.vm.jgnu.security.GeneralSecurityException;
 /**
  * A general exception during authentication and authorization.
  */
-public class LoginException extends GeneralSecurityException
-{
+public class LoginException extends GeneralSecurityException {
 
-    // Constant.
-    // -------------------------------------------------------------------------
+	// Constant.
+	// -------------------------------------------------------------------------
 
-    private static final long serialVersionUID = -4679091624035232488L;
+	private static final long serialVersionUID = -4679091624035232488L;
 
-    // Constructors.
-    // -------------------------------------------------------------------------
+	// Constructors.
+	// -------------------------------------------------------------------------
 
-    public LoginException()
-    {
-    }
+	public LoginException() {
+	}
 
-    public LoginException(String message)
-    {
-	super(message);
-    }
+	public LoginException(String message) {
+		super(message);
+	}
 }

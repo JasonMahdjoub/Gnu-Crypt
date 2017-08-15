@@ -46,84 +46,64 @@ import gnu.jgnux.crypto.sasl.ClientFactory;
 import gnu.jgnux.crypto.sasl.ServerFactory;
 import gnu.vm.jgnu.security.Provider;
 
-public final class GnuSasl extends Provider
-{
-    /**
-     * 
-     */
-    private static final long serialVersionUID = -1937387304609256912L;
+public final class GnuSasl extends Provider {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -1937387304609256912L;
 
-    /**
-     * Returns a {@link Set} of names of SASL Client mechanisms available from
-     * this {@link Provider}.
-     *
-     * @return a {@link Set} of SASL Client mechanisms (Strings).
-     */
-    public static final Set<String> getSaslClientMechanismNames()
-    {
-	return ClientFactory.getNames();
-    }
+	/**
+	 * Returns a {@link Set} of names of SASL Client mechanisms available from this
+	 * {@link Provider}.
+	 *
+	 * @return a {@link Set} of SASL Client mechanisms (Strings).
+	 */
+	public static final Set<String> getSaslClientMechanismNames() {
+		return ClientFactory.getNames();
+	}
 
-    /**
-     * Returns a {@link Set} of names of SASL Server mechanisms available from
-     * this {@link Provider}.
-     *
-     * @return a {@link Set} of SASL Server mechanisms (Strings).
-     */
-    public static final Set<String> getSaslServerMechanismNames()
-    {
-	return ServerFactory.getNames();
-    }
+	/**
+	 * Returns a {@link Set} of names of SASL Server mechanisms available from this
+	 * {@link Provider}.
+	 *
+	 * @return a {@link Set} of SASL Server mechanisms (Strings).
+	 */
+	public static final Set<String> getSaslServerMechanismNames() {
+		return ServerFactory.getNames();
+	}
 
-    public GnuSasl()
-    {
-	super(Registry.GNU_SASL, 2.1, "GNU SASL Provider");
+	public GnuSasl() {
+		super(Registry.GNU_SASL, 2.1, "GNU SASL Provider");
 
-	AccessController.doPrivileged(new PrivilegedAction<Object>() {
-	    @Override
-	    public Object run()
-	    {
-		// SASL Client and Server mechanisms
-		put("SaslClientFactory.ANONYMOUS",
-			gnu.jgnux.crypto.sasl.ClientFactory.class.getName());
-		put("SaslClientFactory.PLAIN",
-			gnu.jgnux.crypto.sasl.ClientFactory.class.getName());
-		put("SaslClientFactory.CRAM-MD5",
-			gnu.jgnux.crypto.sasl.ClientFactory.class.getName());
-		put("SaslClientFactory.SRP",
-			gnu.jgnux.crypto.sasl.ClientFactory.class.getName());
+		AccessController.doPrivileged(new PrivilegedAction<Object>() {
+			@Override
+			public Object run() {
+				// SASL Client and Server mechanisms
+				put("SaslClientFactory.ANONYMOUS", gnu.jgnux.crypto.sasl.ClientFactory.class.getName());
+				put("SaslClientFactory.PLAIN", gnu.jgnux.crypto.sasl.ClientFactory.class.getName());
+				put("SaslClientFactory.CRAM-MD5", gnu.jgnux.crypto.sasl.ClientFactory.class.getName());
+				put("SaslClientFactory.SRP", gnu.jgnux.crypto.sasl.ClientFactory.class.getName());
 
-		put("SaslServerFactory.ANONYMOUS",
-			gnu.jgnux.crypto.sasl.ServerFactory.class.getName());
-		put("SaslServerFactory.PLAIN",
-			gnu.jgnux.crypto.sasl.ServerFactory.class.getName());
-		put("SaslServerFactory.CRAM-MD5",
-			gnu.jgnux.crypto.sasl.ServerFactory.class.getName());
-		put("SaslServerFactory.SRP-MD5",
-			gnu.jgnux.crypto.sasl.ServerFactory.class.getName());
-		put("SaslServerFactory.SRP-SHA-160",
-			gnu.jgnux.crypto.sasl.ServerFactory.class.getName());
-		put("SaslServerFactory.SRP-RIPEMD128",
-			gnu.jgnux.crypto.sasl.ServerFactory.class.getName());
-		put("SaslServerFactory.SRP-RIPEMD160",
-			gnu.jgnux.crypto.sasl.ServerFactory.class.getName());
-		put("SaslServerFactory.SRP-TIGER",
-			gnu.jgnux.crypto.sasl.ServerFactory.class.getName());
-		put("SaslServerFactory.SRP-WHIRLPOOL",
-			gnu.jgnux.crypto.sasl.ServerFactory.class.getName());
+				put("SaslServerFactory.ANONYMOUS", gnu.jgnux.crypto.sasl.ServerFactory.class.getName());
+				put("SaslServerFactory.PLAIN", gnu.jgnux.crypto.sasl.ServerFactory.class.getName());
+				put("SaslServerFactory.CRAM-MD5", gnu.jgnux.crypto.sasl.ServerFactory.class.getName());
+				put("SaslServerFactory.SRP-MD5", gnu.jgnux.crypto.sasl.ServerFactory.class.getName());
+				put("SaslServerFactory.SRP-SHA-160", gnu.jgnux.crypto.sasl.ServerFactory.class.getName());
+				put("SaslServerFactory.SRP-RIPEMD128", gnu.jgnux.crypto.sasl.ServerFactory.class.getName());
+				put("SaslServerFactory.SRP-RIPEMD160", gnu.jgnux.crypto.sasl.ServerFactory.class.getName());
+				put("SaslServerFactory.SRP-TIGER", gnu.jgnux.crypto.sasl.ServerFactory.class.getName());
+				put("SaslServerFactory.SRP-WHIRLPOOL", gnu.jgnux.crypto.sasl.ServerFactory.class.getName());
 
-		put("Alg.Alias.SaslServerFactory.SRP-SHS", "SRP-SHA-160");
-		put("Alg.Alias.SaslServerFactory.SRP-SHA", "SRP-SHA-160");
-		put("Alg.Alias.SaslServerFactory.SRP-SHA1", "SRP-SHA-160");
-		put("Alg.Alias.SaslServerFactory.SRP-SHA-1", "SRP-SHA-160");
-		put("Alg.Alias.SaslServerFactory.SRP-SHA160", "SRP-SHA-160");
-		put("Alg.Alias.SaslServerFactory.SRP-RIPEMD-128",
-			"SRP-RIPEMD128");
-		put("Alg.Alias.SaslServerFactory.SRP-RIPEMD-160",
-			"SRP-RIPEMD160");
+				put("Alg.Alias.SaslServerFactory.SRP-SHS", "SRP-SHA-160");
+				put("Alg.Alias.SaslServerFactory.SRP-SHA", "SRP-SHA-160");
+				put("Alg.Alias.SaslServerFactory.SRP-SHA1", "SRP-SHA-160");
+				put("Alg.Alias.SaslServerFactory.SRP-SHA-1", "SRP-SHA-160");
+				put("Alg.Alias.SaslServerFactory.SRP-SHA160", "SRP-SHA-160");
+				put("Alg.Alias.SaslServerFactory.SRP-RIPEMD-128", "SRP-RIPEMD128");
+				put("Alg.Alias.SaslServerFactory.SRP-RIPEMD-160", "SRP-RIPEMD160");
 
-		return null;
-	    }
-	});
-    }
+				return null;
+			}
+		});
+	}
 }

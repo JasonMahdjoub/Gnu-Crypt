@@ -75,167 +75,148 @@ import java.io.Reader;
  * ignores them if/when found at the start of the line.
  * </p>
  */
-public class ConfigFileTokenizer
-{
+public class ConfigFileTokenizer {
 
-    /** A constant indicating that the end of the stream has been read. */
-    public static final int TT_EOF = -1;
+	/** A constant indicating that the end of the stream has been read. */
+	public static final int TT_EOF = -1;
 
-    /** A constant indicating that a word token has been read. */
-    public static final int TT_WORD = -3;
+	/** A constant indicating that a word token has been read. */
+	public static final int TT_WORD = -3;
 
-    /** A constant indicating that no tokens have been read yet. */
-    private static final int TT_NONE = -4;
+	/** A constant indicating that no tokens have been read yet. */
+	private static final int TT_NONE = -4;
 
-    public String sval;
+	public String sval;
 
-    public int ttype;
+	public int ttype;
 
-    private final BufferedReader br;
+	private final BufferedReader br;
 
-    boolean initialised;
+	boolean initialised;
 
-    private StringBuilder sb;
+	private StringBuilder sb;
 
-    private int sbNdx;
+	private int sbNdx;
 
-    // Constructor(s)
-    // --------------------------------------------------------------------------
+	// Constructor(s)
+	// --------------------------------------------------------------------------
 
-    /** Trivial constructor. */
-    ConfigFileTokenizer(Reader r)
-    {
-	br = r instanceof BufferedReader ? (BufferedReader) r
-		: new BufferedReader(r);
-    }
-
-    // Class methods
-    // --------------------------------------------------------------------------
-
-    // Instance methods
-    // --------------------------------------------------------------------------
-
-    private void abort(String m) throws IOException
-    {
-	throw new IOException(m);
-    }
-
-    private void init() throws IOException
-    {
-	sb = new StringBuilder();
-	String line;
-	while ((line = br.readLine()) != null)
-	{
-	    line = line.trim();
-	    if (line.length() == 0)
-		continue;
-
-	    if (line.startsWith("#") || line.startsWith("//"))
-		continue;
-
-	    sb.append(line).append(" ");
+	/** Trivial constructor. */
+	ConfigFileTokenizer(Reader r) {
+		br = r instanceof BufferedReader ? (BufferedReader) r : new BufferedReader(r);
 	}
 
-	sbNdx = 0;
-	sval = null;
-	ttype = TT_NONE;
+	// Class methods
+	// --------------------------------------------------------------------------
 
-	initialised = true;
-    }
+	// Instance methods
+	// --------------------------------------------------------------------------
 
-    public int nextToken() throws IOException
-    {
-	if (!initialised)
-	    init();
-
-	if (sbNdx >= sb.length())
-	    return TT_EOF;
-
-	skipWhitespace();
-
-	if (sbNdx >= sb.length())
-	    return TT_EOF;
-
-	int endNdx;
-	if (Character.isJavaIdentifierPart(sb.charAt(sbNdx)))
-	{
-	    endNdx = sbNdx + 1;
-	    while (Character.isJavaIdentifierPart(sb.charAt(endNdx))
-		    || sb.charAt(endNdx) == '.')
-		endNdx++;
-
-	    ttype = TT_WORD;
-	    sval = sb.substring(sbNdx, endNdx);
-	    sbNdx = endNdx;
-	    return ttype;
+	private void abort(String m) throws IOException {
+		throw new IOException(m);
 	}
 
-	int c = sb.charAt(sbNdx);
-	if (c == '{' || c == '}' || c == ';' || c == '=')
-	{
-	    ttype = c;
-	    sbNdx++;
-	    return ttype;
+	private void init() throws IOException {
+		sb = new StringBuilder();
+		String line;
+		while ((line = br.readLine()) != null) {
+			line = line.trim();
+			if (line.length() == 0)
+				continue;
+
+			if (line.startsWith("#") || line.startsWith("//"))
+				continue;
+
+			sb.append(line).append(" ");
+		}
+
+		sbNdx = 0;
+		sval = null;
+		ttype = TT_NONE;
+
+		initialised = true;
 	}
 
-	if (c == '"' || c == '\'')
-	{
-	    ttype = c;
-	    String quote = sb.substring(sbNdx, sbNdx + 1);
-	    int i = sbNdx + 1;
-	    while (true)
-	    {
-		// find a candidate
-		endNdx = sb.indexOf(quote, i);
-		if (endNdx == -1)
-		    abort("Missing closing quote: " + quote);
+	public int nextToken() throws IOException {
+		if (!initialised)
+			init();
 
-		// found one; is it escaped?
-		if (sb.charAt(endNdx - 1) != '\\')
-		    break;
+		if (sbNdx >= sb.length())
+			return TT_EOF;
 
-		i++;
-		continue;
-	    }
+		skipWhitespace();
 
-	    endNdx++;
-	    sval = sb.substring(sbNdx, endNdx);
-	    sbNdx = endNdx;
-	    return ttype;
+		if (sbNdx >= sb.length())
+			return TT_EOF;
+
+		int endNdx;
+		if (Character.isJavaIdentifierPart(sb.charAt(sbNdx))) {
+			endNdx = sbNdx + 1;
+			while (Character.isJavaIdentifierPart(sb.charAt(endNdx)) || sb.charAt(endNdx) == '.')
+				endNdx++;
+
+			ttype = TT_WORD;
+			sval = sb.substring(sbNdx, endNdx);
+			sbNdx = endNdx;
+			return ttype;
+		}
+
+		int c = sb.charAt(sbNdx);
+		if (c == '{' || c == '}' || c == ';' || c == '=') {
+			ttype = c;
+			sbNdx++;
+			return ttype;
+		}
+
+		if (c == '"' || c == '\'') {
+			ttype = c;
+			String quote = sb.substring(sbNdx, sbNdx + 1);
+			int i = sbNdx + 1;
+			while (true) {
+				// find a candidate
+				endNdx = sb.indexOf(quote, i);
+				if (endNdx == -1)
+					abort("Missing closing quote: " + quote);
+
+				// found one; is it escaped?
+				if (sb.charAt(endNdx - 1) != '\\')
+					break;
+
+				i++;
+				continue;
+			}
+
+			endNdx++;
+			sval = sb.substring(sbNdx, endNdx);
+			sbNdx = endNdx;
+			return ttype;
+		}
+
+		abort("Unknown character: " + sb.charAt(sbNdx));
+		return Integer.MIN_VALUE;
 	}
 
-	abort("Unknown character: " + sb.charAt(sbNdx));
-	return Integer.MIN_VALUE;
-    }
+	public void pushBack() {
+		sbNdx -= ttype != TT_WORD ? 1 : sval.length();
+	}
 
-    public void pushBack()
-    {
-	sbNdx -= ttype != TT_WORD ? 1 : sval.length();
-    }
+	private void skipWhitespace() throws IOException {
+		int endNdx;
+		while (sbNdx < sb.length())
+			if (Character.isWhitespace(sb.charAt(sbNdx))) {
+				sbNdx++;
+				while (sbNdx < sb.length() && Character.isWhitespace(sb.charAt(sbNdx)))
+					sbNdx++;
 
-    private void skipWhitespace() throws IOException
-    {
-	int endNdx;
-	while (sbNdx < sb.length())
-	    if (Character.isWhitespace(sb.charAt(sbNdx)))
-	    {
-		sbNdx++;
-		while (sbNdx < sb.length()
-			&& Character.isWhitespace(sb.charAt(sbNdx)))
-		    sbNdx++;
+				continue;
+			} else if (sb.charAt(sbNdx) == '/' && sb.charAt(sbNdx + 1) == '*') {
+				endNdx = sb.indexOf("*/", sbNdx + 2);
+				if (endNdx == -1)
+					abort("Missing closing */ sequence");
 
-		continue;
-	    }
-	    else if (sb.charAt(sbNdx) == '/' && sb.charAt(sbNdx + 1) == '*')
-	    {
-		endNdx = sb.indexOf("*/", sbNdx + 2);
-		if (endNdx == -1)
-		    abort("Missing closing */ sequence");
-
-		sbNdx = endNdx + 2;
-		continue;
-	    }
-	    else
-		break;
-    }
+				sbNdx = endNdx + 2;
+				continue;
+			} else
+				break;
+	}
 }

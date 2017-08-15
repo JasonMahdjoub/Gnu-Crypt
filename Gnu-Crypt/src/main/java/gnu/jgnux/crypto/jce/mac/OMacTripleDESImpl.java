@@ -39,10 +39,8 @@ package gnu.jgnux.crypto.jce.mac;
 
 import gnu.jgnu.security.Registry;
 
-public class OMacTripleDESImpl extends MacAdapter
-{
-    public OMacTripleDESImpl()
-    {
-	super(Registry.OMAC_PREFIX + Registry.TRIPLEDES_CIPHER);
-    }
+public class OMacTripleDESImpl extends MacAdapter {
+	public OMacTripleDESImpl() {
+		super(Registry.OMAC_PREFIX + Registry.TRIPLEDES_CIPHER);
+	}
 }

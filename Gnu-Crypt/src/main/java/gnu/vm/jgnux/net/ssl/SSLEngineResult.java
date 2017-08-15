@@ -42,156 +42,141 @@ package gnu.vm.jgnux.net.ssl;
  * operation. This class conveys a possibly intermediate result, and may ask for
  * more input data or request that output data be sent over a connection.
  */
-public class SSLEngineResult
-{
-    /**
-     * An enumeration of possible handshake status states.
-     */
-    public static enum HandshakeStatus
-    {
+public class SSLEngineResult {
+	/**
+	 * An enumeration of possible handshake status states.
+	 */
+	public static enum HandshakeStatus {
+
+		/**
+		 * Not currently handshaking.
+		 */
+		NOT_HANDSHAKING,
+
+		/**
+		 * The handshake is finished.
+		 */
+		FINISHED,
+
+		/**
+		 * Needs the status of one or more delegated tasks.
+		 */
+		NEED_TASK,
+
+		/**
+		 * Has data prepared for output, and needs a new call to <code>wrap</code>.
+		 */
+		NEED_WRAP,
+
+		/**
+		 * Is waiting for more input.
+		 */
+		NEED_UNWRAP
+	}
 
 	/**
-	 * Not currently handshaking.
+	 * An enumeration of possible general states.
 	 */
-	NOT_HANDSHAKING,
+	public static enum Status {
+
+		/**
+		 * There were not enough input bytes available to complete the operation.
+		 */
+		BUFFER_UNDERFLOW,
+
+		/**
+		 * There was not enough space for the output message.
+		 */
+		BUFFER_OVERFLOW,
+
+		/**
+		 * Okay. No error.
+		 */
+		OK,
+
+		/**
+		 * The connection is closed.
+		 */
+		CLOSED
+	}
+
+	private final HandshakeStatus handshakeStatus;
+
+	private final Status status;
+
+	private final int bytesConsumed;
+
+	private final int bytesProduced;
 
 	/**
-	 * The handshake is finished.
+	 * Creates a new SSL engine result.
+	 *
+	 * @param status
+	 *            The status of the SSL connection.
+	 * @param handshakeStatus
+	 *            The status of the SSL handshake.
+	 * @param bytesConsumed
+	 *            The number of bytes consumed by the previous operation.
+	 * @param bytesProduced
+	 *            The number of bytes produced by the previous operation.
+	 * @throws IllegalArgumentException
+	 *             If either enum value is <code>null</code>, or if either integer
+	 *             is negative.
 	 */
-	FINISHED,
+	public SSLEngineResult(Status status, HandshakeStatus handshakeStatus, int bytesConsumed, int bytesProduced) {
+		if (status == null)
+			throw new IllegalArgumentException("'status' may not be null");
+		if (handshakeStatus == null)
+			throw new IllegalArgumentException("'handshakeStatus' may not be null");
+		if (bytesConsumed < 0)
+			throw new IllegalArgumentException("'bytesConumed' must be nonnegative");
+		if (bytesProduced < 0)
+			throw new IllegalArgumentException("'bytesProduced' must be nonnegative");
+		this.status = status;
+		this.handshakeStatus = handshakeStatus;
+		this.bytesConsumed = bytesConsumed;
+		this.bytesProduced = bytesProduced;
+	}
 
 	/**
-	 * Needs the status of one or more delegated tasks.
+	 * Returns the number of bytes consumed by the previous operation.
+	 *
+	 * @return The number of bytes consumed.
 	 */
-	NEED_TASK,
+	public int bytesConsumed() {
+		return bytesConsumed;
+	}
 
 	/**
-	 * Has data prepared for output, and needs a new call to
-	 * <code>wrap</code>.
+	 * Returns the number of bytes produced by the previous operation.
+	 *
+	 * @return The number of bytes produced.
 	 */
-	NEED_WRAP,
+	public int bytesProduced() {
+		return bytesProduced;
+	}
 
 	/**
-	 * Is waiting for more input.
+	 * Returns the handshake status.
+	 *
+	 * @return The handshake status.
 	 */
-	NEED_UNWRAP
-    }
-
-    /**
-     * An enumeration of possible general states.
-     */
-    public static enum Status
-    {
+	public HandshakeStatus getHandshakeStatus() {
+		return handshakeStatus;
+	}
 
 	/**
-	 * There were not enough input bytes available to complete the
-	 * operation.
+	 * Returns the connection status.
+	 *
+	 * @return The connection status.
 	 */
-	BUFFER_UNDERFLOW,
+	public Status getStatus() {
+		return status;
+	}
 
-	/**
-	 * There was not enough space for the output message.
-	 */
-	BUFFER_OVERFLOW,
-
-	/**
-	 * Okay. No error.
-	 */
-	OK,
-
-	/**
-	 * The connection is closed.
-	 */
-	CLOSED
-    }
-
-    private final HandshakeStatus handshakeStatus;
-
-    private final Status status;
-
-    private final int bytesConsumed;
-
-    private final int bytesProduced;
-
-    /**
-     * Creates a new SSL engine result.
-     *
-     * @param status
-     *            The status of the SSL connection.
-     * @param handshakeStatus
-     *            The status of the SSL handshake.
-     * @param bytesConsumed
-     *            The number of bytes consumed by the previous operation.
-     * @param bytesProduced
-     *            The number of bytes produced by the previous operation.
-     * @throws IllegalArgumentException
-     *             If either enum value is <code>null</code>, or if either
-     *             integer is negative.
-     */
-    public SSLEngineResult(Status status, HandshakeStatus handshakeStatus, int bytesConsumed, int bytesProduced)
-    {
-	if (status == null)
-	    throw new IllegalArgumentException("'status' may not be null");
-	if (handshakeStatus == null)
-	    throw new IllegalArgumentException(
-		    "'handshakeStatus' may not be null");
-	if (bytesConsumed < 0)
-	    throw new IllegalArgumentException(
-		    "'bytesConumed' must be nonnegative");
-	if (bytesProduced < 0)
-	    throw new IllegalArgumentException(
-		    "'bytesProduced' must be nonnegative");
-	this.status = status;
-	this.handshakeStatus = handshakeStatus;
-	this.bytesConsumed = bytesConsumed;
-	this.bytesProduced = bytesProduced;
-    }
-
-    /**
-     * Returns the number of bytes consumed by the previous operation.
-     *
-     * @return The number of bytes consumed.
-     */
-    public int bytesConsumed()
-    {
-	return bytesConsumed;
-    }
-
-    /**
-     * Returns the number of bytes produced by the previous operation.
-     *
-     * @return The number of bytes produced.
-     */
-    public int bytesProduced()
-    {
-	return bytesProduced;
-    }
-
-    /**
-     * Returns the handshake status.
-     *
-     * @return The handshake status.
-     */
-    public HandshakeStatus getHandshakeStatus()
-    {
-	return handshakeStatus;
-    }
-
-    /**
-     * Returns the connection status.
-     *
-     * @return The connection status.
-     */
-    public Status getStatus()
-    {
-	return status;
-    }
-
-    @Override
-    public String toString()
-    {
-	return (super.toString() + " [ status: " + status
-		+ "; handshakeStatus: " + handshakeStatus + "; bytesConsumed: "
-		+ bytesConsumed + "; bytesProduced: " + bytesProduced + " ]");
-    }
+	@Override
+	public String toString() {
+		return (super.toString() + " [ status: " + status + "; handshakeStatus: " + handshakeStatus
+				+ "; bytesConsumed: " + bytesConsumed + "; bytesProduced: " + bytesProduced + " ]");
+	}
 }

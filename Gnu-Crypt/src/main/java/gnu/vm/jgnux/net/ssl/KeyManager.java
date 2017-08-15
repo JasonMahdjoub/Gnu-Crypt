@@ -45,6 +45,5 @@ package gnu.vm.jgnux.net.ssl;
  *
  * @author Casey Marshall (rsdio@metastatic.org)
  */
-public interface KeyManager
-{
+public interface KeyManager {
 }

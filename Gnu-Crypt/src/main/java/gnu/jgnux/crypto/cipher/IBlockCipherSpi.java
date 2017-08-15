@@ -45,93 +45,92 @@ import gnu.vm.jgnu.security.InvalidKeyException;
  * Package-private interface exposing mandatory methods to be implemented by
  * concrete {@link BaseCipher} sub-classes.
  */
-interface IBlockCipherSpi extends Cloneable
-{
-    /**
-     * Returns an {@link Iterator} over the supported block sizes. Each element
-     * returned by this object is a {@link java.lang.Integer}.
-     *
-     * @return an <code>Iterator</code> over the supported block sizes.
-     */
-    Iterator<Integer> blockSizes();
+interface IBlockCipherSpi extends Cloneable {
+	/**
+	 * Returns an {@link Iterator} over the supported block sizes. Each element
+	 * returned by this object is a {@link java.lang.Integer}.
+	 *
+	 * @return an <code>Iterator</code> over the supported block sizes.
+	 */
+	Iterator<Integer> blockSizes();
 
-    /**
-     * Decrypts exactly one block of ciphertext.
-     *
-     * @param in
-     *            the ciphertext.
-     * @param inOffset
-     *            index of <code>in</code> from which to start considering data.
-     * @param out
-     *            the plaintext.
-     * @param outOffset
-     *            index of <code>out</code> from which to store the result.
-     * @param k
-     *            the session key to use.
-     * @param bs
-     *            the block size to use.
-     * @exception IllegalArgumentException
-     *                if the block size is invalid.
-     * @exception ArrayIndexOutOfBoundsException
-     *                if there is not enough room in either the plaintext or
-     *                ciphertext buffers.
-     */
-    void decrypt(byte[] in, int inOffset, byte[] out, int outOffset, Object k, int bs);
+	/**
+	 * Decrypts exactly one block of ciphertext.
+	 *
+	 * @param in
+	 *            the ciphertext.
+	 * @param inOffset
+	 *            index of <code>in</code> from which to start considering data.
+	 * @param out
+	 *            the plaintext.
+	 * @param outOffset
+	 *            index of <code>out</code> from which to store the result.
+	 * @param k
+	 *            the session key to use.
+	 * @param bs
+	 *            the block size to use.
+	 * @exception IllegalArgumentException
+	 *                if the block size is invalid.
+	 * @exception ArrayIndexOutOfBoundsException
+	 *                if there is not enough room in either the plaintext or
+	 *                ciphertext buffers.
+	 */
+	void decrypt(byte[] in, int inOffset, byte[] out, int outOffset, Object k, int bs);
 
-    /**
-     * Encrypts exactly one block of plaintext.
-     *
-     * @param in
-     *            the plaintext.
-     * @param inOffset
-     *            index of <code>in</code> from which to start considering data.
-     * @param out
-     *            the ciphertext.
-     * @param outOffset
-     *            index of <code>out</code> from which to store the result.
-     * @param k
-     *            the session key to use.
-     * @param bs
-     *            the block size to use.
-     * @exception IllegalArgumentException
-     *                if the block size is invalid.
-     * @exception ArrayIndexOutOfBoundsException
-     *                if there is not enough room in either the plaintext or
-     *                ciphertext buffers.
-     */
-    void encrypt(byte[] in, int inOffset, byte[] out, int outOffset, Object k, int bs);
+	/**
+	 * Encrypts exactly one block of plaintext.
+	 *
+	 * @param in
+	 *            the plaintext.
+	 * @param inOffset
+	 *            index of <code>in</code> from which to start considering data.
+	 * @param out
+	 *            the ciphertext.
+	 * @param outOffset
+	 *            index of <code>out</code> from which to store the result.
+	 * @param k
+	 *            the session key to use.
+	 * @param bs
+	 *            the block size to use.
+	 * @exception IllegalArgumentException
+	 *                if the block size is invalid.
+	 * @exception ArrayIndexOutOfBoundsException
+	 *                if there is not enough room in either the plaintext or
+	 *                ciphertext buffers.
+	 */
+	void encrypt(byte[] in, int inOffset, byte[] out, int outOffset, Object k, int bs);
 
-    /**
-     * Returns an {@link Iterator} over the supported key sizes. Each element
-     * returned by this object is a {@link java.lang.Integer}.
-     *
-     * @return an <code>Iterator</code> over the supported key sizes.
-     */
-    Iterator<Integer> keySizes();
+	/**
+	 * Returns an {@link Iterator} over the supported key sizes. Each element
+	 * returned by this object is a {@link java.lang.Integer}.
+	 *
+	 * @return an <code>Iterator</code> over the supported key sizes.
+	 */
+	Iterator<Integer> keySizes();
 
-    /**
-     * Expands a user-supplied key material into a session key for a designated
-     * <i>block size</i>.
-     *
-     * @param k
-     *            the user-supplied key material.
-     * @param bs
-     *            the desired block size in bytes.
-     * @return an Object encapsulating the session key.
-     * @exception IllegalArgumentException
-     *                if the block size is invalid.
-     * @exception InvalidKeyException
-     *                if the key data is invalid.
-     */
-    Object makeKey(byte[] k, int bs) throws InvalidKeyException;
+	/**
+	 * Expands a user-supplied key material into a session key for a designated
+	 * <i>block size</i>.
+	 *
+	 * @param k
+	 *            the user-supplied key material.
+	 * @param bs
+	 *            the desired block size in bytes.
+	 * @return an Object encapsulating the session key.
+	 * @exception IllegalArgumentException
+	 *                if the block size is invalid.
+	 * @exception InvalidKeyException
+	 *                if the key data is invalid.
+	 */
+	Object makeKey(byte[] k, int bs) throws InvalidKeyException;
 
-    /**
-     * A <i>correctness</i> test that consists of basic symmetric encryption /
-     * decryption test(s) for all supported block and key sizes, as well as one
-     * (1) variable key Known Answer Test (KAT).
-     *
-     * @return <code>true</code> if the implementation passes simple
-     *         <i>correctness</i> tests. Returns <code>false</code> otherwise.
-     */
-    boolean selfTest();
+	/**
+	 * A <i>correctness</i> test that consists of basic symmetric encryption /
+	 * decryption test(s) for all supported block and key sizes, as well as one (1)
+	 * variable key Known Answer Test (KAT).
+	 *
+	 * @return <code>true</code> if the implementation passes simple
+	 *         <i>correctness</i> tests. Returns <code>false</code> otherwise.
+	 */
+	boolean selfTest();
 }

@@ -44,25 +44,22 @@ import javax.security.auth.login.AccountException;
  * 
  * @since 1.5
  */
-public class AccountLockedException extends AccountException
-{
-    private static final long serialVersionUID = 8280345554014066334L;
+public class AccountLockedException extends AccountException {
+	private static final long serialVersionUID = 8280345554014066334L;
 
-    /**
-     * Create a new exception object.
-     */
-    public AccountLockedException()
-    {
-    }
+	/**
+	 * Create a new exception object.
+	 */
+	public AccountLockedException() {
+	}
 
-    /**
-     * Create a new exception with the indicated detail message.
-     * 
-     * @param message
-     *            the detail message
-     */
-    public AccountLockedException(String message)
-    {
-	super(message);
-    }
+	/**
+	 * Create a new exception with the indicated detail message.
+	 * 
+	 * @param message
+	 *            the detail message
+	 */
+	public AccountLockedException(String message) {
+		super(message);
+	}
 }

@@ -45,14 +45,13 @@ import gnu.jgnu.security.Registry;
  * output data for storage and on-the-wire transmission, as well as (b) re-
  * creating their internal Java representation from external sources.
  */
-public interface ISignatureCodec
-{
-    /** Constant identifying the <i>Raw</i> encoding format. */
-    int RAW_FORMAT = Registry.RAW_ENCODING_ID;
+public interface ISignatureCodec {
+	/** Constant identifying the <i>Raw</i> encoding format. */
+	int RAW_FORMAT = Registry.RAW_ENCODING_ID;
 
-    Object decodeSignature(byte[] input);
+	Object decodeSignature(byte[] input);
 
-    byte[] encodeSignature(Object signature);
+	byte[] encodeSignature(Object signature);
 
-    int getFormatID();
+	int getFormatID();
 }

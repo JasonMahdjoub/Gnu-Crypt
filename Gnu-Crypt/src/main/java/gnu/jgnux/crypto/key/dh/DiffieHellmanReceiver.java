@@ -53,61 +53,54 @@ import gnu.vm.jgnux.crypto.interfaces.DHPrivateKey;
  *
  * @see DiffieHellmanKeyAgreement
  */
-public class DiffieHellmanReceiver extends DiffieHellmanKeyAgreement
-{
-    private BigInteger y; // the receiver's random secret
+public class DiffieHellmanReceiver extends DiffieHellmanKeyAgreement {
+	private BigInteger y; // the receiver's random secret
 
-    // default 0-arguments constructor
+	// default 0-arguments constructor
 
-    private OutgoingMessage computeSharedSecret(IncomingMessage in) throws KeyAgreementException
-    {
-	BigInteger m1 = in.readMPI();
-	if (m1 == null)
-	    throw new KeyAgreementException("missing message (1)");
-	BigInteger p = ownerKey.getParams().getP();
-	BigInteger g = ownerKey.getParams().getG();
-	// B chooses a random integer y, 1 <= y <= p-2
-	// rfc-2631 restricts y to only be in [2, p-1]
-	BigInteger p_minus_2 = p.subtract(TWO);
-	byte[] xBytes = new byte[(p_minus_2.bitLength() + 7) / 8];
-	do
-	{
-	    nextRandomBytes(xBytes);
-	    y = new BigInteger(1, xBytes);
-	} while (!(y.compareTo(TWO) >= 0 && y.compareTo(p_minus_2) <= 0));
-	ZZ = m1.modPow(y, p); // ZZ = (yb ^ xa) mod p
-	complete = true;
-	// B sends A the message: g^y mod p
-	OutgoingMessage result = new OutgoingMessage();
-	result.writeMPI(g.modPow(y, p)); // message (2)
-	return result;
-    }
-
-    @Override
-    protected void engineInit(Map<String, Object> attributes) throws KeyAgreementException
-    {
-	Object random = attributes.get(SOURCE_OF_RANDOMNESS);
-	rnd = null;
-	irnd = null;
-	if (random instanceof SecureRandom)
-	    rnd = (SecureRandom) random;
-	else if (random instanceof IRandom)
-	    irnd = (IRandom) random;
-	ownerKey = (DHPrivateKey) attributes
-		.get(KA_DIFFIE_HELLMAN_OWNER_PRIVATE_KEY);
-	if (ownerKey == null)
-	    throw new KeyAgreementException("missing owner's private key");
-    }
-
-    @Override
-    protected OutgoingMessage engineProcessMessage(IncomingMessage in) throws KeyAgreementException
-    {
-	switch (step)
-	{
-	    case 0:
-		return computeSharedSecret(in);
-	    default:
-		throw new IllegalStateException("unexpected state");
+	private OutgoingMessage computeSharedSecret(IncomingMessage in) throws KeyAgreementException {
+		BigInteger m1 = in.readMPI();
+		if (m1 == null)
+			throw new KeyAgreementException("missing message (1)");
+		BigInteger p = ownerKey.getParams().getP();
+		BigInteger g = ownerKey.getParams().getG();
+		// B chooses a random integer y, 1 <= y <= p-2
+		// rfc-2631 restricts y to only be in [2, p-1]
+		BigInteger p_minus_2 = p.subtract(TWO);
+		byte[] xBytes = new byte[(p_minus_2.bitLength() + 7) / 8];
+		do {
+			nextRandomBytes(xBytes);
+			y = new BigInteger(1, xBytes);
+		} while (!(y.compareTo(TWO) >= 0 && y.compareTo(p_minus_2) <= 0));
+		ZZ = m1.modPow(y, p); // ZZ = (yb ^ xa) mod p
+		complete = true;
+		// B sends A the message: g^y mod p
+		OutgoingMessage result = new OutgoingMessage();
+		result.writeMPI(g.modPow(y, p)); // message (2)
+		return result;
 	}
-    }
+
+	@Override
+	protected void engineInit(Map<String, Object> attributes) throws KeyAgreementException {
+		Object random = attributes.get(SOURCE_OF_RANDOMNESS);
+		rnd = null;
+		irnd = null;
+		if (random instanceof SecureRandom)
+			rnd = (SecureRandom) random;
+		else if (random instanceof IRandom)
+			irnd = (IRandom) random;
+		ownerKey = (DHPrivateKey) attributes.get(KA_DIFFIE_HELLMAN_OWNER_PRIVATE_KEY);
+		if (ownerKey == null)
+			throw new KeyAgreementException("missing owner's private key");
+	}
+
+	@Override
+	protected OutgoingMessage engineProcessMessage(IncomingMessage in) throws KeyAgreementException {
+		switch (step) {
+		case 0:
+			return computeSharedSecret(in);
+		default:
+			throw new IllegalStateException("unexpected state");
+		}
+	}
 }

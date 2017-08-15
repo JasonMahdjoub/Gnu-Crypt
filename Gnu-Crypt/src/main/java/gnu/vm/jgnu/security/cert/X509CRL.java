@@ -84,292 +84,285 @@ import gnu.vm.jgnu.security.SignatureException;
  * 
  * @since 1.2
  */
-public abstract class X509CRL extends CRL implements X509Extension
-{
+public abstract class X509CRL extends CRL implements X509Extension {
 
-    /**
-     * Constructs a new X509CRL.
-     */
-    protected X509CRL()
-    {
-	super("X.509");
-    }
-
-    /**
-     * Compares this X509CRL to other. It checks if the object if instanceOf
-     * X509CRL and then checks if the encoded form matches.
-     * 
-     * @param other
-     *            An Object to test for equality
-     * 
-     * @return true if equal, false otherwise
-     */
-    @Override
-    public boolean equals(Object other)
-    {
-	if (other instanceof X509CRL)
-	{
-	    try
-	    {
-		X509CRL x = (X509CRL) other;
-		if (getEncoded().length != x.getEncoded().length)
-		    return false;
-
-		byte[] b1 = getEncoded();
-		byte[] b2 = x.getEncoded();
-
-		for (int i = 0; i < b1.length; i++)
-		    if (b1[i] != b2[i])
-			return false;
-
-	    }
-	    catch (CRLException crle)
-	    {
-		return false;
-	    }
-	    return true;
+	/**
+	 * Constructs a new X509CRL.
+	 */
+	protected X509CRL() {
+		super("X.509");
 	}
-	return false;
-    }
 
-    /**
-     * Gets the DER ASN.1 encoded format for this X.509 CRL.
-     * 
-     * @return byte array containg encoded form
-     * 
-     * @throws CRLException
-     *             if an error occurs
-     */
-    public abstract byte[] getEncoded() throws CRLException;
+	/**
+	 * Compares this X509CRL to other. It checks if the object if instanceOf X509CRL
+	 * and then checks if the encoded form matches.
+	 * 
+	 * @param other
+	 *            An Object to test for equality
+	 * 
+	 * @return true if equal, false otherwise
+	 */
+	@Override
+	public boolean equals(Object other) {
+		if (other instanceof X509CRL) {
+			try {
+				X509CRL x = (X509CRL) other;
+				if (getEncoded().length != x.getEncoded().length)
+					return false;
 
-    /**
-     * Returns the issuer (issuer distinguished name) of the CRL. The issuer is
-     * the entity who signed and issued the Certificate Revocation List.
-     * 
-     * The ASN.1 DER encoding is:
-     * 
-     * issuer Name,
-     * 
-     * Name ::= CHOICE { RDNSequence }
-     * 
-     * RDNSequence ::= SEQUENCE OF RelativeDistinguishedName
-     * 
-     * RelativeDistinguishedName ::= SET OF AttributeTypeAndValue
-     * 
-     * AttributeTypeAndValue ::= SEQUENCE { type AttributeType, value
-     * AttributeValue }
-     * 
-     * AttributeType ::= OBJECT IDENTIFIER
-     * 
-     * AttributeValue ::= ANY DEFINED BY AttributeType
-     * 
-     * DirectoryString ::= CHOICE { teletexString TeletexString (SIZE (1..MAX)),
-     * printableString PrintableString (SIZE (1..MAX)), universalString
-     * UniversalString (SIZE (1..MAX)), utf8String UTF8String (SIZE (1.. MAX)),
-     * bmpString BMPString (SIZE (1..MAX)) }
-     * 
-     * Consult rfc2459 for more information.
-     * 
-     * @return the issuer in the Principal class
-     */
-    public abstract Principal getIssuerDN();
+				byte[] b1 = getEncoded();
+				byte[] b2 = x.getEncoded();
 
-    /**
-     * Returns the X.500 distinguished name of this CRL's issuer.
-     *
-     * @return The issuer's X.500 distinguished name.
-     * @since JDK 1.4
-     */
-    public X500Principal getIssuerX500Principal()
-    {
-	throw new UnsupportedOperationException();
-    }
+				for (int i = 0; i < b1.length; i++)
+					if (b1[i] != b2[i])
+						return false;
 
-    /*
-     * Gets the nextUpdate field
-     * 
-     * The ASN.1 DER encoding is:
-     * 
-     * nextUpdate Time OPTIONAL,
-     * 
-     * Time ::= CHOICE { utcTime UTCTime, generalTime GeneralizedTime }
-     * 
-     * Consult rfc2459 for more information.
-     * 
-     * @return the nextUpdate date
-     */
-    public abstract Date getNextUpdate();
+			} catch (CRLException crle) {
+				return false;
+			}
+			return true;
+		}
+		return false;
+	}
 
-    /**
-     * Gets the requeste dX509Entry for the specified certificate serial number.
-     * 
-     * @return a X509CRLEntry representing the X.509 CRL entry
-     */
-    public abstract X509CRLEntry getRevokedCertificate(BigInteger serialNumber);
+	/**
+	 * Gets the DER ASN.1 encoded format for this X.509 CRL.
+	 * 
+	 * @return byte array containg encoded form
+	 * 
+	 * @throws CRLException
+	 *             if an error occurs
+	 */
+	public abstract byte[] getEncoded() throws CRLException;
 
-    /**
-     * Returns a Set of revoked certificates.
-     * 
-     * @return a set of revoked certificates.
-     */
-    public abstract Set<? extends X509CRLEntry> getRevokedCertificates();
+	/**
+	 * Returns the issuer (issuer distinguished name) of the CRL. The issuer is the
+	 * entity who signed and issued the Certificate Revocation List.
+	 * 
+	 * The ASN.1 DER encoding is:
+	 * 
+	 * issuer Name,
+	 * 
+	 * Name ::= CHOICE { RDNSequence }
+	 * 
+	 * RDNSequence ::= SEQUENCE OF RelativeDistinguishedName
+	 * 
+	 * RelativeDistinguishedName ::= SET OF AttributeTypeAndValue
+	 * 
+	 * AttributeTypeAndValue ::= SEQUENCE { type AttributeType, value AttributeValue
+	 * }
+	 * 
+	 * AttributeType ::= OBJECT IDENTIFIER
+	 * 
+	 * AttributeValue ::= ANY DEFINED BY AttributeType
+	 * 
+	 * DirectoryString ::= CHOICE { teletexString TeletexString (SIZE (1..MAX)),
+	 * printableString PrintableString (SIZE (1..MAX)), universalString
+	 * UniversalString (SIZE (1..MAX)), utf8String UTF8String (SIZE (1.. MAX)),
+	 * bmpString BMPString (SIZE (1..MAX)) }
+	 * 
+	 * Consult rfc2459 for more information.
+	 * 
+	 * @return the issuer in the Principal class
+	 */
+	public abstract Principal getIssuerDN();
 
-    /**
-     * Returns the signature algorithm used to sign the CRL. An examples is
-     * "SHA-1/DSA".
-     * 
-     * The ASN.1 DER encoding is:
-     * 
-     * signatureAlgorithm AlgorithmIdentifier,
-     * 
-     * AlgorithmIdentifier ::= SEQUENCE { algorithm OBJECT IDENTIFIER,
-     * parameters ANY DEFINED BY algorithm OPTIONAL }
-     * 
-     * Consult rfc2459 for more information.
-     * 
-     * The algorithm name is determined from the OID.
-     * 
-     * @return a string with the signature algorithm name
-     */
-    public abstract String getSigAlgName();
+	/**
+	 * Returns the X.500 distinguished name of this CRL's issuer.
+	 *
+	 * @return The issuer's X.500 distinguished name.
+	 * @since JDK 1.4
+	 */
+	public X500Principal getIssuerX500Principal() {
+		throw new UnsupportedOperationException();
+	}
 
-    /**
-     * Returns the OID for the signature algorithm used. Example
-     * "1.2.840.10040.4.3" is return for SHA-1 with DSA.\
-     * 
-     * The ASN.1 DER encoding for the example is:
-     * 
-     * id-dsa-with-sha1 ID ::= { iso(1) member-body(2) us(840) x9-57 (10040)
-     * x9cm(4) 3 }
-     * 
-     * Consult rfc2459 for more information.
-     * 
-     * @return a string containing the OID.
-     */
-    public abstract String getSigAlgOID();
+	/*
+	 * Gets the nextUpdate field
+	 * 
+	 * The ASN.1 DER encoding is:
+	 * 
+	 * nextUpdate Time OPTIONAL,
+	 * 
+	 * Time ::= CHOICE { utcTime UTCTime, generalTime GeneralizedTime }
+	 * 
+	 * Consult rfc2459 for more information.
+	 * 
+	 * @return the nextUpdate date
+	 */
+	public abstract Date getNextUpdate();
 
-    /**
-     * Returns the AlgorithmParameters in the encoded form for the signature
-     * algorithm used.
-     * 
-     * If access to the parameters is need, create an instance of
-     * AlgorithmParameters.
-     * 
-     * @return byte array containing algorithm parameters, null if no parameters
-     *         are present in CRL
-     */
-    public abstract byte[] getSigAlgParams();
+	/**
+	 * Gets the requeste dX509Entry for the specified certificate serial number.
+	 * 
+	 * @return a X509CRLEntry representing the X.509 CRL entry
+	 */
+	public abstract X509CRLEntry getRevokedCertificate(BigInteger serialNumber);
 
-    /**
-     * Returns the signature for the CRL.
-     * 
-     * The ASN.1 DER encoding is:
-     * 
-     * signatureValue BIT STRING
-     * 
-     * Consult rfc2459 for more information.
-     */
-    public abstract byte[] getSignature();
+	/**
+	 * Returns a Set of revoked certificates.
+	 * 
+	 * @return a set of revoked certificates.
+	 */
+	public abstract Set<? extends X509CRLEntry> getRevokedCertificates();
 
-    /**
-     * Returns the DER ASN.1 encoded tbsCertList which is the basic information
-     * of the list and associated certificates in the encoded state. See top for
-     * more information.
-     * 
-     * The ASN.1 DER encoding is:
-     * 
-     * tbsCertList TBSCertList,
-     * 
-     * Consult rfc2459 for more information.
-     * 
-     * @return byte array representing tbsCertList
-     */
-    public abstract byte[] getTBSCertList() throws CRLException;
+	/**
+	 * Returns the signature algorithm used to sign the CRL. An examples is
+	 * "SHA-1/DSA".
+	 * 
+	 * The ASN.1 DER encoding is:
+	 * 
+	 * signatureAlgorithm AlgorithmIdentifier,
+	 * 
+	 * AlgorithmIdentifier ::= SEQUENCE { algorithm OBJECT IDENTIFIER, parameters
+	 * ANY DEFINED BY algorithm OPTIONAL }
+	 * 
+	 * Consult rfc2459 for more information.
+	 * 
+	 * The algorithm name is determined from the OID.
+	 * 
+	 * @return a string with the signature algorithm name
+	 */
+	public abstract String getSigAlgName();
 
-    /**
-     * Returns the thisUpdate date of the CRL.
-     * 
-     * The ASN.1 DER encoding is:
-     * 
-     * thisUpdate Time,
-     * 
-     * Time ::= CHOICE { utcTime UTCTime, generalTime GeneralizedTime }
-     * 
-     * Consult rfc2459 for more information.
-     * 
-     * @return the thisUpdate date
-     */
-    public abstract Date getThisUpdate();
+	/**
+	 * Returns the OID for the signature algorithm used. Example "1.2.840.10040.4.3"
+	 * is return for SHA-1 with DSA.\
+	 * 
+	 * The ASN.1 DER encoding for the example is:
+	 * 
+	 * id-dsa-with-sha1 ID ::= { iso(1) member-body(2) us(840) x9-57 (10040) x9cm(4)
+	 * 3 }
+	 * 
+	 * Consult rfc2459 for more information.
+	 * 
+	 * @return a string containing the OID.
+	 */
+	public abstract String getSigAlgOID();
 
-    /**
-     * Gets the version of this CRL.
-     * 
-     * The ASN.1 encoding is:
-     * 
-     * version Version OPTIONAL, -- if present, shall be v2
-     * 
-     * Version ::= INTEGER { v1(0), v2(1), v3(2) }
-     * 
-     * Consult rfc2459 for more information.
-     * 
-     * @return the version number, Ex: 1 or 2
-     */
-    public abstract int getVersion();
+	/**
+	 * Returns the AlgorithmParameters in the encoded form for the signature
+	 * algorithm used.
+	 * 
+	 * If access to the parameters is need, create an instance of
+	 * AlgorithmParameters.
+	 * 
+	 * @return byte array containing algorithm parameters, null if no parameters are
+	 *         present in CRL
+	 */
+	public abstract byte[] getSigAlgParams();
 
-    /**
-     * Returns a hash code for this X509CRL in its encoded form.
-     * 
-     * @return A hash code of this class
-     */
-    @Override
-    public int hashCode()
-    {
-	return super.hashCode();
-    }
+	/**
+	 * Returns the signature for the CRL.
+	 * 
+	 * The ASN.1 DER encoding is:
+	 * 
+	 * signatureValue BIT STRING
+	 * 
+	 * Consult rfc2459 for more information.
+	 */
+	public abstract byte[] getSignature();
 
-    /**
-     * Verifies that this CRL was properly signed with the PublicKey that
-     * corresponds to its private key.
-     * 
-     * @param key
-     *            PublicKey to verify with
-     * 
-     * @throws CRLException
-     *             encoding error
-     * @throws NoSuchAlgorithmException
-     *             unsupported algorithm
-     * @throws InvalidKeyException
-     *             incorrect key
-     * @throws NoSuchProviderException
-     *             no provider
-     * @throws SignatureException
-     *             signature error
-     */
-    public abstract void verify(PublicKey key) throws CRLException, NoSuchAlgorithmException, InvalidKeyException, NoSuchProviderException, SignatureException;
+	/**
+	 * Returns the DER ASN.1 encoded tbsCertList which is the basic information of
+	 * the list and associated certificates in the encoded state. See top for more
+	 * information.
+	 * 
+	 * The ASN.1 DER encoding is:
+	 * 
+	 * tbsCertList TBSCertList,
+	 * 
+	 * Consult rfc2459 for more information.
+	 * 
+	 * @return byte array representing tbsCertList
+	 */
+	public abstract byte[] getTBSCertList() throws CRLException;
 
-    // 1.4 instance methods.
-    // ------------------------------------------------------------------------
+	/**
+	 * Returns the thisUpdate date of the CRL.
+	 * 
+	 * The ASN.1 DER encoding is:
+	 * 
+	 * thisUpdate Time,
+	 * 
+	 * Time ::= CHOICE { utcTime UTCTime, generalTime GeneralizedTime }
+	 * 
+	 * Consult rfc2459 for more information.
+	 * 
+	 * @return the thisUpdate date
+	 */
+	public abstract Date getThisUpdate();
 
-    /**
-     * Verifies that this CRL was properly signed with the PublicKey that
-     * corresponds to its private key and uses the signature engine provided by
-     * the provider.
-     * 
-     * @param key
-     *            PublicKey to verify with
-     * @param sigProvider
-     *            Provider to use for signature algorithm
-     * 
-     * @throws CRLException
-     *             encoding error
-     * @throws NoSuchAlgorithmException
-     *             unsupported algorithm
-     * @throws InvalidKeyException
-     *             incorrect key
-     * @throws NoSuchProviderException
-     *             incorrect provider
-     * @throws SignatureException
-     *             signature error
-     */
-    public abstract void verify(PublicKey key, String sigProvider) throws CRLException, NoSuchAlgorithmException, InvalidKeyException, NoSuchProviderException, SignatureException;
+	/**
+	 * Gets the version of this CRL.
+	 * 
+	 * The ASN.1 encoding is:
+	 * 
+	 * version Version OPTIONAL, -- if present, shall be v2
+	 * 
+	 * Version ::= INTEGER { v1(0), v2(1), v3(2) }
+	 * 
+	 * Consult rfc2459 for more information.
+	 * 
+	 * @return the version number, Ex: 1 or 2
+	 */
+	public abstract int getVersion();
+
+	/**
+	 * Returns a hash code for this X509CRL in its encoded form.
+	 * 
+	 * @return A hash code of this class
+	 */
+	@Override
+	public int hashCode() {
+		return super.hashCode();
+	}
+
+	/**
+	 * Verifies that this CRL was properly signed with the PublicKey that
+	 * corresponds to its private key.
+	 * 
+	 * @param key
+	 *            PublicKey to verify with
+	 * 
+	 * @throws CRLException
+	 *             encoding error
+	 * @throws NoSuchAlgorithmException
+	 *             unsupported algorithm
+	 * @throws InvalidKeyException
+	 *             incorrect key
+	 * @throws NoSuchProviderException
+	 *             no provider
+	 * @throws SignatureException
+	 *             signature error
+	 */
+	public abstract void verify(PublicKey key) throws CRLException, NoSuchAlgorithmException, InvalidKeyException,
+			NoSuchProviderException, SignatureException;
+
+	// 1.4 instance methods.
+	// ------------------------------------------------------------------------
+
+	/**
+	 * Verifies that this CRL was properly signed with the PublicKey that
+	 * corresponds to its private key and uses the signature engine provided by the
+	 * provider.
+	 * 
+	 * @param key
+	 *            PublicKey to verify with
+	 * @param sigProvider
+	 *            Provider to use for signature algorithm
+	 * 
+	 * @throws CRLException
+	 *             encoding error
+	 * @throws NoSuchAlgorithmException
+	 *             unsupported algorithm
+	 * @throws InvalidKeyException
+	 *             incorrect key
+	 * @throws NoSuchProviderException
+	 *             incorrect provider
+	 * @throws SignatureException
+	 *             signature error
+	 */
+	public abstract void verify(PublicKey key, String sigProvider) throws CRLException, NoSuchAlgorithmException,
+			InvalidKeyException, NoSuchProviderException, SignatureException;
 }

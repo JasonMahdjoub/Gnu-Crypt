@@ -39,10 +39,8 @@ package gnu.jgnux.crypto.jce.key;
 
 import gnu.jgnu.security.Registry;
 
-public class RijndaelKeyGeneratorImpl extends SecretKeyGeneratorImpl
-{
-    public RijndaelKeyGeneratorImpl()
-    {
-	super(Registry.RIJNDAEL_CIPHER);
-    }
+public class RijndaelKeyGeneratorImpl extends SecretKeyGeneratorImpl {
+	public RijndaelKeyGeneratorImpl() {
+		super(Registry.RIJNDAEL_CIPHER);
+	}
 }

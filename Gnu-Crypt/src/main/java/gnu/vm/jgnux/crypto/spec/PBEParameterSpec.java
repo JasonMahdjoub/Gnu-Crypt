@@ -47,55 +47,51 @@ import java.security.spec.AlgorithmParameterSpec;
  * @author Casey Marshall (csm@gnu.org)
  * @since 1.4
  */
-public class PBEParameterSpec implements AlgorithmParameterSpec
-{
+public class PBEParameterSpec implements AlgorithmParameterSpec {
 
-    // Fields.
-    // ------------------------------------------------------------------------
+	// Fields.
+	// ------------------------------------------------------------------------
 
-    /** The iteration count. */
-    private int iterationCount;
+	/** The iteration count. */
+	private int iterationCount;
 
-    /** The salt. */
-    private byte[] salt;
+	/** The salt. */
+	private byte[] salt;
 
-    // Constructor.
-    // ------------------------------------------------------------------------
+	// Constructor.
+	// ------------------------------------------------------------------------
 
-    /**
-     * Creates a new password-based encryption parameter specification.
-     *
-     * @param salt
-     *            The salt.
-     * @param iterationCount
-     *            The iteration count.
-     */
-    public PBEParameterSpec(byte[] salt, int iterationCount)
-    {
-	this.salt = salt;
-	this.iterationCount = iterationCount;
-    }
+	/**
+	 * Creates a new password-based encryption parameter specification.
+	 *
+	 * @param salt
+	 *            The salt.
+	 * @param iterationCount
+	 *            The iteration count.
+	 */
+	public PBEParameterSpec(byte[] salt, int iterationCount) {
+		this.salt = salt;
+		this.iterationCount = iterationCount;
+	}
 
-    // Instance methods.
-    // ------------------------------------------------------------------------
+	// Instance methods.
+	// ------------------------------------------------------------------------
 
-    /**
-     * Get the iteration count.
-     *
-     * @return The iteration count.
-     */
-    public int getIterationCount()
-    {
-	return iterationCount;
-    }
+	/**
+	 * Get the iteration count.
+	 *
+	 * @return The iteration count.
+	 */
+	public int getIterationCount() {
+		return iterationCount;
+	}
 
-    /**
-     * Get the salt.
-     *
-     * @return The salt.
-     */
-    public byte[] getSalt()
-    {
-	return salt;
-    }
+	/**
+	 * Get the salt.
+	 *
+	 * @return The salt.
+	 */
+	public byte[] getSalt() {
+		return salt;
+	}
 }

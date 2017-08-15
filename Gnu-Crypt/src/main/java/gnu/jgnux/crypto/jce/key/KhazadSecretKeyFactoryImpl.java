@@ -37,9 +37,7 @@ exception statement from your version.  */
 
 package gnu.jgnux.crypto.jce.key;
 
-public class KhazadSecretKeyFactoryImpl extends SecretKeyFactoryImpl
-{
-    public KhazadSecretKeyFactoryImpl()
-    {
-    }
+public class KhazadSecretKeyFactoryImpl extends SecretKeyFactoryImpl {
+	public KhazadSecretKeyFactoryImpl() {
+	}
 }

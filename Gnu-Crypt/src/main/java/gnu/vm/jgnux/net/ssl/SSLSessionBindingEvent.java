@@ -44,53 +44,49 @@ import javax.net.ssl.SSLSession;
 /**
  * An event raised by {@link SSLSession} objects when objects are bound to them.
  */
-public class SSLSessionBindingEvent extends EventObject
-{
+public class SSLSessionBindingEvent extends EventObject {
 
-    // Fields.
-    // -------------------------------------------------------------------
+	// Fields.
+	// -------------------------------------------------------------------
 
-    private static final long serialVersionUID = 3989172637106345L;
+	private static final long serialVersionUID = 3989172637106345L;
 
-    private final String name;
+	private final String name;
 
-    // Constructor.
-    // -------------------------------------------------------------------
+	// Constructor.
+	// -------------------------------------------------------------------
 
-    /**
-     * Creates a new binding event.
-     *
-     * @param session
-     *            The session being bound to.
-     * @param name
-     *            The name the object was bound under.
-     */
-    public SSLSessionBindingEvent(SSLSession session, String name)
-    {
-	super(session);
-	this.name = name;
-    }
+	/**
+	 * Creates a new binding event.
+	 *
+	 * @param session
+	 *            The session being bound to.
+	 * @param name
+	 *            The name the object was bound under.
+	 */
+	public SSLSessionBindingEvent(SSLSession session, String name) {
+		super(session);
+		this.name = name;
+	}
 
-    // Instance methods.
-    // --------------------------------------------------------------------
+	// Instance methods.
+	// --------------------------------------------------------------------
 
-    /**
-     * Returns the name the object was bound under.
-     *
-     * @return The name.
-     */
-    public String getName()
-    {
-	return name;
-    }
+	/**
+	 * Returns the name the object was bound under.
+	 *
+	 * @return The name.
+	 */
+	public String getName() {
+		return name;
+	}
 
-    /**
-     * Returns the session that the object was bound to.
-     *
-     * @return The session.
-     */
-    public SSLSession getSession()
-    {
-	return (SSLSession) getSource();
-    }
+	/**
+	 * Returns the session that the object was bound to.
+	 *
+	 * @return The session.
+	 */
+	public SSLSession getSession() {
+		return (SSLSession) getSource();
+	}
 }

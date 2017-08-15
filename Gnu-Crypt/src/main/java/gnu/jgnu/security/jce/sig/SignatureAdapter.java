@@ -66,181 +66,145 @@ import gnu.vm.jgnu.security.SignatureSpi;
  * All the implementations which subclass this object, and which are serviced by
  * the GNU provider implement the {@link Cloneable} interface.
  */
-class SignatureAdapter extends SignatureSpi implements Cloneable
-{
+class SignatureAdapter extends SignatureSpi implements Cloneable {
 
-    /** Our underlying signature instance. */
-    private ISignature adaptee;
+	/** Our underlying signature instance. */
+	private ISignature adaptee;
 
-    /** Our underlying signature encoder/decoder engine. */
-    private ISignatureCodec codec;
+	/** Our underlying signature encoder/decoder engine. */
+	private ISignatureCodec codec;
 
-    /**
-     * Private constructor for cloning purposes.
-     *
-     * @param adaptee
-     *            a clone of the underlying signature scheme instance.
-     * @param codec
-     *            the signature codec engine to use with this scheme.
-     */
-    private SignatureAdapter(ISignature adaptee, ISignatureCodec codec)
-    {
-	super();
+	/**
+	 * Private constructor for cloning purposes.
+	 *
+	 * @param adaptee
+	 *            a clone of the underlying signature scheme instance.
+	 * @param codec
+	 *            the signature codec engine to use with this scheme.
+	 */
+	private SignatureAdapter(ISignature adaptee, ISignatureCodec codec) {
+		super();
 
-	this.adaptee = adaptee;
-	this.codec = codec;
-    }
-
-    /**
-     * Trivial protected constructor.
-     *
-     * @param sigName
-     *            the canonical name of the signature scheme.
-     * @param codec
-     *            the signature codec engine to use with this scheme.
-     */
-    protected SignatureAdapter(String sigName, ISignatureCodec codec)
-    {
-	this(SignatureFactory.getInstance(sigName), codec);
-    }
-
-    @Override
-    public Object clone()
-    {
-	return new SignatureAdapter((ISignature) adaptee.clone(), codec);
-    }
-
-    // Deprecated
-    @Override
-    public Object engineGetParameter(String param) throws InvalidParameterException
-    {
-	throw new InvalidParameterException("deprecated");
-    }
-
-    @Override
-    public void engineInitSign(PrivateKey privateKey) throws InvalidKeyException
-    {
-	HashMap<String, PrivateKey> attributes = new HashMap<>();
-	attributes.put(ISignature.SIGNER_KEY, privateKey);
-	try
-	{
-	    adaptee.setupSign(attributes);
+		this.adaptee = adaptee;
+		this.codec = codec;
 	}
-	catch (IllegalArgumentException x)
-	{
-	    throw new InvalidKeyException(x.getMessage(), x);
-	}
-    }
 
-    @Override
-    public void engineInitSign(PrivateKey privateKey, SecureRandom random) throws InvalidKeyException
-    {
-	HashMap<String, Object> attributes = new HashMap<>();
-	attributes.put(ISignature.SIGNER_KEY, privateKey);
-	attributes.put(ISignature.SOURCE_OF_RANDOMNESS, random);
-	try
-	{
-	    adaptee.setupSign(attributes);
+	/**
+	 * Trivial protected constructor.
+	 *
+	 * @param sigName
+	 *            the canonical name of the signature scheme.
+	 * @param codec
+	 *            the signature codec engine to use with this scheme.
+	 */
+	protected SignatureAdapter(String sigName, ISignatureCodec codec) {
+		this(SignatureFactory.getInstance(sigName), codec);
 	}
-	catch (IllegalArgumentException x)
-	{
-	    throw new InvalidKeyException(x.getMessage(), x);
-	}
-    }
 
-    @Override
-    public void engineInitVerify(PublicKey publicKey) throws InvalidKeyException
-    {
-	HashMap<String, PublicKey> attributes = new HashMap<>();
-	attributes.put(ISignature.VERIFIER_KEY, publicKey);
-	try
-	{
-	    adaptee.setupVerify(attributes);
+	@Override
+	public Object clone() {
+		return new SignatureAdapter((ISignature) adaptee.clone(), codec);
 	}
-	catch (IllegalArgumentException x)
-	{
-	    throw new InvalidKeyException(x.getMessage(), x);
-	}
-    }
 
-    public void engineSetParameter(AlgorithmParameterSpec params)
-    {
-    }
+	// Deprecated
+	@Override
+	public Object engineGetParameter(String param) throws InvalidParameterException {
+		throw new InvalidParameterException("deprecated");
+	}
 
-    // Deprecated. Replaced by engineSetParameter.
-    @Override
-    public void engineSetParameter(String param, Object value) throws InvalidParameterException
-    {
-	throw new InvalidParameterException("deprecated");
-    }
+	@Override
+	public void engineInitSign(PrivateKey privateKey) throws InvalidKeyException {
+		HashMap<String, PrivateKey> attributes = new HashMap<>();
+		attributes.put(ISignature.SIGNER_KEY, privateKey);
+		try {
+			adaptee.setupSign(attributes);
+		} catch (IllegalArgumentException x) {
+			throw new InvalidKeyException(x.getMessage(), x);
+		}
+	}
 
-    @Override
-    public byte[] engineSign() throws SignatureException
-    {
-	Object signature = null;
-	try
-	{
-	    signature = adaptee.sign();
+	@Override
+	public void engineInitSign(PrivateKey privateKey, SecureRandom random) throws InvalidKeyException {
+		HashMap<String, Object> attributes = new HashMap<>();
+		attributes.put(ISignature.SIGNER_KEY, privateKey);
+		attributes.put(ISignature.SOURCE_OF_RANDOMNESS, random);
+		try {
+			adaptee.setupSign(attributes);
+		} catch (IllegalArgumentException x) {
+			throw new InvalidKeyException(x.getMessage(), x);
+		}
 	}
-	catch (IllegalStateException x)
-	{
-	    throw new SignatureException(x.getMessage(), x);
-	}
-	byte[] result = codec.encodeSignature(signature);
-	return result;
-    }
 
-    @Override
-    public int engineSign(byte[] outbuf, int offset, int len) throws SignatureException
-    {
-	byte[] signature = this.engineSign();
-	int result = signature.length;
-	if (result > len)
-	    throw new SignatureException("Not enough room to store signature");
+	@Override
+	public void engineInitVerify(PublicKey publicKey) throws InvalidKeyException {
+		HashMap<String, PublicKey> attributes = new HashMap<>();
+		attributes.put(ISignature.VERIFIER_KEY, publicKey);
+		try {
+			adaptee.setupVerify(attributes);
+		} catch (IllegalArgumentException x) {
+			throw new InvalidKeyException(x.getMessage(), x);
+		}
+	}
 
-	System.arraycopy(signature, 0, outbuf, offset, result);
-	return result;
-    }
+	public void engineSetParameter(AlgorithmParameterSpec params) {
+	}
 
-    @Override
-    public void engineUpdate(byte b) throws SignatureException
-    {
-	try
-	{
-	    adaptee.update(b);
+	// Deprecated. Replaced by engineSetParameter.
+	@Override
+	public void engineSetParameter(String param, Object value) throws InvalidParameterException {
+		throw new InvalidParameterException("deprecated");
 	}
-	catch (IllegalStateException x)
-	{
-	    throw new SignatureException(x.getMessage(), x);
-	}
-    }
 
-    @Override
-    public void engineUpdate(byte[] b, int off, int len) throws SignatureException
-    {
-	try
-	{
-	    adaptee.update(b, off, len);
+	@Override
+	public byte[] engineSign() throws SignatureException {
+		Object signature = null;
+		try {
+			signature = adaptee.sign();
+		} catch (IllegalStateException x) {
+			throw new SignatureException(x.getMessage(), x);
+		}
+		byte[] result = codec.encodeSignature(signature);
+		return result;
 	}
-	catch (IllegalStateException x)
-	{
-	    throw new SignatureException(x.getMessage(), x);
-	}
-    }
 
-    @Override
-    public boolean engineVerify(byte[] sigBytes) throws SignatureException
-    {
-	Object signature = codec.decodeSignature(sigBytes);
-	boolean result = false;
-	try
-	{
-	    result = adaptee.verify(signature);
+	@Override
+	public int engineSign(byte[] outbuf, int offset, int len) throws SignatureException {
+		byte[] signature = this.engineSign();
+		int result = signature.length;
+		if (result > len)
+			throw new SignatureException("Not enough room to store signature");
+
+		System.arraycopy(signature, 0, outbuf, offset, result);
+		return result;
 	}
-	catch (IllegalStateException x)
-	{
-	    throw new SignatureException(x.getMessage(), x);
+
+	@Override
+	public void engineUpdate(byte b) throws SignatureException {
+		try {
+			adaptee.update(b);
+		} catch (IllegalStateException x) {
+			throw new SignatureException(x.getMessage(), x);
+		}
 	}
-	return result;
-    }
+
+	@Override
+	public void engineUpdate(byte[] b, int off, int len) throws SignatureException {
+		try {
+			adaptee.update(b, off, len);
+		} catch (IllegalStateException x) {
+			throw new SignatureException(x.getMessage(), x);
+		}
+	}
+
+	@Override
+	public boolean engineVerify(byte[] sigBytes) throws SignatureException {
+		Object signature = codec.decodeSignature(sigBytes);
+		boolean result = false;
+		try {
+			result = adaptee.verify(signature);
+		} catch (IllegalStateException x) {
+			throw new SignatureException(x.getMessage(), x);
+		}
+		return result;
+	}
 }

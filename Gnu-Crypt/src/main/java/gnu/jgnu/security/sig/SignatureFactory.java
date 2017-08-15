@@ -48,55 +48,49 @@ import gnu.jgnu.security.sig.rsa.RSASignatureFactory;
 /**
  * A Factory to instantiate signature-with-appendix handlers.
  */
-public class SignatureFactory
-{
-    private static Set<String> names;
+public class SignatureFactory {
+	private static Set<String> names;
 
-    /**
-     * Returns an instance of a signature-with-appendix scheme given its name.
-     *
-     * @param ssa
-     *            the case-insensitive signature-with-appendix scheme name.
-     * @return an instance of the scheme, or <code>null</code> if none found.
-     */
-    public static final ISignature getInstance(String ssa)
-    {
-	if (ssa == null)
-	    return null;
+	/**
+	 * Returns an instance of a signature-with-appendix scheme given its name.
+	 *
+	 * @param ssa
+	 *            the case-insensitive signature-with-appendix scheme name.
+	 * @return an instance of the scheme, or <code>null</code> if none found.
+	 */
+	public static final ISignature getInstance(String ssa) {
+		if (ssa == null)
+			return null;
 
-	ssa = ssa.trim();
-	ssa = ssa.toLowerCase();
-	ISignature result = null;
-	if (ssa.equalsIgnoreCase(Registry.DSA_SIG)
-		|| ssa.equals(Registry.DSS_SIG))
-	    result = new DSSSignature();
-	else if (ssa.startsWith(Registry.RSA_SIG_PREFIX))
-	    result = RSASignatureFactory.getInstance(ssa);
+		ssa = ssa.trim();
+		ssa = ssa.toLowerCase();
+		ISignature result = null;
+		if (ssa.equalsIgnoreCase(Registry.DSA_SIG) || ssa.equals(Registry.DSS_SIG))
+			result = new DSSSignature();
+		else if (ssa.startsWith(Registry.RSA_SIG_PREFIX))
+			result = RSASignatureFactory.getInstance(ssa);
 
-	return result;
-    }
-
-    /**
-     * Returns a {@link Set} of signature-with-appendix scheme names supported
-     * by this <i>Factory</i>.
-     *
-     * @return a {@link Set} of signature-with-appendix scheme names (Strings).
-     */
-    public static synchronized final Set<String> getNames()
-    {
-	if (names == null)
-	{
-	    HashSet<String> hs = new HashSet<>();
-	    hs.add(Registry.DSS_SIG);
-	    hs.addAll(RSASignatureFactory.getNames());
-	    names = Collections.unmodifiableSet(hs);
+		return result;
 	}
-	return names;
-    }
 
-    /** Trivial constructor to enforce Singleton pattern. */
-    private SignatureFactory()
-    {
-	super();
-    }
+	/**
+	 * Returns a {@link Set} of signature-with-appendix scheme names supported by
+	 * this <i>Factory</i>.
+	 *
+	 * @return a {@link Set} of signature-with-appendix scheme names (Strings).
+	 */
+	public static synchronized final Set<String> getNames() {
+		if (names == null) {
+			HashSet<String> hs = new HashSet<>();
+			hs.add(Registry.DSS_SIG);
+			hs.addAll(RSASignatureFactory.getNames());
+			names = Collections.unmodifiableSet(hs);
+		}
+		return names;
+	}
+
+	/** Trivial constructor to enforce Singleton pattern. */
+	private SignatureFactory() {
+		super();
+	}
 }

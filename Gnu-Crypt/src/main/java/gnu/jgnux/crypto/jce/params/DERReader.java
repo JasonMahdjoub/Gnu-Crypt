@@ -39,103 +39,91 @@ package gnu.jgnux.crypto.jce.params;
 
 import java.math.BigInteger;
 
-class DERReader
-{
-    static final int UNIVERSAL = 1;
+class DERReader {
+	static final int UNIVERSAL = 1;
 
-    static final int APPLICATION = 2;
+	static final int APPLICATION = 2;
 
-    static final int CONTEXT_SPECIFIC = 3;
+	static final int CONTEXT_SPECIFIC = 3;
 
-    static final int PRIVATE = 4;
+	static final int PRIVATE = 4;
 
-    byte source[];
+	byte source[];
 
-    int pos;
+	int pos;
 
-    public DERReader()
-    {
-	source = null;
-	pos = 0;
-    }
-
-    public DERReader(byte source[])
-    {
-	init(source);
-    }
-
-    public BigInteger getBigInteger() throws DEREncodingException
-    {
-	return new BigInteger(getPrimitive());
-    }
-
-    // Reads Primitive, definite-length method
-    private byte[] getPrimitive() throws DEREncodingException
-    {
-	int tmp = pos;
-	// Read Identifier
-	byte identifier = source[tmp++];
-	if ((0x20 & identifier) != 0)
-	    throw new DEREncodingException();
-	/* int type = */translateLeadIdentifierByte(identifier);
-	// get tag
-	// int tag = (0x1f & identifier);
-	// get length
-	byte len = source[tmp]; // may be length of length parameter
-	long length = 0x7f & len;
-	int i;
-	if ((0x80 & len) != 0)
-	{
-	    len &= 0x7f;
-	    // get length here
-	    length = 0;
-	    for (i = 0; i < len; i++)
-	    {
-		tmp++;
-		length <<= 8;
-		length += (source[tmp] < 0) ? (256 + source[tmp]) : source[tmp];
-	    }
-	    tmp++;
+	public DERReader() {
+		source = null;
+		pos = 0;
 	}
-	else
-	    tmp++;
 
-	byte tmpb[] = new byte[(int) length];
-	System.arraycopy(source, tmp, tmpb, 0, (int) length);
-	pos = (int) (tmp + length);
-	return tmpb;
-    }
+	public DERReader(byte source[]) {
+		init(source);
+	}
 
-    public boolean hasMorePrimitives()
-    {
-	return pos < source.length;
-    }
+	public BigInteger getBigInteger() throws DEREncodingException {
+		return new BigInteger(getPrimitive());
+	}
 
-    public void init(byte source[])
-    {
-	this.source = source;
-	pos = 0;
-    }
+	// Reads Primitive, definite-length method
+	private byte[] getPrimitive() throws DEREncodingException {
+		int tmp = pos;
+		// Read Identifier
+		byte identifier = source[tmp++];
+		if ((0x20 & identifier) != 0)
+			throw new DEREncodingException();
+		/* int type = */translateLeadIdentifierByte(identifier);
+		// get tag
+		// int tag = (0x1f & identifier);
+		// get length
+		byte len = source[tmp]; // may be length of length parameter
+		long length = 0x7f & len;
+		int i;
+		if ((0x80 & len) != 0) {
+			len &= 0x7f;
+			// get length here
+			length = 0;
+			for (i = 0; i < len; i++) {
+				tmp++;
+				length <<= 8;
+				length += (source[tmp] < 0) ? (256 + source[tmp]) : source[tmp];
+			}
+			tmp++;
+		} else
+			tmp++;
 
-    public void init(String source)
-    {
-	init(source.getBytes());
-    }
+		byte tmpb[] = new byte[(int) length];
+		System.arraycopy(source, tmp, tmpb, 0, (int) length);
+		pos = (int) (tmp + length);
+		return tmpb;
+	}
 
-    private int translateLeadIdentifierByte(byte b)
-    {
-	if ((0x3f & b) == b)
-	    return UNIVERSAL;
-	else if ((0x7f & b) == b)
-	    return APPLICATION;
-	else if ((0xbf & b) == b)
-	    return CONTEXT_SPECIFIC;
-	else
-	    return PRIVATE;
-    }
+	public boolean hasMorePrimitives() {
+		return pos < source.length;
+	}
 
-    /*
-     * private int getIdentifier(int tpos) { while ((0x80 & source[tpos]) != 0)
-     * tpos++; return tpos; }
-     */
+	public void init(byte source[]) {
+		this.source = source;
+		pos = 0;
+	}
+
+	public void init(String source) {
+		init(source.getBytes());
+	}
+
+	private int translateLeadIdentifierByte(byte b) {
+		if ((0x3f & b) == b)
+			return UNIVERSAL;
+		else if ((0x7f & b) == b)
+			return APPLICATION;
+		else if ((0xbf & b) == b)
+			return CONTEXT_SPECIFIC;
+		else
+			return PRIVATE;
+	}
+
+	/*
+	 * private int getIdentifier(int tpos) { while ((0x80 & source[tpos]) != 0)
+	 * tpos++; return tpos; }
+	 */
 }

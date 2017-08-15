@@ -46,113 +46,105 @@ import javax.security.auth.Destroyable;
  * A pairing of a {@link X509Certificate} and its corresponding
  * {@link PrivateKey}, with an optional keystore alias.
  */
-public final class X500PrivateCredential implements Destroyable
-{
+public final class X500PrivateCredential implements Destroyable {
 
-    // Fields.
-    // -------------------------------------------------------------------------
+	// Fields.
+	// -------------------------------------------------------------------------
 
-    private PrivateKey key;
+	private PrivateKey key;
 
-    private X509Certificate certificate;
+	private X509Certificate certificate;
 
-    private String alias;
+	private String alias;
 
-    // Constructors.
-    // -------------------------------------------------------------------------
+	// Constructors.
+	// -------------------------------------------------------------------------
 
-    /**
-     * Creates a new private credential with no associated keystore alias.
-     *
-     * @param certificate
-     *            The X.509 certificate.
-     * @param key
-     *            The private key.
-     * @throws IllegalArgumentException
-     *             If either parameter is null.
-     */
-    public X500PrivateCredential(X509Certificate certificate, PrivateKey key)
-    {
-	if (certificate == null || key == null)
-	    throw new IllegalArgumentException();
-	this.certificate = certificate;
-	this.key = key;
-    }
+	/**
+	 * Creates a new private credential with no associated keystore alias.
+	 *
+	 * @param certificate
+	 *            The X.509 certificate.
+	 * @param key
+	 *            The private key.
+	 * @throws IllegalArgumentException
+	 *             If either parameter is null.
+	 */
+	public X500PrivateCredential(X509Certificate certificate, PrivateKey key) {
+		if (certificate == null || key == null)
+			throw new IllegalArgumentException();
+		this.certificate = certificate;
+		this.key = key;
+	}
 
-    /**
-     * Creates a new private credential with a keystore alias.
-     *
-     * @param certificate
-     *            The X.509 certificate.
-     * @param key
-     *            The private key.
-     * @param alias
-     *            The keystore alias for this credential.
-     * @throws IllegalArgumentException
-     *             If any parameter is null.
-     */
-    public X500PrivateCredential(X509Certificate certificate, PrivateKey key, String alias)
-    {
-	this(certificate, key);
-	if (alias == null)
-	    throw new IllegalArgumentException();
-	this.alias = alias;
-    }
+	/**
+	 * Creates a new private credential with a keystore alias.
+	 *
+	 * @param certificate
+	 *            The X.509 certificate.
+	 * @param key
+	 *            The private key.
+	 * @param alias
+	 *            The keystore alias for this credential.
+	 * @throws IllegalArgumentException
+	 *             If any parameter is null.
+	 */
+	public X500PrivateCredential(X509Certificate certificate, PrivateKey key, String alias) {
+		this(certificate, key);
+		if (alias == null)
+			throw new IllegalArgumentException();
+		this.alias = alias;
+	}
 
-    // Instance methods.
-    // -------------------------------------------------------------------------
+	// Instance methods.
+	// -------------------------------------------------------------------------
 
-    /**
-     * Destroy the sensitive data of this credential, setting the certificate,
-     * private key, and keystore alias to null.
-     */
-    @Override
-    public void destroy()
-    {
-	certificate = null;
-	key = null;
-	alias = null;
-    }
+	/**
+	 * Destroy the sensitive data of this credential, setting the certificate,
+	 * private key, and keystore alias to null.
+	 */
+	@Override
+	public void destroy() {
+		certificate = null;
+		key = null;
+		alias = null;
+	}
 
-    /**
-     * Returns the keystore alias of this credential, or null if not present.
-     *
-     * @return The keystore alias, or null.
-     */
-    public String getAlias()
-    {
-	return alias;
-    }
+	/**
+	 * Returns the keystore alias of this credential, or null if not present.
+	 *
+	 * @return The keystore alias, or null.
+	 */
+	public String getAlias() {
+		return alias;
+	}
 
-    /**
-     * Returns the certificate of this credential.
-     *
-     * @return The certificate of this credential.
-     */
-    public X509Certificate getCertificate()
-    {
-	return certificate;
-    }
+	/**
+	 * Returns the certificate of this credential.
+	 *
+	 * @return The certificate of this credential.
+	 */
+	public X509Certificate getCertificate() {
+		return certificate;
+	}
 
-    /**
-     * Returns the private key of this credential.
-     *
-     * @return The private key of this credential.
-     */
-    public PrivateKey getPrivateKey()
-    {
-	return key;
-    }
+	/**
+	 * Returns the private key of this credential.
+	 *
+	 * @return The private key of this credential.
+	 */
+	public PrivateKey getPrivateKey() {
+		return key;
+	}
 
-    /**
-     * Tells whether or not this credential has been destroyed, and that the
-     * certificate and private key fields are null.
-     *
-     * @return True if this object has been destroyed.
-     */
-    @Override
-    public boolean isDestroyed()
-    {
-	return certificate == null && key == null;
-    }
+	/**
+	 * Tells whether or not this credential has been destroyed, and that the
+	 * certificate and private key fields are null.
+	 *
+	 * @return True if this object has been destroyed.
+	 */
+	@Override
+	public boolean isDestroyed() {
+		return certificate == null && key == null;
+	}
 }

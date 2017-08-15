@@ -49,102 +49,94 @@ import gnu.jgnux.crypto.cipher.IBlockCipher;
 /**
  * A <i>Factory</i> to instantiate block cipher modes of operations.
  */
-public class ModeFactory implements Registry
-{
-    private static Set<String> names;
+public class ModeFactory implements Registry {
+	private static Set<String> names;
 
-    public static IMode getInstance(String mode, IBlockCipher cipher, int cipherBlockSize)
-    {
-	// ensure that cipherBlockSize is valid for the chosen underlying cipher
-	boolean ok = false;
-	for (Iterator<Integer> it = cipher.blockSizes(); it.hasNext();)
-	{
-	    ok = (cipherBlockSize == it.next().intValue());
-	    if (ok)
-		break;
+	public static IMode getInstance(String mode, IBlockCipher cipher, int cipherBlockSize) {
+		// ensure that cipherBlockSize is valid for the chosen underlying cipher
+		boolean ok = false;
+		for (Iterator<Integer> it = cipher.blockSizes(); it.hasNext();) {
+			ok = (cipherBlockSize == it.next().intValue());
+			if (ok)
+				break;
+		}
+		if (!ok)
+			throw new IllegalArgumentException("cipherBlockSize");
+		IMode result = null;
+		if (mode.equalsIgnoreCase(ECB_MODE))
+			result = new ECB(cipher, cipherBlockSize);
+		else if (mode.equalsIgnoreCase(CTR_MODE))
+			result = new CTR(cipher, cipherBlockSize);
+		else if (mode.equalsIgnoreCase(ICM_MODE))
+			result = new ICM(cipher, cipherBlockSize);
+		else if (mode.equalsIgnoreCase(OFB_MODE))
+			result = new OFB(cipher, cipherBlockSize);
+		else if (mode.equalsIgnoreCase(CBC_MODE))
+			result = new CBC(cipher, cipherBlockSize);
+		else if (mode.equalsIgnoreCase(CFB_MODE))
+			result = new CFB(cipher, cipherBlockSize);
+		else if (mode.equalsIgnoreCase(EAX_MODE))
+			result = new EAX(cipher, cipherBlockSize);
+
+		if (result != null && !result.selfTest())
+			throw new InternalError(result.name());
+
+		return result;
 	}
-	if (!ok)
-	    throw new IllegalArgumentException("cipherBlockSize");
-	IMode result = null;
-	if (mode.equalsIgnoreCase(ECB_MODE))
-	    result = new ECB(cipher, cipherBlockSize);
-	else if (mode.equalsIgnoreCase(CTR_MODE))
-	    result = new CTR(cipher, cipherBlockSize);
-	else if (mode.equalsIgnoreCase(ICM_MODE))
-	    result = new ICM(cipher, cipherBlockSize);
-	else if (mode.equalsIgnoreCase(OFB_MODE))
-	    result = new OFB(cipher, cipherBlockSize);
-	else if (mode.equalsIgnoreCase(CBC_MODE))
-	    result = new CBC(cipher, cipherBlockSize);
-	else if (mode.equalsIgnoreCase(CFB_MODE))
-	    result = new CFB(cipher, cipherBlockSize);
-	else if (mode.equalsIgnoreCase(EAX_MODE))
-	    result = new EAX(cipher, cipherBlockSize);
 
-	if (result != null && !result.selfTest())
-	    throw new InternalError(result.name());
+	/**
+	 * Returns an instance of a block cipher mode of operations given its name and
+	 * characteristics of the underlying block cipher.
+	 *
+	 * @param mode
+	 *            the case-insensitive name of the mode of operations.
+	 * @param cipher
+	 *            the case-insensitive name of the block cipher.
+	 * @param cipherBlockSize
+	 *            the block size, in bytes, of the underlying cipher.
+	 * @return an instance of the block cipher algorithm, operating in a given mode
+	 *         of operations, or <code>null</code> if none found.
+	 * @exception InternalError
+	 *                if either the mode or the underlying block cipher
+	 *                implementation does not pass its self-test.
+	 */
+	public static IMode getInstance(String mode, String cipher, int cipherBlockSize) {
+		if (mode == null || cipher == null)
+			return null;
 
-	return result;
-    }
+		mode = mode.trim();
+		cipher = cipher.trim();
+		IBlockCipher cipherImpl = CipherFactory.getInstance(cipher);
+		if (cipherImpl == null)
+			return null;
 
-    /**
-     * Returns an instance of a block cipher mode of operations given its name
-     * and characteristics of the underlying block cipher.
-     *
-     * @param mode
-     *            the case-insensitive name of the mode of operations.
-     * @param cipher
-     *            the case-insensitive name of the block cipher.
-     * @param cipherBlockSize
-     *            the block size, in bytes, of the underlying cipher.
-     * @return an instance of the block cipher algorithm, operating in a given
-     *         mode of operations, or <code>null</code> if none found.
-     * @exception InternalError
-     *                if either the mode or the underlying block cipher
-     *                implementation does not pass its self-test.
-     */
-    public static IMode getInstance(String mode, String cipher, int cipherBlockSize)
-    {
-	if (mode == null || cipher == null)
-	    return null;
-
-	mode = mode.trim();
-	cipher = cipher.trim();
-	IBlockCipher cipherImpl = CipherFactory.getInstance(cipher);
-	if (cipherImpl == null)
-	    return null;
-
-	return getInstance(mode, cipherImpl, cipherBlockSize);
-    }
-
-    /**
-     * Returns a {@link Set} of names of mode supported by this <i>Factory</i>.
-     *
-     * @return a {@link Set} of mode names (Strings).
-     */
-    public static final Set<String> getNames()
-    {
-	synchronized (ModeFactory.class)
-	{
-	    if (names == null)
-	    {
-		HashSet<String> hs = new HashSet<>();
-		hs.add(ECB_MODE);
-		hs.add(CTR_MODE);
-		hs.add(ICM_MODE);
-		hs.add(OFB_MODE);
-		hs.add(CBC_MODE);
-		hs.add(CFB_MODE);
-		hs.add(EAX_MODE);
-		names = Collections.unmodifiableSet(hs);
-	    }
+		return getInstance(mode, cipherImpl, cipherBlockSize);
 	}
-	return names;
-    }
 
-    /** Trivial constructor to enforce Singleton pattern. */
-    private ModeFactory()
-    {
-	super();
-    }
+	/**
+	 * Returns a {@link Set} of names of mode supported by this <i>Factory</i>.
+	 *
+	 * @return a {@link Set} of mode names (Strings).
+	 */
+	public static final Set<String> getNames() {
+		synchronized (ModeFactory.class) {
+			if (names == null) {
+				HashSet<String> hs = new HashSet<>();
+				hs.add(ECB_MODE);
+				hs.add(CTR_MODE);
+				hs.add(ICM_MODE);
+				hs.add(OFB_MODE);
+				hs.add(CBC_MODE);
+				hs.add(CFB_MODE);
+				hs.add(EAX_MODE);
+				names = Collections.unmodifiableSet(hs);
+			}
+		}
+		return names;
+	}
+
+	/** Trivial constructor to enforce Singleton pattern. */
+	private ModeFactory() {
+		super();
+	}
 }

@@ -47,171 +47,153 @@ import gnu.vm.jgnu.security.spec.AlgorithmParameterSpec;
  * @author Casey Marshall (csm@gnu.org)
  * @since 1.4
  */
-public class RC5ParameterSpec implements AlgorithmParameterSpec
-{
+public class RC5ParameterSpec implements AlgorithmParameterSpec {
 
-    // Fields.
-    // ------------------------------------------------------------------------
+	// Fields.
+	// ------------------------------------------------------------------------
 
-    /** The IV. */
-    private byte[] iv;
+	/** The IV. */
+	private byte[] iv;
 
-    /** The number of rounds. */
-    private int rounds;
+	/** The number of rounds. */
+	private int rounds;
 
-    /** The version number. */
-    private int version;
+	/** The version number. */
+	private int version;
 
-    /** The word size, in bits. */
-    private int wordSize;
+	/** The word size, in bits. */
+	private int wordSize;
 
-    // Constructors.
-    // ------------------------------------------------------------------------
+	// Constructors.
+	// ------------------------------------------------------------------------
 
-    /**
-     * Create RC5 parameters without an IV.
-     *
-     * @param version
-     *            The version number.
-     * @param rounds
-     *            The number of rounds.
-     * @param wordSize
-     *            The size of a word, in bits.
-     */
-    public RC5ParameterSpec(int version, int rounds, int wordSize)
-    {
-	this.version = version;
-	this.rounds = rounds;
-	this.wordSize = wordSize;
-    }
-
-    /**
-     * Create RC5 parameters with an IV. The bytes in <code>iv</code> in the
-     * range <code>[0, 2*(wordSize/8)-1]</code> are used.
-     *
-     * @param version
-     *            The version number.
-     * @param rounds
-     *            The number of rounds.
-     * @param wordSize
-     *            The size of a word, in bits.
-     * @param iv
-     *            The IV data.
-     */
-    public RC5ParameterSpec(int version, int rounds, int wordSize, byte[] iv)
-    {
-	this(version, rounds, wordSize, iv, 0);
-    }
-
-    /**
-     * Create RC5 parameters with an IV. The bytes in <code>iv</code> in the
-     * range <code>[off, off+2*(wordSize/8)-1]</code> are used.
-     *
-     * @param version
-     *            The version number.
-     * @param rounds
-     *            The number of rounds.
-     * @param wordSize
-     *            The size of a word, in bits.
-     * @param iv
-     *            The IV data.
-     * @param off
-     *            From where in the array the IV starts.
-     */
-    public RC5ParameterSpec(int version, int rounds, int wordSize, byte[] iv, int off)
-    {
-	this(version, rounds, wordSize);
-	int ivLength = 2 * (wordSize / 8);
-	if (off < 0)
-	    throw new IllegalArgumentException();
-	if (iv.length - off < ivLength)
-	{
-	    throw new IllegalArgumentException("IV too short");
+	/**
+	 * Create RC5 parameters without an IV.
+	 *
+	 * @param version
+	 *            The version number.
+	 * @param rounds
+	 *            The number of rounds.
+	 * @param wordSize
+	 *            The size of a word, in bits.
+	 */
+	public RC5ParameterSpec(int version, int rounds, int wordSize) {
+		this.version = version;
+		this.rounds = rounds;
+		this.wordSize = wordSize;
 	}
-	this.iv = new byte[ivLength];
-	System.arraycopy(iv, off, this.iv, 0, ivLength);
-    }
 
-    // Instance methods.
-    // ------------------------------------------------------------------------
+	/**
+	 * Create RC5 parameters with an IV. The bytes in <code>iv</code> in the range
+	 * <code>[0, 2*(wordSize/8)-1]</code> are used.
+	 *
+	 * @param version
+	 *            The version number.
+	 * @param rounds
+	 *            The number of rounds.
+	 * @param wordSize
+	 *            The size of a word, in bits.
+	 * @param iv
+	 *            The IV data.
+	 */
+	public RC5ParameterSpec(int version, int rounds, int wordSize, byte[] iv) {
+		this(version, rounds, wordSize, iv, 0);
+	}
 
-    @Override
-    public boolean equals(Object o)
-    {
-	if (this == o)
-	    return true;
-	byte[] oiv = ((RC5ParameterSpec) o).getIV();
-	if (iv != oiv)
-	{
-	    if (iv == null || oiv == null)
-		return false;
-	    if (iv.length != oiv.length)
-		return false;
-	    for (int i = 0; i < iv.length; i++)
-	    {
-		if (iv[i] != oiv[i])
-		{
-		    return false;
+	/**
+	 * Create RC5 parameters with an IV. The bytes in <code>iv</code> in the range
+	 * <code>[off, off+2*(wordSize/8)-1]</code> are used.
+	 *
+	 * @param version
+	 *            The version number.
+	 * @param rounds
+	 *            The number of rounds.
+	 * @param wordSize
+	 *            The size of a word, in bits.
+	 * @param iv
+	 *            The IV data.
+	 * @param off
+	 *            From where in the array the IV starts.
+	 */
+	public RC5ParameterSpec(int version, int rounds, int wordSize, byte[] iv, int off) {
+		this(version, rounds, wordSize);
+		int ivLength = 2 * (wordSize / 8);
+		if (off < 0)
+			throw new IllegalArgumentException();
+		if (iv.length - off < ivLength) {
+			throw new IllegalArgumentException("IV too short");
 		}
-	    }
+		this.iv = new byte[ivLength];
+		System.arraycopy(iv, off, this.iv, 0, ivLength);
 	}
-	return rounds == ((RC5ParameterSpec) o).getRounds()
-		&& version == ((RC5ParameterSpec) o).getVersion()
-		&& wordSize == ((RC5ParameterSpec) o).getWordSize();
-    }
 
-    /**
-     * Return the initializaiton vector, or <code>null</code> if none was
-     * specified.
-     *
-     * @return The IV, or null.
-     */
-    public byte[] getIV()
-    {
-	return iv;
-    }
+	// Instance methods.
+	// ------------------------------------------------------------------------
 
-    /**
-     * Get the number of rounds.
-     *
-     * @return The number of rounds.
-     */
-    public int getRounds()
-    {
-	return rounds;
-    }
-
-    /**
-     * Get the version number.
-     *
-     * @return The version number.
-     */
-    public int getVersion()
-    {
-	return version;
-    }
-
-    /**
-     * Get the word size, in bits.
-     *
-     * @return The word size, in bits.
-     */
-    public int getWordSize()
-    {
-	return wordSize;
-    }
-
-    @Override
-    public int hashCode()
-    {
-	int code = rounds + version + wordSize;
-	if (iv != null)
-	{
-	    for (int i = 0; i < iv.length; i++)
-	    {
-		code += iv[i];
-	    }
+	@Override
+	public boolean equals(Object o) {
+		if (this == o)
+			return true;
+		byte[] oiv = ((RC5ParameterSpec) o).getIV();
+		if (iv != oiv) {
+			if (iv == null || oiv == null)
+				return false;
+			if (iv.length != oiv.length)
+				return false;
+			for (int i = 0; i < iv.length; i++) {
+				if (iv[i] != oiv[i]) {
+					return false;
+				}
+			}
+		}
+		return rounds == ((RC5ParameterSpec) o).getRounds() && version == ((RC5ParameterSpec) o).getVersion()
+				&& wordSize == ((RC5ParameterSpec) o).getWordSize();
 	}
-	return code;
-    }
+
+	/**
+	 * Return the initializaiton vector, or <code>null</code> if none was specified.
+	 *
+	 * @return The IV, or null.
+	 */
+	public byte[] getIV() {
+		return iv;
+	}
+
+	/**
+	 * Get the number of rounds.
+	 *
+	 * @return The number of rounds.
+	 */
+	public int getRounds() {
+		return rounds;
+	}
+
+	/**
+	 * Get the version number.
+	 *
+	 * @return The version number.
+	 */
+	public int getVersion() {
+		return version;
+	}
+
+	/**
+	 * Get the word size, in bits.
+	 *
+	 * @return The word size, in bits.
+	 */
+	public int getWordSize() {
+		return wordSize;
+	}
+
+	@Override
+	public int hashCode() {
+		int code = rounds + version + wordSize;
+		if (iv != null) {
+			for (int i = 0; i < iv.length; i++) {
+				code += iv[i];
+			}
+		}
+		return code;
+	}
 }

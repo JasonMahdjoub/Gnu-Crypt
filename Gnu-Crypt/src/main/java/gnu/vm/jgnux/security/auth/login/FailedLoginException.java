@@ -42,23 +42,20 @@ import javax.security.auth.login.LoginException;
 /**
  * An exception that signals that an attempt to login was unsuccessful.
  */
-public class FailedLoginException extends LoginException
-{
+public class FailedLoginException extends LoginException {
 
-    // Constant.
-    // -------------------------------------------------------------------------
+	// Constant.
+	// -------------------------------------------------------------------------
 
-    private static final long serialVersionUID = 802556922354616286L;
+	private static final long serialVersionUID = 802556922354616286L;
 
-    // Constructors.
-    // -------------------------------------------------------------------------
+	// Constructors.
+	// -------------------------------------------------------------------------
 
-    public FailedLoginException()
-    {
-    }
+	public FailedLoginException() {
+	}
 
-    public FailedLoginException(String message)
-    {
-	super(message);
-    }
+	public FailedLoginException(String message) {
+		super(message);
+	}
 }

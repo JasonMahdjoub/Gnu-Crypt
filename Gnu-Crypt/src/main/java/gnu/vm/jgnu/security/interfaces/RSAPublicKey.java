@@ -48,14 +48,13 @@ import gnu.vm.jgnu.security.PublicKey;
  *
  * @author Aaron M. Renn (arenn@urbanophile.com)
  */
-public interface RSAPublicKey extends PublicKey, RSAKey
-{
-    long serialVersionUID = -8727434096241101194L;
+public interface RSAPublicKey extends PublicKey, RSAKey {
+	long serialVersionUID = -8727434096241101194L;
 
-    /**
-     * Returns the public exponent value for this key
-     *
-     * @return The public exponent value for this key
-     */
-    BigInteger getPublicExponent();
+	/**
+	 * Returns the public exponent value for this key
+	 *
+	 * @return The public exponent value for this key
+	 */
+	BigInteger getPublicExponent();
 }

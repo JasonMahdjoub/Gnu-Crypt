@@ -49,100 +49,87 @@ import gnu.jgnux.crypto.prng.UMacGenerator;
  * The SASL-SRP KDF implementation, which is also used, depending on how it was
  * instantiated, as a secure Pseudo Random Number Generator.
  */
-public class KDF
-{
-    private static final int AES_BLOCK_SIZE = 16; // default block size for AES
+public class KDF {
+	private static final int AES_BLOCK_SIZE = 16; // default block size for AES
 
-    private static final int AES_KEY_SIZE = 16; // default key size for the AES
+	private static final int AES_KEY_SIZE = 16; // default key size for the AES
 
-    private static final byte[] buffer = new byte[1];
+	private static final byte[] buffer = new byte[1];
 
-    /** Our default source of randomness. */
-    private static final PRNG prng = PRNG.getInstance();
+	/** Our default source of randomness. */
+	private static final PRNG prng = PRNG.getInstance();
 
-    /**
-     * A Factory mehod that returns an instance of a <code>KDF</code> based on
-     * supplied seed data.
-     *
-     * @param K
-     *            the SASL SRP shared secret for a <code>KDF</code> to be used
-     *            for <i>CALG</i> and <i>IALG</i> setup. <code>null</code>
-     *            otherwise.
-     * @return an instance of a <code>KDF</code>.
-     */
-    static final KDF getInstance(final byte[] K)
-    {
-	int ndx = -1;
-	final byte[] keyMaterial;
-	if (K != null)
-	{
-	    keyMaterial = K;
-	    ndx = 0;
+	/**
+	 * A Factory mehod that returns an instance of a <code>KDF</code> based on
+	 * supplied seed data.
+	 *
+	 * @param K
+	 *            the SASL SRP shared secret for a <code>KDF</code> to be used for
+	 *            <i>CALG</i> and <i>IALG</i> setup. <code>null</code> otherwise.
+	 * @return an instance of a <code>KDF</code>.
+	 */
+	static final KDF getInstance(final byte[] K) {
+		int ndx = -1;
+		final byte[] keyMaterial;
+		if (K != null) {
+			keyMaterial = K;
+			ndx = 0;
+		} else {
+			keyMaterial = new byte[AES_BLOCK_SIZE];
+			while (ndx < 1 || ndx > 255)
+				ndx = (byte) nextByte();
+		}
+		return new KDF(keyMaterial, ndx);
 	}
-	else
-	{
-	    keyMaterial = new byte[AES_BLOCK_SIZE];
-	    while (ndx < 1 || ndx > 255)
-		ndx = (byte) nextByte();
+
+	private static synchronized final int nextByte() {
+		prng.nextBytes(buffer);
+		return (buffer[0] & 0xFF);
 	}
-	return new KDF(keyMaterial, ndx);
-    }
 
-    private static synchronized final int nextByte()
-    {
-	prng.nextBytes(buffer);
-	return (buffer[0] & 0xFF);
-    }
+	/** The underlying UMAC Generator instance. */
+	private UMacGenerator umac = null;
 
-    /** The underlying UMAC Generator instance. */
-    private UMacGenerator umac = null;
+	/**
+	 * Constructs an instance of the <code>KDF</code> initialised with the
+	 * designated shared secret bytes.
+	 *
+	 * @param keyMaterial
+	 *            the SASL SRP shared secret (K) bytes.
+	 */
+	private KDF(final byte[] keyMaterial, final int ndx) {
+		super();
 
-    /**
-     * Constructs an instance of the <code>KDF</code> initialised with the
-     * designated shared secret bytes.
-     *
-     * @param keyMaterial
-     *            the SASL SRP shared secret (K) bytes.
-     */
-    private KDF(final byte[] keyMaterial, final int ndx)
-    {
-	super();
-
-	final HashMap<Object, Object> map = new HashMap<>();
-	map.put(UMacGenerator.CIPHER, Registry.AES_CIPHER);
-	map.put(UMacGenerator.INDEX, Integer.valueOf(ndx));
-	map.put(IBlockCipher.CIPHER_BLOCK_SIZE,
-		Integer.valueOf(AES_BLOCK_SIZE));
-	final byte[] key = new byte[AES_KEY_SIZE];
-	System.arraycopy(keyMaterial, 0, key, 0, AES_KEY_SIZE);
-	map.put(IBlockCipher.KEY_MATERIAL, key);
-	umac = new UMacGenerator();
-	umac.init(map);
-    }
-
-    /**
-     * Returns a designated number of bytes suitable for use in the SASL SRP
-     * mechanism.
-     *
-     * @param length
-     *            the number of bytes needed.
-     * @return a byte array containing the generated/selected bytes.
-     */
-    public synchronized byte[] derive(final int length)
-    {
-	final byte[] result = new byte[length];
-	try
-	{
-	    umac.nextBytes(result, 0, length);
+		final HashMap<Object, Object> map = new HashMap<>();
+		map.put(UMacGenerator.CIPHER, Registry.AES_CIPHER);
+		map.put(UMacGenerator.INDEX, Integer.valueOf(ndx));
+		map.put(IBlockCipher.CIPHER_BLOCK_SIZE, Integer.valueOf(AES_BLOCK_SIZE));
+		final byte[] key = new byte[AES_KEY_SIZE];
+		System.arraycopy(keyMaterial, 0, key, 0, AES_KEY_SIZE);
+		map.put(IBlockCipher.KEY_MATERIAL, key);
+		umac = new UMacGenerator();
+		umac.init(map);
 	}
-	catch (IllegalStateException x) // should not happen
-	{
-	    x.printStackTrace(System.err);
+
+	/**
+	 * Returns a designated number of bytes suitable for use in the SASL SRP
+	 * mechanism.
+	 *
+	 * @param length
+	 *            the number of bytes needed.
+	 * @return a byte array containing the generated/selected bytes.
+	 */
+	public synchronized byte[] derive(final int length) {
+		final byte[] result = new byte[length];
+		try {
+			umac.nextBytes(result, 0, length);
+		} catch (IllegalStateException x) // should not happen
+		{
+			x.printStackTrace(System.err);
+		} catch (LimitReachedException x) // idem
+		{
+			x.printStackTrace(System.err);
+		}
+		return result;
 	}
-	catch (LimitReachedException x) // idem
-	{
-	    x.printStackTrace(System.err);
-	}
-	return result;
-    }
 }

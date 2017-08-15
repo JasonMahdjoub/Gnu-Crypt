@@ -49,195 +49,171 @@ import java.io.InputStream;
  *
  * @author Casey Marshall (rsdio@metastatic.org)
  */
-public class Base64InputStream extends FilterInputStream
-{
+public class Base64InputStream extends FilterInputStream {
 
-    // Constants and fields.
-    // ------------------------------------------------------------------------
+	// Constants and fields.
+	// ------------------------------------------------------------------------
 
-    /** Base-64 digits. */
-    private static final String BASE_64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+	/** Base-64 digits. */
+	private static final String BASE_64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
-    /** Base-64 padding character. */
-    private static final char BASE_64_PAD = '=';
+	/** Base-64 padding character. */
+	private static final char BASE_64_PAD = '=';
 
-    /**
-     * Decode a single Base-64 string to a byte array.
-     *
-     * @param base64
-     *            The Base-64 encoded data.
-     * @return The decoded bytes.
-     * @throws IOException
-     *             If the given data do not compose a valid Base-64 sequence.
-     */
-    public static byte[] decode(String base64) throws IOException
-    {
-	try (Base64InputStream in = new Base64InputStream(
-		new ByteArrayInputStream(base64.getBytes())))
-	{
-	    try (ByteArrayOutputStream out = new ByteArrayOutputStream(
-		    (int) (base64.length() / 0.666)))
-	    {
-		byte[] buf = new byte[1024];
-		int len;
-		while ((len = in.read(buf)) != -1)
-		    out.write(buf, 0, len);
-		return out.toByteArray();
-	    }
-	}
-    }
-
-    /** Decoding state. */
-    private int state;
-
-    /** Intermediate decoded value. */
-    private int temp;
-
-    /** EOF flag. */
-    private boolean eof;
-
-    // Constructors.
-    // ------------------------------------------------------------------------
-
-    private final byte[] one = new byte[1];
-
-    // Class method.
-    // ------------------------------------------------------------------------
-
-    /**
-     * Create a new Base-64 input stream. The input bytes must be the ASCII
-     * characters A-Z, a-z, 0-9, + and /, with optional whitespace, and will be
-     * decoded into a byte stream.
-     *
-     * @param in
-     *            The source of Base-64 input.
-     */
-    public Base64InputStream(InputStream in)
-    {
-	super(in);
-	state = 0;
-	temp = 0;
-	eof = false;
-    }
-
-    // Instance methods.
-    // ------------------------------------------------------------------------
-
-    @Override
-    public int available()
-    {
-	return 0;
-    }
-
-    @Override
-    public void mark(int markLimit)
-    {
-    }
-
-    @Override
-    public boolean markSupported()
-    {
-	return false;
-    }
-
-    @Override
-    public int read() throws IOException
-    {
-	if (read(one) == 1)
-	    return one[0];
-	return -1;
-    }
-
-    @Override
-    @SuppressWarnings("fallthrough")
-    public int read(byte[] buf, int off, int len) throws IOException
-    {
-	if (eof)
-	    return -1;
-	int count = 0;
-	while (count < len)
-	{
-	    int i;
-	    do
-	    {
-		i = in.read();
-
-	    } while (Character.isWhitespace((char) i));
-
-	    int pos = BASE_64.indexOf((char) i);
-	    if (pos >= 0)
-	    {
-		switch (state)
-		{
-		    case 0:
-			temp = pos << 2;
-			state = 1;
-			break;
-		    case 1:
-			buf[count++] = (byte) (temp | (pos >>> 4));
-			temp = (pos & 0x0F) << 4;
-			state = 2;
-			break;
-		    case 2:
-			buf[count++] = (byte) (temp | (pos >>> 2));
-			temp = (pos & 0x03) << 6;
-			state = 3;
-			break;
-		    case 3:
-			buf[count++] = (byte) (temp | pos);
-			state = 0;
-			break;
+	/**
+	 * Decode a single Base-64 string to a byte array.
+	 *
+	 * @param base64
+	 *            The Base-64 encoded data.
+	 * @return The decoded bytes.
+	 * @throws IOException
+	 *             If the given data do not compose a valid Base-64 sequence.
+	 */
+	public static byte[] decode(String base64) throws IOException {
+		try (Base64InputStream in = new Base64InputStream(new ByteArrayInputStream(base64.getBytes()))) {
+			try (ByteArrayOutputStream out = new ByteArrayOutputStream((int) (base64.length() / 0.666))) {
+				byte[] buf = new byte[1024];
+				int len;
+				while ((len = in.read(buf)) != -1)
+					out.write(buf, 0, len);
+				return out.toByteArray();
+			}
 		}
-	    }
-	    else if (i == BASE_64_PAD)
-	    {
-		switch (state)
-		{
-		    case 0:
-		    case 1:
-			throw new IOException("malformed Base-64 input");
-		    case 2:
-			do
-			{
-			    i = in.read();
+	}
+
+	/** Decoding state. */
+	private int state;
+
+	/** Intermediate decoded value. */
+	private int temp;
+
+	/** EOF flag. */
+	private boolean eof;
+
+	// Constructors.
+	// ------------------------------------------------------------------------
+
+	private final byte[] one = new byte[1];
+
+	// Class method.
+	// ------------------------------------------------------------------------
+
+	/**
+	 * Create a new Base-64 input stream. The input bytes must be the ASCII
+	 * characters A-Z, a-z, 0-9, + and /, with optional whitespace, and will be
+	 * decoded into a byte stream.
+	 *
+	 * @param in
+	 *            The source of Base-64 input.
+	 */
+	public Base64InputStream(InputStream in) {
+		super(in);
+		state = 0;
+		temp = 0;
+		eof = false;
+	}
+
+	// Instance methods.
+	// ------------------------------------------------------------------------
+
+	@Override
+	public int available() {
+		return 0;
+	}
+
+	@Override
+	public void mark(int markLimit) {
+	}
+
+	@Override
+	public boolean markSupported() {
+		return false;
+	}
+
+	@Override
+	public int read() throws IOException {
+		if (read(one) == 1)
+			return one[0];
+		return -1;
+	}
+
+	@Override
+	@SuppressWarnings("fallthrough")
+	public int read(byte[] buf, int off, int len) throws IOException {
+		if (eof)
+			return -1;
+		int count = 0;
+		while (count < len) {
+			int i;
+			do {
+				i = in.read();
 
 			} while (Character.isWhitespace((char) i));
-			if (i != BASE_64_PAD)
-			    throw new IOException("malformed Base-64 input");
-		    case 3:
-			do
+
+			int pos = BASE_64.indexOf((char) i);
+			if (pos >= 0) {
+				switch (state) {
+				case 0:
+					temp = pos << 2;
+					state = 1;
+					break;
+				case 1:
+					buf[count++] = (byte) (temp | (pos >>> 4));
+					temp = (pos & 0x0F) << 4;
+					state = 2;
+					break;
+				case 2:
+					buf[count++] = (byte) (temp | (pos >>> 2));
+					temp = (pos & 0x03) << 6;
+					state = 3;
+					break;
+				case 3:
+					buf[count++] = (byte) (temp | pos);
+					state = 0;
+					break;
+				}
+			} else if (i == BASE_64_PAD) {
+				switch (state) {
+				case 0:
+				case 1:
+					throw new IOException("malformed Base-64 input");
+				case 2:
+					do {
+						i = in.read();
+
+					} while (Character.isWhitespace((char) i));
+					if (i != BASE_64_PAD)
+						throw new IOException("malformed Base-64 input");
+				case 3:
+					do {
+						i = in.read();
+
+					} while (Character.isWhitespace((char) i));
+				}
+				eof = true;
+				break;
+			} else // First non-Base-64 character, consider it end-of-stream.
 			{
-			    i = in.read();
-
-			} while (Character.isWhitespace((char) i));
+				if (state != 0)
+					throw new IOException("malformed Base-64 input");
+				eof = true;
+				break;
+			}
 		}
-		eof = true;
-		break;
-	    }
-	    else // First non-Base-64 character, consider it end-of-stream.
-	    {
-		if (state != 0)
-		    throw new IOException("malformed Base-64 input");
-		eof = true;
-		break;
-	    }
+		return count;
 	}
-	return count;
-    }
 
-    @Override
-    public void reset() throws IOException
-    {
-	throw new IOException("reset not supported");
-    }
+	@Override
+	public void reset() throws IOException {
+		throw new IOException("reset not supported");
+	}
 
-    @Override
-    public long skip(long n) throws IOException
-    {
-	long skipped;
-	for (skipped = 0; skipped < n; skipped++)
-	    if (read() == -1)
-		break;
-	return skipped;
-    }
+	@Override
+	public long skip(long n) throws IOException {
+		long skipped;
+		for (skipped = 0; skipped < n; skipped++)
+			if (read() == -1)
+				break;
+		return skipped;
+	}
 }

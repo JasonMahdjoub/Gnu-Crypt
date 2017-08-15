@@ -44,28 +44,25 @@ package gnu.vm.jgnu.security;
  * @author Warren Levy (warrenl@cygnus.com)
  * @status updated to 1.4
  */
-public class InvalidParameterException extends IllegalArgumentException
-{
-    /**
-     * Compatible with JDK 1.1+.
-     */
-    private static final long serialVersionUID = -857968536935667808L;
+public class InvalidParameterException extends IllegalArgumentException {
+	/**
+	 * Compatible with JDK 1.1+.
+	 */
+	private static final long serialVersionUID = -857968536935667808L;
 
-    /**
-     * Construct an exception with no message.
-     */
-    public InvalidParameterException()
-    {
-    }
+	/**
+	 * Construct an exception with no message.
+	 */
+	public InvalidParameterException() {
+	}
 
-    /**
-     * Construct an exception with a message.
-     *
-     * @param msg
-     *            the message
-     */
-    public InvalidParameterException(String msg)
-    {
-	super(msg);
-    }
+	/**
+	 * Construct an exception with a message.
+	 *
+	 * @param msg
+	 *            the message
+	 */
+	public InvalidParameterException(String msg) {
+		super(msg);
+	}
 }

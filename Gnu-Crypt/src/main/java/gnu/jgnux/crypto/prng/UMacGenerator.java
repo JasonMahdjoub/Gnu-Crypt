@@ -85,102 +85,90 @@ import gnu.vm.jgnu.security.InvalidKeyException;
  * T. Krovetz, J. Black, S. Halevi, A. Hevia, H. Krawczyk, and P. Rogaway.</li>
  * </ol>
  */
-public class UMacGenerator extends BasePRNG implements Cloneable
-{
-    /**
-     * Property name of the KDF <code>index</code> value to use in this
-     * instance. The value is taken to be an {@link Integer} less than
-     * <code>256</code>.
-     */
-    public static final String INDEX = "gnu.crypto.prng.umac.index";
-
-    /** The name of the underlying symmetric key block cipher algorithm. */
-    public static final String CIPHER = "gnu.crypto.prng.umac.cipher.name";
-
-    /** The generator's underlying block cipher. */
-    private IBlockCipher cipher;
-
-    /** Trivial 0-arguments constructor. */
-    public UMacGenerator()
-    {
-	super(Registry.UMAC_PRNG);
-    }
-
-    @Override
-    public void fillBlock()
-    {
-	cipher.encryptBlock(buffer, 0, buffer, 0);
-    }
-
-    @Override
-    public void setup(Map<Object, ?> attributes)
-    {
-	boolean newCipher = true;
-	String cipherName = (String) attributes.get(CIPHER);
-	if (cipherName == null)
-	    if (cipher == null) // happy birthday
-		cipher = CipherFactory.getInstance(Registry.RIJNDAEL_CIPHER);
-	    else // we already have one. use it as is
-		newCipher = false;
-	else
-	    cipher = CipherFactory.getInstance(cipherName);
-	// find out what block size we should use it in
-	int cipherBlockSize = 0;
-	Integer bs = (Integer) attributes.get(IBlockCipher.CIPHER_BLOCK_SIZE);
-	if (bs != null)
-	    cipherBlockSize = bs.intValue();
-	else
-	{
-	    if (newCipher) // assume we'll use its default block size
-		cipherBlockSize = cipher.defaultBlockSize();
-	    // else use as is
-	}
-	// get the key material
-	byte[] key = (byte[]) attributes.get(IBlockCipher.KEY_MATERIAL);
-	if (key == null)
-	    throw new IllegalArgumentException(IBlockCipher.KEY_MATERIAL);
-
-	int keyLength = key.length;
-	// ensure that keyLength is valid for the chosen underlying cipher
-	boolean ok = false;
-	for (Iterator<Integer> it = cipher.keySizes(); it.hasNext();)
-	{
-	    ok = (keyLength == it.next().intValue());
-	    if (ok)
-		break;
-	}
-	if (!ok)
-	    throw new IllegalArgumentException("key length");
-	// ensure that remaining params make sense
-	int index = -1;
-	Integer i = (Integer) attributes.get(INDEX);
-	if (i != null)
-	{
-	    index = i.intValue();
-	    if (index < 0 || index > 255)
-		throw new IllegalArgumentException(INDEX);
-	}
-	// now initialise the underlying cipher
-	Map<Object, Object> map = new HashMap<>();
-	if (cipherBlockSize != 0) // only needed if new or changed
-	    map.put(IBlockCipher.CIPHER_BLOCK_SIZE,
-		    Integer.valueOf(cipherBlockSize));
-	map.put(IBlockCipher.KEY_MATERIAL, key);
-	try
-	{
-	    cipher.init(map);
-	}
-	catch (InvalidKeyException x)
-	{
-	    throw new IllegalArgumentException(IBlockCipher.KEY_MATERIAL);
-	}
-	buffer = new byte[cipher.currentBlockSize()];
-	buffer[cipher.currentBlockSize() - 1] = (byte) index;
-	fillBlock();
-	/*
-	 * try {
-	 * 
-	 * } catch (LimitReachedException impossible) { }
+public class UMacGenerator extends BasePRNG implements Cloneable {
+	/**
+	 * Property name of the KDF <code>index</code> value to use in this instance.
+	 * The value is taken to be an {@link Integer} less than <code>256</code>.
 	 */
-    }
+	public static final String INDEX = "gnu.crypto.prng.umac.index";
+
+	/** The name of the underlying symmetric key block cipher algorithm. */
+	public static final String CIPHER = "gnu.crypto.prng.umac.cipher.name";
+
+	/** The generator's underlying block cipher. */
+	private IBlockCipher cipher;
+
+	/** Trivial 0-arguments constructor. */
+	public UMacGenerator() {
+		super(Registry.UMAC_PRNG);
+	}
+
+	@Override
+	public void fillBlock() {
+		cipher.encryptBlock(buffer, 0, buffer, 0);
+	}
+
+	@Override
+	public void setup(Map<Object, ?> attributes) {
+		boolean newCipher = true;
+		String cipherName = (String) attributes.get(CIPHER);
+		if (cipherName == null)
+			if (cipher == null) // happy birthday
+				cipher = CipherFactory.getInstance(Registry.RIJNDAEL_CIPHER);
+			else // we already have one. use it as is
+				newCipher = false;
+		else
+			cipher = CipherFactory.getInstance(cipherName);
+		// find out what block size we should use it in
+		int cipherBlockSize = 0;
+		Integer bs = (Integer) attributes.get(IBlockCipher.CIPHER_BLOCK_SIZE);
+		if (bs != null)
+			cipherBlockSize = bs.intValue();
+		else {
+			if (newCipher) // assume we'll use its default block size
+				cipherBlockSize = cipher.defaultBlockSize();
+			// else use as is
+		}
+		// get the key material
+		byte[] key = (byte[]) attributes.get(IBlockCipher.KEY_MATERIAL);
+		if (key == null)
+			throw new IllegalArgumentException(IBlockCipher.KEY_MATERIAL);
+
+		int keyLength = key.length;
+		// ensure that keyLength is valid for the chosen underlying cipher
+		boolean ok = false;
+		for (Iterator<Integer> it = cipher.keySizes(); it.hasNext();) {
+			ok = (keyLength == it.next().intValue());
+			if (ok)
+				break;
+		}
+		if (!ok)
+			throw new IllegalArgumentException("key length");
+		// ensure that remaining params make sense
+		int index = -1;
+		Integer i = (Integer) attributes.get(INDEX);
+		if (i != null) {
+			index = i.intValue();
+			if (index < 0 || index > 255)
+				throw new IllegalArgumentException(INDEX);
+		}
+		// now initialise the underlying cipher
+		Map<Object, Object> map = new HashMap<>();
+		if (cipherBlockSize != 0) // only needed if new or changed
+			map.put(IBlockCipher.CIPHER_BLOCK_SIZE, Integer.valueOf(cipherBlockSize));
+		map.put(IBlockCipher.KEY_MATERIAL, key);
+		try {
+			cipher.init(map);
+		} catch (InvalidKeyException x) {
+			throw new IllegalArgumentException(IBlockCipher.KEY_MATERIAL);
+		}
+		buffer = new byte[cipher.currentBlockSize()];
+		buffer[cipher.currentBlockSize() - 1] = (byte) index;
+		fillBlock();
+		/*
+		 * try {
+		 * 
+		 * } catch (LimitReachedException impossible) { }
+		 */
+	}
 }

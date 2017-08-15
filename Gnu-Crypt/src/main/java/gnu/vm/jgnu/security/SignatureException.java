@@ -46,54 +46,49 @@ import gnu.vm.jgnu.security.GeneralSecurityException;
  * @author Aaron M. Renn (arenn@urbanophile.com)
  * @status updated to 1.4
  */
-public class SignatureException extends GeneralSecurityException
-{
-    /**
-     * Compatible with JDK 1.1+.
-     */
-    private static final long serialVersionUID = 7509989324975124438L;
+public class SignatureException extends GeneralSecurityException {
+	/**
+	 * Compatible with JDK 1.1+.
+	 */
+	private static final long serialVersionUID = 7509989324975124438L;
 
-    /**
-     * Create an instance with no descriptive error message.
-     */
-    public SignatureException()
-    {
-    }
+	/**
+	 * Create an instance with no descriptive error message.
+	 */
+	public SignatureException() {
+	}
 
-    /**
-     * Create an instance with a descriptive error message.
-     *
-     * @param msg
-     *            the message
-     */
-    public SignatureException(String msg)
-    {
-	super(msg);
-    }
+	/**
+	 * Create an instance with a descriptive error message.
+	 *
+	 * @param msg
+	 *            the message
+	 */
+	public SignatureException(String msg) {
+		super(msg);
+	}
 
-    /**
-     * Create a new instance with a descriptive error message and a cause.
-     * 
-     * @param s
-     *            the descriptive error message
-     * @param cause
-     *            the cause
-     * @since 1.5
-     */
-    public SignatureException(String s, Throwable cause)
-    {
-	super(s, cause);
-    }
+	/**
+	 * Create a new instance with a descriptive error message and a cause.
+	 * 
+	 * @param s
+	 *            the descriptive error message
+	 * @param cause
+	 *            the cause
+	 * @since 1.5
+	 */
+	public SignatureException(String s, Throwable cause) {
+		super(s, cause);
+	}
 
-    /**
-     * Create a new instance with a cause.
-     * 
-     * @param cause
-     *            the cause
-     * @since 1.5
-     */
-    public SignatureException(Throwable cause)
-    {
-	super(cause);
-    }
+	/**
+	 * Create a new instance with a cause.
+	 * 
+	 * @param cause
+	 *            the cause
+	 * @since 1.5
+	 */
+	public SignatureException(Throwable cause) {
+		super(cause);
+	}
 }

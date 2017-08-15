@@ -45,54 +45,47 @@ import gnu.jgnu.security.der.DER;
 import gnu.jgnu.security.der.DERReader;
 import gnu.jgnu.security.der.DERValue;
 
-public class CRLNumber extends Extension.Value
-{
+public class CRLNumber extends Extension.Value {
 
-    // Constants and fields.
-    // -------------------------------------------------------------------------
+	// Constants and fields.
+	// -------------------------------------------------------------------------
 
-    public static final OID ID = new OID("2.5.29.20");
+	public static final OID ID = new OID("2.5.29.20");
 
-    private final BigInteger number;
+	private final BigInteger number;
 
-    // Constructor.
-    // -------------------------------------------------------------------------
+	// Constructor.
+	// -------------------------------------------------------------------------
 
-    public CRLNumber(final BigInteger number)
-    {
-	this.number = number;
-    }
-
-    public CRLNumber(final byte[] encoded) throws IOException
-    {
-	super(encoded);
-	DERValue val = DERReader.read(encoded);
-	if (val.getTag() != DER.INTEGER)
-	    throw new IOException("malformed CRLNumber");
-	number = (BigInteger) val.getValue();
-    }
-
-    // Instance method.
-    // -------------------------------------------------------------------------
-
-    @Override
-    public byte[] getEncoded()
-    {
-	if (encoded == null)
-	{
-	    encoded = new DERValue(DER.INTEGER, number).getEncoded();
+	public CRLNumber(final BigInteger number) {
+		this.number = number;
 	}
-	return encoded.clone();
-    }
 
-    public BigInteger getNumber()
-    {
-	return number;
-    }
+	public CRLNumber(final byte[] encoded) throws IOException {
+		super(encoded);
+		DERValue val = DERReader.read(encoded);
+		if (val.getTag() != DER.INTEGER)
+			throw new IOException("malformed CRLNumber");
+		number = (BigInteger) val.getValue();
+	}
 
-    @Override
-    public String toString()
-    {
-	return CRLNumber.class.getName() + " [ " + number + " ]";
-    }
+	// Instance method.
+	// -------------------------------------------------------------------------
+
+	@Override
+	public byte[] getEncoded() {
+		if (encoded == null) {
+			encoded = new DERValue(DER.INTEGER, number).getEncoded();
+		}
+		return encoded.clone();
+	}
+
+	public BigInteger getNumber() {
+		return number;
+	}
+
+	@Override
+	public String toString() {
+		return CRLNumber.class.getName() + " [ " + number + " ]";
+	}
 }

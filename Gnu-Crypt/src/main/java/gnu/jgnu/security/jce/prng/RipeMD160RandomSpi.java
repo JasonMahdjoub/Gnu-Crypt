@@ -43,15 +43,13 @@ import gnu.jgnu.security.Registry;
  * The implementation of the RIPEMD160-based SecureRandom <i>Service Provider
  * Interface</i> (<b>SPI</b>) adapter.
  */
-public class RipeMD160RandomSpi extends SecureRandomAdapter
-{
-    /**
-     * 
-     */
-    private static final long serialVersionUID = -1826833146069540489L;
+public class RipeMD160RandomSpi extends SecureRandomAdapter {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -1826833146069540489L;
 
-    public RipeMD160RandomSpi()
-    {
-	super(Registry.RIPEMD160_HASH);
-    }
+	public RipeMD160RandomSpi() {
+		super(Registry.RIPEMD160_HASH);
+	}
 }

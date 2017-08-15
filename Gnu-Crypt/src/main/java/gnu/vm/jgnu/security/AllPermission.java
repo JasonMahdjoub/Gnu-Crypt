@@ -60,160 +60,146 @@ import gnu.vm.jgnu.security.AllPermission;
  * @since 1.1
  * @status updated to 1.4
  */
-public final class AllPermission extends Permission
-{
-    /**
-     * Implements AllPermission.newPermissionCollection, and obeys serialization
-     * of JDK.
-     *
-     * @author Eric Blake (ebb9@email.byu.edu)
-     */
-    static final class AllPermissionCollection extends PermissionCollection
-    {
+public final class AllPermission extends Permission {
+	/**
+	 * Implements AllPermission.newPermissionCollection, and obeys serialization of
+	 * JDK.
+	 *
+	 * @author Eric Blake (ebb9@email.byu.edu)
+	 */
+	static final class AllPermissionCollection extends PermissionCollection {
+		/**
+		 * Compatible with JDK 1.1+.
+		 */
+		private static final long serialVersionUID = -4023755556366636806L;
+
+		/**
+		 * Whether an AllPermission has been added to the collection.
+		 *
+		 * @serial if all permission is in the collection yet
+		 */
+		private boolean all_allowed;
+
+		/**
+		 * Add an AllPermission.
+		 *
+		 * @param perm
+		 *            the permission to add
+		 * @throws IllegalArgumentException
+		 *             if perm is not an AllPermission
+		 * @throws SecurityException
+		 *             if the collection is read-only
+		 */
+		@Override
+		public void add(java.security.Permission perm) {
+			if (isReadOnly())
+				throw new SecurityException();
+			if (!(perm instanceof AllPermission))
+				throw new IllegalArgumentException();
+			all_allowed = true;
+		}
+
+		/**
+		 * Returns an enumeration of the elements in the collection.
+		 *
+		 * @return the elements in the collection
+		 */
+		@Override
+		public Enumeration<Permission> elements() {
+			return all_allowed ? Collections.enumeration(Collections.<Permission>singleton(new AllPermission()))
+					: EmptyEnumeration.<Permission>getInstance();
+		}
+
+		/**
+		 * Returns true if this collection implies a permission.
+		 *
+		 * @param perm
+		 *            the permission to check
+		 * @return true if this collection contains an AllPermission
+		 */
+		@Override
+		public boolean implies(Permission perm) {
+			return all_allowed;
+		}
+	} // class AllPermissionCollection
+
 	/**
 	 * Compatible with JDK 1.1+.
 	 */
-	private static final long serialVersionUID = -4023755556366636806L;
+	private static final long serialVersionUID = -2916474571451318075L;
 
 	/**
-	 * Whether an AllPermission has been added to the collection.
-	 *
-	 * @serial if all permission is in the collection yet
+	 * Create a new AllPermission object.
 	 */
-	private boolean all_allowed;
+	public AllPermission() {
+		super("*");
+	}
 
 	/**
-	 * Add an AllPermission.
+	 * Create a new AllPermission object. The parameters are ignored, as all
+	 * permission implies ALL PERMISSION.
+	 *
+	 * @param name
+	 *            ignored
+	 * @param actions
+	 *            ignored
+	 */
+	public AllPermission(String name, String actions) {
+		super("*");
+	}
+
+	/**
+	 * Checks an object for equality. All AllPermissions are equal.
+	 *
+	 * @param obj
+	 *            the <code>Object</code> to test for equality
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		return obj instanceof AllPermission;
+	}
+
+	/**
+	 * This method returns the list of actions associated with this object. This
+	 * will always be the empty string ("") for this class.
+	 *
+	 * @return the action list
+	 */
+	@Override
+	public String getActions() {
+		return "";
+	}
+
+	/**
+	 * This method returns a hash code for this object. This returns 1.
+	 *
+	 * @return a hash value for this object
+	 */
+	@Override
+	public int hashCode() {
+		return 1;
+	}
+
+	/**
+	 * This method always returns <code>true</code> to indicate that this permission
+	 * always implies that any other permission is also granted.
 	 *
 	 * @param perm
-	 *            the permission to add
-	 * @throws IllegalArgumentException
-	 *             if perm is not an AllPermission
-	 * @throws SecurityException
-	 *             if the collection is read-only
+	 *            ignored
+	 * @return true, the permission is implied
 	 */
 	@Override
-	public void add(java.security.Permission perm)
-	{
-	    if (isReadOnly())
-		throw new SecurityException();
-	    if (!(perm instanceof AllPermission))
-		throw new IllegalArgumentException();
-	    all_allowed = true;
+	public boolean implies(Permission perm) {
+		return true;
 	}
 
 	/**
-	 * Returns an enumeration of the elements in the collection.
+	 * Returns a PermissionCollection which can hold AllPermission.
 	 *
-	 * @return the elements in the collection
+	 * @return a permission collection
 	 */
 	@Override
-	public Enumeration<Permission> elements()
-	{
-	    return all_allowed
-		    ? Collections.enumeration(Collections
-			    .<Permission> singleton(new AllPermission()))
-		    : EmptyEnumeration.<Permission> getInstance();
+	public PermissionCollection newPermissionCollection() {
+		return new AllPermissionCollection();
 	}
-
-	/**
-	 * Returns true if this collection implies a permission.
-	 *
-	 * @param perm
-	 *            the permission to check
-	 * @return true if this collection contains an AllPermission
-	 */
-	@Override
-	public boolean implies(Permission perm)
-	{
-	    return all_allowed;
-	}
-    } // class AllPermissionCollection
-
-    /**
-     * Compatible with JDK 1.1+.
-     */
-    private static final long serialVersionUID = -2916474571451318075L;
-
-    /**
-     * Create a new AllPermission object.
-     */
-    public AllPermission()
-    {
-	super("*");
-    }
-
-    /**
-     * Create a new AllPermission object. The parameters are ignored, as all
-     * permission implies ALL PERMISSION.
-     *
-     * @param name
-     *            ignored
-     * @param actions
-     *            ignored
-     */
-    public AllPermission(String name, String actions)
-    {
-	super("*");
-    }
-
-    /**
-     * Checks an object for equality. All AllPermissions are equal.
-     *
-     * @param obj
-     *            the <code>Object</code> to test for equality
-     */
-    @Override
-    public boolean equals(Object obj)
-    {
-	return obj instanceof AllPermission;
-    }
-
-    /**
-     * This method returns the list of actions associated with this object. This
-     * will always be the empty string ("") for this class.
-     *
-     * @return the action list
-     */
-    @Override
-    public String getActions()
-    {
-	return "";
-    }
-
-    /**
-     * This method returns a hash code for this object. This returns 1.
-     *
-     * @return a hash value for this object
-     */
-    @Override
-    public int hashCode()
-    {
-	return 1;
-    }
-
-    /**
-     * This method always returns <code>true</code> to indicate that this
-     * permission always implies that any other permission is also granted.
-     *
-     * @param perm
-     *            ignored
-     * @return true, the permission is implied
-     */
-    @Override
-    public boolean implies(Permission perm)
-    {
-	return true;
-    }
-
-    /**
-     * Returns a PermissionCollection which can hold AllPermission.
-     *
-     * @return a permission collection
-     */
-    @Override
-    public PermissionCollection newPermissionCollection()
-    {
-	return new AllPermissionCollection();
-    }
 } // class AllPermission

@@ -43,10 +43,8 @@ import gnu.jgnu.security.Registry;
  * The implementation of the Serpent <i>Service Provider Interface</i>
  * (<b>SPI</b>) adapter.
  */
-public final class SerpentSpi extends CipherAdapter
-{
-    public SerpentSpi()
-    {
-	super(Registry.SERPENT_CIPHER);
-    }
+public final class SerpentSpi extends CipherAdapter {
+	public SerpentSpi() {
+		super(Registry.SERPENT_CIPHER);
+	}
 }

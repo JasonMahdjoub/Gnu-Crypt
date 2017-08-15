@@ -50,64 +50,51 @@ import gnu.vm.jgnu.security.cert.CertificateFactory;
 /**
  * A primitive entry that contains a path of X.509 certificates.
  */
-public final class CertPathEntry extends PrimitiveEntry
-{
-    public static final int TYPE = 8;
+public final class CertPathEntry extends PrimitiveEntry {
+	public static final int TYPE = 8;
 
-    public static CertPathEntry decode(DataInputStream in) throws IOException
-    {
-	CertPathEntry entry = new CertPathEntry();
-	entry.properties.decode(in);
-	entry.makeCreationDate();
-	int len = in.readInt();
-	MeteredInputStream in2 = new MeteredInputStream(in, len);
-	try
-	{
-	    CertificateFactory fact = CertificateFactory.getInstance("X.509");
-	    entry.path = fact.generateCertificates(in2)
-		    .toArray(new Certificate[0]);
+	public static CertPathEntry decode(DataInputStream in) throws IOException {
+		CertPathEntry entry = new CertPathEntry();
+		entry.properties.decode(in);
+		entry.makeCreationDate();
+		int len = in.readInt();
+		MeteredInputStream in2 = new MeteredInputStream(in, len);
+		try {
+			CertificateFactory fact = CertificateFactory.getInstance("X.509");
+			entry.path = fact.generateCertificates(in2).toArray(new Certificate[0]);
+		} catch (CertificateException ce) {
+			throw new MalformedKeyringException(ce.toString());
+		}
+		return entry;
 	}
-	catch (CertificateException ce)
-	{
-	    throw new MalformedKeyringException(ce.toString());
+
+	private Certificate[] path;
+
+	private CertPathEntry() {
+		super(TYPE);
 	}
-	return entry;
-    }
 
-    private Certificate[] path;
-
-    private CertPathEntry()
-    {
-	super(TYPE);
-    }
-
-    public CertPathEntry(Certificate[] path, Date creationDate, Properties properties)
-    {
-	super(TYPE, creationDate, properties);
-	if (path == null || path.length == 0)
-	    throw new IllegalArgumentException("no certificate path");
-	this.path = path.clone();
-    }
-
-    @Override
-    protected void encodePayload() throws IOException
-    {
-	ByteArrayOutputStream bout = new ByteArrayOutputStream(1024);
-	// byte[] enc = null;
-	try
-	{
-	    for (int i = 0; i < path.length; i++)
-		bout.write(path[i].getEncoded());
+	public CertPathEntry(Certificate[] path, Date creationDate, Properties properties) {
+		super(TYPE, creationDate, properties);
+		if (path == null || path.length == 0)
+			throw new IllegalArgumentException("no certificate path");
+		this.path = path.clone();
 	}
-	catch (CertificateEncodingException cee)
-	{
-	    throw new IOException(cee.toString());
-	}
-	payload = bout.toByteArray();
-    }
 
-    public Certificate[] getCertPath()
-    {
-	return path;
-    }
+	@Override
+	protected void encodePayload() throws IOException {
+		ByteArrayOutputStream bout = new ByteArrayOutputStream(1024);
+		// byte[] enc = null;
+		try {
+			for (int i = 0; i < path.length; i++)
+				bout.write(path[i].getEncoded());
+		} catch (CertificateEncodingException cee) {
+			throw new IOException(cee.toString());
+		}
+		payload = bout.toByteArray();
+	}
+
+	public Certificate[] getCertPath() {
+		return path;
+	}
 }

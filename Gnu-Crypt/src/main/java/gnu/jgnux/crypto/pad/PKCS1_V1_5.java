@@ -57,81 +57,71 @@ import gnu.jgnu.security.util.PRNG;
  *
  * @see EME_PKCS1_V1_5
  */
-public class PKCS1_V1_5 extends BasePad
-{
-    private EME_PKCS1_V1_5 codec;
+public class PKCS1_V1_5 extends BasePad {
+	private EME_PKCS1_V1_5 codec;
 
-    /**
-     * Trivial package-private constructor for use by the <i>Factory</i> class.
-     *
-     * @see PadFactory
-     */
-    PKCS1_V1_5()
-    {
-	super(Registry.EME_PKCS1_V1_5_PAD);
-    }
-
-    @Override
-    public byte[] pad(final byte[] in, final int offset, final int length)
-    {
-	final byte[] M = new byte[length];
-	System.arraycopy(in, offset, M, 0, length);
-	final byte[] EM = codec.encode(M);
-	final byte[] result = new byte[blockSize - length];
-	System.arraycopy(EM, 0, result, 0, result.length);
-	return result;
-    }
-
-    @Override
-    public boolean selfTest()
-    {
-	final int[] mLen = new int[] { 16, 20, 32, 48, 64 };
-	final byte[] M = new byte[mLen[mLen.length - 1]];
-	PRNG.getInstance().nextBytes(M);
-	final byte[] EM = new byte[1024];
-	byte[] p;
-	int bs, i, j;
-	for (bs = 256; bs < 1025; bs += 256)
-	{
-	    init(bs);
-	    for (i = 0; i < mLen.length; i++)
-	    {
-		j = mLen[i];
-		p = pad(M, 0, j);
-		if (j + p.length != blockSize)
-		{
-		    return false;
-		}
-		System.arraycopy(p, 0, EM, 0, p.length);
-		System.arraycopy(M, 0, EM, p.length, j);
-		/*
-		 * try {
-		 */
-		if (p.length != unpad(EM, 0, blockSize))
-		{
-		    return false;
-		}
-		/*
-		 * } catch (WrongPaddingException x) { return false; }
-		 */
-	    }
-	    reset();
+	/**
+	 * Trivial package-private constructor for use by the <i>Factory</i> class.
+	 *
+	 * @see PadFactory
+	 */
+	PKCS1_V1_5() {
+		super(Registry.EME_PKCS1_V1_5_PAD);
 	}
-	return true;
-    }
 
-    @Override
-    public void setup()
-    {
-	codec = EME_PKCS1_V1_5.getInstance(blockSize);
-    }
+	@Override
+	public byte[] pad(final byte[] in, final int offset, final int length) {
+		final byte[] M = new byte[length];
+		System.arraycopy(in, offset, M, 0, length);
+		final byte[] EM = codec.encode(M);
+		final byte[] result = new byte[blockSize - length];
+		System.arraycopy(EM, 0, result, 0, result.length);
+		return result;
+	}
 
-    @Override
-    public int unpad(final byte[] in, final int offset, final int length)
-    {
-	final byte[] EM = new byte[length];
-	System.arraycopy(in, offset, EM, 0, length);
-	final int result = length - codec.decode(EM).length;
-	return result;
-    }
+	@Override
+	public boolean selfTest() {
+		final int[] mLen = new int[] { 16, 20, 32, 48, 64 };
+		final byte[] M = new byte[mLen[mLen.length - 1]];
+		PRNG.getInstance().nextBytes(M);
+		final byte[] EM = new byte[1024];
+		byte[] p;
+		int bs, i, j;
+		for (bs = 256; bs < 1025; bs += 256) {
+			init(bs);
+			for (i = 0; i < mLen.length; i++) {
+				j = mLen[i];
+				p = pad(M, 0, j);
+				if (j + p.length != blockSize) {
+					return false;
+				}
+				System.arraycopy(p, 0, EM, 0, p.length);
+				System.arraycopy(M, 0, EM, p.length, j);
+				/*
+				 * try {
+				 */
+				if (p.length != unpad(EM, 0, blockSize)) {
+					return false;
+				}
+				/*
+				 * } catch (WrongPaddingException x) { return false; }
+				 */
+			}
+			reset();
+		}
+		return true;
+	}
+
+	@Override
+	public void setup() {
+		codec = EME_PKCS1_V1_5.getInstance(blockSize);
+	}
+
+	@Override
+	public int unpad(final byte[] in, final int offset, final int length) {
+		final byte[] EM = new byte[length];
+		System.arraycopy(in, offset, EM, 0, length);
+		final int result = length - codec.decode(EM).length;
+		return result;
+	}
 }

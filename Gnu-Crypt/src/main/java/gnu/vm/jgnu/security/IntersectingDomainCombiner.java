@@ -47,38 +47,33 @@ import gnu.vm.jgnu.security.IntersectingDomainCombiner;
  * A trivial implementation of {@link DomainCombiner} that produces the
  * intersection of the supplied {@link ProtectionDomain} objects.
  */
-final class IntersectingDomainCombiner implements DomainCombiner
-{
+final class IntersectingDomainCombiner implements DomainCombiner {
 
-    // Contstant.
-    // -------------------------------------------------------------------------
+	// Contstant.
+	// -------------------------------------------------------------------------
 
-    static final IntersectingDomainCombiner SINGLETON = new IntersectingDomainCombiner();
+	static final IntersectingDomainCombiner SINGLETON = new IntersectingDomainCombiner();
 
-    // Constructor.
-    // -------------------------------------------------------------------------
+	// Constructor.
+	// -------------------------------------------------------------------------
 
-    private IntersectingDomainCombiner()
-    {
-    }
-
-    // Methods.
-    // -------------------------------------------------------------------------
-
-    @Override
-    public ProtectionDomain[] combine(ProtectionDomain[] currentDomains, ProtectionDomain[] assignedDomains)
-    {
-	HashSet<ProtectionDomain> newDomains = new HashSet<>();
-	for (int i = 0; i < currentDomains.length; i++)
-	{
-	    if (currentDomains[i] == null)
-		continue;
-	    for (int j = 0; j < assignedDomains.length; j++)
-	    {
-		if (currentDomains[i].equals(assignedDomains[j]))
-		    newDomains.add(currentDomains[i]);
-	    }
+	private IntersectingDomainCombiner() {
 	}
-	return newDomains.toArray(new ProtectionDomain[newDomains.size()]);
-    }
+
+	// Methods.
+	// -------------------------------------------------------------------------
+
+	@Override
+	public ProtectionDomain[] combine(ProtectionDomain[] currentDomains, ProtectionDomain[] assignedDomains) {
+		HashSet<ProtectionDomain> newDomains = new HashSet<>();
+		for (int i = 0; i < currentDomains.length; i++) {
+			if (currentDomains[i] == null)
+				continue;
+			for (int j = 0; j < assignedDomains.length; j++) {
+				if (currentDomains[i].equals(assignedDomains[j]))
+					newDomains.add(currentDomains[i]);
+			}
+		}
+		return newDomains.toArray(new ProtectionDomain[newDomains.size()]);
+	}
 }

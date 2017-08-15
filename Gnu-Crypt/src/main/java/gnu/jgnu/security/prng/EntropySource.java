@@ -40,21 +40,20 @@ package gnu.jgnu.security.prng;
 /**
  * A generic interface for adding random bytes to an entropy pool.
  */
-public interface EntropySource
-{
-    /**
-     * Returns a new buffer with the next random bytes to add.
-     *
-     * @return The next random bytes.
-     */
-    byte[] nextBytes();
+public interface EntropySource {
+	/**
+	 * Returns a new buffer with the next random bytes to add.
+	 *
+	 * @return The next random bytes.
+	 */
+	byte[] nextBytes();
 
-    /**
-     * Returns the estimated quality of this source. This value should be
-     * between 0 and 100 (the running quality is computed as a percentage, 100
-     * percent being perfect-quality).
-     *
-     * @return The quality.
-     */
-    double quality();
+	/**
+	 * Returns the estimated quality of this source. This value should be between 0
+	 * and 100 (the running quality is computed as a percentage, 100 percent being
+	 * perfect-quality).
+	 *
+	 * @return The quality.
+	 */
+	double quality();
 }

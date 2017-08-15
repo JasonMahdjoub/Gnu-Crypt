@@ -43,29 +43,26 @@ import gnu.vm.jgnu.security.GeneralSecurityException;
  * A checked security exception to denote an unexpected problem while unwrapping
  * key material with a Key Wrapping Algorithm.
  */
-public class KeyUnwrappingException extends GeneralSecurityException
-{
-    /**
-     * 
-     */
-    private static final long serialVersionUID = 8874233891023738087L;
+public class KeyUnwrappingException extends GeneralSecurityException {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 8874233891023738087L;
 
-    /**
-     * Create a new instance with no descriptive error message.
-     */
-    public KeyUnwrappingException()
-    {
-	super();
-    }
+	/**
+	 * Create a new instance with no descriptive error message.
+	 */
+	public KeyUnwrappingException() {
+		super();
+	}
 
-    /**
-     * Create a new instance with a descriptive error message.
-     *
-     * @param msg
-     *            the descriptive error message
-     */
-    public KeyUnwrappingException(String msg)
-    {
-	super(msg);
-    }
+	/**
+	 * Create a new instance with a descriptive error message.
+	 *
+	 * @param msg
+	 *            the descriptive error message
+	 */
+	public KeyUnwrappingException(String msg) {
+		super(msg);
+	}
 }

@@ -40,37 +40,30 @@ package gnu.jgnux.crypto.sasl.srp;
 /**
  * A simple timing-related object for use by SRP re-use code.
  */
-class StoreEntry
-{
-    private boolean perenial;
+class StoreEntry {
+	private boolean perenial;
 
-    private long timeToDie;
+	private long timeToDie;
 
-    StoreEntry(int ttl)
-    {
-	super();
+	StoreEntry(int ttl) {
+		super();
 
-	if (ttl == 0)
-	{
-	    perenial = true;
-	    timeToDie = 0L;
+		if (ttl == 0) {
+			perenial = true;
+			timeToDie = 0L;
+		} else {
+			perenial = false;
+			timeToDie = System.currentTimeMillis() + (ttl & 0xFFFFFFFFL) * 1000L;
+		}
 	}
-	else
-	{
-	    perenial = false;
-	    timeToDie = System.currentTimeMillis()
-		    + (ttl & 0xFFFFFFFFL) * 1000L;
-	}
-    }
 
-    /**
-     * Returns <code>true</code> if the Time-To_live period has not elapsed.
-     *
-     * @return <code>true</code> if the Time-To-Live period (in seconds) has not
-     *         elapsed yet; <code>false</code> otherwise.
-     */
-    boolean isAlive()
-    {
-	return (perenial ? true : (System.currentTimeMillis() < timeToDie));
-    }
+	/**
+	 * Returns <code>true</code> if the Time-To_live period has not elapsed.
+	 *
+	 * @return <code>true</code> if the Time-To-Live period (in seconds) has not
+	 *         elapsed yet; <code>false</code> otherwise.
+	 */
+	boolean isAlive() {
+		return (perenial ? true : (System.currentTimeMillis() < timeToDie));
+	}
 }

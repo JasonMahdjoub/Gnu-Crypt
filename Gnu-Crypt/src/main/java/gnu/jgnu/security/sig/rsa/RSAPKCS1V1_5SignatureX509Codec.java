@@ -81,52 +81,47 @@ import gnu.vm.jgnu.security.InvalidParameterException;
  * ...
  * </pre>
  */
-public class RSAPKCS1V1_5SignatureX509Codec implements ISignatureCodec
-{
-    // default 0-arguments constructor
+public class RSAPKCS1V1_5SignatureX509Codec implements ISignatureCodec {
+	// default 0-arguments constructor
 
-    /**
-     * Decodes a <i>signature</i> as defined in the documentation of this class.
-     *
-     * @param input
-     *            the byte array to unmarshall into a valid RSA PKCS1 (v1.5)
-     *            signature instance; i.e. a byte array. MUST NOT be null.
-     * @return an array of raw bytes decoded from the designated input. In the
-     *         case of RSA PKCS1 (v1.5) this is the same as the input.
-     * @throw InvalidParameterException if the <code>input</code> array is null.
-     */
-    @Override
-    public Object decodeSignature(byte[] input)
-    {
-	if (input == null)
-	    throw new InvalidParameterException("Input bytes MUST NOT be null");
+	/**
+	 * Decodes a <i>signature</i> as defined in the documentation of this class.
+	 *
+	 * @param input
+	 *            the byte array to unmarshall into a valid RSA PKCS1 (v1.5)
+	 *            signature instance; i.e. a byte array. MUST NOT be null.
+	 * @return an array of raw bytes decoded from the designated input. In the case
+	 *         of RSA PKCS1 (v1.5) this is the same as the input.
+	 * @throw InvalidParameterException if the <code>input</code> array is null.
+	 */
+	@Override
+	public Object decodeSignature(byte[] input) {
+		if (input == null)
+			throw new InvalidParameterException("Input bytes MUST NOT be null");
 
-	return input;
-    }
+		return input;
+	}
 
-    /**
-     * Encodes an RSA Signature output as a <i>signature</i> BIT STRING as
-     * defined in the documentation of this class.
-     *
-     * @param signature
-     *            the output of the RSA PKCS1 (v1.5) signature algorithm; i.e.
-     *            the value returned by the invocation of
-     *            {@link gnu.jgnu.security.sig.ISignature#sign()} method. In the
-     *            case of the RSA PKCS1 (v1.5) signature this is an array of
-     *            bytes.
-     * @return the raw bytes of an RSA signature which could be then used as the
-     *         contents of a BIT STRING as per rfc-2459.
-     */
-    @Override
-    public byte[] encodeSignature(Object signature)
-    {
-	byte[] result = (byte[]) signature;
-	return result;
-    }
+	/**
+	 * Encodes an RSA Signature output as a <i>signature</i> BIT STRING as defined
+	 * in the documentation of this class.
+	 *
+	 * @param signature
+	 *            the output of the RSA PKCS1 (v1.5) signature algorithm; i.e. the
+	 *            value returned by the invocation of
+	 *            {@link gnu.jgnu.security.sig.ISignature#sign()} method. In the
+	 *            case of the RSA PKCS1 (v1.5) signature this is an array of bytes.
+	 * @return the raw bytes of an RSA signature which could be then used as the
+	 *         contents of a BIT STRING as per rfc-2459.
+	 */
+	@Override
+	public byte[] encodeSignature(Object signature) {
+		byte[] result = (byte[]) signature;
+		return result;
+	}
 
-    @Override
-    public int getFormatID()
-    {
-	return Registry.X509_ENCODING_ID;
-    }
+	@Override
+	public int getFormatID() {
+		return Registry.X509_ENCODING_ID;
+	}
 }

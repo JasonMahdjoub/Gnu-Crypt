@@ -50,125 +50,98 @@ import gnu.jgnux.crypto.sasl.NoSuchUserException;
 /**
  * The PLAIN mechanism authentication information provider implementation.
  */
-public class PlainAuthInfoProvider implements IAuthInfoProvider, PlainRegistry
-{
-    private PasswordFile passwordFile = null;
+public class PlainAuthInfoProvider implements IAuthInfoProvider, PlainRegistry {
+	private PasswordFile passwordFile = null;
 
-    // implicit 0-args constrcutor
+	// implicit 0-args constrcutor
 
-    @Override
-    public void activate(Map<String, Object> context) throws AuthenticationException
-    {
-	try
-	{
-	    if (context == null)
-		passwordFile = new PasswordFile();
-	    else
-	    {
-		String pfn = (String) context.get(PASSWORD_FILE);
-		if (pfn == null)
-		    passwordFile = new PasswordFile();
-		else
-		    passwordFile = new PasswordFile(pfn);
-	    }
+	@Override
+	public void activate(Map<String, Object> context) throws AuthenticationException {
+		try {
+			if (context == null)
+				passwordFile = new PasswordFile();
+			else {
+				String pfn = (String) context.get(PASSWORD_FILE);
+				if (pfn == null)
+					passwordFile = new PasswordFile();
+				else
+					passwordFile = new PasswordFile(pfn);
+			}
+		} catch (IOException x) {
+			throw new AuthenticationException("activate()", x);
+		}
 	}
-	catch (IOException x)
-	{
-	    throw new AuthenticationException("activate()", x);
-	}
-    }
 
-    @Override
-    public boolean contains(String userName) throws AuthenticationException
-    {
-	if (passwordFile == null)
-	    throw new AuthenticationException("contains()",
-		    new IllegalStateException());
-	boolean result = false;
-	try
-	{
-	    result = passwordFile.contains(userName);
+	@Override
+	public boolean contains(String userName) throws AuthenticationException {
+		if (passwordFile == null)
+			throw new AuthenticationException("contains()", new IllegalStateException());
+		boolean result = false;
+		try {
+			result = passwordFile.contains(userName);
+		} catch (IOException x) {
+			throw new AuthenticationException("contains()", x);
+		}
+		return result;
 	}
-	catch (IOException x)
-	{
-	    throw new AuthenticationException("contains()", x);
-	}
-	return result;
-    }
 
-    @Override
-    public Map<String, String> getConfiguration(String mode) throws AuthenticationException
-    {
-	throw new AuthenticationException("",
-		new UnsupportedOperationException());
-    }
+	@Override
+	public Map<String, String> getConfiguration(String mode) throws AuthenticationException {
+		throw new AuthenticationException("", new UnsupportedOperationException());
+	}
 
-    @Override
-    public Map<String, String> lookup(Map<String, String> userID) throws AuthenticationException
-    {
-	if (passwordFile == null)
-	    throw new AuthenticationException("lookup()",
-		    new IllegalStateException());
-	Map<String, String> result = new HashMap<>();
-	try
-	{
-	    String userName = userID.get(Registry.SASL_USERNAME);
-	    if (userName == null)
-		throw new NoSuchUserException("");
-	    String[] data = passwordFile.lookup(userName);
-	    result.put(Registry.SASL_USERNAME, data[0]);
-	    result.put(Registry.SASL_PASSWORD, data[1]);
-	    result.put(UID_FIELD, data[2]);
-	    result.put(GID_FIELD, data[3]);
-	    result.put(GECOS_FIELD, data[4]);
-	    result.put(DIR_FIELD, data[5]);
-	    result.put(SHELL_FIELD, data[6]);
+	@Override
+	public Map<String, String> lookup(Map<String, String> userID) throws AuthenticationException {
+		if (passwordFile == null)
+			throw new AuthenticationException("lookup()", new IllegalStateException());
+		Map<String, String> result = new HashMap<>();
+		try {
+			String userName = userID.get(Registry.SASL_USERNAME);
+			if (userName == null)
+				throw new NoSuchUserException("");
+			String[] data = passwordFile.lookup(userName);
+			result.put(Registry.SASL_USERNAME, data[0]);
+			result.put(Registry.SASL_PASSWORD, data[1]);
+			result.put(UID_FIELD, data[2]);
+			result.put(GID_FIELD, data[3]);
+			result.put(GECOS_FIELD, data[4]);
+			result.put(DIR_FIELD, data[5]);
+			result.put(SHELL_FIELD, data[6]);
+		} catch (Exception x) {
+			if (x instanceof AuthenticationException)
+				throw (AuthenticationException) x;
+			throw new AuthenticationException("lookup()", x);
+		}
+		return result;
 	}
-	catch (Exception x)
-	{
-	    if (x instanceof AuthenticationException)
-		throw (AuthenticationException) x;
-	    throw new AuthenticationException("lookup()", x);
-	}
-	return result;
-    }
 
-    @Override
-    public void passivate()
-    {
-	passwordFile = null;
-    }
+	@Override
+	public void passivate() {
+		passwordFile = null;
+	}
 
-    @Override
-    public void update(Map<String, String> userCredentials) throws AuthenticationException
-    {
-	if (passwordFile == null)
-	    throw new AuthenticationException("update()",
-		    new IllegalStateException());
-	try
-	{
-	    String userName = userCredentials.get(Registry.SASL_USERNAME);
-	    String password = userCredentials.get(Registry.SASL_PASSWORD);
-	    String uid = userCredentials.get(UID_FIELD);
-	    String gid = userCredentials.get(GID_FIELD);
-	    String gecos = userCredentials.get(GECOS_FIELD);
-	    String dir = userCredentials.get(DIR_FIELD);
-	    String shell = userCredentials.get(SHELL_FIELD);
-	    if (uid == null || gid == null || gecos == null || dir == null
-		    || shell == null)
-		passwordFile.changePasswd(userName, password);
-	    else
-	    {
-		String[] attributes = new String[] { uid, gid, gecos, dir,
-			shell };
-		passwordFile.add(userName, password, attributes);
-	    }
+	@Override
+	public void update(Map<String, String> userCredentials) throws AuthenticationException {
+		if (passwordFile == null)
+			throw new AuthenticationException("update()", new IllegalStateException());
+		try {
+			String userName = userCredentials.get(Registry.SASL_USERNAME);
+			String password = userCredentials.get(Registry.SASL_PASSWORD);
+			String uid = userCredentials.get(UID_FIELD);
+			String gid = userCredentials.get(GID_FIELD);
+			String gecos = userCredentials.get(GECOS_FIELD);
+			String dir = userCredentials.get(DIR_FIELD);
+			String shell = userCredentials.get(SHELL_FIELD);
+			if (uid == null || gid == null || gecos == null || dir == null || shell == null)
+				passwordFile.changePasswd(userName, password);
+			else {
+				String[] attributes = new String[] { uid, gid, gecos, dir, shell };
+				passwordFile.add(userName, password, attributes);
+			}
+		} catch (Exception x) {
+			if (x instanceof AuthenticationException)
+				throw (AuthenticationException) x;
+			throw new AuthenticationException("update()", x);
+		}
 	}
-	catch (Exception x)
-	{
-	    if (x instanceof AuthenticationException)
-		throw (AuthenticationException) x;
-	    throw new AuthenticationException("update()", x);
-	}
-    }
 }

@@ -49,30 +49,25 @@ import gnu.vm.jgnu.security.spec.AlgorithmParameterSpec;
  * The implementation of the TMMH16 <i>Service Provider Interface</i>
  * (<b>SPI</b>) adapter.
  */
-public final class TMMH16Spi extends MacAdapter
-{
-    public TMMH16Spi()
-    {
-	super(Registry.TMMH16);
-    }
+public final class TMMH16Spi extends MacAdapter {
+	public TMMH16Spi() {
+		super(Registry.TMMH16);
+	}
 
-    @Override
-    protected void engineInit(Key key, AlgorithmParameterSpec params) throws InvalidKeyException, InvalidAlgorithmParameterException
-    {
-	if (!(params instanceof TMMHParameterSpec))
-	    throw new InvalidAlgorithmParameterException();
-	TMMHParameterSpec spec = (TMMHParameterSpec) params;
-	attributes.put(TMMH16.TAG_LENGTH, spec.getTagLength());
-	attributes.put(TMMH16.KEYSTREAM, spec.getKeystream());
-	attributes.put(TMMH16.PREFIX, spec.getPrefix());
-	try
-	{
-	    mac.reset();
-	    mac.init(attributes);
+	@Override
+	protected void engineInit(Key key, AlgorithmParameterSpec params)
+			throws InvalidKeyException, InvalidAlgorithmParameterException {
+		if (!(params instanceof TMMHParameterSpec))
+			throw new InvalidAlgorithmParameterException();
+		TMMHParameterSpec spec = (TMMHParameterSpec) params;
+		attributes.put(TMMH16.TAG_LENGTH, spec.getTagLength());
+		attributes.put(TMMH16.KEYSTREAM, spec.getKeystream());
+		attributes.put(TMMH16.PREFIX, spec.getPrefix());
+		try {
+			mac.reset();
+			mac.init(attributes);
+		} catch (IllegalArgumentException iae) {
+			throw new InvalidAlgorithmParameterException(iae.getMessage());
+		}
 	}
-	catch (IllegalArgumentException iae)
-	{
-	    throw new InvalidAlgorithmParameterException(iae.getMessage());
-	}
-    }
 }

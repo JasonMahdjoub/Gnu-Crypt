@@ -61,97 +61,89 @@ import gnu.vm.jgnu.security.Key;
  * Thomas J. Wu.</li>
  * </ol>
  */
-public abstract class SRPKey implements Key, Serializable
-{
-    /**
-     * 
-     */
-    private static final long serialVersionUID = 6444534236284546643L;
+public abstract class SRPKey implements Key, Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 6444534236284546643L;
 
-    /** The public, Germaine prime, shared modulus. */
-    protected final BigInteger N;
+	/** The public, Germaine prime, shared modulus. */
+	protected final BigInteger N;
 
-    /** The generator. */
-    protected final BigInteger g;
+	/** The generator. */
+	protected final BigInteger g;
 
-    protected SRPKey(BigInteger N, BigInteger g)
-    {
-	super();
+	protected SRPKey(BigInteger N, BigInteger g) {
+		super();
 
-	this.N = N;
-	this.g = g;
-    }
+		this.N = N;
+		this.g = g;
+	}
 
-    /**
-     * Returns <code>true</code> if the designated object is an instance of
-     * <code>SRPKey</code> and has the same SRP parameter values as this one.
-     *
-     * @param obj
-     *            the other non-null SRP key to compare to.
-     * @return <code>true</code> if the designated object is of the same type
-     *         and value as this one.
-     */
-    @Override
-    public boolean equals(Object obj)
-    {
-	if (obj == null)
-	    return false;
-	if (!(obj instanceof SRPKey))
-	    return false;
-	SRPKey that = (SRPKey) obj;
-	return N.equals(that.getN()) && g.equals(that.getG());
-    }
+	/**
+	 * Returns <code>true</code> if the designated object is an instance of
+	 * <code>SRPKey</code> and has the same SRP parameter values as this one.
+	 *
+	 * @param obj
+	 *            the other non-null SRP key to compare to.
+	 * @return <code>true</code> if the designated object is of the same type and
+	 *         value as this one.
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null)
+			return false;
+		if (!(obj instanceof SRPKey))
+			return false;
+		SRPKey that = (SRPKey) obj;
+		return N.equals(that.getN()) && g.equals(that.getG());
+	}
 
-    /**
-     * Returns the standard algorithm name for this key.
-     *
-     * @return the standard algorithm name for this key.
-     */
-    @Override
-    public String getAlgorithm()
-    {
-	return Registry.SRP_KPG;
-    }
+	/**
+	 * Returns the standard algorithm name for this key.
+	 *
+	 * @return the standard algorithm name for this key.
+	 */
+	@Override
+	public String getAlgorithm() {
+		return Registry.SRP_KPG;
+	}
 
-    /** @deprecated see getEncoded(int). */
-    @Deprecated
-    @Override
-    public byte[] getEncoded()
-    {
-	return getEncoded(IKeyPairCodec.RAW_FORMAT);
-    }
+	/** @deprecated see getEncoded(int). */
+	@Deprecated
+	@Override
+	public byte[] getEncoded() {
+		return getEncoded(IKeyPairCodec.RAW_FORMAT);
+	}
 
-    public abstract byte[] getEncoded(int format);
+	public abstract byte[] getEncoded(int format);
 
-    /**
-     * Returns {@link Registry#RAW_ENCODING_SHORT_NAME} which is the sole format
-     * supported for this type of keys.
-     *
-     * @return {@link Registry#RAW_ENCODING_SHORT_NAME} ALWAYS.
-     */
-    @Override
-    public String getFormat()
-    {
-	return Registry.RAW_ENCODING_SHORT_NAME;
-    }
+	/**
+	 * Returns {@link Registry#RAW_ENCODING_SHORT_NAME} which is the sole format
+	 * supported for this type of keys.
+	 *
+	 * @return {@link Registry#RAW_ENCODING_SHORT_NAME} ALWAYS.
+	 */
+	@Override
+	public String getFormat() {
+		return Registry.RAW_ENCODING_SHORT_NAME;
+	}
 
-    /**
-     * Returns the generator.
-     *
-     * @return <code>g</code>.
-     */
-    public BigInteger getG()
-    {
-	return g;
-    }
+	/**
+	 * Returns the generator.
+	 *
+	 * @return <code>g</code>.
+	 */
+	public BigInteger getG() {
+		return g;
+	}
 
-    /**
-     * Returns the public shared modulus.
-     *
-     * @return <code>N</code>.
-     */
-    public BigInteger getN()
-    {
-	return N;
-    }
+	/**
+	 * Returns the public shared modulus.
+	 *
+	 * @return <code>N</code>.
+	 */
+	public BigInteger getN() {
+		return N;
+	}
 }

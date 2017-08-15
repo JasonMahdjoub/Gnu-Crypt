@@ -53,79 +53,59 @@ import gnu.jgnu.security.Registry;
  * it was mentioned or not in the value of that property, or if it that property
  * was not defined.
  */
-public class AuthInfo
-{
-    private static final ArrayList<IAuthInfoProviderFactory> factories = new ArrayList<>();
-    static
-    {
-	IAuthInfoProviderFactory ours = new AuthInfoProviderFactory();
-	// if SASL_AUTH_INFO_PROVIDER_PKGS is defined then parse it
-	String clazz;
-	String pkgs = System.getProperty(Registry.SASL_AUTH_INFO_PROVIDER_PKGS,
-		null);
-	if (pkgs != null)
-	{
-	    for (StringTokenizer st = new StringTokenizer(pkgs, "|"); st
-		    .hasMoreTokens();)
-	    {
-		clazz = st.nextToken().trim();
-		if (!"gnu.javax.crypto.sasl".equals(clazz))
-		{
-		    clazz += ".AuthInfoProviderFactory";
-		    try
-		    {
-			IAuthInfoProviderFactory factory = (IAuthInfoProviderFactory) Class
-				.forName(clazz).newInstance();
-			factories.add(factory);
-		    }
-		    catch (ClassCastException ignored)
-		    {
-		    }
-		    catch (ClassNotFoundException ignored)
-		    {
-		    }
-		    catch (InstantiationException ignored)
-		    {
-		    }
-		    catch (IllegalAccessException ignored)
-		    {
-		    }
+public class AuthInfo {
+	private static final ArrayList<IAuthInfoProviderFactory> factories = new ArrayList<>();
+	static {
+		IAuthInfoProviderFactory ours = new AuthInfoProviderFactory();
+		// if SASL_AUTH_INFO_PROVIDER_PKGS is defined then parse it
+		String clazz;
+		String pkgs = System.getProperty(Registry.SASL_AUTH_INFO_PROVIDER_PKGS, null);
+		if (pkgs != null) {
+			for (StringTokenizer st = new StringTokenizer(pkgs, "|"); st.hasMoreTokens();) {
+				clazz = st.nextToken().trim();
+				if (!"gnu.javax.crypto.sasl".equals(clazz)) {
+					clazz += ".AuthInfoProviderFactory";
+					try {
+						IAuthInfoProviderFactory factory = (IAuthInfoProviderFactory) Class.forName(clazz)
+								.newInstance();
+						factories.add(factory);
+					} catch (ClassCastException ignored) {
+					} catch (ClassNotFoundException ignored) {
+					} catch (InstantiationException ignored) {
+					} catch (IllegalAccessException ignored) {
+					}
+				}
+			}
 		}
-	    }
+		// always add ours last; unless it's already there
+		if (!factories.contains(ours))
+			factories.add(ours);
 	}
-	// always add ours last; unless it's already there
-	if (!factories.contains(ours))
-	    factories.add(ours);
-    }
 
-    /**
-     * A convenience method to return the authentication information provider
-     * for a designated SASL mechnanism. It goes through all the installed
-     * provider factories, one at a time, and attempts to return a new instance
-     * of the provider for the designated mechanism. It stops at the first
-     * factory returning a non-null provider.
-     *
-     * @param mechanism
-     *            the name of a SASL mechanism.
-     * @return an implementation that provides {@link IAuthInfoProvider} for
-     *         that mechanism; or <code>null</code> if none found.
-     */
-    public static IAuthInfoProvider getProvider(String mechanism)
-    {
-	for (Iterator<IAuthInfoProviderFactory> it = factories.iterator(); it
-		.hasNext();)
-	{
-	    IAuthInfoProviderFactory factory = it.next();
-	    IAuthInfoProvider result = factory.getInstance(mechanism);
-	    if (result != null)
-		return result;
+	/**
+	 * A convenience method to return the authentication information provider for a
+	 * designated SASL mechnanism. It goes through all the installed provider
+	 * factories, one at a time, and attempts to return a new instance of the
+	 * provider for the designated mechanism. It stops at the first factory
+	 * returning a non-null provider.
+	 *
+	 * @param mechanism
+	 *            the name of a SASL mechanism.
+	 * @return an implementation that provides {@link IAuthInfoProvider} for that
+	 *         mechanism; or <code>null</code> if none found.
+	 */
+	public static IAuthInfoProvider getProvider(String mechanism) {
+		for (Iterator<IAuthInfoProviderFactory> it = factories.iterator(); it.hasNext();) {
+			IAuthInfoProviderFactory factory = it.next();
+			IAuthInfoProvider result = factory.getInstance(mechanism);
+			if (result != null)
+				return result;
+		}
+		return null;
 	}
-	return null;
-    }
 
-    /** Trivial constructor to enforce Singleton pattern. */
-    private AuthInfo()
-    {
-	super();
-    }
+	/** Trivial constructor to enforce Singleton pattern. */
+	private AuthInfo() {
+		super();
+	}
 }

@@ -43,15 +43,13 @@ import gnu.jgnu.security.Registry;
  * The implementation of the MD4-based SecureRandom <i>Service Provider
  * Interface</i> (<b>SPI</b>) adapter.
  */
-public class MD4RandomSpi extends SecureRandomAdapter
-{
-    /**
-     * 
-     */
-    private static final long serialVersionUID = -2812563232122795714L;
+public class MD4RandomSpi extends SecureRandomAdapter {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -2812563232122795714L;
 
-    public MD4RandomSpi()
-    {
-	super(Registry.MD4_HASH);
-    }
+	public MD4RandomSpi() {
+		super(Registry.MD4_HASH);
+	}
 }

@@ -110,217 +110,196 @@ import gnu.vm.jgnu.security.Policy;
  * @see SecureClassLoader
  * @since 1.2
  */
-public abstract class Policy
-{
-    private static Policy currentPolicy;
+public abstract class Policy {
+	private static Policy currentPolicy;
 
-    /**
-     * Ensures/forces loading of the configured policy provider, while bypassing
-     * the {@link SecurityManager} checks for <code>"getPolicy"</code> security
-     * permission. Needed by {@link ProtectionDomain}.
-     */
-    static Policy getCurrentPolicy()
-    {
-	// FIXME: The class name of the Policy provider should really be sourced
-	// from the "java.security" configuration file. For now, just hard-code
-	// a stub implementation.
-	if (currentPolicy == null)
-	{
-	    String pp = System.getProperty("policy.provider");
-	    if (pp != null)
-		try
-		{
-		    currentPolicy = (Policy) Class.forName(pp).newInstance();
-		}
-		catch (Exception e)
-		{
-		    // Ignored.
-		}
-
-	    if (currentPolicy == null)
-		currentPolicy = new gnu.jgnu.security.provider.DefaultPolicy();
-	}
-	return currentPolicy;
-    }
-
-    /**
-     * Returns the currently installed <code>Policy</code> handler. The value
-     * should not be cached as it can be changed any time by
-     * {@link #setPolicy(Policy)}.
-     *
-     * @return the current <code>Policy</code>.
-     * @throws SecurityException
-     *             if a {@link SecurityManager} is installed which disallows
-     *             this operation.
-     */
-    public static Policy getPolicy()
-    {
-	/*
-	 * SecurityManager sm = System.getSecurityManager(); if (sm != null)
-	 * sm.checkPermission(new SecurityPermission("getPolicy"));
+	/**
+	 * Ensures/forces loading of the configured policy provider, while bypassing the
+	 * {@link SecurityManager} checks for <code>"getPolicy"</code> security
+	 * permission. Needed by {@link ProtectionDomain}.
 	 */
+	static Policy getCurrentPolicy() {
+		// FIXME: The class name of the Policy provider should really be sourced
+		// from the "java.security" configuration file. For now, just hard-code
+		// a stub implementation.
+		if (currentPolicy == null) {
+			String pp = System.getProperty("policy.provider");
+			if (pp != null)
+				try {
+					currentPolicy = (Policy) Class.forName(pp).newInstance();
+				} catch (Exception e) {
+					// Ignored.
+				}
 
-	return getCurrentPolicy();
-    }
+			if (currentPolicy == null)
+				currentPolicy = new gnu.jgnu.security.provider.DefaultPolicy();
+		}
+		return currentPolicy;
+	}
 
-    /**
-     * Tests if <code>currentPolicy</code> is not <code>null</code>, thus
-     * allowing clients to not force loading of any policy provider; needed by
-     * {@link ProtectionDomain}.
-     */
-    static boolean isLoaded()
-    {
-	return currentPolicy != null;
-    }
-
-    /**
-     * Sets the <code>Policy</code> handler to a new value.
-     *
-     * @param policy
-     *            the new <code>Policy</code> to use.
-     * @throws SecurityException
-     *             if a {@link SecurityManager} is installed which disallows
-     *             this operation.
-     */
-    public static void setPolicy(Policy policy)
-    {
-	/*
-	 * SecurityManager sm = System.getSecurityManager(); if (sm != null)
-	 * sm.checkPermission(new SecurityPermission("setPolicy"));
+	/**
+	 * Returns the currently installed <code>Policy</code> handler. The value should
+	 * not be cached as it can be changed any time by {@link #setPolicy(Policy)}.
+	 *
+	 * @return the current <code>Policy</code>.
+	 * @throws SecurityException
+	 *             if a {@link SecurityManager} is installed which disallows this
+	 *             operation.
 	 */
+	public static Policy getPolicy() {
+		/*
+		 * SecurityManager sm = System.getSecurityManager(); if (sm != null)
+		 * sm.checkPermission(new SecurityPermission("getPolicy"));
+		 */
 
-	setup(policy);
-	currentPolicy = policy;
-    }
-
-    private static void setup(final Policy policy)
-    {
-	if (policy.pd2pc == null)
-	    policy.pd2pc = Collections.synchronizedMap(
-		    new LinkedHashMap<ProtectionDomain, PermissionCollection>());
-
-	ProtectionDomain pd = policy.getClass().getProtectionDomain();
-	if (pd.getCodeSource() != null)
-	{
-	    PermissionCollection pc = null;
-	    if (currentPolicy != null)
-		pc = currentPolicy.getPermissions(pd);
-
-	    if (pc == null) // assume it has all
-	    {
-		pc = new Permissions();
-		pc.add(new AllPermission());
-	    }
-
-	    policy.pd2pc.put(pd, pc); // add the mapping pd -> pc
-	}
-    }
-
-    /** Map of ProtectionDomains to PermissionCollections for this instance. */
-    private Map<ProtectionDomain, PermissionCollection> pd2pc = null;
-
-    /** Constructs a new <code>Policy</code> object. */
-    public Policy()
-    {
-    }
-
-    /**
-     * Returns the set of Permissions allowed for a given {@link CodeSource}.
-     *
-     * @param codesource
-     *            the {@link CodeSource} for which, the caller needs to find the
-     *            set of granted permissions.
-     * @return a set of permissions for {@link CodeSource} specified by the
-     *         current <code>Policy</code>.
-     * @throws SecurityException
-     *             if a {@link SecurityManager} is installed which disallows
-     *             this operation.
-     */
-    public abstract PermissionCollection getPermissions(CodeSource codesource);
-
-    /**
-     * Returns the set of Permissions allowed for a given
-     * {@link ProtectionDomain}.
-     *
-     * @param domain
-     *            the {@link ProtectionDomain} for which, the caller needs to
-     *            find the set of granted permissions.
-     * @return a set of permissions for {@link ProtectionDomain} specified by
-     *         the current <code>Policy.</code>.
-     * @since 1.4
-     * @see ProtectionDomain
-     * @see SecureClassLoader
-     */
-    public PermissionCollection getPermissions(ProtectionDomain domain)
-    {
-	if (domain == null)
-	    return new Permissions();
-
-	if (pd2pc == null)
-	    setup(this);
-
-	PermissionCollection result = pd2pc.get(domain);
-	if (result != null)
-	{
-	    Permissions realResult = new Permissions();
-	    for (Enumeration<Permission> e = result.elements(); e
-		    .hasMoreElements();)
-		realResult.add(e.nextElement());
-
-	    return realResult;
+		return getCurrentPolicy();
 	}
 
-	result = getPermissions(domain.getCodeSource());
-	if (result == null)
-	    result = new Permissions();
-
-	PermissionCollection pc = domain.getPermissions();
-	if (pc != null)
-	    for (Enumeration<Permission> e = pc.elements(); e
-		    .hasMoreElements();)
-		result.add(e.nextElement());
-
-	return result;
-    }
-
-    /**
-     * Checks if the designated {@link Permission} is granted to a designated
-     * {@link ProtectionDomain}.
-     *
-     * @param domain
-     *            the {@link ProtectionDomain} to test.
-     * @param permission
-     *            the {@link Permission} to check.
-     * @return <code>true</code> if <code>permission</code> is implied by a
-     *         permission granted to this {@link ProtectionDomain}. Returns
-     *         <code>false</code> otherwise.
-     * @since 1.4
-     * @see ProtectionDomain
-     */
-    public boolean implies(ProtectionDomain domain, Permission permission)
-    {
-	if (pd2pc == null)
-	    setup(this);
-
-	PermissionCollection pc = pd2pc.get(domain);
-	if (pc != null)
-	    return pc.implies(permission);
-
-	boolean result = false;
-	pc = getPermissions(domain);
-	if (pc != null)
-	{
-	    result = pc.implies(permission);
-	    pd2pc.put(domain, pc);
+	/**
+	 * Tests if <code>currentPolicy</code> is not <code>null</code>, thus allowing
+	 * clients to not force loading of any policy provider; needed by
+	 * {@link ProtectionDomain}.
+	 */
+	static boolean isLoaded() {
+		return currentPolicy != null;
 	}
 
-	return result;
-    }
+	/**
+	 * Sets the <code>Policy</code> handler to a new value.
+	 *
+	 * @param policy
+	 *            the new <code>Policy</code> to use.
+	 * @throws SecurityException
+	 *             if a {@link SecurityManager} is installed which disallows this
+	 *             operation.
+	 */
+	public static void setPolicy(Policy policy) {
+		/*
+		 * SecurityManager sm = System.getSecurityManager(); if (sm != null)
+		 * sm.checkPermission(new SecurityPermission("setPolicy"));
+		 */
 
-    /**
-     * Causes this <code>Policy</code> instance to refresh / reload its
-     * configuration. The method used to refresh depends on the concrete
-     * implementation.
-     */
-    public abstract void refresh();
+		setup(policy);
+		currentPolicy = policy;
+	}
+
+	private static void setup(final Policy policy) {
+		if (policy.pd2pc == null)
+			policy.pd2pc = Collections.synchronizedMap(new LinkedHashMap<ProtectionDomain, PermissionCollection>());
+
+		ProtectionDomain pd = policy.getClass().getProtectionDomain();
+		if (pd.getCodeSource() != null) {
+			PermissionCollection pc = null;
+			if (currentPolicy != null)
+				pc = currentPolicy.getPermissions(pd);
+
+			if (pc == null) // assume it has all
+			{
+				pc = new Permissions();
+				pc.add(new AllPermission());
+			}
+
+			policy.pd2pc.put(pd, pc); // add the mapping pd -> pc
+		}
+	}
+
+	/** Map of ProtectionDomains to PermissionCollections for this instance. */
+	private Map<ProtectionDomain, PermissionCollection> pd2pc = null;
+
+	/** Constructs a new <code>Policy</code> object. */
+	public Policy() {
+	}
+
+	/**
+	 * Returns the set of Permissions allowed for a given {@link CodeSource}.
+	 *
+	 * @param codesource
+	 *            the {@link CodeSource} for which, the caller needs to find the set
+	 *            of granted permissions.
+	 * @return a set of permissions for {@link CodeSource} specified by the current
+	 *         <code>Policy</code>.
+	 * @throws SecurityException
+	 *             if a {@link SecurityManager} is installed which disallows this
+	 *             operation.
+	 */
+	public abstract PermissionCollection getPermissions(CodeSource codesource);
+
+	/**
+	 * Returns the set of Permissions allowed for a given {@link ProtectionDomain}.
+	 *
+	 * @param domain
+	 *            the {@link ProtectionDomain} for which, the caller needs to find
+	 *            the set of granted permissions.
+	 * @return a set of permissions for {@link ProtectionDomain} specified by the
+	 *         current <code>Policy.</code>.
+	 * @since 1.4
+	 * @see ProtectionDomain
+	 * @see SecureClassLoader
+	 */
+	public PermissionCollection getPermissions(ProtectionDomain domain) {
+		if (domain == null)
+			return new Permissions();
+
+		if (pd2pc == null)
+			setup(this);
+
+		PermissionCollection result = pd2pc.get(domain);
+		if (result != null) {
+			Permissions realResult = new Permissions();
+			for (Enumeration<Permission> e = result.elements(); e.hasMoreElements();)
+				realResult.add(e.nextElement());
+
+			return realResult;
+		}
+
+		result = getPermissions(domain.getCodeSource());
+		if (result == null)
+			result = new Permissions();
+
+		PermissionCollection pc = domain.getPermissions();
+		if (pc != null)
+			for (Enumeration<Permission> e = pc.elements(); e.hasMoreElements();)
+				result.add(e.nextElement());
+
+		return result;
+	}
+
+	/**
+	 * Checks if the designated {@link Permission} is granted to a designated
+	 * {@link ProtectionDomain}.
+	 *
+	 * @param domain
+	 *            the {@link ProtectionDomain} to test.
+	 * @param permission
+	 *            the {@link Permission} to check.
+	 * @return <code>true</code> if <code>permission</code> is implied by a
+	 *         permission granted to this {@link ProtectionDomain}. Returns
+	 *         <code>false</code> otherwise.
+	 * @since 1.4
+	 * @see ProtectionDomain
+	 */
+	public boolean implies(ProtectionDomain domain, Permission permission) {
+		if (pd2pc == null)
+			setup(this);
+
+		PermissionCollection pc = pd2pc.get(domain);
+		if (pc != null)
+			return pc.implies(permission);
+
+		boolean result = false;
+		pc = getPermissions(domain);
+		if (pc != null) {
+			result = pc.implies(permission);
+			pd2pc.put(domain, pc);
+		}
+
+		return result;
+	}
+
+	/**
+	 * Causes this <code>Policy</code> instance to refresh / reload its
+	 * configuration. The method used to refresh depends on the concrete
+	 * implementation.
+	 */
+	public abstract void refresh();
 }

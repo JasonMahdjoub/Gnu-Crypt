@@ -51,260 +51,235 @@ import gnu.vm.jgnu.security.InvalidKeyException;
  * A basic abstract class to facilitate implementing block cipher modes of
  * operations.
  */
-public abstract class BaseMode implements IMode
-{
-    /** The canonical name prefix of this mode. */
-    protected String name;
+public abstract class BaseMode implements IMode {
+	/** The canonical name prefix of this mode. */
+	protected String name;
 
-    /** The state indicator of this instance. */
-    protected int state;
+	/** The state indicator of this instance. */
+	protected int state;
 
-    /** The underlying block cipher implementation. */
-    protected IBlockCipher cipher;
+	/** The underlying block cipher implementation. */
+	protected IBlockCipher cipher;
 
-    /** The block size, in bytes, to operate the underlying block cipher in. */
-    protected int cipherBlockSize;
+	/** The block size, in bytes, to operate the underlying block cipher in. */
+	protected int cipherBlockSize;
 
-    /** The block size, in bytes, in which to operate the mode instance. */
-    protected int modeBlockSize;
+	/** The block size, in bytes, in which to operate the mode instance. */
+	protected int modeBlockSize;
 
-    /** The initialisation vector value. */
-    protected byte[] iv;
+	/** The initialisation vector value. */
+	protected byte[] iv;
 
-    /** The instance lock. */
-    protected Object lock = new Object();
+	/** The instance lock. */
+	protected Object lock = new Object();
 
-    /**
-     * Trivial constructor for use by concrete subclasses.
-     *
-     * @param name
-     *            the canonical name prefix of this mode.
-     * @param underlyingCipher
-     *            the implementation of the underlying cipher.
-     * @param cipherBlockSize
-     *            the block size, in bytes, in which to operate the underlying
-     *            cipher.
-     */
-    protected BaseMode(String name, IBlockCipher underlyingCipher, int cipherBlockSize)
-    {
-	super();
+	/**
+	 * Trivial constructor for use by concrete subclasses.
+	 *
+	 * @param name
+	 *            the canonical name prefix of this mode.
+	 * @param underlyingCipher
+	 *            the implementation of the underlying cipher.
+	 * @param cipherBlockSize
+	 *            the block size, in bytes, in which to operate the underlying
+	 *            cipher.
+	 */
+	protected BaseMode(String name, IBlockCipher underlyingCipher, int cipherBlockSize) {
+		super();
 
-	this.name = name;
-	this.cipher = underlyingCipher;
-	this.cipherBlockSize = cipherBlockSize;
-	state = -1;
-    }
+		this.name = name;
+		this.cipher = underlyingCipher;
+		this.cipherBlockSize = cipherBlockSize;
+		state = -1;
+	}
 
-    /**
-     * Returns an {@link Iterator} over the supported block sizes. Each element
-     * returned by this object is an {@link Integer}.
-     * <p>
-     * The default behaviour is to return an iterator with just one value, which
-     * is that currently configured for the underlying block cipher. Concrete
-     * implementations may override this behaviour to signal their ability to
-     * support other values.
-     *
-     * @return an {@link Iterator} over the supported block sizes.
-     */
-    @Override
-    public Iterator<Integer> blockSizes()
-    {
-	ArrayList<Integer> al = new ArrayList<>();
-	al.add(Integer.valueOf(cipherBlockSize));
-	return Collections.unmodifiableList(al).iterator();
-    }
+	/**
+	 * Returns an {@link Iterator} over the supported block sizes. Each element
+	 * returned by this object is an {@link Integer}.
+	 * <p>
+	 * The default behaviour is to return an iterator with just one value, which is
+	 * that currently configured for the underlying block cipher. Concrete
+	 * implementations may override this behaviour to signal their ability to
+	 * support other values.
+	 *
+	 * @return an {@link Iterator} over the supported block sizes.
+	 */
+	@Override
+	public Iterator<Integer> blockSizes() {
+		ArrayList<Integer> al = new ArrayList<>();
+		al.add(Integer.valueOf(cipherBlockSize));
+		return Collections.unmodifiableList(al).iterator();
+	}
 
-    @Override
-    public abstract Object clone();
+	@Override
+	public abstract Object clone();
 
-    @Override
-    public int currentBlockSize()
-    {
-	if (state == -1)
-	    throw new IllegalStateException();
-	return modeBlockSize;
-    }
+	@Override
+	public int currentBlockSize() {
+		if (state == -1)
+			throw new IllegalStateException();
+		return modeBlockSize;
+	}
 
-    @Override
-    public abstract void decryptBlock(byte[] in, int i, byte[] out, int o);
+	@Override
+	public abstract void decryptBlock(byte[] in, int i, byte[] out, int o);
 
-    /**
-     * Returns the default value, in bytes, of the mode's block size. This value
-     * is part of the construction arguments passed to the Factory methods in
-     * {@link ModeFactory}. Unless changed by an invocation of any of the
-     * <code>init()</code> methods, a <i>Mode</i> instance would operate with
-     * the same block size as its underlying block cipher. As mentioned earlier,
-     * the block size of the underlying block cipher itself is specified in one
-     * of the method(s) available in the factory class.
-     *
-     * @return the default value, in bytes, of the mode's block size.
-     * @see ModeFactory
-     */
-    @Override
-    public int defaultBlockSize()
-    {
-	return cipherBlockSize;
-    }
+	/**
+	 * Returns the default value, in bytes, of the mode's block size. This value is
+	 * part of the construction arguments passed to the Factory methods in
+	 * {@link ModeFactory}. Unless changed by an invocation of any of the
+	 * <code>init()</code> methods, a <i>Mode</i> instance would operate with the
+	 * same block size as its underlying block cipher. As mentioned earlier, the
+	 * block size of the underlying block cipher itself is specified in one of the
+	 * method(s) available in the factory class.
+	 *
+	 * @return the default value, in bytes, of the mode's block size.
+	 * @see ModeFactory
+	 */
+	@Override
+	public int defaultBlockSize() {
+		return cipherBlockSize;
+	}
 
-    /**
-     * Returns the default value, in bytes, of the underlying block cipher key
-     * size.
-     *
-     * @return the default value, in bytes, of the underlying cipher's key size.
-     */
-    @Override
-    public int defaultKeySize()
-    {
-	return cipher.defaultKeySize();
-    }
+	/**
+	 * Returns the default value, in bytes, of the underlying block cipher key size.
+	 *
+	 * @return the default value, in bytes, of the underlying cipher's key size.
+	 */
+	@Override
+	public int defaultKeySize() {
+		return cipher.defaultKeySize();
+	}
 
-    @Override
-    public abstract void encryptBlock(byte[] in, int i, byte[] out, int o);
+	@Override
+	public abstract void encryptBlock(byte[] in, int i, byte[] out, int o);
 
-    @Override
-    public void init(Map<Object, Object> attributes) throws InvalidKeyException, IllegalStateException
-    {
-	synchronized (lock)
-	{
-	    if (state != -1)
-		throw new IllegalStateException();
-	    Integer want = (Integer) attributes.get(STATE);
-	    if (want != null)
-	    {
-		switch (want.intValue())
-		{
-		    case ENCRYPTION:
-			state = ENCRYPTION;
-			break;
-		    case DECRYPTION:
-			state = DECRYPTION;
-			break;
-		    default:
-			throw new IllegalArgumentException();
+	@Override
+	public void init(Map<Object, Object> attributes) throws InvalidKeyException, IllegalStateException {
+		synchronized (lock) {
+			if (state != -1)
+				throw new IllegalStateException();
+			Integer want = (Integer) attributes.get(STATE);
+			if (want != null) {
+				switch (want.intValue()) {
+				case ENCRYPTION:
+					state = ENCRYPTION;
+					break;
+				case DECRYPTION:
+					state = DECRYPTION;
+					break;
+				default:
+					throw new IllegalArgumentException();
+				}
+			}
+			Integer bs = (Integer) attributes.get(MODE_BLOCK_SIZE);
+			modeBlockSize = (bs == null ? cipherBlockSize : bs.intValue());
+			byte[] iv = (byte[]) attributes.get(IV);
+			if (iv != null)
+				this.iv = iv.clone();
+			else
+				this.iv = new byte[modeBlockSize];
+			cipher.init(attributes);
+			setup();
 		}
-	    }
-	    Integer bs = (Integer) attributes.get(MODE_BLOCK_SIZE);
-	    modeBlockSize = (bs == null ? cipherBlockSize : bs.intValue());
-	    byte[] iv = (byte[]) attributes.get(IV);
-	    if (iv != null)
-		this.iv = iv.clone();
-	    else
-		this.iv = new byte[modeBlockSize];
-	    cipher.init(attributes);
-	    setup();
 	}
-    }
 
-    /**
-     * Returns an {@link Iterator} over the supported underlying block cipher
-     * key sizes. Each element returned by this object is an instance of
-     * {@link Integer}.
-     *
-     * @return an {@link Iterator} over the supported key sizes.
-     */
-    @Override
-    public Iterator<Integer> keySizes()
-    {
-	return cipher.keySizes();
-    }
-
-    @Override
-    public String name()
-    {
-	return new StringBuilder(name).append('(').append(cipher.name())
-		.append(')').toString();
-    }
-
-    @Override
-    public void reset()
-    {
-	synchronized (lock)
-	{
-	    state = -1;
-	    iv = null;
-	    cipher.reset();
-	    teardown();
+	/**
+	 * Returns an {@link Iterator} over the supported underlying block cipher key
+	 * sizes. Each element returned by this object is an instance of
+	 * {@link Integer}.
+	 *
+	 * @return an {@link Iterator} over the supported key sizes.
+	 */
+	@Override
+	public Iterator<Integer> keySizes() {
+		return cipher.keySizes();
 	}
-    }
 
-    @Override
-    public boolean selfTest()
-    {
-	int ks;
-	Iterator<Integer> bit;
-	for (Iterator<Integer> kit = keySizes(); kit.hasNext();)
-	{
-	    ks = kit.next().intValue();
-	    for (bit = blockSizes(); bit.hasNext();)
-		if (!testSymmetry(ks, bit.next().intValue()))
-		    return false;
+	@Override
+	public String name() {
+		return new StringBuilder(name).append('(').append(cipher.name()).append(')').toString();
 	}
-	return true;
-    }
 
-    /** The initialisation phase of the concrete mode implementation. */
-    public abstract void setup();
-
-    /** The termination phase of the concrete mode implementation. */
-    public abstract void teardown();
-
-    private boolean testSymmetry(int ks, int bs)
-    {
-	try
-	{
-	    IMode mode = (IMode) this.clone();
-	    byte[] iv = new byte[cipherBlockSize]; // all zeroes
-	    byte[] k = new byte[ks];
-	    int i;
-	    for (i = 0; i < ks; i++)
-		k[i] = (byte) i;
-	    int blockCount = 5;
-	    int limit = blockCount * bs;
-	    byte[] pt = new byte[limit];
-	    for (i = 0; i < limit; i++)
-		pt[i] = (byte) i;
-	    byte[] ct = new byte[limit];
-	    byte[] cpt = new byte[limit];
-	    Map<Object, Object> map = new HashMap<>();
-	    map.put(KEY_MATERIAL, k);
-	    map.put(CIPHER_BLOCK_SIZE, Integer.valueOf(cipherBlockSize));
-	    map.put(STATE, Integer.valueOf(ENCRYPTION));
-	    map.put(IV, iv);
-	    map.put(MODE_BLOCK_SIZE, Integer.valueOf(bs));
-	    mode.reset();
-	    mode.init(map);
-	    for (i = 0; i < blockCount; i++)
-		mode.update(pt, i * bs, ct, i * bs);
-	    mode.reset();
-	    map.put(STATE, Integer.valueOf(DECRYPTION));
-	    mode.init(map);
-	    for (i = 0; i < blockCount; i++)
-		mode.update(ct, i * bs, cpt, i * bs);
-	    return Arrays.equals(pt, cpt);
+	@Override
+	public void reset() {
+		synchronized (lock) {
+			state = -1;
+			iv = null;
+			cipher.reset();
+			teardown();
+		}
 	}
-	catch (Exception x)
-	{
-	    x.printStackTrace(System.err);
-	    return false;
-	}
-    }
 
-    @Override
-    public void update(byte[] in, int inOffset, byte[] out, int outOffset) throws IllegalStateException
-    {
-	synchronized (lock)
-	{
-	    switch (state)
-	    {
-		case ENCRYPTION:
-		    encryptBlock(in, inOffset, out, outOffset);
-		    break;
-		case DECRYPTION:
-		    decryptBlock(in, inOffset, out, outOffset);
-		    break;
-		default:
-		    throw new IllegalStateException();
-	    }
+	@Override
+	public boolean selfTest() {
+		int ks;
+		Iterator<Integer> bit;
+		for (Iterator<Integer> kit = keySizes(); kit.hasNext();) {
+			ks = kit.next().intValue();
+			for (bit = blockSizes(); bit.hasNext();)
+				if (!testSymmetry(ks, bit.next().intValue()))
+					return false;
+		}
+		return true;
 	}
-    }
+
+	/** The initialisation phase of the concrete mode implementation. */
+	public abstract void setup();
+
+	/** The termination phase of the concrete mode implementation. */
+	public abstract void teardown();
+
+	private boolean testSymmetry(int ks, int bs) {
+		try {
+			IMode mode = (IMode) this.clone();
+			byte[] iv = new byte[cipherBlockSize]; // all zeroes
+			byte[] k = new byte[ks];
+			int i;
+			for (i = 0; i < ks; i++)
+				k[i] = (byte) i;
+			int blockCount = 5;
+			int limit = blockCount * bs;
+			byte[] pt = new byte[limit];
+			for (i = 0; i < limit; i++)
+				pt[i] = (byte) i;
+			byte[] ct = new byte[limit];
+			byte[] cpt = new byte[limit];
+			Map<Object, Object> map = new HashMap<>();
+			map.put(KEY_MATERIAL, k);
+			map.put(CIPHER_BLOCK_SIZE, Integer.valueOf(cipherBlockSize));
+			map.put(STATE, Integer.valueOf(ENCRYPTION));
+			map.put(IV, iv);
+			map.put(MODE_BLOCK_SIZE, Integer.valueOf(bs));
+			mode.reset();
+			mode.init(map);
+			for (i = 0; i < blockCount; i++)
+				mode.update(pt, i * bs, ct, i * bs);
+			mode.reset();
+			map.put(STATE, Integer.valueOf(DECRYPTION));
+			mode.init(map);
+			for (i = 0; i < blockCount; i++)
+				mode.update(ct, i * bs, cpt, i * bs);
+			return Arrays.equals(pt, cpt);
+		} catch (Exception x) {
+			x.printStackTrace(System.err);
+			return false;
+		}
+	}
+
+	@Override
+	public void update(byte[] in, int inOffset, byte[] out, int outOffset) throws IllegalStateException {
+		synchronized (lock) {
+			switch (state) {
+			case ENCRYPTION:
+				encryptBlock(in, inOffset, out, outOffset);
+				break;
+			case DECRYPTION:
+				decryptBlock(in, inOffset, out, outOffset);
+				break;
+			default:
+				throw new IllegalStateException();
+			}
+		}
+	}
 }

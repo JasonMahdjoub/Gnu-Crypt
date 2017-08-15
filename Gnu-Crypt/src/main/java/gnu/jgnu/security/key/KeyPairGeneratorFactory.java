@@ -49,75 +49,62 @@ import gnu.jgnu.security.key.rsa.RSAKeyPairGenerator;
 /**
  * A Factory to instantiate asymmetric keypair generators.
  */
-public class KeyPairGeneratorFactory
-{
-    /**
-     * Returns an instance of a keypair generator given its name.
-     *
-     * @param name
-     *            the case-insensitive key generator name.
-     * @return an instance of the keypair generator, or <code>null</code> if
-     *         none found.
-     */
-    public static IKeyPairGenerator getInstance(String name)
-    {
-	if (name == null)
-	    return null;
+public class KeyPairGeneratorFactory {
+	/**
+	 * Returns an instance of a keypair generator given its name.
+	 *
+	 * @param name
+	 *            the case-insensitive key generator name.
+	 * @return an instance of the keypair generator, or <code>null</code> if none
+	 *         found.
+	 */
+	public static IKeyPairGenerator getInstance(String name) {
+		if (name == null)
+			return null;
 
-	name = name.trim();
-	IKeyPairGenerator result = null;
-	if (name.equalsIgnoreCase(Registry.DSA_KPG)
-		|| name.equalsIgnoreCase(Registry.DSS_KPG))
-	    result = new DSSKeyPairGenerator();
-	else if (name.equalsIgnoreCase(Registry.RSA_KPG))
-	    result = new RSAKeyPairGenerator();
-	else if (name.equalsIgnoreCase(Registry.DH_KPG))
-	    result = makeInstance(
-		    "gnu.javax.crypto.key.dh.GnuDHKeyPairGenerator");
-	else if (name.equalsIgnoreCase(Registry.SRP_KPG))
-	    result = makeInstance(
-		    "gnu.javax.crypto.key.srp6.SRPKeyPairGenerator");
+		name = name.trim();
+		IKeyPairGenerator result = null;
+		if (name.equalsIgnoreCase(Registry.DSA_KPG) || name.equalsIgnoreCase(Registry.DSS_KPG))
+			result = new DSSKeyPairGenerator();
+		else if (name.equalsIgnoreCase(Registry.RSA_KPG))
+			result = new RSAKeyPairGenerator();
+		else if (name.equalsIgnoreCase(Registry.DH_KPG))
+			result = makeInstance("gnu.javax.crypto.key.dh.GnuDHKeyPairGenerator");
+		else if (name.equalsIgnoreCase(Registry.SRP_KPG))
+			result = makeInstance("gnu.javax.crypto.key.srp6.SRPKeyPairGenerator");
 
-	return result;
-    }
-
-    /**
-     * Returns a {@link Set} of keypair generator names supported by this
-     * <i>Factory</i>. Those keypair generators may be used in conjunction with
-     * the digital signature schemes with appendix supported by this library.
-     *
-     * @return a {@link Set} of keypair generator names (Strings).
-     */
-    public static final Set<String> getNames()
-    {
-	HashSet<String> hs = new HashSet<>();
-	hs.add(Registry.DSS_KPG);
-	hs.add(Registry.DSA_KPG);
-	hs.add(Registry.RSA_KPG);
-	hs.add(Registry.DH_KPG);
-	hs.add(Registry.SRP_KPG);
-	return Collections.unmodifiableSet(hs);
-    }
-
-    private static IKeyPairGenerator makeInstance(String clazz)
-    {
-	try
-	{
-	    Class<?> c = Class.forName(clazz);
-	    Constructor<?> ctor = c.getConstructor(new Class[0]);
-	    return (IKeyPairGenerator) ctor.newInstance(new Object[0]);
+		return result;
 	}
-	catch (Exception x)
-	{
-	    throw new IllegalArgumentException(
-		    "strong crypto key pair generator not available: " + clazz,
-		    x);
-	}
-    }
 
-    /** Trivial constructor to enforce Singleton pattern. */
-    private KeyPairGeneratorFactory()
-    {
-	super();
-    }
+	/**
+	 * Returns a {@link Set} of keypair generator names supported by this
+	 * <i>Factory</i>. Those keypair generators may be used in conjunction with the
+	 * digital signature schemes with appendix supported by this library.
+	 *
+	 * @return a {@link Set} of keypair generator names (Strings).
+	 */
+	public static final Set<String> getNames() {
+		HashSet<String> hs = new HashSet<>();
+		hs.add(Registry.DSS_KPG);
+		hs.add(Registry.DSA_KPG);
+		hs.add(Registry.RSA_KPG);
+		hs.add(Registry.DH_KPG);
+		hs.add(Registry.SRP_KPG);
+		return Collections.unmodifiableSet(hs);
+	}
+
+	private static IKeyPairGenerator makeInstance(String clazz) {
+		try {
+			Class<?> c = Class.forName(clazz);
+			Constructor<?> ctor = c.getConstructor(new Class[0]);
+			return (IKeyPairGenerator) ctor.newInstance(new Object[0]);
+		} catch (Exception x) {
+			throw new IllegalArgumentException("strong crypto key pair generator not available: " + clazz, x);
+		}
+	}
+
+	/** Trivial constructor to enforce Singleton pattern. */
+	private KeyPairGeneratorFactory() {
+		super();
+	}
 }

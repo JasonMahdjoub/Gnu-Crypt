@@ -54,43 +54,36 @@ import gnu.vm.jgnu.security.spec.RSAKeyGenParameterSpec;
  * call to an <code>initialize()</code> method), the GNU provider uses a default
  * <i>modulus</i> size (keysize) of 1024 bits.
  */
-public class RSAKeyPairGeneratorSpi extends KeyPairGeneratorAdapter
-{
-    public RSAKeyPairGeneratorSpi()
-    {
-	super(Registry.RSA_KPG);
-    }
-
-    @Override
-    public void initialize(AlgorithmParameterSpec params, SecureRandom random) throws InvalidAlgorithmParameterException
-    {
-	HashMap<String, Object> attributes = new HashMap<>();
-	if (params != null)
-	{
-	    if (!(params instanceof RSAKeyGenParameterSpec))
-		throw new InvalidAlgorithmParameterException("params");
-
-	    attributes.put(RSAKeyPairGenerator.RSA_PARAMETERS, params);
+public class RSAKeyPairGeneratorSpi extends KeyPairGeneratorAdapter {
+	public RSAKeyPairGeneratorSpi() {
+		super(Registry.RSA_KPG);
 	}
-	if (random != null)
-	    attributes.put(RSAKeyPairGenerator.SOURCE_OF_RANDOMNESS, random);
 
-	attributes.put(RSAKeyPairGenerator.PREFERRED_ENCODING_FORMAT,
-		Integer.valueOf(Registry.ASN1_ENCODING_ID));
-	adaptee.setup(attributes);
-    }
+	@Override
+	public void initialize(AlgorithmParameterSpec params, SecureRandom random)
+			throws InvalidAlgorithmParameterException {
+		HashMap<String, Object> attributes = new HashMap<>();
+		if (params != null) {
+			if (!(params instanceof RSAKeyGenParameterSpec))
+				throw new InvalidAlgorithmParameterException("params");
 
-    @Override
-    public void initialize(int keysize, SecureRandom random)
-    {
-	HashMap<String, Object> attributes = new HashMap<>();
-	attributes.put(RSAKeyPairGenerator.MODULUS_LENGTH,
-		Integer.valueOf(keysize));
-	if (random != null)
-	    attributes.put(RSAKeyPairGenerator.SOURCE_OF_RANDOMNESS, random);
+			attributes.put(RSAKeyPairGenerator.RSA_PARAMETERS, params);
+		}
+		if (random != null)
+			attributes.put(RSAKeyPairGenerator.SOURCE_OF_RANDOMNESS, random);
 
-	attributes.put(RSAKeyPairGenerator.PREFERRED_ENCODING_FORMAT,
-		Integer.valueOf(Registry.ASN1_ENCODING_ID));
-	adaptee.setup(attributes);
-    }
+		attributes.put(RSAKeyPairGenerator.PREFERRED_ENCODING_FORMAT, Integer.valueOf(Registry.ASN1_ENCODING_ID));
+		adaptee.setup(attributes);
+	}
+
+	@Override
+	public void initialize(int keysize, SecureRandom random) {
+		HashMap<String, Object> attributes = new HashMap<>();
+		attributes.put(RSAKeyPairGenerator.MODULUS_LENGTH, Integer.valueOf(keysize));
+		if (random != null)
+			attributes.put(RSAKeyPairGenerator.SOURCE_OF_RANDOMNESS, random);
+
+		attributes.put(RSAKeyPairGenerator.PREFERRED_ENCODING_FORMAT, Integer.valueOf(Registry.ASN1_ENCODING_ID));
+		adaptee.setup(attributes);
+	}
 }

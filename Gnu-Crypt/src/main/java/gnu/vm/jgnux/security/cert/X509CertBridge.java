@@ -53,161 +53,126 @@ import gnu.vm.jgnu.security.SignatureException;
  * to a {@link java.security.cert.X509Certificate}.
  * </p>
  */
-final class X509CertBridge extends X509Certificate
-{
+final class X509CertBridge extends X509Certificate {
 
-    // Fields.
-    // -------------------------------------------------------------------------
+	// Fields.
+	// -------------------------------------------------------------------------
 
-    private gnu.vm.jgnu.security.cert.X509Certificate cert;
+	private gnu.vm.jgnu.security.cert.X509Certificate cert;
 
-    // Constructor.
-    // -------------------------------------------------------------------------
+	// Constructor.
+	// -------------------------------------------------------------------------
 
-    X509CertBridge(gnu.vm.jgnu.security.cert.X509Certificate cert)
-    {
-	this.cert = cert;
-    }
-
-    // Instance methods.
-    // -------------------------------------------------------------------------
-
-    @Override
-    public void checkValidity() throws CertificateExpiredException, CertificateNotYetValidException
-    {
-	try
-	{
-	    cert.checkValidity();
+	X509CertBridge(gnu.vm.jgnu.security.cert.X509Certificate cert) {
+		this.cert = cert;
 	}
-	catch (gnu.vm.jgnu.security.cert.CertificateExpiredException cee)
-	{
-	    throw new CertificateExpiredException(cee.getMessage());
+
+	// Instance methods.
+	// -------------------------------------------------------------------------
+
+	@Override
+	public void checkValidity() throws CertificateExpiredException, CertificateNotYetValidException {
+		try {
+			cert.checkValidity();
+		} catch (gnu.vm.jgnu.security.cert.CertificateExpiredException cee) {
+			throw new CertificateExpiredException(cee.getMessage());
+		} catch (gnu.vm.jgnu.security.cert.CertificateNotYetValidException cnyve) {
+			throw new CertificateNotYetValidException(cnyve.getMessage());
+		}
 	}
-	catch (gnu.vm.jgnu.security.cert.CertificateNotYetValidException cnyve)
-	{
-	    throw new CertificateNotYetValidException(cnyve.getMessage());
+
+	@Override
+	public void checkValidity(Date date) throws CertificateExpiredException, CertificateNotYetValidException {
+		try {
+			cert.checkValidity(date);
+		} catch (gnu.vm.jgnu.security.cert.CertificateExpiredException cee) {
+			throw new CertificateExpiredException(cee.getMessage());
+		} catch (gnu.vm.jgnu.security.cert.CertificateNotYetValidException cnyve) {
+			throw new CertificateNotYetValidException(cnyve.getMessage());
+		}
 	}
-    }
 
-    @Override
-    public void checkValidity(Date date) throws CertificateExpiredException, CertificateNotYetValidException
-    {
-	try
-	{
-	    cert.checkValidity(date);
+	@Override
+	public byte[] getEncoded() throws CertificateEncodingException {
+		try {
+			return cert.getEncoded();
+		} catch (gnu.vm.jgnu.security.cert.CertificateEncodingException cee) {
+			throw new CertificateEncodingException(cee.getMessage());
+		}
 	}
-	catch (gnu.vm.jgnu.security.cert.CertificateExpiredException cee)
-	{
-	    throw new CertificateExpiredException(cee.getMessage());
+
+	@Override
+	public Principal getIssuerDN() {
+		return cert.getIssuerDN();
 	}
-	catch (gnu.vm.jgnu.security.cert.CertificateNotYetValidException cnyve)
-	{
-	    throw new CertificateNotYetValidException(cnyve.getMessage());
+
+	@Override
+	public Date getNotAfter() {
+		return cert.getNotAfter();
 	}
-    }
 
-    @Override
-    public byte[] getEncoded() throws CertificateEncodingException
-    {
-	try
-	{
-	    return cert.getEncoded();
+	@Override
+	public Date getNotBefore() {
+		return cert.getNotBefore();
 	}
-	catch (gnu.vm.jgnu.security.cert.CertificateEncodingException cee)
-	{
-	    throw new CertificateEncodingException(cee.getMessage());
+
+	@Override
+	public PublicKey getPublicKey() {
+		return cert.getPublicKey();
 	}
-    }
 
-    @Override
-    public Principal getIssuerDN()
-    {
-	return cert.getIssuerDN();
-    }
-
-    @Override
-    public Date getNotAfter()
-    {
-	return cert.getNotAfter();
-    }
-
-    @Override
-    public Date getNotBefore()
-    {
-	return cert.getNotBefore();
-    }
-
-    @Override
-    public PublicKey getPublicKey()
-    {
-	return cert.getPublicKey();
-    }
-
-    @Override
-    public BigInteger getSerialNumber()
-    {
-	return cert.getSerialNumber();
-    }
-
-    @Override
-    public String getSigAlgName()
-    {
-	return cert.getSigAlgName();
-    }
-
-    @Override
-    public String getSigAlgOID()
-    {
-	return cert.getSigAlgOID();
-    }
-
-    @Override
-    public byte[] getSigAlgParams()
-    {
-	return cert.getSigAlgParams();
-    }
-
-    @Override
-    public Principal getSubjectDN()
-    {
-	return cert.getSubjectDN();
-    }
-
-    @Override
-    public int getVersion()
-    {
-	return cert.getVersion();
-    }
-
-    @Override
-    public String toString()
-    {
-	return cert.toString();
-    }
-
-    @Override
-    public void verify(PublicKey key) throws CertificateException, NoSuchAlgorithmException, InvalidKeyException, NoSuchProviderException, SignatureException
-    {
-	try
-	{
-	    cert.verify(key);
+	@Override
+	public BigInteger getSerialNumber() {
+		return cert.getSerialNumber();
 	}
-	catch (gnu.vm.jgnu.security.cert.CertificateException ce)
-	{
-	    throw new CertificateException(ce.getMessage());
-	}
-    }
 
-    @Override
-    public void verify(PublicKey key, String sigProvider) throws CertificateException, NoSuchAlgorithmException, InvalidKeyException, NoSuchProviderException, SignatureException
-    {
-	try
-	{
-	    cert.verify(key, sigProvider);
+	@Override
+	public String getSigAlgName() {
+		return cert.getSigAlgName();
 	}
-	catch (gnu.vm.jgnu.security.cert.CertificateException ce)
-	{
-	    throw new CertificateException(ce.getMessage());
+
+	@Override
+	public String getSigAlgOID() {
+		return cert.getSigAlgOID();
 	}
-    }
+
+	@Override
+	public byte[] getSigAlgParams() {
+		return cert.getSigAlgParams();
+	}
+
+	@Override
+	public Principal getSubjectDN() {
+		return cert.getSubjectDN();
+	}
+
+	@Override
+	public int getVersion() {
+		return cert.getVersion();
+	}
+
+	@Override
+	public String toString() {
+		return cert.toString();
+	}
+
+	@Override
+	public void verify(PublicKey key) throws CertificateException, NoSuchAlgorithmException, InvalidKeyException,
+			NoSuchProviderException, SignatureException {
+		try {
+			cert.verify(key);
+		} catch (gnu.vm.jgnu.security.cert.CertificateException ce) {
+			throw new CertificateException(ce.getMessage());
+		}
+	}
+
+	@Override
+	public void verify(PublicKey key, String sigProvider) throws CertificateException, NoSuchAlgorithmException,
+			InvalidKeyException, NoSuchProviderException, SignatureException {
+		try {
+			cert.verify(key, sigProvider);
+		} catch (gnu.vm.jgnu.security.cert.CertificateException ce) {
+			throw new CertificateException(ce.getMessage());
+		}
+	}
 }

@@ -42,16 +42,14 @@ import javax.net.ssl.SSLException;
 /**
  * An exception that signals an error in the SSL handshake phase.
  */
-public class SSLHandshakeException extends SSLException
-{
+public class SSLHandshakeException extends SSLException {
 
-    /**
-     * 
-     */
-    private static final long serialVersionUID = -8491258247645072282L;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -8491258247645072282L;
 
-    public SSLHandshakeException(String message)
-    {
-	super(message);
-    }
+	public SSLHandshakeException(String message) {
+		super(message);
+	}
 }

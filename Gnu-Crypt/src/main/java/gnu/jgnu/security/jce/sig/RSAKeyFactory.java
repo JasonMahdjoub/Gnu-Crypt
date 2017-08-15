@@ -60,178 +60,137 @@ import gnu.vm.jgnu.security.spec.RSAPrivateKeySpec;
 import gnu.vm.jgnu.security.spec.RSAPublicKeySpec;
 import gnu.vm.jgnu.security.spec.X509EncodedKeySpec;
 
-public class RSAKeyFactory extends KeyFactorySpi
-{
-    // implicit 0-arguments constructor
+public class RSAKeyFactory extends KeyFactorySpi {
+	// implicit 0-arguments constructor
 
-    @Override
-    protected PrivateKey engineGeneratePrivate(KeySpec keySpec) throws InvalidKeySpecException
-    {
-	if (keySpec instanceof RSAPrivateCrtKeySpec)
-	{
-	    RSAPrivateCrtKeySpec spec = (RSAPrivateCrtKeySpec) keySpec;
-	    BigInteger n = spec.getModulus();
-	    BigInteger e = spec.getPublicExponent();
-	    BigInteger d = spec.getPrivateExponent();
-	    BigInteger p = spec.getPrimeP();
-	    BigInteger q = spec.getPrimeQ();
-	    BigInteger dP = spec.getPrimeExponentP();
-	    BigInteger dQ = spec.getPrimeExponentQ();
-	    BigInteger qInv = spec.getCrtCoefficient();
-	    return new GnuRSAPrivateKey(Registry.PKCS8_ENCODING_ID, n, e, d, p,
-		    q, dP, dQ, qInv);
-	}
-	if (keySpec instanceof PKCS8EncodedKeySpec)
-	{
-	    PKCS8EncodedKeySpec spec = (PKCS8EncodedKeySpec) keySpec;
-	    byte[] encoded = spec.getEncoded();
-	    // PrivateKey result;
-	    try
-	    {
-		return new RSAKeyPairPKCS8Codec().decodePrivateKey(encoded);
-	    }
-	    catch (RuntimeException x)
-	    {
-		throw new InvalidKeySpecException(x.getMessage(), x);
-	    }
-	}
-	throw new InvalidKeySpecException(
-		"Unsupported (private) key specification");
-    }
-
-    @Override
-    protected PublicKey engineGeneratePublic(KeySpec keySpec) throws InvalidKeySpecException
-    {
-	if (keySpec instanceof RSAPublicKeySpec)
-	{
-	    RSAPublicKeySpec spec = (RSAPublicKeySpec) keySpec;
-	    BigInteger n = spec.getModulus();
-	    BigInteger e = spec.getPublicExponent();
-	    return new GnuRSAPublicKey(Registry.X509_ENCODING_ID, n, e);
-	}
-	if (keySpec instanceof X509EncodedKeySpec)
-	{
-	    X509EncodedKeySpec spec = (X509EncodedKeySpec) keySpec;
-	    byte[] encoded = spec.getEncoded();
-	    // PublicKey result;
-	    try
-	    {
-		return new RSAKeyPairX509Codec().decodePublicKey(encoded);
-	    }
-	    catch (RuntimeException x)
-	    {
-		throw new InvalidKeySpecException(x.getMessage(), x);
-	    }
-	}
-	throw new InvalidKeySpecException(
-		"Unsupported (public) key specification");
-    }
-
-    @Override
-    protected KeySpec engineGetKeySpec(Key key, Class<? extends KeySpec> keySpec) throws InvalidKeySpecException
-    {
-	if (key instanceof RSAPublicKey)
-	{
-	    if (keySpec.isAssignableFrom(RSAPublicKeySpec.class))
-	    {
-		RSAPublicKey rsaKey = (RSAPublicKey) key;
-		BigInteger n = rsaKey.getModulus();
-		BigInteger e = rsaKey.getPublicExponent();
-		return new RSAPublicKeySpec(n, e);
-	    }
-	    if (keySpec.isAssignableFrom(X509EncodedKeySpec.class))
-	    {
-		if (key instanceof GnuRSAPublicKey)
-		{
-		    GnuRSAPublicKey rsaKey = (GnuRSAPublicKey) key;
-		    byte[] encoded = rsaKey
-			    .getEncoded(Registry.X509_ENCODING_ID);
-		    return new X509EncodedKeySpec(encoded);
+	@Override
+	protected PrivateKey engineGeneratePrivate(KeySpec keySpec) throws InvalidKeySpecException {
+		if (keySpec instanceof RSAPrivateCrtKeySpec) {
+			RSAPrivateCrtKeySpec spec = (RSAPrivateCrtKeySpec) keySpec;
+			BigInteger n = spec.getModulus();
+			BigInteger e = spec.getPublicExponent();
+			BigInteger d = spec.getPrivateExponent();
+			BigInteger p = spec.getPrimeP();
+			BigInteger q = spec.getPrimeQ();
+			BigInteger dP = spec.getPrimeExponentP();
+			BigInteger dQ = spec.getPrimeExponentQ();
+			BigInteger qInv = spec.getCrtCoefficient();
+			return new GnuRSAPrivateKey(Registry.PKCS8_ENCODING_ID, n, e, d, p, q, dP, dQ, qInv);
 		}
-
-		if (Registry.X509_ENCODING_SORT_NAME
-			.equalsIgnoreCase(key.getFormat()))
-		{
-		    byte[] encoded = key.getEncoded();
-		    return new X509EncodedKeySpec(encoded);
+		if (keySpec instanceof PKCS8EncodedKeySpec) {
+			PKCS8EncodedKeySpec spec = (PKCS8EncodedKeySpec) keySpec;
+			byte[] encoded = spec.getEncoded();
+			// PrivateKey result;
+			try {
+				return new RSAKeyPairPKCS8Codec().decodePrivateKey(encoded);
+			} catch (RuntimeException x) {
+				throw new InvalidKeySpecException(x.getMessage(), x);
+			}
 		}
-		throw new InvalidKeySpecException(
-			"Wrong key type or unsupported (public) key specification");
-	    }
-	    throw new InvalidKeySpecException(
-		    "Unsupported (public) key specification");
+		throw new InvalidKeySpecException("Unsupported (private) key specification");
 	}
-	if ((key instanceof RSAPrivateCrtKey)
-		&& keySpec.isAssignableFrom(RSAPrivateCrtKeySpec.class))
-	{
-	    RSAPrivateCrtKey rsaKey = (RSAPrivateCrtKey) key;
-	    BigInteger n = rsaKey.getModulus();
-	    BigInteger e = rsaKey.getPublicExponent();
-	    BigInteger d = rsaKey.getPrivateExponent();
-	    BigInteger p = rsaKey.getPrimeP();
-	    BigInteger q = rsaKey.getPrimeQ();
-	    BigInteger dP = rsaKey.getPrimeExponentP();
-	    BigInteger dQ = rsaKey.getPrimeExponentQ();
-	    BigInteger qInv = rsaKey.getCrtCoefficient();
-	    return new RSAPrivateCrtKeySpec(n, e, d, p, q, dP, dQ, qInv);
-	}
-	if ((key instanceof RSAPrivateKey)
-		&& keySpec.isAssignableFrom(RSAPrivateKeySpec.class))
-	{
-	    RSAPrivateKey rsaKey = (RSAPrivateKey) key;
-	    BigInteger n = rsaKey.getModulus();
-	    BigInteger d = rsaKey.getPrivateExponent();
-	    return new RSAPrivateKeySpec(n, d);
-	}
-	if (keySpec.isAssignableFrom(PKCS8EncodedKeySpec.class))
-	{
-	    if (key instanceof GnuRSAPrivateKey)
-	    {
-		GnuRSAPrivateKey rsaKey = (GnuRSAPrivateKey) key;
-		byte[] encoded = rsaKey.getEncoded(Registry.PKCS8_ENCODING_ID);
-		return new PKCS8EncodedKeySpec(encoded);
-	    }
-	    if (Registry.PKCS8_ENCODING_SHORT_NAME
-		    .equalsIgnoreCase(key.getFormat()))
-	    {
-		byte[] encoded = key.getEncoded();
-		return new PKCS8EncodedKeySpec(encoded);
-	    }
-	    throw new InvalidKeySpecException(
-		    "Wrong key type or unsupported (private) key specification");
-	}
-	throw new InvalidKeySpecException(
-		"Wrong key type or unsupported key specification");
-    }
 
-    @Override
-    protected Key engineTranslateKey(Key key) throws InvalidKeyException
-    {
-	if ((key instanceof GnuRSAPublicKey)
-		|| (key instanceof GnuRSAPrivateKey))
-	    return key;
+	@Override
+	protected PublicKey engineGeneratePublic(KeySpec keySpec) throws InvalidKeySpecException {
+		if (keySpec instanceof RSAPublicKeySpec) {
+			RSAPublicKeySpec spec = (RSAPublicKeySpec) keySpec;
+			BigInteger n = spec.getModulus();
+			BigInteger e = spec.getPublicExponent();
+			return new GnuRSAPublicKey(Registry.X509_ENCODING_ID, n, e);
+		}
+		if (keySpec instanceof X509EncodedKeySpec) {
+			X509EncodedKeySpec spec = (X509EncodedKeySpec) keySpec;
+			byte[] encoded = spec.getEncoded();
+			// PublicKey result;
+			try {
+				return new RSAKeyPairX509Codec().decodePublicKey(encoded);
+			} catch (RuntimeException x) {
+				throw new InvalidKeySpecException(x.getMessage(), x);
+			}
+		}
+		throw new InvalidKeySpecException("Unsupported (public) key specification");
+	}
 
-	if (key instanceof RSAPublicKey)
-	{
-	    RSAPublicKey rsaKey = (RSAPublicKey) key;
-	    BigInteger n = rsaKey.getModulus();
-	    BigInteger e = rsaKey.getPublicExponent();
-	    return new GnuRSAPublicKey(Registry.X509_ENCODING_ID, n, e);
+	@Override
+	protected KeySpec engineGetKeySpec(Key key, Class<? extends KeySpec> keySpec) throws InvalidKeySpecException {
+		if (key instanceof RSAPublicKey) {
+			if (keySpec.isAssignableFrom(RSAPublicKeySpec.class)) {
+				RSAPublicKey rsaKey = (RSAPublicKey) key;
+				BigInteger n = rsaKey.getModulus();
+				BigInteger e = rsaKey.getPublicExponent();
+				return new RSAPublicKeySpec(n, e);
+			}
+			if (keySpec.isAssignableFrom(X509EncodedKeySpec.class)) {
+				if (key instanceof GnuRSAPublicKey) {
+					GnuRSAPublicKey rsaKey = (GnuRSAPublicKey) key;
+					byte[] encoded = rsaKey.getEncoded(Registry.X509_ENCODING_ID);
+					return new X509EncodedKeySpec(encoded);
+				}
+
+				if (Registry.X509_ENCODING_SORT_NAME.equalsIgnoreCase(key.getFormat())) {
+					byte[] encoded = key.getEncoded();
+					return new X509EncodedKeySpec(encoded);
+				}
+				throw new InvalidKeySpecException("Wrong key type or unsupported (public) key specification");
+			}
+			throw new InvalidKeySpecException("Unsupported (public) key specification");
+		}
+		if ((key instanceof RSAPrivateCrtKey) && keySpec.isAssignableFrom(RSAPrivateCrtKeySpec.class)) {
+			RSAPrivateCrtKey rsaKey = (RSAPrivateCrtKey) key;
+			BigInteger n = rsaKey.getModulus();
+			BigInteger e = rsaKey.getPublicExponent();
+			BigInteger d = rsaKey.getPrivateExponent();
+			BigInteger p = rsaKey.getPrimeP();
+			BigInteger q = rsaKey.getPrimeQ();
+			BigInteger dP = rsaKey.getPrimeExponentP();
+			BigInteger dQ = rsaKey.getPrimeExponentQ();
+			BigInteger qInv = rsaKey.getCrtCoefficient();
+			return new RSAPrivateCrtKeySpec(n, e, d, p, q, dP, dQ, qInv);
+		}
+		if ((key instanceof RSAPrivateKey) && keySpec.isAssignableFrom(RSAPrivateKeySpec.class)) {
+			RSAPrivateKey rsaKey = (RSAPrivateKey) key;
+			BigInteger n = rsaKey.getModulus();
+			BigInteger d = rsaKey.getPrivateExponent();
+			return new RSAPrivateKeySpec(n, d);
+		}
+		if (keySpec.isAssignableFrom(PKCS8EncodedKeySpec.class)) {
+			if (key instanceof GnuRSAPrivateKey) {
+				GnuRSAPrivateKey rsaKey = (GnuRSAPrivateKey) key;
+				byte[] encoded = rsaKey.getEncoded(Registry.PKCS8_ENCODING_ID);
+				return new PKCS8EncodedKeySpec(encoded);
+			}
+			if (Registry.PKCS8_ENCODING_SHORT_NAME.equalsIgnoreCase(key.getFormat())) {
+				byte[] encoded = key.getEncoded();
+				return new PKCS8EncodedKeySpec(encoded);
+			}
+			throw new InvalidKeySpecException("Wrong key type or unsupported (private) key specification");
+		}
+		throw new InvalidKeySpecException("Wrong key type or unsupported key specification");
 	}
-	if (key instanceof RSAPrivateCrtKey)
-	{
-	    RSAPrivateCrtKey rsaKey = (RSAPrivateCrtKey) key;
-	    BigInteger n = rsaKey.getModulus();
-	    BigInteger e = rsaKey.getPublicExponent();
-	    BigInteger d = rsaKey.getPrivateExponent();
-	    BigInteger p = rsaKey.getPrimeP();
-	    BigInteger q = rsaKey.getPrimeQ();
-	    BigInteger dP = rsaKey.getPrimeExponentP();
-	    BigInteger dQ = rsaKey.getPrimeExponentQ();
-	    BigInteger qInv = rsaKey.getCrtCoefficient();
-	    return new GnuRSAPrivateKey(Registry.PKCS8_ENCODING_ID, n, e, d, p,
-		    q, dP, dQ, qInv);
+
+	@Override
+	protected Key engineTranslateKey(Key key) throws InvalidKeyException {
+		if ((key instanceof GnuRSAPublicKey) || (key instanceof GnuRSAPrivateKey))
+			return key;
+
+		if (key instanceof RSAPublicKey) {
+			RSAPublicKey rsaKey = (RSAPublicKey) key;
+			BigInteger n = rsaKey.getModulus();
+			BigInteger e = rsaKey.getPublicExponent();
+			return new GnuRSAPublicKey(Registry.X509_ENCODING_ID, n, e);
+		}
+		if (key instanceof RSAPrivateCrtKey) {
+			RSAPrivateCrtKey rsaKey = (RSAPrivateCrtKey) key;
+			BigInteger n = rsaKey.getModulus();
+			BigInteger e = rsaKey.getPublicExponent();
+			BigInteger d = rsaKey.getPrivateExponent();
+			BigInteger p = rsaKey.getPrimeP();
+			BigInteger q = rsaKey.getPrimeQ();
+			BigInteger dP = rsaKey.getPrimeExponentP();
+			BigInteger dQ = rsaKey.getPrimeExponentQ();
+			BigInteger qInv = rsaKey.getCrtCoefficient();
+			return new GnuRSAPrivateKey(Registry.PKCS8_ENCODING_ID, n, e, d, p, q, dP, dQ, qInv);
+		}
+		throw new InvalidKeyException("Unsupported key type");
 	}
-	throw new InvalidKeyException("Unsupported key type");
-    }
 }

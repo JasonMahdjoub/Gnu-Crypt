@@ -56,17 +56,16 @@ import java.security.ProtectionDomain;
  * @since 1.3
  * @status updated to 1.4
  */
-public interface DomainCombiner
-{
-    /**
-     * Combines the current ProtectionDomains of the Thread with new
-     * ProtectionDomains.
-     *
-     * @param currentDomains
-     *            - the ProtectionDomains for the current thread.
-     * @param assignedDomains
-     *            - ProtectionsDomains to add
-     * @return a new array of all the ProtectionDomains
-     */
-    ProtectionDomain[] combine(ProtectionDomain[] currentDomains, ProtectionDomain[] assignedDomains);
+public interface DomainCombiner {
+	/**
+	 * Combines the current ProtectionDomains of the Thread with new
+	 * ProtectionDomains.
+	 *
+	 * @param currentDomains
+	 *            - the ProtectionDomains for the current thread.
+	 * @param assignedDomains
+	 *            - ProtectionsDomains to add
+	 * @return a new array of all the ProtectionDomains
+	 */
+	ProtectionDomain[] combine(ProtectionDomain[] currentDomains, ProtectionDomain[] assignedDomains);
 } // interface DomainCombiner

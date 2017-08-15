@@ -59,170 +59,162 @@ import gnu.vm.jgnu.security.spec.RSAPublicKeySpec;
  * @see RSAPublicKeySpec
  * @see RSAOtherPrimeInfo
  */
-public class RSAMultiPrimePrivateCrtKeySpec extends RSAPrivateKeySpec
-{
-    // Constants and fields
-    // --------------------------------------------------------------------------
+public class RSAMultiPrimePrivateCrtKeySpec extends RSAPrivateKeySpec {
+	// Constants and fields
+	// --------------------------------------------------------------------------
 
-    private BigInteger publicExponent;
+	private BigInteger publicExponent;
 
-    private BigInteger primeP;
+	private BigInteger primeP;
 
-    private BigInteger primeQ;
+	private BigInteger primeQ;
 
-    private BigInteger primeExponentP;
+	private BigInteger primeExponentP;
 
-    private BigInteger primeExponentQ;
+	private BigInteger primeExponentQ;
 
-    private BigInteger crtCoefficient;
+	private BigInteger crtCoefficient;
 
-    private RSAOtherPrimeInfo[] otherPrimeInfo;
+	private RSAOtherPrimeInfo[] otherPrimeInfo;
 
-    // Constructor(s)
-    // --------------------------------------------------------------------------
+	// Constructor(s)
+	// --------------------------------------------------------------------------
 
-    /**
-     * Constructs a new instance of <code>RSAMultiPrimePrivateCrtKeySpec</code>
-     * given the various PKCS#1 v2.1 parameters.
-     *
-     * <p>
-     * Note that <code>otherPrimeInfo</code> is cloned when constructing this
-     * object.
-     * </p>
-     *
-     * @param modulus
-     *            the modulus n.
-     * @param publicExponent
-     *            the public exponent e.
-     * @param privateExponent
-     *            the private exponent d.
-     * @param primeP
-     *            the prime factor p of n.
-     * @param primeQ
-     *            the prime factor q of n.
-     * @param primeExponentP
-     *            this is d mod (p-1).
-     * @param primeExponentQ
-     *            this is d mod (q-1).
-     * @param crtCoefficient
-     *            the Chinese Remainder Theorem coefficient q-1 mod p.
-     * @param otherPrimeInfo
-     *            triplets of the rest of primes, <code>null</code> can be
-     *            specified if there are only two prime factors (p and q).
-     * @throws NullPointerException
-     *             if any of the parameters is <code>null</code>.
-     * @throws IllegalArgumentException
-     *             if an empty <code>otherPrimeInfo</code> is specified.
-     */
-    public RSAMultiPrimePrivateCrtKeySpec(BigInteger modulus, BigInteger publicExponent, BigInteger privateExponent, BigInteger primeP, BigInteger primeQ, BigInteger primeExponentP, BigInteger primeExponentQ, BigInteger crtCoefficient, RSAOtherPrimeInfo[] otherPrimeInfo)
-    {
-	super(modulus, privateExponent);
+	/**
+	 * Constructs a new instance of <code>RSAMultiPrimePrivateCrtKeySpec</code>
+	 * given the various PKCS#1 v2.1 parameters.
+	 *
+	 * <p>
+	 * Note that <code>otherPrimeInfo</code> is cloned when constructing this
+	 * object.
+	 * </p>
+	 *
+	 * @param modulus
+	 *            the modulus n.
+	 * @param publicExponent
+	 *            the public exponent e.
+	 * @param privateExponent
+	 *            the private exponent d.
+	 * @param primeP
+	 *            the prime factor p of n.
+	 * @param primeQ
+	 *            the prime factor q of n.
+	 * @param primeExponentP
+	 *            this is d mod (p-1).
+	 * @param primeExponentQ
+	 *            this is d mod (q-1).
+	 * @param crtCoefficient
+	 *            the Chinese Remainder Theorem coefficient q-1 mod p.
+	 * @param otherPrimeInfo
+	 *            triplets of the rest of primes, <code>null</code> can be specified
+	 *            if there are only two prime factors (p and q).
+	 * @throws NullPointerException
+	 *             if any of the parameters is <code>null</code>.
+	 * @throws IllegalArgumentException
+	 *             if an empty <code>otherPrimeInfo</code> is specified.
+	 */
+	public RSAMultiPrimePrivateCrtKeySpec(BigInteger modulus, BigInteger publicExponent, BigInteger privateExponent,
+			BigInteger primeP, BigInteger primeQ, BigInteger primeExponentP, BigInteger primeExponentQ,
+			BigInteger crtCoefficient, RSAOtherPrimeInfo[] otherPrimeInfo) {
+		super(modulus, privateExponent);
 
-	if (modulus == null)
-	    throw new NullPointerException("modulus");
-	if (publicExponent == null)
-	    throw new NullPointerException("publicExponent");
-	if (privateExponent == null)
-	    throw new NullPointerException("privateExponent");
-	if (primeP == null)
-	    throw new NullPointerException("primeP");
-	if (primeQ == null)
-	    throw new NullPointerException("primeQ");
-	if (primeExponentP == null)
-	    throw new NullPointerException("primeExponentP");
-	if (primeExponentQ == null)
-	    throw new NullPointerException("primeExponentQ");
-	if (crtCoefficient == null)
-	    throw new NullPointerException("crtCoefficient");
-	if (otherPrimeInfo != null)
-	    if (otherPrimeInfo.length == 0)
-		throw new IllegalArgumentException();
-	    else
-		this.otherPrimeInfo = otherPrimeInfo.clone();
+		if (modulus == null)
+			throw new NullPointerException("modulus");
+		if (publicExponent == null)
+			throw new NullPointerException("publicExponent");
+		if (privateExponent == null)
+			throw new NullPointerException("privateExponent");
+		if (primeP == null)
+			throw new NullPointerException("primeP");
+		if (primeQ == null)
+			throw new NullPointerException("primeQ");
+		if (primeExponentP == null)
+			throw new NullPointerException("primeExponentP");
+		if (primeExponentQ == null)
+			throw new NullPointerException("primeExponentQ");
+		if (crtCoefficient == null)
+			throw new NullPointerException("crtCoefficient");
+		if (otherPrimeInfo != null)
+			if (otherPrimeInfo.length == 0)
+				throw new IllegalArgumentException();
+			else
+				this.otherPrimeInfo = otherPrimeInfo.clone();
 
-	this.publicExponent = publicExponent;
-	this.primeP = primeP;
-	this.primeQ = primeQ;
-	this.primeExponentP = primeExponentP;
-	this.primeExponentQ = primeExponentQ;
-	this.crtCoefficient = crtCoefficient;
-    }
+		this.publicExponent = publicExponent;
+		this.primeP = primeP;
+		this.primeQ = primeQ;
+		this.primeExponentP = primeExponentP;
+		this.primeExponentQ = primeExponentQ;
+		this.crtCoefficient = crtCoefficient;
+	}
 
-    // Class methods
-    // --------------------------------------------------------------------------
+	// Class methods
+	// --------------------------------------------------------------------------
 
-    // Instance methods
-    // --------------------------------------------------------------------------
+	// Instance methods
+	// --------------------------------------------------------------------------
 
-    /**
-     * Returns the CRT Coefficient q-1 mod p.
-     *
-     * @return the CRT Coefficient q-1 mod p.
-     */
-    public BigInteger getCrtCoefficient()
-    {
-	return this.crtCoefficient;
-    }
+	/**
+	 * Returns the CRT Coefficient q-1 mod p.
+	 *
+	 * @return the CRT Coefficient q-1 mod p.
+	 */
+	public BigInteger getCrtCoefficient() {
+		return this.crtCoefficient;
+	}
 
-    /**
-     * Returns a clone of <code>otherPrimeInfo</code> or <code>null</code> if it
-     * was <code>null</code> at construction time.
-     *
-     * @return a cloned copy of <code>otherPrimeInfo</code>.
-     */
-    public RSAOtherPrimeInfo[] getOtherPrimeInfo()
-    {
-	return this.otherPrimeInfo == null ? null
-		: (RSAOtherPrimeInfo[]) this.otherPrimeInfo.clone();
-    }
+	/**
+	 * Returns a clone of <code>otherPrimeInfo</code> or <code>null</code> if it was
+	 * <code>null</code> at construction time.
+	 *
+	 * @return a cloned copy of <code>otherPrimeInfo</code>.
+	 */
+	public RSAOtherPrimeInfo[] getOtherPrimeInfo() {
+		return this.otherPrimeInfo == null ? null : (RSAOtherPrimeInfo[]) this.otherPrimeInfo.clone();
+	}
 
-    /**
-     * Returns d mod (p-1).
-     *
-     * @return d mod (p-1).
-     */
-    public BigInteger getPrimeExponentP()
-    {
-	return this.primeExponentP;
-    }
+	/**
+	 * Returns d mod (p-1).
+	 *
+	 * @return d mod (p-1).
+	 */
+	public BigInteger getPrimeExponentP() {
+		return this.primeExponentP;
+	}
 
-    /**
-     * Returns d mod (q-1).
-     *
-     * @return d mod (q-1).
-     */
-    public BigInteger getPrimeExponentQ()
-    {
-	return this.primeExponentQ;
-    }
+	/**
+	 * Returns d mod (q-1).
+	 *
+	 * @return d mod (q-1).
+	 */
+	public BigInteger getPrimeExponentQ() {
+		return this.primeExponentQ;
+	}
 
-    /**
-     * Returns the prime p.
-     *
-     * @return the prime p.
-     */
-    public BigInteger getPrimeP()
-    {
-	return this.primeP;
-    }
+	/**
+	 * Returns the prime p.
+	 *
+	 * @return the prime p.
+	 */
+	public BigInteger getPrimeP() {
+		return this.primeP;
+	}
 
-    /**
-     * Returns the prime q.
-     *
-     * @return the prime q.
-     */
-    public BigInteger getPrimeQ()
-    {
-	return this.primeQ;
-    }
+	/**
+	 * Returns the prime q.
+	 *
+	 * @return the prime q.
+	 */
+	public BigInteger getPrimeQ() {
+		return this.primeQ;
+	}
 
-    /**
-     * Returns the public exponent.
-     *
-     * @return the public exponent.
-     */
-    public BigInteger getPublicExponent()
-    {
-	return this.publicExponent;
-    }
+	/**
+	 * Returns the public exponent.
+	 *
+	 * @return the public exponent.
+	 */
+	public BigInteger getPublicExponent() {
+		return this.publicExponent;
+	}
 }

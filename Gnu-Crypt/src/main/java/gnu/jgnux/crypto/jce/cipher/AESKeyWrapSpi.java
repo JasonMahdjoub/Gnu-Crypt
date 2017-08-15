@@ -41,50 +41,46 @@ package gnu.jgnux.crypto.jce.cipher;
  * Base abstract class to group common AES Key Wrapping Algorithm Adapter
  * methods.
  */
-abstract class AESKeyWrapSpi extends KeyWrappingAlgorithmAdapter
-{
-    protected AESKeyWrapSpi(String name, int keySize, String supportedMode)
-    {
-	super(name, 16, keySize, supportedMode);
-    }
+abstract class AESKeyWrapSpi extends KeyWrappingAlgorithmAdapter {
+	protected AESKeyWrapSpi(String name, int keySize, String supportedMode) {
+		super(name, 16, keySize, supportedMode);
+	}
 
-    /**
-     * AES Key Wrapping algorithms operate on an 8-byte block; a block half the
-     * size of the AES block itself.
-     * <p>
-     * In unwrapping, the number of 8-byte output blocks is ALWAYS one block
-     * shorter than the input.
-     *
-     * @param inputLength
-     *            the size of the cipher text.
-     * @return the size in bytes of <code>n - 1</code> 8-byte blocks where
-     *         <code>n</code> is the smallest number of 8-byte blocks that
-     *         contain the designated number of input bytes.
-     */
-    @Override
-    protected int getOutputSizeForUnwrap(int inputLength)
-    {
-	int n = (inputLength + 7) / 8;
-	return 8 * (n - 1);
-    }
+	/**
+	 * AES Key Wrapping algorithms operate on an 8-byte block; a block half the size
+	 * of the AES block itself.
+	 * <p>
+	 * In unwrapping, the number of 8-byte output blocks is ALWAYS one block shorter
+	 * than the input.
+	 *
+	 * @param inputLength
+	 *            the size of the cipher text.
+	 * @return the size in bytes of <code>n - 1</code> 8-byte blocks where
+	 *         <code>n</code> is the smallest number of 8-byte blocks that contain
+	 *         the designated number of input bytes.
+	 */
+	@Override
+	protected int getOutputSizeForUnwrap(int inputLength) {
+		int n = (inputLength + 7) / 8;
+		return 8 * (n - 1);
+	}
 
-    /**
-     * AES Key Wrapping algorithms operate on an 8-byte block; a block half the
-     * size of the AES block itself.
-     * <p>
-     * In wrapping, the number of 8-byte output blocks is ALWAYS one block
-     * longer than the input.
-     *
-     * @param inputLength
-     *            the size of the plain text.
-     * @return the size in bytes of <code>n + 1</code> 8-byte blocks where
-     *         <code>n</code> is the smallest number of 8-byte blocks that
-     *         contain the designated number of input bytes.
-     */
-    @Override
-    protected int getOutputSizeForWrap(int inputLength)
-    {
-	int n = (inputLength + 7) / 8;
-	return 8 * (n + 1);
-    }
+	/**
+	 * AES Key Wrapping algorithms operate on an 8-byte block; a block half the size
+	 * of the AES block itself.
+	 * <p>
+	 * In wrapping, the number of 8-byte output blocks is ALWAYS one block longer
+	 * than the input.
+	 *
+	 * @param inputLength
+	 *            the size of the plain text.
+	 * @return the size in bytes of <code>n + 1</code> 8-byte blocks where
+	 *         <code>n</code> is the smallest number of 8-byte blocks that contain
+	 *         the designated number of input bytes.
+	 */
+	@Override
+	protected int getOutputSizeForWrap(int inputLength) {
+		int n = (inputLength + 7) / 8;
+		return 8 * (n + 1);
+	}
 }

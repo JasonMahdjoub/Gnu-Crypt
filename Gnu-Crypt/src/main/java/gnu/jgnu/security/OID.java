@@ -66,463 +66,410 @@ import gnu.jgnu.security.der.DEREncodingException;
  *
  * @author Casey Marshall (csm@gnu.org)
  */
-public class OID implements Cloneable, Comparable<OID>, java.io.Serializable
-{
+public class OID implements Cloneable, Comparable<OID>, java.io.Serializable {
 
-    // Fields.
-    // ------------------------------------------------------------------------
+	// Fields.
+	// ------------------------------------------------------------------------
 
-    /* Serial version id for serialization. */
-    static final long serialVersionUID = 5722492029044597779L;
+	/* Serial version id for serialization. */
+	static final long serialVersionUID = 5722492029044597779L;
 
-    private static void encodeSubID(ByteArrayOutputStream out, int id)
-    {
-	if (id < 128)
-	{
-	    out.write(id);
+	private static void encodeSubID(ByteArrayOutputStream out, int id) {
+		if (id < 128) {
+			out.write(id);
+		} else if (id < 16384) {
+			out.write((id >>> 7) | 0x80);
+			out.write(id & 0x7F);
+		} else if (id < 2097152) {
+			out.write((id >>> 14) | 0x80);
+			out.write(((id >>> 7) | 0x80) & 0xFF);
+			out.write(id & 0x7F);
+		} else if (id < 268435456) {
+			out.write((id >>> 21) | 0x80);
+			out.write(((id >>> 14) | 0x80) & 0xFF);
+			out.write(((id >>> 7) | 0x80) & 0xFF);
+			out.write(id & 0x7F);
+		}
 	}
-	else if (id < 16384)
-	{
-	    out.write((id >>> 7) | 0x80);
-	    out.write(id & 0x7F);
+
+	private static int[] fromDER(byte[] der, boolean relative) throws DEREncodingException {
+		// cannot be longer than this.
+		int[] components = new int[der.length + 1];
+		int count = 0;
+		int i = 0;
+		if (!relative && i < der.length) {
+			// Non-relative OIDs have the first two arcs coded as:
+			//
+			// i = first_arc * 40 + second_arc;
+			//
+			int j = (der[i] & 0xFF);
+			components[count++] = j / 40;
+			components[count++] = j % 40;
+			i++;
+		}
+		while (i < der.length) {
+			int j = 0;
+			do {
+				j = der[i++] & 0xFF;
+				components[count] <<= 7;
+				components[count] |= j & 0x7F;
+				if (i >= der.length && (j & 0x80) != 0)
+					throw new DEREncodingException("malformed OID");
+			} while ((j & 0x80) != 0);
+			count++;
+		}
+		if (count == components.length)
+			return components;
+		int[] ret = new int[count];
+		System.arraycopy(components, 0, ret, 0, count);
+		return ret;
 	}
-	else if (id < 2097152)
-	{
-	    out.write((id >>> 14) | 0x80);
-	    out.write(((id >>> 7) | 0x80) & 0xFF);
-	    out.write(id & 0x7F);
+
+	private static int[] fromString(String strRep) throws NumberFormatException {
+		if (strRep.startsWith("OID.") || strRep.startsWith("oid."))
+			strRep = strRep.substring(4);
+		StringTokenizer tok = new StringTokenizer(strRep, ".");
+		if (tok.countTokens() == 0)
+			throw new IllegalArgumentException();
+		int[] components = new int[tok.countTokens()];
+		int i = 0;
+		while (tok.hasMoreTokens()) {
+			components[i++] = Integer.parseInt(tok.nextToken());
+		}
+		return components;
 	}
-	else if (id < 268435456)
-	{
-	    out.write((id >>> 21) | 0x80);
-	    out.write(((id >>> 14) | 0x80) & 0xFF);
-	    out.write(((id >>> 7) | 0x80) & 0xFF);
-	    out.write(id & 0x7F);
+
+	/**
+	 * The numeric ID structure.
+	 */
+	private int[] components;
+
+	// Constructors.
+	// ------------------------------------------------------------------------
+
+	/**
+	 * The string representation of this OID, in dotted-decimal format.
+	 */
+	private transient String strRep;
+
+	/**
+	 * The DER encoding of this OID.
+	 */
+	private transient byte[] der;
+
+	/**
+	 * Whether or not this OID is relative.
+	 */
+	private boolean relative;
+
+	/**
+	 * Construct a new OID from the given DER bytes.
+	 *
+	 * @param encoded
+	 *            The DER encoded OID.
+	 * @throws IOException
+	 *             If an error occurs reading the OID.
+	 */
+	public OID(byte[] encoded) throws IOException {
+		this(encoded, false);
 	}
-    }
 
-    private static int[] fromDER(byte[] der, boolean relative) throws DEREncodingException
-    {
-	// cannot be longer than this.
-	int[] components = new int[der.length + 1];
-	int count = 0;
-	int i = 0;
-	if (!relative && i < der.length)
-	{
-	    // Non-relative OIDs have the first two arcs coded as:
-	    //
-	    // i = first_arc * 40 + second_arc;
-	    //
-	    int j = (der[i] & 0xFF);
-	    components[count++] = j / 40;
-	    components[count++] = j % 40;
-	    i++;
+	/**
+	 * Construct a new OID from the given DER bytes.
+	 *
+	 * @param encoded
+	 *            The encoded relative OID.
+	 * @param relative
+	 *            The relative flag.
+	 */
+	public OID(byte[] encoded, boolean relative) throws IOException {
+		der = encoded.clone();
+		this.relative = relative;
+		try {
+			components = fromDER(der, relative);
+		} catch (ArrayIndexOutOfBoundsException aioobe) {
+			aioobe.printStackTrace();
+			throw aioobe;
+		}
 	}
-	while (i < der.length)
-	{
-	    int j = 0;
-	    do
-	    {
-		j = der[i++] & 0xFF;
-		components[count] <<= 7;
-		components[count] |= j & 0x7F;
-		if (i >= der.length && (j & 0x80) != 0)
-		    throw new DEREncodingException("malformed OID");
-	    } while ((j & 0x80) != 0);
-	    count++;
+
+	/**
+	 * Construct a new OID from the DER bytes in an input stream. This method does
+	 * not read the tag or the length field from the input stream, so the caller
+	 * must supply the number of octets in this OID's encoded form.
+	 *
+	 * @param derIn
+	 *            The DER input stream.
+	 * @param len
+	 *            The number of bytes in the encoded form.
+	 * @throws IOException
+	 *             If an error occurs reading the OID.
+	 */
+	public OID(InputStream derIn, int len) throws IOException {
+		this(derIn, len, false);
 	}
-	if (count == components.length)
-	    return components;
-	int[] ret = new int[count];
-	System.arraycopy(components, 0, ret, 0, count);
-	return ret;
-    }
 
-    private static int[] fromString(String strRep) throws NumberFormatException
-    {
-	if (strRep.startsWith("OID.") || strRep.startsWith("oid."))
-	    strRep = strRep.substring(4);
-	StringTokenizer tok = new StringTokenizer(strRep, ".");
-	if (tok.countTokens() == 0)
-	    throw new IllegalArgumentException();
-	int[] components = new int[tok.countTokens()];
-	int i = 0;
-	while (tok.hasMoreTokens())
-	{
-	    components[i++] = Integer.parseInt(tok.nextToken());
+	/**
+	 * Construct a new OID from the DER bytes in an input stream. This method does
+	 * not read the tag or the length field from the input stream, so the caller
+	 * must supply the number of octets in this OID's encoded form.
+	 *
+	 * @param derIn
+	 *            The DER input stream.
+	 * @param len
+	 *            The number of bytes in the encoded form.
+	 * @param relative
+	 *            The relative flag.
+	 * @throws IOException
+	 *             If an error occurs reading the OID.
+	 */
+	public OID(InputStream derIn, int len, boolean relative) throws IOException {
+		der = new byte[len];
+		derIn.read(der);
+		this.relative = relative;
+		try {
+			components = fromDER(der, relative);
+		} catch (ArrayIndexOutOfBoundsException aioobe) {
+			aioobe.printStackTrace();
+			throw aioobe;
+		}
 	}
-	return components;
-    }
 
-    /**
-     * The numeric ID structure.
-     */
-    private int[] components;
-
-    // Constructors.
-    // ------------------------------------------------------------------------
-
-    /**
-     * The string representation of this OID, in dotted-decimal format.
-     */
-    private transient String strRep;
-
-    /**
-     * The DER encoding of this OID.
-     */
-    private transient byte[] der;
-
-    /**
-     * Whether or not this OID is relative.
-     */
-    private boolean relative;
-
-    /**
-     * Construct a new OID from the given DER bytes.
-     *
-     * @param encoded
-     *            The DER encoded OID.
-     * @throws IOException
-     *             If an error occurs reading the OID.
-     */
-    public OID(byte[] encoded) throws IOException
-    {
-	this(encoded, false);
-    }
-
-    /**
-     * Construct a new OID from the given DER bytes.
-     *
-     * @param encoded
-     *            The encoded relative OID.
-     * @param relative
-     *            The relative flag.
-     */
-    public OID(byte[] encoded, boolean relative) throws IOException
-    {
-	der = encoded.clone();
-	this.relative = relative;
-	try
-	{
-	    components = fromDER(der, relative);
+	/**
+	 * Create a new OID from the given byte array. The argument (which can neither
+	 * be null nor zero-length) is copied to prevent subsequent modification.
+	 *
+	 * @param components
+	 *            The numeric IDs.
+	 * @throws IllegalArgumentException
+	 *             If <i>components</i> is null or empty.
+	 */
+	public OID(int[] components) {
+		this(components, false);
 	}
-	catch (ArrayIndexOutOfBoundsException aioobe)
-	{
-	    aioobe.printStackTrace();
-	    throw aioobe;
+
+	// Instance methods.
+	// ------------------------------------------------------------------------
+
+	/**
+	 * Create a new OID from the given byte array. The argument (which can neither
+	 * be null nor zero-length) is copied to prevent subsequent modification.
+	 *
+	 * @param components
+	 *            The numeric IDs.
+	 * @param relative
+	 *            The relative flag.
+	 * @throws IllegalArgumentException
+	 *             If <i>components</i> is null or empty.
+	 */
+	public OID(int[] components, boolean relative) {
+		if (components == null || components.length == 0)
+			throw new IllegalArgumentException();
+		this.components = components.clone();
+		this.relative = relative;
 	}
-    }
 
-    /**
-     * Construct a new OID from the DER bytes in an input stream. This method
-     * does not read the tag or the length field from the input stream, so the
-     * caller must supply the number of octets in this OID's encoded form.
-     *
-     * @param derIn
-     *            The DER input stream.
-     * @param len
-     *            The number of bytes in the encoded form.
-     * @throws IOException
-     *             If an error occurs reading the OID.
-     */
-    public OID(InputStream derIn, int len) throws IOException
-    {
-	this(derIn, len, false);
-    }
-
-    /**
-     * Construct a new OID from the DER bytes in an input stream. This method
-     * does not read the tag or the length field from the input stream, so the
-     * caller must supply the number of octets in this OID's encoded form.
-     *
-     * @param derIn
-     *            The DER input stream.
-     * @param len
-     *            The number of bytes in the encoded form.
-     * @param relative
-     *            The relative flag.
-     * @throws IOException
-     *             If an error occurs reading the OID.
-     */
-    public OID(InputStream derIn, int len, boolean relative) throws IOException
-    {
-	der = new byte[len];
-	derIn.read(der);
-	this.relative = relative;
-	try
-	{
-	    components = fromDER(der, relative);
+	/**
+	 * Create a new OID from the given dotted-decimal representation.
+	 *
+	 * @param strRep
+	 *            The string representation of the OID.
+	 * @throws IllegalArgumentException
+	 *             If the string does not contain at least one integer.
+	 * @throws NumberFormatException
+	 *             If the string does not contain only numbers and periods ('.').
+	 */
+	public OID(String strRep) {
+		this(strRep, false);
 	}
-	catch (ArrayIndexOutOfBoundsException aioobe)
-	{
-	    aioobe.printStackTrace();
-	    throw aioobe;
+
+	/**
+	 * Create a new OID from the given dotted-decimal representation.
+	 *
+	 * @param strRep
+	 *            The string representation of the OID.
+	 * @param relative
+	 *            The relative flag.
+	 * @throws IllegalArgumentException
+	 *             If the string does not contain at least one integer.
+	 * @throws NumberFormatException
+	 *             If the string does not contain only numbers and periods ('.').
+	 */
+	public OID(String strRep, boolean relative) {
+		this.relative = relative;
+		this.strRep = strRep;
+		components = fromString(strRep);
 	}
-    }
 
-    /**
-     * Create a new OID from the given byte array. The argument (which can
-     * neither be null nor zero-length) is copied to prevent subsequent
-     * modification.
-     *
-     * @param components
-     *            The numeric IDs.
-     * @throws IllegalArgumentException
-     *             If <i>components</i> is null or empty.
-     */
-    public OID(int[] components)
-    {
-	this(components, false);
-    }
-
-    // Instance methods.
-    // ------------------------------------------------------------------------
-
-    /**
-     * Create a new OID from the given byte array. The argument (which can
-     * neither be null nor zero-length) is copied to prevent subsequent
-     * modification.
-     *
-     * @param components
-     *            The numeric IDs.
-     * @param relative
-     *            The relative flag.
-     * @throws IllegalArgumentException
-     *             If <i>components</i> is null or empty.
-     */
-    public OID(int[] components, boolean relative)
-    {
-	if (components == null || components.length == 0)
-	    throw new IllegalArgumentException();
-	this.components = components.clone();
-	this.relative = relative;
-    }
-
-    /**
-     * Create a new OID from the given dotted-decimal representation.
-     *
-     * @param strRep
-     *            The string representation of the OID.
-     * @throws IllegalArgumentException
-     *             If the string does not contain at least one integer.
-     * @throws NumberFormatException
-     *             If the string does not contain only numbers and periods
-     *             ('.').
-     */
-    public OID(String strRep)
-    {
-	this(strRep, false);
-    }
-
-    /**
-     * Create a new OID from the given dotted-decimal representation.
-     *
-     * @param strRep
-     *            The string representation of the OID.
-     * @param relative
-     *            The relative flag.
-     * @throws IllegalArgumentException
-     *             If the string does not contain at least one integer.
-     * @throws NumberFormatException
-     *             If the string does not contain only numbers and periods
-     *             ('.').
-     */
-    public OID(String strRep, boolean relative)
-    {
-	this.relative = relative;
-	this.strRep = strRep;
-	components = fromString(strRep);
-    }
-
-    /**
-     * Returns a copy of this OID.
-     *
-     * @return The copy.
-     */
-    @Override
-    public Object clone()
-    {
-	try
-	{
-	    return super.clone();
+	/**
+	 * Returns a copy of this OID.
+	 *
+	 * @return The copy.
+	 */
+	@Override
+	public Object clone() {
+		try {
+			return super.clone();
+		} catch (CloneNotSupportedException cnse) {
+			InternalError ie = new InternalError();
+			ie.initCause(cnse);
+			throw ie;
+		}
 	}
-	catch (CloneNotSupportedException cnse)
-	{
-	    InternalError ie = new InternalError();
-	    ie.initCause(cnse);
-	    throw ie;
+
+	/**
+	 * Compares this OID to another. The comparison is essentially lexicographic,
+	 * where the two OIDs are compared until their first difference, then that
+	 * difference is returned. If one OID is shorter, but all elements equal between
+	 * the two for the shorter length, then the shorter OID is lesser than the
+	 * longer.
+	 *
+	 * @param o
+	 *            The object to compare.
+	 * @return An integer less than, equal to, or greater than zero if this object
+	 *         is less than, equal to, or greater than the argument.
+	 * @throws ClassCastException
+	 *             If <i>o</i> is not an OID.
+	 */
+	@Override
+	public int compareTo(OID o) {
+		if (equals(o))
+			return 0;
+		int[] components2 = o.components;
+		int len = Math.min(components.length, components2.length);
+		for (int i = 0; i < len; i++) {
+			if (components[i] != components2[i])
+				return (components[i] < components2[i]) ? -1 : 1;
+		}
+		if (components.length == components2.length)
+			return 0;
+		return (components.length < components2.length) ? -1 : 1;
 	}
-    }
 
-    /**
-     * Compares this OID to another. The comparison is essentially
-     * lexicographic, where the two OIDs are compared until their first
-     * difference, then that difference is returned. If one OID is shorter, but
-     * all elements equal between the two for the shorter length, then the
-     * shorter OID is lesser than the longer.
-     *
-     * @param o
-     *            The object to compare.
-     * @return An integer less than, equal to, or greater than zero if this
-     *         object is less than, equal to, or greater than the argument.
-     * @throws ClassCastException
-     *             If <i>o</i> is not an OID.
-     */
-    @Override
-    public int compareTo(OID o)
-    {
-	if (equals(o))
-	    return 0;
-	int[] components2 = o.components;
-	int len = Math.min(components.length, components2.length);
-	for (int i = 0; i < len; i++)
-	{
-	    if (components[i] != components2[i])
-		return (components[i] < components2[i]) ? -1 : 1;
+	/**
+	 * Tests whether or not this OID equals another.
+	 *
+	 * @return Whether or not this OID equals the other.
+	 */
+	@Override
+	public boolean equals(Object o) {
+		if (!(o instanceof OID))
+			return false;
+		return java.util.Arrays.equals(components, ((OID) o).components);
 	}
-	if (components.length == components2.length)
-	    return 0;
-	return (components.length < components2.length) ? -1 : 1;
-    }
 
-    /**
-     * Tests whether or not this OID equals another.
-     *
-     * @return Whether or not this OID equals the other.
-     */
-    @Override
-    public boolean equals(Object o)
-    {
-	if (!(o instanceof OID))
-	    return false;
-	return java.util.Arrays.equals(components, ((OID) o).components);
-    }
-
-    public OID getChild(int id)
-    {
-	int[] child = new int[components.length + 1];
-	System.arraycopy(components, 0, child, 0, components.length);
-	child[child.length - 1] = id;
-	return new OID(child);
-    }
-
-    /*
-     * Nice idea, but possibly too expensive for whatever benefit it provides.
-     * 
-     * public String getShortName() { return OIDTable.getShortName(this); }
-     * 
-     * public String getLongName() { return OIDTable.getLongName(this); }
-     * 
-     */
-
-    /**
-     * Get the DER encoding of this OID, minus the tag and length fields.
-     *
-     * @return The DER bytes.
-     */
-    public byte[] getDER()
-    {
-	if (der == null)
-	{
-	    ByteArrayOutputStream bout = new ByteArrayOutputStream();
-	    int i = 0;
-	    if (!relative)
-	    {
-		int b = components[i++] * 40
-			+ (components.length > 1 ? components[i++] : 0);
-		encodeSubID(bout, b);
-	    }
-	    for (; i < components.length; i++)
-		encodeSubID(bout, components[i]);
-	    der = bout.toByteArray();
+	public OID getChild(int id) {
+		int[] child = new int[components.length + 1];
+		System.arraycopy(components, 0, child, 0, components.length);
+		child[child.length - 1] = id;
+		return new OID(child);
 	}
-	return der.clone();
-    }
 
-    /**
-     * Return the numeric IDs of this OID. The value returned is copied to
-     * prevent modification.
-     *
-     * @return The IDs in a new integer array.
-     */
-    public int[] getIDs()
-    {
-	return components.clone();
-    }
+	/*
+	 * Nice idea, but possibly too expensive for whatever benefit it provides.
+	 * 
+	 * public String getShortName() { return OIDTable.getShortName(this); }
+	 * 
+	 * public String getLongName() { return OIDTable.getLongName(this); }
+	 * 
+	 */
 
-    /**
-     * Get the parent OID of this OID. That is, if this OID is "1.2.3.4", then
-     * the parent OID will be "1.2.3". If this OID is a top-level OID, this
-     * method returns null.
-     *
-     * @return The parent OID, or null.
-     */
-    public OID getParent()
-    {
-	if (components.length == 1)
-	    return null;
-	int[] parent = new int[components.length - 1];
-	System.arraycopy(components, 0, parent, 0, parent.length);
-	return new OID(parent);
-    }
-
-    /**
-     * Get the root OID of this OID. That is, the first two components.
-     *
-     * @return The root OID.
-     */
-    public OID getRoot()
-    {
-	if (components.length <= 2)
-	    return this;
-	int[] root = new int[2];
-	root[0] = components[0];
-	root[1] = components[1];
-	return new OID(root);
-    }
-
-    // Own methods.
-    // ------------------------------------------------------------------------
-
-    /**
-     * Computes a hash code for this OID.
-     *
-     * @return The hash code.
-     */
-    @Override
-    public int hashCode()
-    {
-	int ret = 0;
-	for (int i = 0; i < components.length; i++)
-	    ret += components[i] << (i & 31);
-	return ret;
-    }
-
-    public boolean isRelative()
-    {
-	return relative;
-    }
-
-    /**
-     * Returns the value of this OID in dotted-decimal format.
-     *
-     * @return The string representation.
-     */
-    @Override
-    public String toString()
-    {
-	if (strRep != null)
-	    return strRep;
-	else
-	{
-	    StringBuilder buf = new StringBuilder();
-	    for (int i = 0; i < components.length; i++)
-	    {
-		buf.append(components[i] & 0xFFFFFFFFL);
-		if (i < components.length - 1)
-		    buf.append('.');
-	    }
-	    return (strRep = buf.toString());
+	/**
+	 * Get the DER encoding of this OID, minus the tag and length fields.
+	 *
+	 * @return The DER bytes.
+	 */
+	public byte[] getDER() {
+		if (der == null) {
+			ByteArrayOutputStream bout = new ByteArrayOutputStream();
+			int i = 0;
+			if (!relative) {
+				int b = components[i++] * 40 + (components.length > 1 ? components[i++] : 0);
+				encodeSubID(bout, b);
+			}
+			for (; i < components.length; i++)
+				encodeSubID(bout, components[i]);
+			der = bout.toByteArray();
+		}
+		return der.clone();
 	}
-    }
+
+	/**
+	 * Return the numeric IDs of this OID. The value returned is copied to prevent
+	 * modification.
+	 *
+	 * @return The IDs in a new integer array.
+	 */
+	public int[] getIDs() {
+		return components.clone();
+	}
+
+	/**
+	 * Get the parent OID of this OID. That is, if this OID is "1.2.3.4", then the
+	 * parent OID will be "1.2.3". If this OID is a top-level OID, this method
+	 * returns null.
+	 *
+	 * @return The parent OID, or null.
+	 */
+	public OID getParent() {
+		if (components.length == 1)
+			return null;
+		int[] parent = new int[components.length - 1];
+		System.arraycopy(components, 0, parent, 0, parent.length);
+		return new OID(parent);
+	}
+
+	/**
+	 * Get the root OID of this OID. That is, the first two components.
+	 *
+	 * @return The root OID.
+	 */
+	public OID getRoot() {
+		if (components.length <= 2)
+			return this;
+		int[] root = new int[2];
+		root[0] = components[0];
+		root[1] = components[1];
+		return new OID(root);
+	}
+
+	// Own methods.
+	// ------------------------------------------------------------------------
+
+	/**
+	 * Computes a hash code for this OID.
+	 *
+	 * @return The hash code.
+	 */
+	@Override
+	public int hashCode() {
+		int ret = 0;
+		for (int i = 0; i < components.length; i++)
+			ret += components[i] << (i & 31);
+		return ret;
+	}
+
+	public boolean isRelative() {
+		return relative;
+	}
+
+	/**
+	 * Returns the value of this OID in dotted-decimal format.
+	 *
+	 * @return The string representation.
+	 */
+	@Override
+	public String toString() {
+		if (strRep != null)
+			return strRep;
+		else {
+			StringBuilder buf = new StringBuilder();
+			for (int i = 0; i < components.length; i++) {
+				buf.append(components[i] & 0xFFFFFFFFL);
+				if (i < components.length - 1)
+					buf.append('.');
+			}
+			return (strRep = buf.toString());
+		}
+	}
 }

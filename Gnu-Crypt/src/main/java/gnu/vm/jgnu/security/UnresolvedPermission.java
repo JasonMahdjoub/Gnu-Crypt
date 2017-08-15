@@ -74,195 +74,182 @@ import gnu.vm.jgnu.security.UnresolvedPermissionCollection;
  * @since 1.1
  * @status updated to 1.4
  */
-public final class UnresolvedPermission extends Permission
-{
-    /**
-     * Compatible with JDK 1.1+.
-     */
-    private static final long serialVersionUID = -4821973115467008846L;
+public final class UnresolvedPermission extends Permission {
+	/**
+	 * Compatible with JDK 1.1+.
+	 */
+	private static final long serialVersionUID = -4821973115467008846L;
 
-    /**
-     * The list of actions associated with this permission object.
-     *
-     * @serial the permission actions
-     */
-    private final String actions;
+	/**
+	 * The list of actions associated with this permission object.
+	 *
+	 * @serial the permission actions
+	 */
+	private final String actions;
 
-    /**
-     * The list of <code>Certificates</code> associated with this object.
-     */
-    private final transient Certificate[] certs;
+	/**
+	 * The list of <code>Certificates</code> associated with this object.
+	 */
+	private final transient Certificate[] certs;
 
-    /**
-     * The name of the class this object should be resolved to.
-     *
-     * @serial the fully-qualified classname of the resolved type
-     */
-    // Package visible for use by UnresolvedPermissionCollection.
-    final String type;
+	/**
+	 * The name of the class this object should be resolved to.
+	 *
+	 * @serial the fully-qualified classname of the resolved type
+	 */
+	// Package visible for use by UnresolvedPermissionCollection.
+	final String type;
 
-    /**
-     * The name of the permission.
-     *
-     * @serial the permission name
-     */
-    private final String name;
+	/**
+	 * The name of the permission.
+	 *
+	 * @serial the permission name
+	 */
+	private final String name;
 
-    /**
-     * Create a new instance with all the information necessary to resolve it to
-     * an instance of the proper class at a future time.
-     *
-     * @param type
-     *            the fully-qualified name of the class of this permission
-     * @param name
-     *            the name of this permission
-     * @param actions
-     *            the action list for this permission
-     * @param certs
-     *            the list of certificates that sign this permission
-     */
-    public UnresolvedPermission(String type, String name, String actions, Certificate[] certs)
-    {
-	super(name);
-	this.name = name;
-	this.type = type;
-	this.actions = actions;
-	this.certs = certs;
-    }
+	/**
+	 * Create a new instance with all the information necessary to resolve it to an
+	 * instance of the proper class at a future time.
+	 *
+	 * @param type
+	 *            the fully-qualified name of the class of this permission
+	 * @param name
+	 *            the name of this permission
+	 * @param actions
+	 *            the action list for this permission
+	 * @param certs
+	 *            the list of certificates that sign this permission
+	 */
+	public UnresolvedPermission(String type, String name, String actions, Certificate[] certs) {
+		super(name);
+		this.name = name;
+		this.type = type;
+		this.actions = actions;
+		this.certs = certs;
+	}
 
-    /**
-     * This method tests this permission for equality against the specified
-     * <code>Object</code>. This will be true if and only if the following
-     * conditions are met:
-     * <ul>
-     * <li>The specified <code>Object</code> is an UnresolvedPermission</li>
-     * <li>The specified permission has the same type (i.e., desired class name)
-     * as this permission.</li>
-     * <li>The specified permission has the same name as this one.</li>
-     * <li>The specified permissoin has the same action list as this one.</li>
-     * <li>The specified permission has the same certificate list as this
-     * one.</li>
-     * </ul>
-     *
-     * @param obj
-     *            the <code>Object</code> to test for equality
-     * @return true if the specified object is equal to this one
-     */
-    @Override
-    public boolean equals(Object obj)
-    {
-	if (!(obj instanceof UnresolvedPermission))
-	    return (false);
-	UnresolvedPermission up = (UnresolvedPermission) obj;
-	return up.name.equals(name) && up.actions.equals(actions)
-		&& up.type.equals(type) && Arrays.equals(up.certs, certs);
-    }
+	/**
+	 * This method tests this permission for equality against the specified
+	 * <code>Object</code>. This will be true if and only if the following
+	 * conditions are met:
+	 * <ul>
+	 * <li>The specified <code>Object</code> is an UnresolvedPermission</li>
+	 * <li>The specified permission has the same type (i.e., desired class name) as
+	 * this permission.</li>
+	 * <li>The specified permission has the same name as this one.</li>
+	 * <li>The specified permissoin has the same action list as this one.</li>
+	 * <li>The specified permission has the same certificate list as this one.</li>
+	 * </ul>
+	 *
+	 * @param obj
+	 *            the <code>Object</code> to test for equality
+	 * @return true if the specified object is equal to this one
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (!(obj instanceof UnresolvedPermission))
+			return (false);
+		UnresolvedPermission up = (UnresolvedPermission) obj;
+		return up.name.equals(name) && up.actions.equals(actions) && up.type.equals(type)
+				&& Arrays.equals(up.certs, certs);
+	}
 
-    /**
-     * This method returns the list of actions associated with this permission.
-     *
-     * @return the action list
-     */
-    @Override
-    public String getActions()
-    {
-	return actions;
-    }
+	/**
+	 * This method returns the list of actions associated with this permission.
+	 *
+	 * @return the action list
+	 */
+	@Override
+	public String getActions() {
+		return actions;
+	}
 
-    /**
-     * Return the actions of the unresolved permission, or null if there are no
-     * actions.
-     * 
-     * @since 1.5
-     */
-    public String getUnresolvedActions()
-    {
-	return actions;
-    }
+	/**
+	 * Return the actions of the unresolved permission, or null if there are no
+	 * actions.
+	 * 
+	 * @since 1.5
+	 */
+	public String getUnresolvedActions() {
+		return actions;
+	}
 
-    /**
-     * Return the certificates of the unresolved permission. If there are no
-     * certificates, null is returned. Otherwise, a new array is returned.
-     * 
-     * @since 1.5
-     */
-    public Certificate[] getUnresolvedCerts()
-    {
-	if (certs == null)
-	    return null;
-	return certs.clone();
-    }
+	/**
+	 * Return the certificates of the unresolved permission. If there are no
+	 * certificates, null is returned. Otherwise, a new array is returned.
+	 * 
+	 * @since 1.5
+	 */
+	public Certificate[] getUnresolvedCerts() {
+		if (certs == null)
+			return null;
+		return certs.clone();
+	}
 
-    /**
-     * Return the name of the unresolved permission.
-     * 
-     * @since 1.5
-     */
-    public String getUnresolvedName()
-    {
-	return name;
-    }
+	/**
+	 * Return the name of the unresolved permission.
+	 * 
+	 * @since 1.5
+	 */
+	public String getUnresolvedName() {
+		return name;
+	}
 
-    /**
-     * Return the name of the class of the unresolved permission.
-     * 
-     * @since 1.5
-     */
-    public String getUnresolvedType()
-    {
-	return type;
-    }
+	/**
+	 * Return the name of the class of the unresolved permission.
+	 * 
+	 * @since 1.5
+	 */
+	public String getUnresolvedType() {
+		return type;
+	}
 
-    /**
-     * Returns a hash code value for this object. Following the lead of
-     * Permission, this returns the hashcode of the permission name.
-     *
-     * @return A hash value
-     */
-    @Override
-    public int hashCode()
-    {
-	return name.hashCode();
-    }
+	/**
+	 * Returns a hash code value for this object. Following the lead of Permission,
+	 * this returns the hashcode of the permission name.
+	 *
+	 * @return A hash value
+	 */
+	@Override
+	public int hashCode() {
+		return name.hashCode();
+	}
 
-    /**
-     * This method returns <code>false</code> always to indicate that this
-     * permission does not imply the specified permission. An
-     * <code>UnresolvedPermission</code> never grants any permissions.
-     *
-     * @param perm
-     *            the <code>Permission</code> object to test
-     * @return false; until a permission is resolved, it implies nothing
-     */
-    @Override
-    public boolean implies(Permission perm)
-    {
-	return false;
-    }
+	/**
+	 * This method returns <code>false</code> always to indicate that this
+	 * permission does not imply the specified permission. An
+	 * <code>UnresolvedPermission</code> never grants any permissions.
+	 *
+	 * @param perm
+	 *            the <code>Permission</code> object to test
+	 * @return false; until a permission is resolved, it implies nothing
+	 */
+	@Override
+	public boolean implies(Permission perm) {
+		return false;
+	}
 
-    /**
-     * This class returns a <code>PermissionCollection</code> object that can be
-     * used to store instances of <code>UnresolvedPermission</code>.
-     *
-     * @return a new <code>PermissionCollection</code>
-     */
-    @Override
-    public PermissionCollection newPermissionCollection()
-    {
-	return new UnresolvedPermissionCollection();
-    }
+	/**
+	 * This class returns a <code>PermissionCollection</code> object that can be
+	 * used to store instances of <code>UnresolvedPermission</code>.
+	 *
+	 * @return a new <code>PermissionCollection</code>
+	 */
+	@Override
+	public PermissionCollection newPermissionCollection() {
+		return new UnresolvedPermissionCollection();
+	}
 
-    /**
-     * This method returns a <code>String</code> representation of this class.
-     * The format is: '(unresolved "ClassName "name" "actions")'
-     *
-     * @return <code>String</code> representation of this object
-     */
-    @Override
-    public String toString()
-    {
-	return "(unresolved " + type + ' ' + name + ' ' + actions + ')';
-    }
+	/**
+	 * This method returns a <code>String</code> representation of this class. The
+	 * format is: '(unresolved "ClassName "name" "actions")'
+	 *
+	 * @return <code>String</code> representation of this object
+	 */
+	@Override
+	public String toString() {
+		return "(unresolved " + type + ' ' + name + ' ' + actions + ')';
+	}
 } // class UnresolvedPermission
 
 /**
@@ -271,105 +258,95 @@ public final class UnresolvedPermission extends Permission
  *
  * @author Eric Blake (ebb9@email.byu.edu)
  */
-class UnresolvedPermissionCollection extends PermissionCollection
-{
-    /**
-     * Compatible with JDK 1.1+.
-     */
-    private static final long serialVersionUID = -7176153071733132400L;
+class UnresolvedPermissionCollection extends PermissionCollection {
+	/**
+	 * Compatible with JDK 1.1+.
+	 */
+	private static final long serialVersionUID = -7176153071733132400L;
 
-    // Package-private to avoid a trampoline.
-    /**
-     * Hashtable where we store permissions.
-     *
-     * @serial map of typename to a Vector of permissions (you'd think Sun would
-     *         document this better!)
-     */
-    final Hashtable<String, Vector<Permission>> permissions = new Hashtable<>();
+	// Package-private to avoid a trampoline.
+	/**
+	 * Hashtable where we store permissions.
+	 *
+	 * @serial map of typename to a Vector of permissions (you'd think Sun would
+	 *         document this better!)
+	 */
+	final Hashtable<String, Vector<Permission>> permissions = new Hashtable<>();
 
-    /**
-     * Add a permission.
-     *
-     * @param perm
-     *            the permission to add
-     * @throws IllegalArgumentException
-     *             if perm is not an UnresolvedPermission
-     * @throws SecurityException
-     *             if the collection is read-only
-     */
-    @Override
-    public void add(Permission perm)
-    {
-	if (isReadOnly())
-	    throw new SecurityException();
-	if (!(perm instanceof UnresolvedPermission))
-	    throw new IllegalArgumentException();
-	UnresolvedPermission up = (UnresolvedPermission) perm;
-	Vector<Permission> v = permissions.get(up.type);
-	if (v == null)
-	{
-	    v = new Vector<>();
-	    permissions.put(up.type, v);
+	/**
+	 * Add a permission.
+	 *
+	 * @param perm
+	 *            the permission to add
+	 * @throws IllegalArgumentException
+	 *             if perm is not an UnresolvedPermission
+	 * @throws SecurityException
+	 *             if the collection is read-only
+	 */
+	@Override
+	public void add(Permission perm) {
+		if (isReadOnly())
+			throw new SecurityException();
+		if (!(perm instanceof UnresolvedPermission))
+			throw new IllegalArgumentException();
+		UnresolvedPermission up = (UnresolvedPermission) perm;
+		Vector<Permission> v = permissions.get(up.type);
+		if (v == null) {
+			v = new Vector<>();
+			permissions.put(up.type, v);
+		}
+		v.add(up);
 	}
-	v.add(up);
-    }
 
-    /**
-     * Return the elements.
-     *
-     * @return the elements
-     */
-    @Override
-    public Enumeration<Permission> elements()
-    {
-	return new Enumeration<Permission>() {
-	    Enumeration<Vector<Permission>> main_enum = permissions.elements();
+	/**
+	 * Return the elements.
+	 *
+	 * @return the elements
+	 */
+	@Override
+	public Enumeration<Permission> elements() {
+		return new Enumeration<Permission>() {
+			Enumeration<Vector<Permission>> main_enum = permissions.elements();
 
-	    Enumeration<Permission> sub_enum;
+			Enumeration<Permission> sub_enum;
 
-	    @Override
-	    public boolean hasMoreElements()
-	    {
-		if (sub_enum == null)
-		{
-		    if (main_enum == null)
-			return false;
-		    if (!main_enum.hasMoreElements())
-		    {
-			main_enum = null;
-			return false;
-		    }
-		    Vector<Permission> v = main_enum.nextElement();
-		    sub_enum = v.elements();
-		}
-		if (!sub_enum.hasMoreElements())
-		{
-		    sub_enum = null;
-		    return hasMoreElements();
-		}
-		return true;
-	    }
+			@Override
+			public boolean hasMoreElements() {
+				if (sub_enum == null) {
+					if (main_enum == null)
+						return false;
+					if (!main_enum.hasMoreElements()) {
+						main_enum = null;
+						return false;
+					}
+					Vector<Permission> v = main_enum.nextElement();
+					sub_enum = v.elements();
+				}
+				if (!sub_enum.hasMoreElements()) {
+					sub_enum = null;
+					return hasMoreElements();
+				}
+				return true;
+			}
 
-	    @Override
-	    public Permission nextElement()
-	    {
-		if (!hasMoreElements())
-		    throw new NoSuchElementException();
-		return sub_enum.nextElement();
-	    }
-	};
-    }
+			@Override
+			public Permission nextElement() {
+				if (!hasMoreElements())
+					throw new NoSuchElementException();
+				return sub_enum.nextElement();
+			}
+		};
+	}
 
-    /**
-     * Returns true if perm is implied by the collection.
-     *
-     * @param perm
-     *            the permission to check
-     * @return false; unresolved permissions imply nothing
-     */
-    @Override
-    public boolean implies(Permission perm)
-    {
-	return false;
-    }
+	/**
+	 * Returns true if perm is implied by the collection.
+	 *
+	 * @param perm
+	 *            the permission to check
+	 * @return false; unresolved permissions imply nothing
+	 */
+	@Override
+	public boolean implies(Permission perm) {
+		return false;
+	}
 } // class UnresolvedPermissionCollection

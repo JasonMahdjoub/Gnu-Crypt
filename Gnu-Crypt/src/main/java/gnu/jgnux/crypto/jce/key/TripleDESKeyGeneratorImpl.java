@@ -39,10 +39,8 @@ package gnu.jgnux.crypto.jce.key;
 
 import gnu.jgnu.security.Registry;
 
-public class TripleDESKeyGeneratorImpl extends SecretKeyGeneratorImpl
-{
-    public TripleDESKeyGeneratorImpl()
-    {
-	super(Registry.TRIPLEDES_CIPHER);
-    }
+public class TripleDESKeyGeneratorImpl extends SecretKeyGeneratorImpl {
+	public TripleDESKeyGeneratorImpl() {
+		super(Registry.TRIPLEDES_CIPHER);
+	}
 }

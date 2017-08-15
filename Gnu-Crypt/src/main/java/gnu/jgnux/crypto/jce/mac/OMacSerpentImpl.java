@@ -39,10 +39,8 @@ package gnu.jgnux.crypto.jce.mac;
 
 import gnu.jgnu.security.Registry;
 
-public class OMacSerpentImpl extends MacAdapter
-{
-    public OMacSerpentImpl()
-    {
-	super(Registry.OMAC_PREFIX + Registry.SERPENT_CIPHER);
-    }
+public class OMacSerpentImpl extends MacAdapter {
+	public OMacSerpentImpl() {
+		super(Registry.OMAC_PREFIX + Registry.SERPENT_CIPHER);
+	}
 }

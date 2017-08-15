@@ -45,30 +45,27 @@ import javax.security.auth.Destroyable;
  *
  * @see Destroyable
  */
-public class DestroyFailedException extends Exception
-{
+public class DestroyFailedException extends Exception {
 
-    /**
-     * 
-     */
-    private static final long serialVersionUID = 3968403686729615L;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 3968403686729615L;
 
-    /**
-     * Creates a new DestroyFailedException with no detail message.
-     */
-    public DestroyFailedException()
-    {
-	super();
-    }
+	/**
+	 * Creates a new DestroyFailedException with no detail message.
+	 */
+	public DestroyFailedException() {
+		super();
+	}
 
-    /**
-     * Creates a new DestroyFailedException with a detail message.
-     *
-     * @param message
-     *            The detail message.
-     */
-    public DestroyFailedException(String message)
-    {
-	super(message);
-    }
+	/**
+	 * Creates a new DestroyFailedException with a detail message.
+	 *
+	 * @param message
+	 *            The detail message.
+	 */
+	public DestroyFailedException(String message) {
+		super(message);
+	}
 }

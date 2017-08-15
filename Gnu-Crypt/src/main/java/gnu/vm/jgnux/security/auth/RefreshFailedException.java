@@ -40,29 +40,26 @@ package gnu.vm.jgnux.security.auth;
 /**
  * A signal that a call to {@link Refreshable#refresh()} failed.
  */
-public class RefreshFailedException extends Exception
-{
+public class RefreshFailedException extends Exception {
 
-    /**
-     * 
-     */
-    private static final long serialVersionUID = -4365583795101843373L;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -4365583795101843373L;
 
-    /**
-     * Create a new RefreshFailedException with no detail message.
-     */
-    public RefreshFailedException()
-    {
-    }
+	/**
+	 * Create a new RefreshFailedException with no detail message.
+	 */
+	public RefreshFailedException() {
+	}
 
-    /**
-     * Create a new RefreshFailedException with a detail message.
-     *
-     * @param message
-     *            The detail message.
-     */
-    public RefreshFailedException(String message)
-    {
-	super(message);
-    }
+	/**
+	 * Create a new RefreshFailedException with a detail message.
+	 *
+	 * @param message
+	 *            The detail message.
+	 */
+	public RefreshFailedException(String message) {
+		super(message);
+	}
 }

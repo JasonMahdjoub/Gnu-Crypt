@@ -50,63 +50,54 @@ import gnu.jgnu.security.Registry;
  * 128-, 192- and 256-bit long, and key sizes from 64- to 512-bit in 8-bit
  * increments.
  */
-public final class NullCipher extends BaseCipher
-{
-    /** Trivial 0-arguments constructor. */
-    public NullCipher()
-    {
-	super(Registry.NULL_CIPHER, 16, 16);
-    }
+public final class NullCipher extends BaseCipher {
+	/** Trivial 0-arguments constructor. */
+	public NullCipher() {
+		super(Registry.NULL_CIPHER, 16, 16);
+	}
 
-    @Override
-    public Iterator<Integer> blockSizes()
-    {
-	ArrayList<Integer> al = new ArrayList<>();
-	al.add(Integer.valueOf(64 / 8));
-	al.add(Integer.valueOf(128 / 8));
-	al.add(Integer.valueOf(192 / 8));
-	al.add(Integer.valueOf(256 / 8));
-	return Collections.unmodifiableList(al).iterator();
-    }
+	@Override
+	public Iterator<Integer> blockSizes() {
+		ArrayList<Integer> al = new ArrayList<>();
+		al.add(Integer.valueOf(64 / 8));
+		al.add(Integer.valueOf(128 / 8));
+		al.add(Integer.valueOf(192 / 8));
+		al.add(Integer.valueOf(256 / 8));
+		return Collections.unmodifiableList(al).iterator();
+	}
 
-    @Override
-    public Object clone()
-    {
-	NullCipher result = new NullCipher();
-	result.currentBlockSize = this.currentBlockSize;
-	return result;
-    }
+	@Override
+	public Object clone() {
+		NullCipher result = new NullCipher();
+		result.currentBlockSize = this.currentBlockSize;
+		return result;
+	}
 
-    @Override
-    public void decrypt(byte[] in, int i, byte[] out, int j, Object k, int bs)
-    {
-	System.arraycopy(in, i, out, j, bs);
-    }
+	@Override
+	public void decrypt(byte[] in, int i, byte[] out, int j, Object k, int bs) {
+		System.arraycopy(in, i, out, j, bs);
+	}
 
-    @Override
-    public void encrypt(byte[] in, int i, byte[] out, int j, Object k, int bs)
-    {
-	System.arraycopy(in, i, out, j, bs);
-    }
+	@Override
+	public void encrypt(byte[] in, int i, byte[] out, int j, Object k, int bs) {
+		System.arraycopy(in, i, out, j, bs);
+	}
 
-    @Override
-    public Iterator<Integer> keySizes()
-    {
-	ArrayList<Integer> al = new ArrayList<>();
-	for (int n = 8; n < 64; n++)
-	    al.add(Integer.valueOf(n));
-	return Collections.unmodifiableList(al).iterator();
-    }
+	@Override
+	public Iterator<Integer> keySizes() {
+		ArrayList<Integer> al = new ArrayList<>();
+		for (int n = 8; n < 64; n++)
+			al.add(Integer.valueOf(n));
+		return Collections.unmodifiableList(al).iterator();
+	}
 
-    @Override
-    public Object makeKey(byte[] uk, int bs)
-    {
-	return new Object();
-    }
+	@Override
+	public Object makeKey(byte[] uk, int bs) {
+		return new Object();
+	}
 
-    @Override
-    public boolean selfTest()
-    {
-	return true;
-    }
+	@Override
+	public boolean selfTest() {
+		return true;
+	}
 }

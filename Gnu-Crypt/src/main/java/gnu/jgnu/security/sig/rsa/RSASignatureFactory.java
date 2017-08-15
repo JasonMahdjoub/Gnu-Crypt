@@ -50,128 +50,116 @@ import gnu.jgnu.security.sig.ISignature;
 /**
  * A Factory class to instantiate RSA Signature classes.
  */
-public class RSASignatureFactory
-{
-    private static Set<String> names;
+public class RSASignatureFactory {
+	private static Set<String> names;
 
-    /**
-     * Returns a new instance of an RSA Signature given its name. The name of an
-     * RSA Signature always starts with <code>rsa-</code>, followed by either
-     * <code>pss</code> or <code>pkcs1_v1.5</code>. An optional message digest
-     * name, to be used with the RSA signature may be specified by appending the
-     * hyphen chanaracter <code>-</code> followed by the canonical message
-     * digest algorithm name. When no message digest algorithm name is given,
-     * SHA-160 is used.
-     *
-     * @param name
-     *            the composite RSA signature name.
-     * @return a new instance of an RSA Signature algorithm implementation.
-     *         Returns <code>null</code> if the given name does not correspond
-     *         to any supported RSA Signature encoding and message digest
-     *         combination.
-     */
-    public static final ISignature getInstance(String name)
-    {
-	if (name == null)
-	    return null;
+	/**
+	 * Returns a new instance of an RSA Signature given its name. The name of an RSA
+	 * Signature always starts with <code>rsa-</code>, followed by either
+	 * <code>pss</code> or <code>pkcs1_v1.5</code>. An optional message digest name,
+	 * to be used with the RSA signature may be specified by appending the hyphen
+	 * chanaracter <code>-</code> followed by the canonical message digest algorithm
+	 * name. When no message digest algorithm name is given, SHA-160 is used.
+	 *
+	 * @param name
+	 *            the composite RSA signature name.
+	 * @return a new instance of an RSA Signature algorithm implementation. Returns
+	 *         <code>null</code> if the given name does not correspond to any
+	 *         supported RSA Signature encoding and message digest combination.
+	 */
+	public static final ISignature getInstance(String name) {
+		if (name == null)
+			return null;
 
-	name = name.trim();
-	if (name.length() == 0)
-	    return null;
+		name = name.trim();
+		if (name.length() == 0)
+			return null;
 
-	name = name.toLowerCase();
-	if (!name.startsWith(Registry.RSA_SIG_PREFIX))
-	    return null;
+		name = name.toLowerCase();
+		if (!name.startsWith(Registry.RSA_SIG_PREFIX))
+			return null;
 
-	name = name.substring(Registry.RSA_SIG_PREFIX.length()).trim();
-	if (name.startsWith(Registry.RSA_PSS_ENCODING))
-	    return getPSSSignature(name);
-	else if (name.startsWith(Registry.RSA_PKCS1_V1_5_ENCODING))
-	    return getPKCS1Signature(name);
-	else
-	    return null;
-    }
-
-    /**
-     * Returns a {@link Set} of names of <i>RSA</i> signatures supported by this
-     * <i>Factory</i>.
-     *
-     * @return a {@link Set} of RSA Signature algorithm names (Strings).
-     */
-    public static synchronized final Set<String> getNames()
-    {
-	if (names == null)
-	{
-	    Set<String> hashNames = HashFactory.getNames();
-	    HashSet<String> hs = new HashSet<>();
-	    for (Iterator<String> it = hashNames.iterator(); it.hasNext();)
-	    {
-		String mdName = it.next();
-		hs.add(Registry.RSA_PSS_SIG + "-" + mdName);
-	    }
-
-	    hs.add(Registry.RSA_PKCS1_V1_5_SIG + "-" + Registry.MD2_HASH);
-	    hs.add(Registry.RSA_PKCS1_V1_5_SIG + "-" + Registry.MD5_HASH);
-	    hs.add(Registry.RSA_PKCS1_V1_5_SIG + "-" + Registry.SHA160_HASH);
-	    hs.add(Registry.RSA_PKCS1_V1_5_SIG + "-" + Registry.SHA256_HASH);
-	    hs.add(Registry.RSA_PKCS1_V1_5_SIG + "-" + Registry.SHA384_HASH);
-	    hs.add(Registry.RSA_PKCS1_V1_5_SIG + "-" + Registry.SHA512_HASH);
-
-	    names = Collections.unmodifiableSet(hs);
+		name = name.substring(Registry.RSA_SIG_PREFIX.length()).trim();
+		if (name.startsWith(Registry.RSA_PSS_ENCODING))
+			return getPSSSignature(name);
+		else if (name.startsWith(Registry.RSA_PKCS1_V1_5_ENCODING))
+			return getPKCS1Signature(name);
+		else
+			return null;
 	}
 
-	return names;
-    }
+	/**
+	 * Returns a {@link Set} of names of <i>RSA</i> signatures supported by this
+	 * <i>Factory</i>.
+	 *
+	 * @return a {@link Set} of RSA Signature algorithm names (Strings).
+	 */
+	public static synchronized final Set<String> getNames() {
+		if (names == null) {
+			Set<String> hashNames = HashFactory.getNames();
+			HashSet<String> hs = new HashSet<>();
+			for (Iterator<String> it = hashNames.iterator(); it.hasNext();) {
+				String mdName = it.next();
+				hs.add(Registry.RSA_PSS_SIG + "-" + mdName);
+			}
 
-    private static final ISignature getPKCS1Signature(String name)
-    {
-	name = name.substring(Registry.RSA_PKCS1_V1_5_ENCODING.length()).trim();
-	// remove the hyphen if found at the beginning
-	if (name.startsWith("-"))
-	    name = name.substring(1).trim();
+			hs.add(Registry.RSA_PKCS1_V1_5_SIG + "-" + Registry.MD2_HASH);
+			hs.add(Registry.RSA_PKCS1_V1_5_SIG + "-" + Registry.MD5_HASH);
+			hs.add(Registry.RSA_PKCS1_V1_5_SIG + "-" + Registry.SHA160_HASH);
+			hs.add(Registry.RSA_PKCS1_V1_5_SIG + "-" + Registry.SHA256_HASH);
+			hs.add(Registry.RSA_PKCS1_V1_5_SIG + "-" + Registry.SHA384_HASH);
+			hs.add(Registry.RSA_PKCS1_V1_5_SIG + "-" + Registry.SHA512_HASH);
 
-	IMessageDigest md;
-	if (name.length() == 0)
-	    md = HashFactory.getInstance(Registry.SHA160_HASH);
-	else
-	{
-	    // check if there is such a hash
-	    md = HashFactory.getInstance(name);
-	    if (md == null)
-		return null;
+			names = Collections.unmodifiableSet(hs);
+		}
+
+		return names;
 	}
 
-	ISignature result = new RSAPKCS1V1_5Signature(md);
-	return result;
-    }
+	private static final ISignature getPKCS1Signature(String name) {
+		name = name.substring(Registry.RSA_PKCS1_V1_5_ENCODING.length()).trim();
+		// remove the hyphen if found at the beginning
+		if (name.startsWith("-"))
+			name = name.substring(1).trim();
 
-    private static final ISignature getPSSSignature(String name)
-    {
-	name = name.substring(Registry.RSA_PSS_ENCODING.length()).trim();
-	// remove the hyphen if found at the beginning
-	if (name.startsWith("-"))
-	    name = name.substring(1).trim();
+		IMessageDigest md;
+		if (name.length() == 0)
+			md = HashFactory.getInstance(Registry.SHA160_HASH);
+		else {
+			// check if there is such a hash
+			md = HashFactory.getInstance(name);
+			if (md == null)
+				return null;
+		}
 
-	IMessageDigest md;
-	if (name.length() == 0)
-	    md = HashFactory.getInstance(Registry.SHA160_HASH);
-	else
-	{
-	    // check if there is such a hash
-	    md = HashFactory.getInstance(name);
-	    if (md == null)
-		return null;
+		ISignature result = new RSAPKCS1V1_5Signature(md);
+		return result;
 	}
 
-	ISignature result = new RSAPSSSignature(md, 0);
-	return result;
-    }
+	private static final ISignature getPSSSignature(String name) {
+		name = name.substring(Registry.RSA_PSS_ENCODING.length()).trim();
+		// remove the hyphen if found at the beginning
+		if (name.startsWith("-"))
+			name = name.substring(1).trim();
 
-    /**
-     * Private constructor to enforce usage through Factory (class) methods.
-     */
-    private RSASignatureFactory()
-    {
-	super();
-    }
+		IMessageDigest md;
+		if (name.length() == 0)
+			md = HashFactory.getInstance(Registry.SHA160_HASH);
+		else {
+			// check if there is such a hash
+			md = HashFactory.getInstance(name);
+			if (md == null)
+				return null;
+		}
+
+		ISignature result = new RSAPSSSignature(md, 0);
+		return result;
+	}
+
+	/**
+	 * Private constructor to enforce usage through Factory (class) methods.
+	 */
+	private RSASignatureFactory() {
+		super();
+	}
 }

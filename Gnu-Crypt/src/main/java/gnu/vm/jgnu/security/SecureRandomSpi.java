@@ -48,39 +48,36 @@ import java.io.Serializable;
  * 
  * @author Mark Benvenuto (ivymccough@worldnet.att.net)
  */
-public abstract class SecureRandomSpi implements Serializable
-{
-    private static final long serialVersionUID = -2991854161009191830L;
+public abstract class SecureRandomSpi implements Serializable {
+	private static final long serialVersionUID = -2991854161009191830L;
 
-    /**
-     * Default Constructor for SecureRandomSpi
-     */
-    public SecureRandomSpi()
-    {
-    }
+	/**
+	 * Default Constructor for SecureRandomSpi
+	 */
+	public SecureRandomSpi() {
+	}
 
-    /**
-     * Gets a user specified number of bytes specified by the parameter.
-     * 
-     * @param numBytes
-     *            number of random bytes to generate
-     * 
-     * @return an array full of random bytes
-     */
-    protected abstract byte[] engineGenerateSeed(int numBytes);
+	/**
+	 * Gets a user specified number of bytes specified by the parameter.
+	 * 
+	 * @param numBytes
+	 *            number of random bytes to generate
+	 * 
+	 * @return an array full of random bytes
+	 */
+	protected abstract byte[] engineGenerateSeed(int numBytes);
 
-    /**
-     * Gets a user specified number of bytes depending on the length of the
-     * array?
-     * 
-     * @param bytes
-     *            array to fill with random bytes
-     */
-    protected abstract void engineNextBytes(byte[] bytes);
+	/**
+	 * Gets a user specified number of bytes depending on the length of the array?
+	 * 
+	 * @param bytes
+	 *            array to fill with random bytes
+	 */
+	protected abstract void engineNextBytes(byte[] bytes);
 
-    /**
-     * Updates the seed for SecureRandomSpi but does not reset seed. It does to
-     * this so repeated called never decrease randomness.
-     */
-    protected abstract void engineSetSeed(byte[] seed);
+	/**
+	 * Updates the seed for SecureRandomSpi but does not reset seed. It does to this
+	 * so repeated called never decrease randomness.
+	 */
+	protected abstract void engineSetSeed(byte[] seed);
 }

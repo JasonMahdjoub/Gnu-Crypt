@@ -55,107 +55,84 @@ import gnu.jgnux.crypto.sasl.ServerMechanism;
 /**
  * The PLAIN SASL server-side mechanism.
  */
-public class PlainServer extends ServerMechanism implements SaslServer
-{
-    public PlainServer()
-    {
-	super(Registry.SASL_PLAIN_MECHANISM);
-    }
-
-    @Override
-    public byte[] evaluateResponse(final byte[] response) throws SaslException
-    {
-	if (response == null)
-	    return null;
-	try
-	{
-	    final String nullStr = new String("\0");
-	    final StringTokenizer strtok = new StringTokenizer(
-		    new String(response), nullStr, true);
-	    authorizationID = strtok.nextToken();
-	    if (!authorizationID.equals(nullStr))
-		strtok.nextToken();
-	    else
-		authorizationID = null;
-	    final String id = strtok.nextToken();
-	    if (id.equals(nullStr))
-		throw new SaslException("No identity given");
-	    if (authorizationID == null)
-		authorizationID = id;
-	    if ((!authorizationID.equals(nullStr))
-		    && (!authorizationID.equals(id)))
-		throw new SaslException("Delegation not supported");
-	    strtok.nextToken();
-	    final byte[] pwd;
-	    try
-	    {
-		pwd = strtok.nextToken().getBytes("UTF-8");
-	    }
-	    catch (UnsupportedEncodingException x)
-	    {
-		throw new SaslException("evaluateResponse()", x);
-	    }
-	    if (pwd == null)
-		throw new SaslException("No password given");
-	    final byte[] password;
-	    try
-	    {
-		password = new String(lookupPassword(id)).getBytes("UTF-8");
-	    }
-	    catch (UnsupportedEncodingException x)
-	    {
-		throw new SaslException("evaluateResponse()", x);
-	    }
-	    if (!Arrays.equals(pwd, password))
-		throw new SaslException("Password incorrect");
-	    this.complete = true;
-	    return null;
+public class PlainServer extends ServerMechanism implements SaslServer {
+	public PlainServer() {
+		super(Registry.SASL_PLAIN_MECHANISM);
 	}
-	catch (NoSuchElementException x)
-	{
-	    throw new SaslException("evaluateResponse()", x);
+
+	@Override
+	public byte[] evaluateResponse(final byte[] response) throws SaslException {
+		if (response == null)
+			return null;
+		try {
+			final String nullStr = new String("\0");
+			final StringTokenizer strtok = new StringTokenizer(new String(response), nullStr, true);
+			authorizationID = strtok.nextToken();
+			if (!authorizationID.equals(nullStr))
+				strtok.nextToken();
+			else
+				authorizationID = null;
+			final String id = strtok.nextToken();
+			if (id.equals(nullStr))
+				throw new SaslException("No identity given");
+			if (authorizationID == null)
+				authorizationID = id;
+			if ((!authorizationID.equals(nullStr)) && (!authorizationID.equals(id)))
+				throw new SaslException("Delegation not supported");
+			strtok.nextToken();
+			final byte[] pwd;
+			try {
+				pwd = strtok.nextToken().getBytes("UTF-8");
+			} catch (UnsupportedEncodingException x) {
+				throw new SaslException("evaluateResponse()", x);
+			}
+			if (pwd == null)
+				throw new SaslException("No password given");
+			final byte[] password;
+			try {
+				password = new String(lookupPassword(id)).getBytes("UTF-8");
+			} catch (UnsupportedEncodingException x) {
+				throw new SaslException("evaluateResponse()", x);
+			}
+			if (!Arrays.equals(pwd, password))
+				throw new SaslException("Password incorrect");
+			this.complete = true;
+			return null;
+		} catch (NoSuchElementException x) {
+			throw new SaslException("evaluateResponse()", x);
+		}
 	}
-    }
 
-    @Override
-    protected String getNegotiatedQOP()
-    {
-	return Registry.QOP_AUTH;
-    }
-
-    @Override
-    @SuppressWarnings("unused")
-    protected void initMechanism() throws SaslException
-    {
-    }
-
-    private char[] lookupPassword(final String userName) throws SaslException
-    {
-	try
-	{
-	    if (!authenticator.contains(userName))
-		throw new NoSuchUserException(userName);
-	    final Map<String, String> userID = new HashMap<>();
-	    userID.put(Registry.SASL_USERNAME, userName);
-	    final Map<String, String> credentials = authenticator
-		    .lookup(userID);
-	    final String password = credentials.get(Registry.SASL_PASSWORD);
-	    if (password == null)
-		throw new SaslException("lookupPassword()",
-			new InternalError());
-	    return password.toCharArray();
+	@Override
+	protected String getNegotiatedQOP() {
+		return Registry.QOP_AUTH;
 	}
-	catch (IOException x)
-	{
-	    if (x instanceof SaslException)
-		throw (SaslException) x;
-	    throw new SaslException("lookupPassword()", x);
-	}
-    }
 
-    @Override
-    @SuppressWarnings("unused")
-    protected void resetMechanism() throws SaslException
-    {
-    }
+	@Override
+	@SuppressWarnings("unused")
+	protected void initMechanism() throws SaslException {
+	}
+
+	private char[] lookupPassword(final String userName) throws SaslException {
+		try {
+			if (!authenticator.contains(userName))
+				throw new NoSuchUserException(userName);
+			final Map<String, String> userID = new HashMap<>();
+			userID.put(Registry.SASL_USERNAME, userName);
+			final Map<String, String> credentials = authenticator.lookup(userID);
+			final String password = credentials.get(Registry.SASL_PASSWORD);
+			if (password == null)
+				throw new SaslException("lookupPassword()", new InternalError());
+			return password.toCharArray();
+		} catch (IOException x) {
+			if (x instanceof SaslException)
+				throw (SaslException) x;
+			throw new SaslException("lookupPassword()", x);
+		}
+	}
+
+	@Override
+	@SuppressWarnings("unused")
+	protected void resetMechanism() throws SaslException {
+	}
 }

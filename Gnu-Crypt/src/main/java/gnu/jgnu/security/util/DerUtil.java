@@ -45,17 +45,14 @@ import gnu.jgnu.security.der.DERValue;
 /**
  * Utility methods for DER encoding handling.
  */
-public abstract class DerUtil
-{
-    public static final void checkIsBigInteger(DERValue v, String msg) throws DEREncodingException
-    {
-	if (!(v.getValue() instanceof BigInteger))
-	    throw new DEREncodingException(msg);
-    }
+public abstract class DerUtil {
+	public static final void checkIsBigInteger(DERValue v, String msg) throws DEREncodingException {
+		if (!(v.getValue() instanceof BigInteger))
+			throw new DEREncodingException(msg);
+	}
 
-    public static final void checkIsConstructed(DERValue v, String msg) throws DEREncodingException
-    {
-	if (!v.isConstructed())
-	    throw new DEREncodingException(msg);
-    }
+	public static final void checkIsConstructed(DERValue v, String msg) throws DEREncodingException {
+		if (!v.isConstructed())
+			throw new DEREncodingException(msg);
+	}
 }

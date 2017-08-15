@@ -45,25 +45,22 @@ import javax.security.auth.login.CredentialException;
  * 
  * @since 1.5
  */
-public class CredentialNotFoundException extends CredentialException
-{
-    private static final long serialVersionUID = -7779934467214319475L;
+public class CredentialNotFoundException extends CredentialException {
+	private static final long serialVersionUID = -7779934467214319475L;
 
-    /**
-     * Create a new exception.
-     */
-    public CredentialNotFoundException()
-    {
-    }
+	/**
+	 * Create a new exception.
+	 */
+	public CredentialNotFoundException() {
+	}
 
-    /**
-     * Create a new exception with the given detail message.
-     * 
-     * @param message
-     *            the detail message
-     */
-    public CredentialNotFoundException(String message)
-    {
-	super(message);
-    }
+	/**
+	 * Create a new exception with the given detail message.
+	 * 
+	 * @param message
+	 *            the detail message
+	 */
+	public CredentialNotFoundException(String message) {
+		super(message);
+	}
 }

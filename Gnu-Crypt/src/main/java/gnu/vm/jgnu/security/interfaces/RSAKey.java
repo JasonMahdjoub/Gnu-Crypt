@@ -46,12 +46,11 @@ import java.math.BigInteger;
  * 
  * @author Mark Benvenuto
  */
-public interface RSAKey
-{
-    /**
-     * Generates a modulus.
-     * 
-     * @returns a modulus
-     */
-    BigInteger getModulus();
+public interface RSAKey {
+	/**
+	 * Generates a modulus.
+	 * 
+	 * @returns a modulus
+	 */
+	BigInteger getModulus();
 }

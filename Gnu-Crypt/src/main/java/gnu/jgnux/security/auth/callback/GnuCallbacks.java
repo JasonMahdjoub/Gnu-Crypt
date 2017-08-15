@@ -42,32 +42,25 @@ import java.security.PrivilegedAction;
 
 import gnu.vm.jgnu.security.Provider;
 
-public final class GnuCallbacks extends Provider
-{
-    /**
-     * 
-     */
-    private static final long serialVersionUID = -5978562213558760614L;
+public final class GnuCallbacks extends Provider {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -5978562213558760614L;
 
-    public GnuCallbacks()
-    {
-	super("GNU-CALLBACKS", 2.1,
-		"Implementations of various callback handlers.");
+	public GnuCallbacks() {
+		super("GNU-CALLBACKS", 2.1, "Implementations of various callback handlers.");
 
-	AccessController.doPrivileged(new PrivilegedAction<Object>() {
-	    @Override
-	    public Object run()
-	    {
-		put("CallbackHandler.Default",
-			DefaultCallbackHandler.class.getName());
-		put("CallbackHandler.Console",
-			ConsoleCallbackHandler.class.getName());
-		put("CallbackHandler.AWT", AWTCallbackHandler.class.getName());
-		put("CallbackHandler.Swing",
-			SwingCallbackHandler.class.getName());
+		AccessController.doPrivileged(new PrivilegedAction<Object>() {
+			@Override
+			public Object run() {
+				put("CallbackHandler.Default", DefaultCallbackHandler.class.getName());
+				put("CallbackHandler.Console", ConsoleCallbackHandler.class.getName());
+				put("CallbackHandler.AWT", AWTCallbackHandler.class.getName());
+				put("CallbackHandler.Swing", SwingCallbackHandler.class.getName());
 
-		return null;
-	    }
-	});
-    }
+				return null;
+			}
+		});
+	}
 }

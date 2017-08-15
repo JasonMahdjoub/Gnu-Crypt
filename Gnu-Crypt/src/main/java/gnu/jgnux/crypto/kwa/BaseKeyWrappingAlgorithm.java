@@ -48,104 +48,90 @@ import gnu.vm.jgnux.crypto.ShortBufferException;
  * A base class to facilitate implementation of concrete Key Wrapping
  * Algorithms.
  */
-public abstract class BaseKeyWrappingAlgorithm implements IKeyWrappingAlgorithm
-{
-    /** The canonical name of the key wrapping algorithm. */
-    protected String name;
+public abstract class BaseKeyWrappingAlgorithm implements IKeyWrappingAlgorithm {
+	/** The canonical name of the key wrapping algorithm. */
+	protected String name;
 
-    /** A source of randomness if/when needed by concrete implementations. */
-    private PRNG prng;
+	/** A source of randomness if/when needed by concrete implementations. */
+	private PRNG prng;
 
-    /**
-     * Protected constructor.
-     *
-     * @param name
-     *            the key wrapping algorithm canonical name.
-     */
-    protected BaseKeyWrappingAlgorithm(String name)
-    {
-	super();
-    }
+	/**
+	 * Protected constructor.
+	 *
+	 * @param name
+	 *            the key wrapping algorithm canonical name.
+	 */
+	protected BaseKeyWrappingAlgorithm(String name) {
+		super();
+	}
 
-    protected abstract void engineInit(Map<Object, Object> attributes) throws InvalidKeyException;
+	protected abstract void engineInit(Map<Object, Object> attributes) throws InvalidKeyException;
 
-    protected abstract byte[] engineUnwrap(byte[] in, int inOffset, int length) throws KeyUnwrappingException;
+	protected abstract byte[] engineUnwrap(byte[] in, int inOffset, int length) throws KeyUnwrappingException;
 
-    protected abstract byte[] engineWrap(byte[] in, int inOffset, int length);
+	protected abstract byte[] engineWrap(byte[] in, int inOffset, int length);
 
-    /** @return a strong pseudo-random number generator if/when needed. */
-    protected PRNG getDefaultPRNG()
-    {
-	if (prng == null)
-	    prng = PRNG.getInstance();
+	/** @return a strong pseudo-random number generator if/when needed. */
+	protected PRNG getDefaultPRNG() {
+		if (prng == null)
+			prng = PRNG.getInstance();
 
-	return prng;
-    }
+		return prng;
+	}
 
-    @Override
-    public void init(Map<Object, Object> attributes) throws InvalidKeyException
-    {
-	if (attributes == null)
-	    attributes = Collections.emptyMap();
+	@Override
+	public void init(Map<Object, Object> attributes) throws InvalidKeyException {
+		if (attributes == null)
+			attributes = Collections.emptyMap();
 
-	engineInit(attributes);
-    }
+		engineInit(attributes);
+	}
 
-    @Override
-    public String name()
-    {
-	return this.name;
-    }
+	@Override
+	public String name() {
+		return this.name;
+	}
 
-    @Override
-    public byte[] unwrap(byte[] in, int inOffset, int length) throws KeyUnwrappingException
-    {
-	if (inOffset < 0)
-	    throw new IllegalArgumentException(
-		    "Input offset MUST NOT be negative");
-	if (length < 0)
-	    throw new IllegalArgumentException(
-		    "Input length MUST NOT be negative");
+	@Override
+	public byte[] unwrap(byte[] in, int inOffset, int length) throws KeyUnwrappingException {
+		if (inOffset < 0)
+			throw new IllegalArgumentException("Input offset MUST NOT be negative");
+		if (length < 0)
+			throw new IllegalArgumentException("Input length MUST NOT be negative");
 
-	return engineUnwrap(in, inOffset, length);
-    }
+		return engineUnwrap(in, inOffset, length);
+	}
 
-    @Override
-    public int unwrap(byte[] in, int inOffset, int length, byte[] out, int outOffset) throws ShortBufferException, KeyUnwrappingException
-    {
-	if (outOffset < 0)
-	    throw new IllegalArgumentException(
-		    "Output offset MUST NOT be negative");
-	byte[] result = engineUnwrap(in, inOffset, length);
-	if (outOffset + result.length > out.length)
-	    throw new ShortBufferException();
-	System.arraycopy(result, 0, out, outOffset, result.length);
-	return result.length;
-    }
+	@Override
+	public int unwrap(byte[] in, int inOffset, int length, byte[] out, int outOffset)
+			throws ShortBufferException, KeyUnwrappingException {
+		if (outOffset < 0)
+			throw new IllegalArgumentException("Output offset MUST NOT be negative");
+		byte[] result = engineUnwrap(in, inOffset, length);
+		if (outOffset + result.length > out.length)
+			throw new ShortBufferException();
+		System.arraycopy(result, 0, out, outOffset, result.length);
+		return result.length;
+	}
 
-    @Override
-    public byte[] wrap(byte[] in, int inOffset, int length)
-    {
-	if (inOffset < 0)
-	    throw new IllegalArgumentException(
-		    "Input offset MUST NOT be negative");
-	if (length < 0)
-	    throw new IllegalArgumentException(
-		    "Input length MUST NOT be negative");
+	@Override
+	public byte[] wrap(byte[] in, int inOffset, int length) {
+		if (inOffset < 0)
+			throw new IllegalArgumentException("Input offset MUST NOT be negative");
+		if (length < 0)
+			throw new IllegalArgumentException("Input length MUST NOT be negative");
 
-	return engineWrap(in, inOffset, length);
-    }
+		return engineWrap(in, inOffset, length);
+	}
 
-    @Override
-    public int wrap(byte[] in, int inOffset, int length, byte[] out, int outOffset) throws ShortBufferException
-    {
-	if (outOffset < 0)
-	    throw new IllegalArgumentException(
-		    "Output offset MUST NOT be negative");
-	byte[] result = wrap(in, inOffset, length);
-	if (outOffset + result.length > out.length)
-	    throw new ShortBufferException();
-	System.arraycopy(result, 0, out, outOffset, result.length);
-	return result.length;
-    }
+	@Override
+	public int wrap(byte[] in, int inOffset, int length, byte[] out, int outOffset) throws ShortBufferException {
+		if (outOffset < 0)
+			throw new IllegalArgumentException("Output offset MUST NOT be negative");
+		byte[] result = wrap(in, inOffset, length);
+		if (outOffset + result.length > out.length)
+			throw new ShortBufferException();
+		System.arraycopy(result, 0, out, outOffset, result.length);
+		return result.length;
+	}
 }

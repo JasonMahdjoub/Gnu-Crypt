@@ -57,89 +57,79 @@ import gnu.vm.jgnux.crypto.MacSpi;
  * authentication code algorithm, such as the <i>Hashed Message Authentication
  * Code</i> (<b>HMAC</b>) algorithms.
  */
-class MacAdapter extends MacSpi implements Cloneable
-{
-    /** Our MAC instance. */
-    protected IMac mac;
+class MacAdapter extends MacSpi implements Cloneable {
+	/** Our MAC instance. */
+	protected IMac mac;
 
-    /** Our MAC attributes. */
-    protected Map<Object, Object> attributes;
+	/** Our MAC attributes. */
+	protected Map<Object, Object> attributes;
 
-    /**
-     * Private constructor for cloning purposes.
-     *
-     * @param mac
-     *            a clone of the internal {@link IMac} instance.
-     * @param attributes
-     *            a clone of the current {@link Map} of attributes.
-     */
-    private MacAdapter(IMac mac, Map<Object, Object> attributes)
-    {
-	super();
+	/**
+	 * Private constructor for cloning purposes.
+	 *
+	 * @param mac
+	 *            a clone of the internal {@link IMac} instance.
+	 * @param attributes
+	 *            a clone of the current {@link Map} of attributes.
+	 */
+	private MacAdapter(IMac mac, Map<Object, Object> attributes) {
+		super();
 
-	this.mac = mac;
-	this.attributes = attributes;
-    }
+		this.mac = mac;
+		this.attributes = attributes;
+	}
 
-    /**
-     * Creates a new Mac instance for the given name.
-     *
-     * @param name
-     *            The name of the mac to create.
-     */
-    protected MacAdapter(String name)
-    {
-	mac = MacFactory.getInstance(name);
-	attributes = new HashMap<>();
-    }
+	/**
+	 * Creates a new Mac instance for the given name.
+	 *
+	 * @param name
+	 *            The name of the mac to create.
+	 */
+	protected MacAdapter(String name) {
+		mac = MacFactory.getInstance(name);
+		attributes = new HashMap<>();
+	}
 
-    @Override
-    public Object clone() throws CloneNotSupportedException
-    {
-	return new MacAdapter((IMac) mac.clone(), new HashMap<>(attributes));
-    }
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+		return new MacAdapter((IMac) mac.clone(), new HashMap<>(attributes));
+	}
 
-    @Override
-    protected byte[] engineDoFinal()
-    {
-	byte[] result = mac.digest();
-	engineReset();
-	return result;
-    }
+	@Override
+	protected byte[] engineDoFinal() {
+		byte[] result = mac.digest();
+		engineReset();
+		return result;
+	}
 
-    @Override
-    protected int engineGetMacLength()
-    {
-	return mac.macSize();
-    }
+	@Override
+	protected int engineGetMacLength() {
+		return mac.macSize();
+	}
 
-    @Override
-    @SuppressWarnings("unused")
-    protected void engineInit(Key key, AlgorithmParameterSpec params) throws InvalidKeyException, InvalidAlgorithmParameterException
-    {
-	if (!key.getFormat().equalsIgnoreCase("RAW"))
-	    throw new InvalidKeyException(
-		    "unknown key format " + key.getFormat());
-	attributes.put(IMac.MAC_KEY_MATERIAL, key.getEncoded());
-	mac.reset();
-	mac.init(attributes);
-    }
+	@Override
+	@SuppressWarnings("unused")
+	protected void engineInit(Key key, AlgorithmParameterSpec params)
+			throws InvalidKeyException, InvalidAlgorithmParameterException {
+		if (!key.getFormat().equalsIgnoreCase("RAW"))
+			throw new InvalidKeyException("unknown key format " + key.getFormat());
+		attributes.put(IMac.MAC_KEY_MATERIAL, key.getEncoded());
+		mac.reset();
+		mac.init(attributes);
+	}
 
-    @Override
-    protected void engineReset()
-    {
-	mac.reset();
-    }
+	@Override
+	protected void engineReset() {
+		mac.reset();
+	}
 
-    @Override
-    protected void engineUpdate(byte b)
-    {
-	mac.update(b);
-    }
+	@Override
+	protected void engineUpdate(byte b) {
+		mac.update(b);
+	}
 
-    @Override
-    protected void engineUpdate(byte[] in, int off, int len)
-    {
-	mac.update(in, off, len);
-    }
+	@Override
+	protected void engineUpdate(byte[] in, int off, int len) {
+		mac.update(in, off, len);
+	}
 }

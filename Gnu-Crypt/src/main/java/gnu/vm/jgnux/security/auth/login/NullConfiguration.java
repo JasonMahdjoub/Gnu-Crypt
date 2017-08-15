@@ -40,27 +40,23 @@ package gnu.vm.jgnux.security.auth.login;
 import javax.security.auth.login.AppConfigurationEntry;
 import javax.security.auth.login.Configuration;
 
-final class NullConfiguration extends Configuration
-{
+final class NullConfiguration extends Configuration {
 
-    // Contructor.
-    // -------------------------------------------------------------------------
+	// Contructor.
+	// -------------------------------------------------------------------------
 
-    NullConfiguration()
-    {
-    }
+	NullConfiguration() {
+	}
 
-    // Instance methods.
-    // -------------------------------------------------------------------------
+	// Instance methods.
+	// -------------------------------------------------------------------------
 
-    @Override
-    public AppConfigurationEntry[] getAppConfigurationEntry(String applicationName)
-    {
-	return null;
-    }
+	@Override
+	public AppConfigurationEntry[] getAppConfigurationEntry(String applicationName) {
+		return null;
+	}
 
-    @Override
-    public void refresh()
-    {
-    }
+	@Override
+	public void refresh() {
+	}
 }

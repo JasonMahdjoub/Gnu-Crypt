@@ -44,42 +44,34 @@ import gnu.vm.jgnux.crypto.SecretKey;
 import gnu.vm.jgnux.crypto.SecretKeyFactorySpi;
 import gnu.vm.jgnux.crypto.spec.SecretKeySpec;
 
-public abstract class SecretKeyFactoryImpl extends SecretKeyFactorySpi
-{
+public abstract class SecretKeyFactoryImpl extends SecretKeyFactorySpi {
 
-    protected SecretKeyFactoryImpl()
-    {
-    }
+	protected SecretKeyFactoryImpl() {
+	}
 
-    @Override
-    protected SecretKey engineGenerateSecret(KeySpec spec) throws InvalidKeySpecException
-    {
-	if (spec instanceof SecretKeySpec)
-	    return (SecretKey) spec;
-	throw new InvalidKeySpecException(
-		"unknown key spec: " + spec.getClass().getName());
-    }
+	@Override
+	protected SecretKey engineGenerateSecret(KeySpec spec) throws InvalidKeySpecException {
+		if (spec instanceof SecretKeySpec)
+			return (SecretKey) spec;
+		throw new InvalidKeySpecException("unknown key spec: " + spec.getClass().getName());
+	}
 
-    @Override
-    protected KeySpec engineGetKeySpec(SecretKey key, Class<?> spec) throws InvalidKeySpecException
-    {
-	if (spec.equals(SecretKeySpec.class))
-	{
-	    if (key instanceof SecretKeySpec)
-		return (KeySpec) key;
-	    else
+	@Override
+	protected KeySpec engineGetKeySpec(SecretKey key, Class<?> spec) throws InvalidKeySpecException {
+		if (spec.equals(SecretKeySpec.class)) {
+			if (key instanceof SecretKeySpec)
+				return (KeySpec) key;
+			else
+				return new SecretKeySpec(key.getEncoded(), key.getAlgorithm());
+		}
+		throw new InvalidKeySpecException("unsupported key spec: " + spec.getName());
+	}
+
+	@Override
+	protected SecretKey engineTranslateKey(SecretKey key) throws InvalidKeyException {
+		if (!"RAW".equals(key.getFormat()))
+			throw new InvalidKeyException("only raw keys are supported");
+		// SecretKeySpec is good enough for our purposes.
 		return new SecretKeySpec(key.getEncoded(), key.getAlgorithm());
 	}
-	throw new InvalidKeySpecException(
-		"unsupported key spec: " + spec.getName());
-    }
-
-    @Override
-    protected SecretKey engineTranslateKey(SecretKey key) throws InvalidKeyException
-    {
-	if (!"RAW".equals(key.getFormat()))
-	    throw new InvalidKeyException("only raw keys are supported");
-	// SecretKeySpec is good enough for our purposes.
-	return new SecretKeySpec(key.getEncoded(), key.getAlgorithm());
-    }
 }

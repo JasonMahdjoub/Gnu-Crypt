@@ -37,9 +37,7 @@ exception statement from your version.  */
 
 package gnu.jgnux.crypto.jce.key;
 
-public class TwofishSecretKeyFactoryImpl extends SecretKeyFactoryImpl
-{
-    public TwofishSecretKeyFactoryImpl()
-    {
-    }
+public class TwofishSecretKeyFactoryImpl extends SecretKeyFactoryImpl {
+	public TwofishSecretKeyFactoryImpl() {
+	}
 }

@@ -56,123 +56,102 @@ import java.util.zip.Inflater;
  * at least one element behind this instance in the constructed chain;
  * otherwise, a {@link TransformerException} is thrown at initialisation time.
  */
-class DeflateTransformer extends Transformer
-{
-    private Deflater compressor;
+class DeflateTransformer extends Transformer {
+	private Deflater compressor;
 
-    private Inflater decompressor;
+	private Inflater decompressor;
 
-    private int outputBlockSize = 512; // default zlib buffer size
+	private int outputBlockSize = 512; // default zlib buffer size
 
-    private byte[] zlibBuffer;
+	private byte[] zlibBuffer;
 
-    DeflateTransformer()
-    {
-	super();
+	DeflateTransformer() {
+		super();
 
-    }
-
-    private void compress()
-    {
-	int len = compressor.deflate(zlibBuffer);
-	if (len > 0)
-	    inBuffer.write(zlibBuffer, 0, len);
-    }
-
-    private void decompress(byte[] in, int offset, int length) throws TransformerException
-    {
-	decompressor.setInput(in, offset, length);
-	int len = 1;
-	while (len > 0)
-	{
-	    try
-	    {
-		len = decompressor.inflate(zlibBuffer);
-	    }
-	    catch (DataFormatException x)
-	    {
-		throw new TransformerException("decompress()", x);
-	    }
-	    if (len > 0)
-		inBuffer.write(zlibBuffer, 0, len);
 	}
-    }
 
-    @Override
-    int delegateBlockSize()
-    {
-	return 1;
-    }
-
-    @Override
-    void initDelegate(Map<Object, Object> attributes) throws TransformerException
-    {
-	if (tail == null)
-	{
-	    IllegalStateException cause = new IllegalStateException(
-		    "Compression transformer missing its tail!");
-	    throw new TransformerException("initDelegate()", cause);
+	private void compress() {
+		int len = compressor.deflate(zlibBuffer);
+		if (len > 0)
+			inBuffer.write(zlibBuffer, 0, len);
 	}
-	outputBlockSize = tail.currentBlockSize();
-	zlibBuffer = new byte[outputBlockSize];
-	Direction flow = (Direction) attributes.get(DIRECTION);
-	if (flow == Direction.FORWARD)
-	    compressor = new Deflater();
-	else
-	    decompressor = new Inflater();
-    }
 
-    @Override
-    byte[] lastUpdateDelegate() throws TransformerException
-    {
-	// process multiples of blocksize as much as possible
-	if (wired == Direction.FORWARD) // compressing
-	{
-	    if (!compressor.finished())
-	    {
-		compressor.finish();
-		while (!compressor.finished())
-		    compress();
-	    }
+	private void decompress(byte[] in, int offset, int length) throws TransformerException {
+		decompressor.setInput(in, offset, length);
+		int len = 1;
+		while (len > 0) {
+			try {
+				len = decompressor.inflate(zlibBuffer);
+			} catch (DataFormatException x) {
+				throw new TransformerException("decompress()", x);
+			}
+			if (len > 0)
+				inBuffer.write(zlibBuffer, 0, len);
+		}
 	}
-	else // decompressing
-	{
-	    if (!decompressor.finished())
-	    {
-		IllegalStateException cause = new IllegalStateException(
-			"Compression transformer, after last update, must be finished "
-				+ "but isn't");
-		throw new TransformerException("lastUpdateDelegate()", cause);
-	    }
-	}
-	byte[] result = inBuffer.toByteArray();
-	inBuffer.reset();
-	return result;
-    }
 
-    @Override
-    void resetDelegate()
-    {
-	compressor = null;
-	decompressor = null;
-	outputBlockSize = 1;
-	zlibBuffer = null;
-    }
-
-    @Override
-    byte[] updateDelegate(byte[] in, int offset, int length) throws TransformerException
-    {
-	byte[] result;
-	if (wired == Direction.FORWARD)
-	{
-	    compressor.setInput(in, offset, length);
-	    while (!compressor.needsInput())
-		compress();
+	@Override
+	int delegateBlockSize() {
+		return 1;
 	}
-	else // decompression: inflate first and then update tail
-	    decompress(in, offset, length);
-	result = inBuffer.toByteArray();
-	inBuffer.reset();
-	return result;
-    }
+
+	@Override
+	void initDelegate(Map<Object, Object> attributes) throws TransformerException {
+		if (tail == null) {
+			IllegalStateException cause = new IllegalStateException("Compression transformer missing its tail!");
+			throw new TransformerException("initDelegate()", cause);
+		}
+		outputBlockSize = tail.currentBlockSize();
+		zlibBuffer = new byte[outputBlockSize];
+		Direction flow = (Direction) attributes.get(DIRECTION);
+		if (flow == Direction.FORWARD)
+			compressor = new Deflater();
+		else
+			decompressor = new Inflater();
+	}
+
+	@Override
+	byte[] lastUpdateDelegate() throws TransformerException {
+		// process multiples of blocksize as much as possible
+		if (wired == Direction.FORWARD) // compressing
+		{
+			if (!compressor.finished()) {
+				compressor.finish();
+				while (!compressor.finished())
+					compress();
+			}
+		} else // decompressing
+		{
+			if (!decompressor.finished()) {
+				IllegalStateException cause = new IllegalStateException(
+						"Compression transformer, after last update, must be finished " + "but isn't");
+				throw new TransformerException("lastUpdateDelegate()", cause);
+			}
+		}
+		byte[] result = inBuffer.toByteArray();
+		inBuffer.reset();
+		return result;
+	}
+
+	@Override
+	void resetDelegate() {
+		compressor = null;
+		decompressor = null;
+		outputBlockSize = 1;
+		zlibBuffer = null;
+	}
+
+	@Override
+	byte[] updateDelegate(byte[] in, int offset, int length) throws TransformerException {
+		byte[] result;
+		if (wired == Direction.FORWARD) {
+			compressor.setInput(in, offset, length);
+			while (!compressor.needsInput())
+				compress();
+		} else // decompression: inflate first and then update tail
+			decompress(in, offset, length);
+		result = inBuffer.toByteArray();
+		inBuffer.reset();
+		return result;
+	}
 }

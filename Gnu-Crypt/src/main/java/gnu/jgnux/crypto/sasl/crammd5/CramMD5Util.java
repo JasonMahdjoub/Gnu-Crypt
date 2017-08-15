@@ -53,66 +53,46 @@ import gnu.vm.jgnu.security.InvalidKeyException;
 /**
  * A package-private CRAM-MD5-specific utility class.
  */
-class CramMD5Util
-{
-    static byte[] createHMac(final char[] passwd, final byte[] data) throws InvalidKeyException, SaslException
-    {
-	final IMac mac = HMacFactory
-		.getInstance(Registry.HMAC_NAME_PREFIX + Registry.MD5_HASH);
-	final HashMap<Object, Object> map = new HashMap<>();
-	final byte[] km;
-	try
-	{
-	    km = new String(passwd).getBytes("UTF-8");
+class CramMD5Util {
+	static byte[] createHMac(final char[] passwd, final byte[] data) throws InvalidKeyException, SaslException {
+		final IMac mac = HMacFactory.getInstance(Registry.HMAC_NAME_PREFIX + Registry.MD5_HASH);
+		final HashMap<Object, Object> map = new HashMap<>();
+		final byte[] km;
+		try {
+			km = new String(passwd).getBytes("UTF-8");
+		} catch (UnsupportedEncodingException x) {
+			throw new SaslException("createHMac()", x);
+		}
+		map.put(IMac.MAC_KEY_MATERIAL, km);
+		mac.init(map);
+		mac.update(data, 0, data.length);
+		return mac.digest();
 	}
-	catch (UnsupportedEncodingException x)
-	{
-	    throw new SaslException("createHMac()", x);
-	}
-	map.put(IMac.MAC_KEY_MATERIAL, km);
-	mac.init(map);
-	mac.update(data, 0, data.length);
-	return mac.digest();
-    }
 
-    static byte[] createMsgID() throws SaslException
-    {
-	final String encoded;
-	try
-	{
-	    encoded = Util.toBase64(
-		    Thread.currentThread().getName().getBytes("UTF-8"));
+	static byte[] createMsgID() throws SaslException {
+		final String encoded;
+		try {
+			encoded = Util.toBase64(Thread.currentThread().getName().getBytes("UTF-8"));
+		} catch (UnsupportedEncodingException x) {
+			throw new SaslException("createMsgID()", x);
+		}
+		String hostname = "localhost";
+		try {
+			hostname = InetAddress.getLocalHost().getHostAddress();
+		} catch (UnknownHostException ignored) {
+		}
+		final byte[] result;
+		try {
+			result = new StringBuilder("<").append(encoded.substring(0, encoded.length())).append(".")
+					.append(String.valueOf(System.currentTimeMillis())).append("@").append(hostname).append(">")
+					.toString().getBytes("UTF-8");
+		} catch (UnsupportedEncodingException x) {
+			throw new SaslException("createMsgID()", x);
+		}
+		return result;
 	}
-	catch (UnsupportedEncodingException x)
-	{
-	    throw new SaslException("createMsgID()", x);
-	}
-	String hostname = "localhost";
-	try
-	{
-	    hostname = InetAddress.getLocalHost().getHostAddress();
-	}
-	catch (UnknownHostException ignored)
-	{
-	}
-	final byte[] result;
-	try
-	{
-	    result = new StringBuilder("<")
-		    .append(encoded.substring(0, encoded.length())).append(".")
-		    .append(String.valueOf(System.currentTimeMillis()))
-		    .append("@").append(hostname).append(">").toString()
-		    .getBytes("UTF-8");
-	}
-	catch (UnsupportedEncodingException x)
-	{
-	    throw new SaslException("createMsgID()", x);
-	}
-	return result;
-    }
 
-    private CramMD5Util()
-    {
-	super();
-    }
+	private CramMD5Util() {
+		super();
+	}
 }

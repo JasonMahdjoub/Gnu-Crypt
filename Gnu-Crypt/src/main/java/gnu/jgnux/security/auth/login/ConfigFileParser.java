@@ -89,242 +89,212 @@ import javax.security.auth.login.AppConfigurationEntry;
  * to {@link java.lang.Character#isJavaIdentifierPart(char)}.</li>
  * </ol>
  */
-public final class ConfigFileParser
-{
-    private ConfigFileTokenizer cft;
+public final class ConfigFileParser {
+	private ConfigFileTokenizer cft;
 
-    private final Map<String, List<AppConfigurationEntry>> map = new HashMap<>();
+	private final Map<String, List<AppConfigurationEntry>> map = new HashMap<>();
 
-    // default 0-arguments constructor
+	// default 0-arguments constructor
 
-    private void abort(String m) throws IOException
-    {
-	throw new IOException(m);
-    }
+	private void abort(String m) throws IOException {
+		throw new IOException(m);
+	}
 
-    /**
-     * The documentation of the
-     * {@link gnu.vm.javax.security.auth.login.Configuration} states that:
-     * <i>"...If a String in the form, ${system.property}, occurs in the value,
-     * it will be expanded to the value of the system property."</i>. This
-     * method ensures this is the case. If such a string can not be expanded
-     * then it is left AS IS, assuming the LoginModule knows what to do with it.
-     *
-     * <p>
-     * <b>IMPORTANT</b>: This implementation DOES NOT handle embedded ${}
-     * constructs.
-     *
-     * @param s
-     *            the raw parameter value, incl. eventually strings of the form
-     *            <code>${system.property}</code>.
-     * @return the input string with every occurence of
-     *         <code>${system.property}</code> replaced with the value of the
-     *         corresponding System property at the time of this method
-     *         invocation. If the string is not a known System property name,
-     *         then the complete sequence (incl. the ${} characters are passed
-     *         AS IS.
-     */
-    private String expandParamValue(String s)
-    {
-	String result = s;
-	try
-	{
-	    int searchNdx = 0;
-	    while (searchNdx < result.length())
-	    {
-		int i = s.indexOf("${", searchNdx);
-		if (i == -1)
-		    break;
+	/**
+	 * The documentation of the
+	 * {@link gnu.vm.javax.security.auth.login.Configuration} states that: <i>"...If
+	 * a String in the form, ${system.property}, occurs in the value, it will be
+	 * expanded to the value of the system property."</i>. This method ensures this
+	 * is the case. If such a string can not be expanded then it is left AS IS,
+	 * assuming the LoginModule knows what to do with it.
+	 *
+	 * <p>
+	 * <b>IMPORTANT</b>: This implementation DOES NOT handle embedded ${}
+	 * constructs.
+	 *
+	 * @param s
+	 *            the raw parameter value, incl. eventually strings of the form
+	 *            <code>${system.property}</code>.
+	 * @return the input string with every occurence of
+	 *         <code>${system.property}</code> replaced with the value of the
+	 *         corresponding System property at the time of this method invocation.
+	 *         If the string is not a known System property name, then the complete
+	 *         sequence (incl. the ${} characters are passed AS IS.
+	 */
+	private String expandParamValue(String s) {
+		String result = s;
+		try {
+			int searchNdx = 0;
+			while (searchNdx < result.length()) {
+				int i = s.indexOf("${", searchNdx);
+				if (i == -1)
+					break;
 
-		int j = s.indexOf("}", i + 2);
-		if (j == -1)
-		{
-		    break;
+				int j = s.indexOf("}", i + 2);
+				if (j == -1) {
+					break;
+				}
+
+				String sysPropName = s.substring(i + 2, j);
+				String sysPropValue = System.getProperty(sysPropName);
+				if (sysPropValue != null) {
+					result = s.substring(0, i) + sysPropValue + s.substring(j + 1);
+					searchNdx = i + sysPropValue.length();
+				} else
+					searchNdx = j + 1;
+			}
+		} catch (Exception x) {
 		}
 
-		String sysPropName = s.substring(i + 2, j);
-		String sysPropValue = System.getProperty(sysPropName);
-		if (sysPropValue != null)
-		{
-		    result = s.substring(0, i) + sysPropValue
-			    + s.substring(j + 1);
-		    searchNdx = i + sysPropValue.length();
+		return result;
+	}
+
+	/**
+	 * Returns the parse result as a {@link Map} where the keys are application
+	 * names, and the entries are {@link List}s of {@link AppConfigurationEntry}
+	 * entries, one for each login module entry, in the order they were encountered,
+	 * for that application name in the just parsed configuration file.
+	 */
+	public Map<String, List<AppConfigurationEntry>> getLoginModulesMap() {
+		return map;
+	}
+
+	private void initParser(Reader r) {
+		map.clear();
+
+		cft = new ConfigFileTokenizer(r);
+	}
+
+	/**
+	 * Parses the {@link Reader}'s contents assuming it is in the <i>default
+	 * syntax</i>.
+	 *
+	 * @param r
+	 *            the {@link Reader} whose contents are assumed to be a JAAS Login
+	 *            Configuration Module file written in the <i>default syntax</i>.
+	 * @throws IOException
+	 *             if an exception occurs while parsing the input.
+	 */
+	public void parse(Reader r) throws IOException {
+		initParser(r);
+
+		while (parseAppOrOtherEntry()) {
+			/* do nothing */
 		}
+	}
+
+	/**
+	 * @return <code>true</code> if a LOGIN_MODULE_ENTRY was correctly parsed.
+	 *         Returns <code>false</code> otherwise.
+	 * @throws IOException
+	 *             if an exception occurs while parsing the input.
+	 */
+	private boolean parseACE(List<AppConfigurationEntry> listOfACEs) throws IOException {
+		int c = cft.nextToken();
+		if (c != ConfigFileTokenizer.TT_WORD) {
+			cft.pushBack();
+			return false;
+		}
+
+		String clazz = validateClassName(cft.sval);
+
+		if (cft.nextToken() != ConfigFileTokenizer.TT_WORD)
+			abort("Was expecting FLAG but found none");
+
+		String flag = cft.sval;
+		AppConfigurationEntry.LoginModuleControlFlag f = null;
+		if (flag.equalsIgnoreCase("required"))
+			f = AppConfigurationEntry.LoginModuleControlFlag.REQUIRED;
+		else if (flag.equalsIgnoreCase("requisite"))
+			f = AppConfigurationEntry.LoginModuleControlFlag.REQUISITE;
+		else if (flag.equalsIgnoreCase("sufficient"))
+			f = AppConfigurationEntry.LoginModuleControlFlag.SUFFICIENT;
+		else if (flag.equalsIgnoreCase("optional"))
+			f = AppConfigurationEntry.LoginModuleControlFlag.OPTIONAL;
 		else
-		    searchNdx = j + 1;
-	    }
-	}
-	catch (Exception x)
-	{
-	}
+			abort("Unknown Flag: " + flag);
 
-	return result;
-    }
+		Map<String, String> options = new HashMap<>();
+		String paramName, paramValue;
+		c = cft.nextToken();
+		while (c != ';') {
+			if (c != ConfigFileTokenizer.TT_WORD)
+				abort("Was expecting PARAM_NAME but got '" + ((char) c) + "'");
 
-    /**
-     * Returns the parse result as a {@link Map} where the keys are application
-     * names, and the entries are {@link List}s of {@link AppConfigurationEntry}
-     * entries, one for each login module entry, in the order they were
-     * encountered, for that application name in the just parsed configuration
-     * file.
-     */
-    public Map<String, List<AppConfigurationEntry>> getLoginModulesMap()
-    {
-	return map;
-    }
+			paramName = cft.sval;
+			if (cft.nextToken() != '=')
+				abort("Missing '=' after PARAM_NAME");
 
-    private void initParser(Reader r)
-    {
-	map.clear();
+			c = cft.nextToken();
+			if (c != '"' && c != '\'') {
+			}
+			paramValue = expandParamValue(cft.sval);
+			options.put(paramName, paramValue);
 
-	cft = new ConfigFileTokenizer(r);
-    }
-
-    /**
-     * Parses the {@link Reader}'s contents assuming it is in the <i>default
-     * syntax</i>.
-     *
-     * @param r
-     *            the {@link Reader} whose contents are assumed to be a JAAS
-     *            Login Configuration Module file written in the <i>default
-     *            syntax</i>.
-     * @throws IOException
-     *             if an exception occurs while parsing the input.
-     */
-    public void parse(Reader r) throws IOException
-    {
-	initParser(r);
-
-	while (parseAppOrOtherEntry())
-	{
-	    /* do nothing */
-	}
-    }
-
-    /**
-     * @return <code>true</code> if a LOGIN_MODULE_ENTRY was correctly parsed.
-     *         Returns <code>false</code> otherwise.
-     * @throws IOException
-     *             if an exception occurs while parsing the input.
-     */
-    private boolean parseACE(List<AppConfigurationEntry> listOfACEs) throws IOException
-    {
-	int c = cft.nextToken();
-	if (c != ConfigFileTokenizer.TT_WORD)
-	{
-	    cft.pushBack();
-	    return false;
+			c = cft.nextToken();
+		}
+		AppConfigurationEntry ace = new AppConfigurationEntry(clazz, f, options);
+		listOfACEs.add(ace);
+		return true;
 	}
 
-	String clazz = validateClassName(cft.sval);
+	/**
+	 * @return <code>true</code> if an APP_OR_OTHER_ENTRY was correctly parsed.
+	 *         Returns <code>false</code> otherwise.
+	 * @throws IOException
+	 *             if an exception occurs while parsing the input.
+	 */
+	private boolean parseAppOrOtherEntry() throws IOException {
+		int c = cft.nextToken();
+		if (c == ConfigFileTokenizer.TT_EOF)
+			return false;
 
-	if (cft.nextToken() != ConfigFileTokenizer.TT_WORD)
-	    abort("Was expecting FLAG but found none");
+		if (c != ConfigFileTokenizer.TT_WORD) {
+			cft.pushBack();
+			return false;
+		}
 
-	String flag = cft.sval;
-	AppConfigurationEntry.LoginModuleControlFlag f = null;
-	if (flag.equalsIgnoreCase("required"))
-	    f = AppConfigurationEntry.LoginModuleControlFlag.REQUIRED;
-	else if (flag.equalsIgnoreCase("requisite"))
-	    f = AppConfigurationEntry.LoginModuleControlFlag.REQUISITE;
-	else if (flag.equalsIgnoreCase("sufficient"))
-	    f = AppConfigurationEntry.LoginModuleControlFlag.SUFFICIENT;
-	else if (flag.equalsIgnoreCase("optional"))
-	    f = AppConfigurationEntry.LoginModuleControlFlag.OPTIONAL;
-	else
-	    abort("Unknown Flag: " + flag);
+		String appName = cft.sval;
+		if (cft.nextToken() != '{')
+			abort("Missing '{' after APP_NAME_OR_OTHER");
 
-	Map<String, String> options = new HashMap<>();
-	String paramName, paramValue;
-	c = cft.nextToken();
-	while (c != ';')
-	{
-	    if (c != ConfigFileTokenizer.TT_WORD)
-		abort("Was expecting PARAM_NAME but got '" + ((char) c) + "'");
+		List<AppConfigurationEntry> lmis = new ArrayList<>();
+		while (parseACE(lmis)) {
+			/* do nothing */
+		}
 
-	    paramName = cft.sval;
-	    if (cft.nextToken() != '=')
-		abort("Missing '=' after PARAM_NAME");
+		c = cft.nextToken();
+		if (c != '}')
+			abort("Was expecting '}' but found " + (char) c);
 
-	    c = cft.nextToken();
-	    if (c != '"' && c != '\'')
-	    {
-	    }
-	    paramValue = expandParamValue(cft.sval);
-	    options.put(paramName, paramValue);
+		c = cft.nextToken();
+		if (c != ';')
+			abort("Was expecting ';' but found " + (char) c);
 
-	    c = cft.nextToken();
-	}
-	AppConfigurationEntry ace = new AppConfigurationEntry(clazz, f,
-		options);
-	listOfACEs.add(ace);
-	return true;
-    }
-
-    /**
-     * @return <code>true</code> if an APP_OR_OTHER_ENTRY was correctly parsed.
-     *         Returns <code>false</code> otherwise.
-     * @throws IOException
-     *             if an exception occurs while parsing the input.
-     */
-    private boolean parseAppOrOtherEntry() throws IOException
-    {
-	int c = cft.nextToken();
-	if (c == ConfigFileTokenizer.TT_EOF)
-	    return false;
-
-	if (c != ConfigFileTokenizer.TT_WORD)
-	{
-	    cft.pushBack();
-	    return false;
+		List<AppConfigurationEntry> listOfACEs = map.get(appName);
+		if (listOfACEs == null) {
+			listOfACEs = new ArrayList<>();
+			map.put(appName, listOfACEs);
+		}
+		listOfACEs.addAll(lmis);
+		return !appName.equalsIgnoreCase("other");
 	}
 
-	String appName = cft.sval;
-	if (cft.nextToken() != '{')
-	    abort("Missing '{' after APP_NAME_OR_OTHER");
+	private String validateClassName(String cn) throws IOException {
+		if (cn.startsWith(".") || cn.endsWith("."))
+			abort("MODULE_CLASS MUST NOT start or end with a '.'");
 
-	List<AppConfigurationEntry> lmis = new ArrayList<>();
-	while (parseACE(lmis))
-	{
-	    /* do nothing */
+		String[] tokens = cn.split("\\.");
+		for (int i = 0; i < tokens.length; i++) {
+			String t = tokens[i];
+			if (!Character.isJavaIdentifierStart(t.charAt(0)))
+				abort("Class name [" + cn + "] contains an invalid sub-package identifier: " + t);
+
+			// we dont check the rest of the characters for
+			// isJavaIdentifierPart()
+			// because that's what the tokenizer does.
+		}
+
+		return cn;
 	}
-
-	c = cft.nextToken();
-	if (c != '}')
-	    abort("Was expecting '}' but found " + (char) c);
-
-	c = cft.nextToken();
-	if (c != ';')
-	    abort("Was expecting ';' but found " + (char) c);
-
-	List<AppConfigurationEntry> listOfACEs = map.get(appName);
-	if (listOfACEs == null)
-	{
-	    listOfACEs = new ArrayList<>();
-	    map.put(appName, listOfACEs);
-	}
-	listOfACEs.addAll(lmis);
-	return !appName.equalsIgnoreCase("other");
-    }
-
-    private String validateClassName(String cn) throws IOException
-    {
-	if (cn.startsWith(".") || cn.endsWith("."))
-	    abort("MODULE_CLASS MUST NOT start or end with a '.'");
-
-	String[] tokens = cn.split("\\.");
-	for (int i = 0; i < tokens.length; i++)
-	{
-	    String t = tokens[i];
-	    if (!Character.isJavaIdentifierStart(t.charAt(0)))
-		abort("Class name [" + cn
-			+ "] contains an invalid sub-package identifier: " + t);
-
-	    // we dont check the rest of the characters for
-	    // isJavaIdentifierPart()
-	    // because that's what the tokenizer does.
-	}
-
-	return cn;
-    }
 }

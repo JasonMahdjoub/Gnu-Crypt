@@ -63,286 +63,248 @@ import gnu.jgnu.security.OID;
  *
  * @author Casey Marshall (csm@gnu.org)
  */
-public class DERWriter implements DER
-{
+public class DERWriter implements DER {
 
-    // Constructors.
-    // ------------------------------------------------------------------------
+	// Constructors.
+	// ------------------------------------------------------------------------
 
-    public static int definiteEncodingSize(int length)
-    {
-	if (length < 128)
-	    return 1;
-	else if (length < 256)
-	    return 2;
-	else if (length < 65536)
-	    return 3;
-	else if (length < 16777216)
-	    return 4;
-	else
-	    return 5;
-    }
-
-    // Class methods.
-    // ------------------------------------------------------------------------
-
-    private static byte[] toIso88591(String string)
-    {
-	byte[] result = new byte[string.length()];
-	for (int i = 0; i < string.length(); i++)
-	    result[i] = (byte) string.charAt(i);
-	return result;
-    }
-
-    private static byte[] toUtf16Be(String string)
-    {
-	byte[] result = new byte[string.length() * 2];
-	for (int i = 0; i < string.length(); i++)
-	{
-	    result[i * 2] = (byte) ((string.charAt(i) >>> 8) & 0xFF);
-	    result[i * 2 + 1] = (byte) (string.charAt(i) & 0xFF);
-	}
-	return result;
-    }
-
-    // Own methods.
-    // ------------------------------------------------------------------------
-
-    private static byte[] toUtf8(String string)
-    {
-	int len = string.length();
-	ByteArrayOutputStream buf = new ByteArrayOutputStream(len + (len >> 1));
-	for (int i = 0; i < len; i++)
-	{
-	    char c = string.charAt(i);
-	    if (c < 0x0080)
-		buf.write(c & 0xFF);
-	    else if (c < 0x0800)
-	    {
-		buf.write(0xC0 | ((c >>> 6) & 0x3F));
-		buf.write(0x80 | (c & 0x3F));
-	    }
-	    else
-	    {
-		buf.write(0xE0 | ((c >>> 12) & 0x0F));
-		buf.write(0x80 | ((c >>> 6) & 0x3F));
-		buf.write(0x80 | (c & 0x3F));
-	    }
-	}
-	return buf.toByteArray();
-    }
-
-    @SuppressWarnings("unchecked")
-    public static int write(OutputStream out, DERValue object) throws IOException
-    {
-	if (DER.CONSTRUCTED_VALUE.equals(object.getValue()))
-	{
-	    out.write(object.getEncoded());
-	    return object.getLength();
+	public static int definiteEncodingSize(int length) {
+		if (length < 128)
+			return 1;
+		else if (length < 256)
+			return 2;
+		else if (length < 65536)
+			return 3;
+		else if (length < 16777216)
+			return 4;
+		else
+			return 5;
 	}
 
-	out.write(object.getExternalTag());
-	Object value = object.getValue();
-	if (value == null)
-	{
-	    writeLength(out, 0);
-	    return 0;
+	// Class methods.
+	// ------------------------------------------------------------------------
+
+	private static byte[] toIso88591(String string) {
+		byte[] result = new byte[string.length()];
+		for (int i = 0; i < string.length(); i++)
+			result[i] = (byte) string.charAt(i);
+		return result;
 	}
-	if (value instanceof Boolean)
-	    return writeBoolean(out, (Boolean) value);
-	else if (value instanceof BigInteger)
-	    return writeInteger(out, (BigInteger) value);
-	else if (value instanceof Date)
-	    return writeDate(out, object.getExternalTag(), (Date) value);
-	else if (value instanceof String)
-	    return writeString(out, object.getExternalTag(), (String) value);
-	else if (value instanceof List)
-	    return writeSequence(out, (List<DERValue>) value);
-	else if (value instanceof Set)
-	    return writeSet(out, (Set<DERValue>) value);
-	else if (value instanceof BitString)
-	    return writeBitString(out, (BitString) value);
-	else if (value instanceof OID)
-	    return writeOID(out, (OID) value);
-	else if (value instanceof byte[])
-	{
-	    writeLength(out, ((byte[]) value).length);
-	    out.write((byte[]) value);
-	    return ((byte[]) value).length;
+
+	private static byte[] toUtf16Be(String string) {
+		byte[] result = new byte[string.length() * 2];
+		for (int i = 0; i < string.length(); i++) {
+			result[i * 2] = (byte) ((string.charAt(i) >>> 8) & 0xFF);
+			result[i * 2 + 1] = (byte) (string.charAt(i) & 0xFF);
+		}
+		return result;
 	}
-	else if (value instanceof DERValue)
-	{
-	    ByteArrayOutputStream bout = new ByteArrayOutputStream();
-	    write(bout, (DERValue) value);
-	    byte[] buf = bout.toByteArray();
-	    writeLength(out, buf.length);
-	    out.write(buf);
-	    return buf.length;
+
+	// Own methods.
+	// ------------------------------------------------------------------------
+
+	private static byte[] toUtf8(String string) {
+		int len = string.length();
+		ByteArrayOutputStream buf = new ByteArrayOutputStream(len + (len >> 1));
+		for (int i = 0; i < len; i++) {
+			char c = string.charAt(i);
+			if (c < 0x0080)
+				buf.write(c & 0xFF);
+			else if (c < 0x0800) {
+				buf.write(0xC0 | ((c >>> 6) & 0x3F));
+				buf.write(0x80 | (c & 0x3F));
+			} else {
+				buf.write(0xE0 | ((c >>> 12) & 0x0F));
+				buf.write(0x80 | ((c >>> 6) & 0x3F));
+				buf.write(0x80 | (c & 0x3F));
+			}
+		}
+		return buf.toByteArray();
 	}
-	else
-	    throw new DEREncodingException(
-		    "cannot encode " + value.getClass().getName());
-    }
 
-    private static int writeBitString(OutputStream out, BitString bs) throws IOException
-    {
-	byte[] buf = bs.getShiftedByteArray();
-	writeLength(out, buf.length + 1);
-	out.write(bs.getIgnoredBits());
-	out.write(buf);
-	return buf.length + 1;
-    }
+	@SuppressWarnings("unchecked")
+	public static int write(OutputStream out, DERValue object) throws IOException {
+		if (DER.CONSTRUCTED_VALUE.equals(object.getValue())) {
+			out.write(object.getEncoded());
+			return object.getLength();
+		}
 
-    /**
-     * Write a BOOLEAN type to the given output stream.
-     *
-     * @param out
-     *            The sink output stream.
-     * @param b
-     *            The boolean value to write.
-     */
-    private static int writeBoolean(OutputStream out, Boolean b) throws IOException
-    {
-	writeLength(out, 1);
-	if (b.booleanValue())
-	    out.write(0xFF);
-	else
-	    out.write(0);
-	return 1;
-    }
-
-    private static int writeDate(OutputStream out, int tag, Date date) throws IOException
-    {
-	SimpleDateFormat sdf = null;
-	if ((tag & 0x1F) == UTC_TIME)
-	    sdf = new SimpleDateFormat("yyMMddHHmmss'Z'");
-	else
-	    sdf = new SimpleDateFormat("yyyyMMddHHmmss'.'SSS'Z'");
-	sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
-	byte[] b = sdf.format(date).getBytes("ISO-8859-1");
-	writeLength(out, b.length);
-	out.write(b);
-	return b.length;
-    }
-
-    /**
-     * Write an INTEGER type to the given output stream.
-     *
-     * @param out
-     *            The sink output stream.
-     * @param integer
-     *            The integer to write.
-     */
-    private static int writeInteger(OutputStream out, BigInteger integer) throws IOException
-    {
-	byte[] bytes = integer.toByteArray();
-	writeLength(out, bytes.length);
-	out.write(bytes);
-	return bytes.length;
-    }
-
-    static void writeLength(OutputStream out, int len) throws IOException
-    {
-	if (len < 128)
-	    out.write(len);
-	else if (len < 256)
-	{
-	    out.write(0x81);
-	    out.write(len);
+		out.write(object.getExternalTag());
+		Object value = object.getValue();
+		if (value == null) {
+			writeLength(out, 0);
+			return 0;
+		}
+		if (value instanceof Boolean)
+			return writeBoolean(out, (Boolean) value);
+		else if (value instanceof BigInteger)
+			return writeInteger(out, (BigInteger) value);
+		else if (value instanceof Date)
+			return writeDate(out, object.getExternalTag(), (Date) value);
+		else if (value instanceof String)
+			return writeString(out, object.getExternalTag(), (String) value);
+		else if (value instanceof List)
+			return writeSequence(out, (List<DERValue>) value);
+		else if (value instanceof Set)
+			return writeSet(out, (Set<DERValue>) value);
+		else if (value instanceof BitString)
+			return writeBitString(out, (BitString) value);
+		else if (value instanceof OID)
+			return writeOID(out, (OID) value);
+		else if (value instanceof byte[]) {
+			writeLength(out, ((byte[]) value).length);
+			out.write((byte[]) value);
+			return ((byte[]) value).length;
+		} else if (value instanceof DERValue) {
+			ByteArrayOutputStream bout = new ByteArrayOutputStream();
+			write(bout, (DERValue) value);
+			byte[] buf = bout.toByteArray();
+			writeLength(out, buf.length);
+			out.write(buf);
+			return buf.length;
+		} else
+			throw new DEREncodingException("cannot encode " + value.getClass().getName());
 	}
-	else if (len < 65536)
-	{
-	    out.write(0x82);
-	    out.write(len >> 8);
-	    out.write(len);
+
+	private static int writeBitString(OutputStream out, BitString bs) throws IOException {
+		byte[] buf = bs.getShiftedByteArray();
+		writeLength(out, buf.length + 1);
+		out.write(bs.getIgnoredBits());
+		out.write(buf);
+		return buf.length + 1;
 	}
-	else if (len < 16777216)
-	{
-	    out.write(0x83);
-	    out.write(len >> 16);
-	    out.write(len >> 8);
-	    out.write(len);
+
+	/**
+	 * Write a BOOLEAN type to the given output stream.
+	 *
+	 * @param out
+	 *            The sink output stream.
+	 * @param b
+	 *            The boolean value to write.
+	 */
+	private static int writeBoolean(OutputStream out, Boolean b) throws IOException {
+		writeLength(out, 1);
+		if (b.booleanValue())
+			out.write(0xFF);
+		else
+			out.write(0);
+		return 1;
 	}
-	else
-	{
-	    out.write(0x84);
-	    out.write(len >> 24);
-	    out.write(len >> 16);
-	    out.write(len >> 8);
-	    out.write(len);
+
+	private static int writeDate(OutputStream out, int tag, Date date) throws IOException {
+		SimpleDateFormat sdf = null;
+		if ((tag & 0x1F) == UTC_TIME)
+			sdf = new SimpleDateFormat("yyMMddHHmmss'Z'");
+		else
+			sdf = new SimpleDateFormat("yyyyMMddHHmmss'.'SSS'Z'");
+		sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+		byte[] b = sdf.format(date).getBytes("ISO-8859-1");
+		writeLength(out, b.length);
+		out.write(b);
+		return b.length;
 	}
-    }
 
-    private static int writeOID(OutputStream out, OID oid) throws IOException
-    {
-	byte[] der = oid.getDER();
-	writeLength(out, der.length);
-	out.write(der);
-	return der.length;
-    }
-
-    private static int writeSequence(OutputStream out, List<DERValue> sequence) throws IOException
-    {
-	ByteArrayOutputStream bout = new ByteArrayOutputStream();
-	for (Iterator<DERValue> i = sequence.iterator(); i.hasNext();)
-	{
-	    write(bout, i.next());
+	/**
+	 * Write an INTEGER type to the given output stream.
+	 *
+	 * @param out
+	 *            The sink output stream.
+	 * @param integer
+	 *            The integer to write.
+	 */
+	private static int writeInteger(OutputStream out, BigInteger integer) throws IOException {
+		byte[] bytes = integer.toByteArray();
+		writeLength(out, bytes.length);
+		out.write(bytes);
+		return bytes.length;
 	}
-	byte[] buf = bout.toByteArray();
-	writeLength(out, buf.length);
-	out.write(buf);
-	return buf.length;
-    }
 
-    private static int writeSet(OutputStream out, Set<DERValue> set) throws IOException
-    {
-	ByteArrayOutputStream bout = new ByteArrayOutputStream();
-	for (Iterator<DERValue> i = set.iterator(); i.hasNext();)
-	{
-	    write(bout, i.next());
+	static void writeLength(OutputStream out, int len) throws IOException {
+		if (len < 128)
+			out.write(len);
+		else if (len < 256) {
+			out.write(0x81);
+			out.write(len);
+		} else if (len < 65536) {
+			out.write(0x82);
+			out.write(len >> 8);
+			out.write(len);
+		} else if (len < 16777216) {
+			out.write(0x83);
+			out.write(len >> 16);
+			out.write(len >> 8);
+			out.write(len);
+		} else {
+			out.write(0x84);
+			out.write(len >> 24);
+			out.write(len >> 16);
+			out.write(len >> 8);
+			out.write(len);
+		}
 	}
-	byte[] buf = bout.toByteArray();
-	writeLength(out, buf.length);
-	out.write(buf);
-	return buf.length;
-    }
 
-    private static int writeString(OutputStream out, int tag, String str) throws IOException
-    {
-	byte[] b = null;
-	switch (tag & 0x1F)
-	{
-	    case NUMERIC_STRING:
-	    case PRINTABLE_STRING:
-	    case T61_STRING:
-	    case VIDEOTEX_STRING:
-	    case IA5_STRING:
-	    case GRAPHIC_STRING:
-	    case ISO646_STRING:
-	    case GENERAL_STRING:
-		b = toIso88591(str);
-		break;
-
-	    case UNIVERSAL_STRING:
-	    case BMP_STRING:
-		b = toUtf16Be(str);
-		break;
-
-	    case UTF8_STRING:
-	    default:
-		b = toUtf8(str);
-		break;
+	private static int writeOID(OutputStream out, OID oid) throws IOException {
+		byte[] der = oid.getDER();
+		writeLength(out, der.length);
+		out.write(der);
+		return der.length;
 	}
-	writeLength(out, b.length);
-	out.write(b);
-	return b.length;
-    }
 
-    // Package method.
-    // ------------------------------------------------------------------------
+	private static int writeSequence(OutputStream out, List<DERValue> sequence) throws IOException {
+		ByteArrayOutputStream bout = new ByteArrayOutputStream();
+		for (Iterator<DERValue> i = sequence.iterator(); i.hasNext();) {
+			write(bout, i.next());
+		}
+		byte[] buf = bout.toByteArray();
+		writeLength(out, buf.length);
+		out.write(buf);
+		return buf.length;
+	}
 
-    /** This class only has static methods. */
-    private DERWriter()
-    {
-    }
+	private static int writeSet(OutputStream out, Set<DERValue> set) throws IOException {
+		ByteArrayOutputStream bout = new ByteArrayOutputStream();
+		for (Iterator<DERValue> i = set.iterator(); i.hasNext();) {
+			write(bout, i.next());
+		}
+		byte[] buf = bout.toByteArray();
+		writeLength(out, buf.length);
+		out.write(buf);
+		return buf.length;
+	}
+
+	private static int writeString(OutputStream out, int tag, String str) throws IOException {
+		byte[] b = null;
+		switch (tag & 0x1F) {
+		case NUMERIC_STRING:
+		case PRINTABLE_STRING:
+		case T61_STRING:
+		case VIDEOTEX_STRING:
+		case IA5_STRING:
+		case GRAPHIC_STRING:
+		case ISO646_STRING:
+		case GENERAL_STRING:
+			b = toIso88591(str);
+			break;
+
+		case UNIVERSAL_STRING:
+		case BMP_STRING:
+			b = toUtf16Be(str);
+			break;
+
+		case UTF8_STRING:
+		default:
+			b = toUtf8(str);
+			break;
+		}
+		writeLength(out, b.length);
+		out.write(b);
+		return b.length;
+	}
+
+	// Package method.
+	// ------------------------------------------------------------------------
+
+	/** This class only has static methods. */
+	private DERWriter() {
+	}
 }

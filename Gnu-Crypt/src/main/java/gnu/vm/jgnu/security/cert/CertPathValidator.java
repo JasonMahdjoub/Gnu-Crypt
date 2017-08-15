@@ -60,204 +60,184 @@ import gnu.vm.jgnu.security.Security;
  * @since JDK 1.4
  * @see CertPath
  */
-public class CertPathValidator
-{
+public class CertPathValidator {
 
-    // Constants and fields.
-    // ------------------------------------------------------------------------
+	// Constants and fields.
+	// ------------------------------------------------------------------------
 
-    /** Service name for CertPathValidator. */
-    private static final String CERT_PATH_VALIDATOR = "CertPathValidator";
+	/** Service name for CertPathValidator. */
+	private static final String CERT_PATH_VALIDATOR = "CertPathValidator";
 
-    /**
-     * Returns an instance of the given validator from the first provider that
-     * implements it.
-     *
-     * @param algorithm
-     *            The name of the algorithm to get.
-     * @return The new instance.
-     * @throws NoSuchAlgorithmException
-     *             If no installed provider implements the requested algorithm.
-     * @throws IllegalArgumentException
-     *             if <code>algorithm</code> is <code>null</code> or is an empty
-     *             string.
-     */
-    public static CertPathValidator getInstance(String algorithm) throws NoSuchAlgorithmException
-    {
-	Provider[] p = Security.getProviders();
-	NoSuchAlgorithmException lastException = null;
-	for (int i = 0; i < p.length; i++)
-	    try
-	    {
-		return getInstance(algorithm, p[i]);
-	    }
-	    catch (NoSuchAlgorithmException x)
-	    {
-		lastException = x;
-	    }
-	if (lastException != null)
-	    throw lastException;
-	throw new NoSuchAlgorithmException(algorithm);
-    }
-
-    /**
-     * Returns an instance of the given validator from the given provider.
-     *
-     * @param algorithm
-     *            The name of the algorithm to get.
-     * @param provider
-     *            The provider from which to get the implementation.
-     * @return The new instance.
-     * @throws NoSuchAlgorithmException
-     *             If the provider does not implement the algorithm.
-     * @throws IllegalArgumentException
-     *             if either <code>algorithm</code> or <code>provider</code> is
-     *             <code>null</code>, or if <code>algorithm</code> is an empty
-     *             string.
-     */
-    public static CertPathValidator getInstance(String algorithm, Provider provider) throws NoSuchAlgorithmException
-    {
-	StringBuilder sb = new StringBuilder(
-		"CertPathValidator for algorithm [").append(algorithm)
-			.append("] from provider[").append(provider)
-			.append("] could not be created");
-	Throwable cause;
-	try
-	{
-	    Object spi = Engine.getInstance(CERT_PATH_VALIDATOR, algorithm,
-		    provider);
-	    return new CertPathValidator((CertPathValidatorSpi) spi, provider,
-		    algorithm);
+	/**
+	 * Returns an instance of the given validator from the first provider that
+	 * implements it.
+	 *
+	 * @param algorithm
+	 *            The name of the algorithm to get.
+	 * @return The new instance.
+	 * @throws NoSuchAlgorithmException
+	 *             If no installed provider implements the requested algorithm.
+	 * @throws IllegalArgumentException
+	 *             if <code>algorithm</code> is <code>null</code> or is an empty
+	 *             string.
+	 */
+	public static CertPathValidator getInstance(String algorithm) throws NoSuchAlgorithmException {
+		Provider[] p = Security.getProviders();
+		NoSuchAlgorithmException lastException = null;
+		for (int i = 0; i < p.length; i++)
+			try {
+				return getInstance(algorithm, p[i]);
+			} catch (NoSuchAlgorithmException x) {
+				lastException = x;
+			}
+		if (lastException != null)
+			throw lastException;
+		throw new NoSuchAlgorithmException(algorithm);
 	}
-	catch (InvocationTargetException x)
-	{
-	    cause = x.getCause();
-	    if (cause instanceof NoSuchAlgorithmException)
-		throw (NoSuchAlgorithmException) cause;
-	    if (cause == null)
-		cause = x;
+
+	/**
+	 * Returns an instance of the given validator from the given provider.
+	 *
+	 * @param algorithm
+	 *            The name of the algorithm to get.
+	 * @param provider
+	 *            The provider from which to get the implementation.
+	 * @return The new instance.
+	 * @throws NoSuchAlgorithmException
+	 *             If the provider does not implement the algorithm.
+	 * @throws IllegalArgumentException
+	 *             if either <code>algorithm</code> or <code>provider</code> is
+	 *             <code>null</code>, or if <code>algorithm</code> is an empty
+	 *             string.
+	 */
+	public static CertPathValidator getInstance(String algorithm, Provider provider) throws NoSuchAlgorithmException {
+		StringBuilder sb = new StringBuilder("CertPathValidator for algorithm [").append(algorithm)
+				.append("] from provider[").append(provider).append("] could not be created");
+		Throwable cause;
+		try {
+			Object spi = Engine.getInstance(CERT_PATH_VALIDATOR, algorithm, provider);
+			return new CertPathValidator((CertPathValidatorSpi) spi, provider, algorithm);
+		} catch (InvocationTargetException x) {
+			cause = x.getCause();
+			if (cause instanceof NoSuchAlgorithmException)
+				throw (NoSuchAlgorithmException) cause;
+			if (cause == null)
+				cause = x;
+		} catch (ClassCastException x) {
+			cause = x;
+		}
+		NoSuchAlgorithmException x = new NoSuchAlgorithmException(sb.toString());
+		x.initCause(cause);
+		throw x;
 	}
-	catch (ClassCastException x)
-	{
-	    cause = x;
+
+	/**
+	 * Returns an instance of the given validator from the named provider.
+	 *
+	 * @param algorithm
+	 *            The name of the algorithm to get.
+	 * @param provider
+	 *            The name of the provider from which to get the implementation.
+	 * @return The new instance.
+	 * @throws NoSuchAlgorithmException
+	 *             If the named provider does not implement the algorithm.
+	 * @throws NoSuchProviderException
+	 *             If no provider named <i>provider</i> is installed.
+	 * @throws IllegalArgumentException
+	 *             if either <code>algorithm</code> or <code>provider</code> is
+	 *             <code>null</code>, or if <code>algorithm</code> is an empty
+	 *             string.
+	 */
+	public static CertPathValidator getInstance(String algorithm, String provider)
+			throws NoSuchAlgorithmException, NoSuchProviderException {
+		if (provider == null)
+			throw new IllegalArgumentException("provider MUST NOT be null");
+		Provider p = Security.getProvider(provider);
+		if (p == null)
+			throw new NoSuchProviderException(provider);
+		return getInstance(algorithm, p);
 	}
-	NoSuchAlgorithmException x = new NoSuchAlgorithmException(
-		sb.toString());
-	x.initCause(cause);
-	throw x;
-    }
 
-    /**
-     * Returns an instance of the given validator from the named provider.
-     *
-     * @param algorithm
-     *            The name of the algorithm to get.
-     * @param provider
-     *            The name of the provider from which to get the implementation.
-     * @return The new instance.
-     * @throws NoSuchAlgorithmException
-     *             If the named provider does not implement the algorithm.
-     * @throws NoSuchProviderException
-     *             If no provider named <i>provider</i> is installed.
-     * @throws IllegalArgumentException
-     *             if either <code>algorithm</code> or <code>provider</code> is
-     *             <code>null</code>, or if <code>algorithm</code> is an empty
-     *             string.
-     */
-    public static CertPathValidator getInstance(String algorithm, String provider) throws NoSuchAlgorithmException, NoSuchProviderException
-    {
-	if (provider == null)
-	    throw new IllegalArgumentException("provider MUST NOT be null");
-	Provider p = Security.getProvider(provider);
-	if (p == null)
-	    throw new NoSuchProviderException(provider);
-	return getInstance(algorithm, p);
-    }
+	// Constructor.
+	// ------------------------------------------------------------------------
 
-    // Constructor.
-    // ------------------------------------------------------------------------
+	/** The underlying implementation. */
+	private final CertPathValidatorSpi validatorSpi;
 
-    /** The underlying implementation. */
-    private final CertPathValidatorSpi validatorSpi;
+	// Class methods.
+	// ------------------------------------------------------------------------
 
-    // Class methods.
-    // ------------------------------------------------------------------------
+	/**
+	 * Returns the default validator type.
+	 *
+	 * <p>
+	 * This value may be set at run-time via the security property
+	 * "certpathvalidator.type", or the value "PKIX" if this property is not set.
+	 *
+	 * @return The default validator type.
+	 */
+	/*
+	 * public static synchronized String getDefaultType() { String type = (String)
+	 * AccessController.doPrivileged( new PrivilegedAction() { public Object run() {
+	 * return Security.getProperty("certpathvalidator.type"); } } ); if (type ==
+	 * null) type = "PKIX"; return type; }
+	 */
 
-    /**
-     * Returns the default validator type.
-     *
-     * <p>
-     * This value may be set at run-time via the security property
-     * "certpathvalidator.type", or the value "PKIX" if this property is not
-     * set.
-     *
-     * @return The default validator type.
-     */
-    /*
-     * public static synchronized String getDefaultType() { String type =
-     * (String) AccessController.doPrivileged( new PrivilegedAction() { public
-     * Object run() { return Security.getProperty("certpathvalidator.type"); } }
-     * ); if (type == null) type = "PKIX"; return type; }
-     */
+	/** The provider of this implementation. */
+	private final Provider provider;
 
-    /** The provider of this implementation. */
-    private final Provider provider;
+	/** The algorithm's name. */
+	private final String algorithm;
 
-    /** The algorithm's name. */
-    private final String algorithm;
+	/**
+	 * Creates a new CertPathValidator.
+	 *
+	 * @param validatorSpi
+	 *            The underlying implementation.
+	 * @param provider
+	 *            The provider of the implementation.
+	 * @param algorithm
+	 *            The algorithm name.
+	 */
+	protected CertPathValidator(CertPathValidatorSpi validatorSpi, Provider provider, String algorithm) {
+		this.validatorSpi = validatorSpi;
+		this.provider = provider;
+		this.algorithm = algorithm;
+	}
 
-    /**
-     * Creates a new CertPathValidator.
-     *
-     * @param validatorSpi
-     *            The underlying implementation.
-     * @param provider
-     *            The provider of the implementation.
-     * @param algorithm
-     *            The algorithm name.
-     */
-    protected CertPathValidator(CertPathValidatorSpi validatorSpi, Provider provider, String algorithm)
-    {
-	this.validatorSpi = validatorSpi;
-	this.provider = provider;
-	this.algorithm = algorithm;
-    }
+	/**
+	 * Return the name of this validator.
+	 *
+	 * @return This validator's name.
+	 */
+	public final String getAlgorithm() {
+		return algorithm;
+	}
 
-    /**
-     * Return the name of this validator.
-     *
-     * @return This validator's name.
-     */
-    public final String getAlgorithm()
-    {
-	return algorithm;
-    }
+	/**
+	 * Return the provider of this implementation.
+	 *
+	 * @return The provider.
+	 */
+	public final Provider getProvider() {
+		return provider;
+	}
 
-    /**
-     * Return the provider of this implementation.
-     *
-     * @return The provider.
-     */
-    public final Provider getProvider()
-    {
-	return provider;
-    }
-
-    /**
-     * Attempt to validate a certificate path.
-     *
-     * @param certPath
-     *            The path to validate.
-     * @param params
-     *            The algorithm-specific parameters.
-     * @return The result of this validation attempt.
-     * @throws CertPathValidatorException
-     *             If the certificate path cannot be validated.
-     * @throws InvalidAlgorithmParameterException
-     *             If this implementation rejects the specified parameters.
-     */
-    public final CertPathValidatorResult validate(CertPath certPath, CertPathParameters params) throws CertPathValidatorException, InvalidAlgorithmParameterException
-    {
-	return validatorSpi.engineValidate(certPath, params);
-    }
+	/**
+	 * Attempt to validate a certificate path.
+	 *
+	 * @param certPath
+	 *            The path to validate.
+	 * @param params
+	 *            The algorithm-specific parameters.
+	 * @return The result of this validation attempt.
+	 * @throws CertPathValidatorException
+	 *             If the certificate path cannot be validated.
+	 * @throws InvalidAlgorithmParameterException
+	 *             If this implementation rejects the specified parameters.
+	 */
+	public final CertPathValidatorResult validate(CertPath certPath, CertPathParameters params)
+			throws CertPathValidatorException, InvalidAlgorithmParameterException {
+		return validatorSpi.engineValidate(certPath, params);
+	}
 }

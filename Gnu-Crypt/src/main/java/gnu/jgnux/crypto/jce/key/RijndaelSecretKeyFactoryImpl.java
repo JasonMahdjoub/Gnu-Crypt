@@ -37,9 +37,7 @@ exception statement from your version.  */
 
 package gnu.jgnux.crypto.jce.key;
 
-public class RijndaelSecretKeyFactoryImpl extends SecretKeyFactoryImpl
-{
-    public RijndaelSecretKeyFactoryImpl()
-    {
-    }
+public class RijndaelSecretKeyFactoryImpl extends SecretKeyFactoryImpl {
+	public RijndaelSecretKeyFactoryImpl() {
+	}
 }

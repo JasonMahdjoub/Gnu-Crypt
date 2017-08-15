@@ -51,136 +51,105 @@ import gnu.jgnux.crypto.sasl.NoSuchUserException;
 /**
  * The SRP mechanism authentication information provider implementation.
  */
-public class SRPAuthInfoProvider implements IAuthInfoProvider
-{
-    private PasswordFile passwordFile = null;
+public class SRPAuthInfoProvider implements IAuthInfoProvider {
+	private PasswordFile passwordFile = null;
 
-    // implicit 0-args constrcutor
+	// implicit 0-args constrcutor
 
-    @Override
-    public void activate(Map<String, Object> context) throws AuthenticationException
-    {
-	try
-	{
-	    if (context == null)
-		passwordFile = new PasswordFile();
-	    else
-	    {
-		passwordFile = (PasswordFile) context
-			.get(SRPRegistry.PASSWORD_DB);
-		if (passwordFile == null)
-		{
-		    String pfn = (String) context
-			    .get(SRPRegistry.PASSWORD_FILE);
-		    if (pfn == null)
-			passwordFile = new PasswordFile();
-		    else
-			passwordFile = new PasswordFile(pfn);
+	@Override
+	public void activate(Map<String, Object> context) throws AuthenticationException {
+		try {
+			if (context == null)
+				passwordFile = new PasswordFile();
+			else {
+				passwordFile = (PasswordFile) context.get(SRPRegistry.PASSWORD_DB);
+				if (passwordFile == null) {
+					String pfn = (String) context.get(SRPRegistry.PASSWORD_FILE);
+					if (pfn == null)
+						passwordFile = new PasswordFile();
+					else
+						passwordFile = new PasswordFile(pfn);
+				}
+			}
+		} catch (IOException x) {
+			throw new AuthenticationException("activate()", x);
 		}
-	    }
 	}
-	catch (IOException x)
-	{
-	    throw new AuthenticationException("activate()", x);
-	}
-    }
 
-    @Override
-    public boolean contains(String userName) throws AuthenticationException
-    {
-	if (passwordFile == null)
-	    throw new AuthenticationException("contains()",
-		    new IllegalStateException());
-	boolean result = false;
-	try
-	{
-	    result = passwordFile.contains(userName);
+	@Override
+	public boolean contains(String userName) throws AuthenticationException {
+		if (passwordFile == null)
+			throw new AuthenticationException("contains()", new IllegalStateException());
+		boolean result = false;
+		try {
+			result = passwordFile.contains(userName);
+		} catch (IOException x) {
+			throw new AuthenticationException("contains()", x);
+		}
+		return result;
 	}
-	catch (IOException x)
-	{
-	    throw new AuthenticationException("contains()", x);
-	}
-	return result;
-    }
 
-    @Override
-    public Map<String, String> getConfiguration(String mode) throws AuthenticationException
-    {
-	if (passwordFile == null)
-	    throw new AuthenticationException("getConfiguration()",
-		    new IllegalStateException());
-	Map<String, String> result = new HashMap<>();
-	try
-	{
-	    String[] data = passwordFile.lookupConfig(mode);
-	    result.put(SRPRegistry.SHARED_MODULUS, data[0]);
-	    result.put(SRPRegistry.FIELD_GENERATOR, data[1]);
+	@Override
+	public Map<String, String> getConfiguration(String mode) throws AuthenticationException {
+		if (passwordFile == null)
+			throw new AuthenticationException("getConfiguration()", new IllegalStateException());
+		Map<String, String> result = new HashMap<>();
+		try {
+			String[] data = passwordFile.lookupConfig(mode);
+			result.put(SRPRegistry.SHARED_MODULUS, data[0]);
+			result.put(SRPRegistry.FIELD_GENERATOR, data[1]);
+		} catch (Exception x) {
+			if (x instanceof AuthenticationException)
+				throw (AuthenticationException) x;
+			throw new AuthenticationException("getConfiguration()", x);
+		}
+		return result;
 	}
-	catch (Exception x)
-	{
-	    if (x instanceof AuthenticationException)
-		throw (AuthenticationException) x;
-	    throw new AuthenticationException("getConfiguration()", x);
-	}
-	return result;
-    }
 
-    @Override
-    public Map<String, String> lookup(Map<String, String> userID) throws AuthenticationException
-    {
-	if (passwordFile == null)
-	    throw new AuthenticationException("lookup()",
-		    new IllegalStateException());
-	Map<String, String> result = new HashMap<>();
-	try
-	{
-	    String userName = userID.get(Registry.SASL_USERNAME);
-	    if (userName == null)
-		throw new NoSuchUserException("");
-	    String mdName = userID.get(SRPRegistry.MD_NAME_FIELD);
-	    String[] data = passwordFile.lookup(userName, mdName);
-	    result.put(SRPRegistry.USER_VERIFIER_FIELD, data[0]);
-	    result.put(SRPRegistry.SALT_FIELD, data[1]);
-	    result.put(SRPRegistry.CONFIG_NDX_FIELD, data[2]);
+	@Override
+	public Map<String, String> lookup(Map<String, String> userID) throws AuthenticationException {
+		if (passwordFile == null)
+			throw new AuthenticationException("lookup()", new IllegalStateException());
+		Map<String, String> result = new HashMap<>();
+		try {
+			String userName = userID.get(Registry.SASL_USERNAME);
+			if (userName == null)
+				throw new NoSuchUserException("");
+			String mdName = userID.get(SRPRegistry.MD_NAME_FIELD);
+			String[] data = passwordFile.lookup(userName, mdName);
+			result.put(SRPRegistry.USER_VERIFIER_FIELD, data[0]);
+			result.put(SRPRegistry.SALT_FIELD, data[1]);
+			result.put(SRPRegistry.CONFIG_NDX_FIELD, data[2]);
+		} catch (Exception x) {
+			if (x instanceof AuthenticationException)
+				throw (AuthenticationException) x;
+			throw new AuthenticationException("lookup()", x);
+		}
+		return result;
 	}
-	catch (Exception x)
-	{
-	    if (x instanceof AuthenticationException)
-		throw (AuthenticationException) x;
-	    throw new AuthenticationException("lookup()", x);
-	}
-	return result;
-    }
 
-    @Override
-    public void passivate()
-    {
-	passwordFile = null;
-    }
+	@Override
+	public void passivate() {
+		passwordFile = null;
+	}
 
-    @Override
-    public void update(Map<String, String> userCredentials) throws AuthenticationException
-    {
-	if (passwordFile == null)
-	    throw new AuthenticationException("update()",
-		    new IllegalStateException());
-	try
-	{
-	    String userName = userCredentials.get(Registry.SASL_USERNAME);
-	    String password = userCredentials.get(Registry.SASL_PASSWORD);
-	    String salt = userCredentials.get(SRPRegistry.SALT_FIELD);
-	    String config = userCredentials.get(SRPRegistry.CONFIG_NDX_FIELD);
-	    if (salt == null || config == null)
-		passwordFile.changePasswd(userName, password);
-	    else
-		passwordFile.add(userName, password, Util.fromBase64(salt),
-			config);
+	@Override
+	public void update(Map<String, String> userCredentials) throws AuthenticationException {
+		if (passwordFile == null)
+			throw new AuthenticationException("update()", new IllegalStateException());
+		try {
+			String userName = userCredentials.get(Registry.SASL_USERNAME);
+			String password = userCredentials.get(Registry.SASL_PASSWORD);
+			String salt = userCredentials.get(SRPRegistry.SALT_FIELD);
+			String config = userCredentials.get(SRPRegistry.CONFIG_NDX_FIELD);
+			if (salt == null || config == null)
+				passwordFile.changePasswd(userName, password);
+			else
+				passwordFile.add(userName, password, Util.fromBase64(salt), config);
+		} catch (Exception x) {
+			if (x instanceof AuthenticationException)
+				throw (AuthenticationException) x;
+			throw new AuthenticationException("update()", x);
+		}
 	}
-	catch (Exception x)
-	{
-	    if (x instanceof AuthenticationException)
-		throw (AuthenticationException) x;
-	    throw new AuthenticationException("update()", x);
-	}
-    }
 }

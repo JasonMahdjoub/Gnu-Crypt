@@ -86,123 +86,113 @@ import gnu.vm.jgnu.security.InvalidKeyException;
  * @see ModeStage
  * @see CascadeStage
  */
-public abstract class Stage
-{
-    public static final String DIRECTION = "gnu.crypto.assembly.stage.direction";
+public abstract class Stage {
+	public static final String DIRECTION = "gnu.crypto.assembly.stage.direction";
 
-    public static final Stage getInstance(Cascade cascade, Direction forwardDirection)
-    {
-	return new CascadeStage(cascade, forwardDirection);
-    }
-
-    public static final Stage getInstance(IMode mode, Direction forwardDirection)
-    {
-	return new ModeStage(mode, forwardDirection);
-    }
-
-    protected Direction forward;
-
-    protected Direction wired;
-
-    protected Stage(Direction forwardDirection)
-    {
-	super();
-
-	this.forward = forwardDirection;
-	this.wired = null;
-    }
-
-    /**
-     * Returns the {@link Set} of supported block sizes for this
-     * <code>Stage</code>. Each element in the returned {@link Set} is an
-     * instance of {@link Integer}.
-     *
-     * @return a {@link Set} of supported block sizes.
-     */
-    public abstract Set<Integer> blockSizes();
-
-    /**
-     * Returns the currently set block size for the stage.
-     *
-     * @return the current block size for this stage.
-     * @throws IllegalStateException
-     *             if the instance is not initialised.
-     */
-    public abstract int currentBlockSize() throws IllegalStateException;
-
-    /**
-     * Initialises the stage for operation with specific characteristics.
-     *
-     * @param attributes
-     *            a set of name-value pairs that describes the desired future
-     *            behaviour of this instance.
-     * @throws IllegalStateException
-     *             if the instance is already initialised.
-     * @throws InvalidKeyException
-     *             if the key data is invalid.
-     */
-    public void init(Map<Object, Object> attributes) throws InvalidKeyException
-    {
-	if (wired != null)
-	    throw new IllegalStateException();
-	Direction flow = (Direction) attributes.get(DIRECTION);
-	if (flow == null)
-	{
-	    flow = Direction.FORWARD;
-	    attributes.put(DIRECTION, flow);
+	public static final Stage getInstance(Cascade cascade, Direction forwardDirection) {
+		return new CascadeStage(cascade, forwardDirection);
 	}
-	initDelegate(attributes);
-	wired = flow;
-    }
 
-    abstract void initDelegate(Map<Object, Object> attributes) throws InvalidKeyException;
+	public static final Stage getInstance(IMode mode, Direction forwardDirection) {
+		return new ModeStage(mode, forwardDirection);
+	}
 
-    /**
-     * Resets the stage for re-initialisation and use with other
-     * characteristics. This method always succeeds.
-     */
-    public void reset()
-    {
-	resetDelegate();
-	wired = null;
-    }
+	protected Direction forward;
 
-    abstract void resetDelegate();
+	protected Direction wired;
 
-    /**
-     * Conducts a simple <i>correctness</i> test that consists of basic
-     * symmetric encryption / decryption test(s) for all supported block and key
-     * sizes of underlying block cipher(s) wrapped by Mode leafs. The test also
-     * includes one (1) variable key Known Answer Test (KAT) for each block
-     * cipher.
-     *
-     * @return <code>true</code> if the implementation passes simple
-     *         <i>correctness</i> tests. Returns <code>false</code> otherwise.
-     */
-    public abstract boolean selfTest();
+	protected Stage(Direction forwardDirection) {
+		super();
 
-    /**
-     * Processes exactly one block of <i>plaintext</i> (if initialised in the
-     * {@link Direction#FORWARD} state) or <i>ciphertext</i> (if initialised in
-     * the {@link Direction#REVERSED} state).
-     *
-     * @param in
-     *            the plaintext.
-     * @param inOffset
-     *            index of <code>in</code> from which to start considering data.
-     * @param out
-     *            the ciphertext.
-     * @param outOffset
-     *            index of <code>out</code> from which to store result.
-     * @throws IllegalStateException
-     *             if the instance is not initialised.
-     */
-    public void update(byte[] in, int inOffset, byte[] out, int outOffset)
-    {
-	if (wired == null)
-	    throw new IllegalStateException();
-	updateDelegate(in, inOffset, out, outOffset);
-    }
+		this.forward = forwardDirection;
+		this.wired = null;
+	}
 
-    abstract void updateDelegate(byte[] in, int inOffset, byte[] out, int outOffset);
+	/**
+	 * Returns the {@link Set} of supported block sizes for this <code>Stage</code>.
+	 * Each element in the returned {@link Set} is an instance of {@link Integer}.
+	 *
+	 * @return a {@link Set} of supported block sizes.
+	 */
+	public abstract Set<Integer> blockSizes();
+
+	/**
+	 * Returns the currently set block size for the stage.
+	 *
+	 * @return the current block size for this stage.
+	 * @throws IllegalStateException
+	 *             if the instance is not initialised.
+	 */
+	public abstract int currentBlockSize() throws IllegalStateException;
+
+	/**
+	 * Initialises the stage for operation with specific characteristics.
+	 *
+	 * @param attributes
+	 *            a set of name-value pairs that describes the desired future
+	 *            behaviour of this instance.
+	 * @throws IllegalStateException
+	 *             if the instance is already initialised.
+	 * @throws InvalidKeyException
+	 *             if the key data is invalid.
+	 */
+	public void init(Map<Object, Object> attributes) throws InvalidKeyException {
+		if (wired != null)
+			throw new IllegalStateException();
+		Direction flow = (Direction) attributes.get(DIRECTION);
+		if (flow == null) {
+			flow = Direction.FORWARD;
+			attributes.put(DIRECTION, flow);
+		}
+		initDelegate(attributes);
+		wired = flow;
+	}
+
+	abstract void initDelegate(Map<Object, Object> attributes) throws InvalidKeyException;
+
+	/**
+	 * Resets the stage for re-initialisation and use with other characteristics.
+	 * This method always succeeds.
+	 */
+	public void reset() {
+		resetDelegate();
+		wired = null;
+	}
+
+	abstract void resetDelegate();
+
+	/**
+	 * Conducts a simple <i>correctness</i> test that consists of basic symmetric
+	 * encryption / decryption test(s) for all supported block and key sizes of
+	 * underlying block cipher(s) wrapped by Mode leafs. The test also includes one
+	 * (1) variable key Known Answer Test (KAT) for each block cipher.
+	 *
+	 * @return <code>true</code> if the implementation passes simple
+	 *         <i>correctness</i> tests. Returns <code>false</code> otherwise.
+	 */
+	public abstract boolean selfTest();
+
+	/**
+	 * Processes exactly one block of <i>plaintext</i> (if initialised in the
+	 * {@link Direction#FORWARD} state) or <i>ciphertext</i> (if initialised in the
+	 * {@link Direction#REVERSED} state).
+	 *
+	 * @param in
+	 *            the plaintext.
+	 * @param inOffset
+	 *            index of <code>in</code> from which to start considering data.
+	 * @param out
+	 *            the ciphertext.
+	 * @param outOffset
+	 *            index of <code>out</code> from which to store result.
+	 * @throws IllegalStateException
+	 *             if the instance is not initialised.
+	 */
+	public void update(byte[] in, int inOffset, byte[] out, int outOffset) {
+		if (wired == null)
+			throw new IllegalStateException();
+		updateDelegate(in, inOffset, out, outOffset);
+	}
+
+	abstract void updateDelegate(byte[] in, int inOffset, byte[] out, int outOffset);
 }

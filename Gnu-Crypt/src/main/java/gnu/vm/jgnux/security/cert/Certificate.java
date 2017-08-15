@@ -57,148 +57,134 @@ import gnu.vm.jgnu.security.SignatureException;
  * applications.</b>
  * </p>
  */
-public abstract class Certificate
-{
+public abstract class Certificate {
 
-    // Constructors.
-    // -------------------------------------------------------------------------
+	// Constructors.
+	// -------------------------------------------------------------------------
 
-    public Certificate()
-    {
-	super();
-    }
-
-    // Instance methods.
-    // -------------------------------------------------------------------------
-
-    /**
-     * <p>
-     * Tests if this certificate equals another.
-     * </p>
-     *
-     * @param other
-     *            The object to test.
-     * @return True if the certificates are equal.
-     */
-    @Override
-    public boolean equals(Object other)
-    {
-	if (other == null || !(other instanceof Certificate))
-	{
-	    return false;
+	public Certificate() {
+		super();
 	}
-	if (other == this)
-	{
-	    return true;
+
+	// Instance methods.
+	// -------------------------------------------------------------------------
+
+	/**
+	 * <p>
+	 * Tests if this certificate equals another.
+	 * </p>
+	 *
+	 * @param other
+	 *            The object to test.
+	 * @return True if the certificates are equal.
+	 */
+	@Override
+	public boolean equals(Object other) {
+		if (other == null || !(other instanceof Certificate)) {
+			return false;
+		}
+		if (other == this) {
+			return true;
+		}
+		try {
+			return Arrays.equals(getEncoded(), ((Certificate) other).getEncoded());
+		} catch (CertificateEncodingException cee) {
+			return false;
+		}
 	}
-	try
-	{
-	    return Arrays.equals(getEncoded(),
-		    ((Certificate) other).getEncoded());
+
+	/**
+	 * <p>
+	 * Return the encoded form of this certificate.
+	 * </p>
+	 *
+	 * @return The encoded form.
+	 * @throws CertificateEncodingException
+	 *             If the certificate could not be encoded.
+	 */
+	public abstract byte[] getEncoded() throws CertificateEncodingException;
+
+	// Abstract methods.
+	// -------------------------------------------------------------------------
+
+	/**
+	 * <p>
+	 * Returns this certificate's public key.
+	 * </p>
+	 *
+	 * @return The public key.
+	 */
+	public abstract PublicKey getPublicKey();
+
+	/**
+	 * <p>
+	 * Computes a hash code for this certificate.
+	 * </p>
+	 *
+	 * @return The hash code.
+	 */
+	@Override
+	public int hashCode() {
+		try {
+			Adler32 csum = new Adler32();
+			csum.update(getEncoded());
+			return (int) csum.getValue();
+		} catch (CertificateEncodingException cee) {
+			return 0;
+		}
 	}
-	catch (CertificateEncodingException cee)
-	{
-	    return false;
-	}
-    }
 
-    /**
-     * <p>
-     * Return the encoded form of this certificate.
-     * </p>
-     *
-     * @return The encoded form.
-     * @throws CertificateEncodingException
-     *             If the certificate could not be encoded.
-     */
-    public abstract byte[] getEncoded() throws CertificateEncodingException;
+	/**
+	 * <p>
+	 * Returns a printable representation of this certificate.
+	 * </p>
+	 *
+	 * @return The string.
+	 */
+	@Override
+	public abstract String toString();
 
-    // Abstract methods.
-    // -------------------------------------------------------------------------
+	/**
+	 * <p>
+	 * Verifies the signature of this certificate.
+	 * </p>
+	 *
+	 * @param key
+	 *            The signer's public key.
+	 * @throws CertificateException
+	 * @throws NoSuchAlgorithmException
+	 *             If the algorithm used to sign the certificate is not available.
+	 * @throws InvalidKeyException
+	 *             If the supplied key is not appropriate for the certificate's
+	 *             signature algorithm.
+	 * @throws NoSuchProviderException
+	 * @throws SignatureException
+	 *             If the signature could not be verified.
+	 */
+	public abstract void verify(PublicKey key) throws CertificateException, NoSuchAlgorithmException,
+			InvalidKeyException, NoSuchProviderException, SignatureException;
 
-    /**
-     * <p>
-     * Returns this certificate's public key.
-     * </p>
-     *
-     * @return The public key.
-     */
-    public abstract PublicKey getPublicKey();
-
-    /**
-     * <p>
-     * Computes a hash code for this certificate.
-     * </p>
-     *
-     * @return The hash code.
-     */
-    @Override
-    public int hashCode()
-    {
-	try
-	{
-	    Adler32 csum = new Adler32();
-	    csum.update(getEncoded());
-	    return (int) csum.getValue();
-	}
-	catch (CertificateEncodingException cee)
-	{
-	    return 0;
-	}
-    }
-
-    /**
-     * <p>
-     * Returns a printable representation of this certificate.
-     * </p>
-     *
-     * @return The string.
-     */
-    @Override
-    public abstract String toString();
-
-    /**
-     * <p>
-     * Verifies the signature of this certificate.
-     * </p>
-     *
-     * @param key
-     *            The signer's public key.
-     * @throws CertificateException
-     * @throws NoSuchAlgorithmException
-     *             If the algorithm used to sign the certificate is not
-     *             available.
-     * @throws InvalidKeyException
-     *             If the supplied key is not appropriate for the certificate's
-     *             signature algorithm.
-     * @throws NoSuchProviderException
-     * @throws SignatureException
-     *             If the signature could not be verified.
-     */
-    public abstract void verify(PublicKey key) throws CertificateException, NoSuchAlgorithmException, InvalidKeyException, NoSuchProviderException, SignatureException;
-
-    /**
-     * <p>
-     * Verifies the signature of this certificate, using the specified security
-     * provider.
-     * </p>
-     *
-     * @param key
-     *            The signer's public key.
-     * @param sigProvider
-     *            The name of the signature provider.
-     * @throws CertificateException
-     * @throws NoSuchAlgorithmException
-     *             If the algorithm used to sign the certificate is not
-     *             available.
-     * @throws InvalidKeyException
-     *             If the supplied key is not appropriate for the certificate's
-     *             signature algorithm.
-     * @throws NoSuchProviderException
-     *             If <i>sigProvider</i> is not the name of an installed
-     *             provider.
-     * @throws SignatureException
-     *             If the signature could not be verified.
-     */
-    public abstract void verify(PublicKey key, String sigProvider) throws CertificateException, NoSuchAlgorithmException, InvalidKeyException, NoSuchProviderException, SignatureException;
+	/**
+	 * <p>
+	 * Verifies the signature of this certificate, using the specified security
+	 * provider.
+	 * </p>
+	 *
+	 * @param key
+	 *            The signer's public key.
+	 * @param sigProvider
+	 *            The name of the signature provider.
+	 * @throws CertificateException
+	 * @throws NoSuchAlgorithmException
+	 *             If the algorithm used to sign the certificate is not available.
+	 * @throws InvalidKeyException
+	 *             If the supplied key is not appropriate for the certificate's
+	 *             signature algorithm.
+	 * @throws NoSuchProviderException
+	 *             If <i>sigProvider</i> is not the name of an installed provider.
+	 * @throws SignatureException
+	 *             If the signature could not be verified.
+	 */
+	public abstract void verify(PublicKey key, String sigProvider) throws CertificateException,
+			NoSuchAlgorithmException, InvalidKeyException, NoSuchProviderException, SignatureException;
 }

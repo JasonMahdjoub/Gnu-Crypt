@@ -39,10 +39,8 @@ package gnu.jgnux.crypto.jce.key;
 
 import gnu.jgnu.security.Registry;
 
-public class BlowfishKeyGeneratorImpl extends SecretKeyGeneratorImpl
-{
-    public BlowfishKeyGeneratorImpl()
-    {
-	super(Registry.BLOWFISH_CIPHER);
-    }
+public class BlowfishKeyGeneratorImpl extends SecretKeyGeneratorImpl {
+	public BlowfishKeyGeneratorImpl() {
+		super(Registry.BLOWFISH_CIPHER);
+	}
 }

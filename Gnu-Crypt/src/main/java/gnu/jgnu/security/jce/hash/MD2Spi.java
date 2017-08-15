@@ -43,11 +43,9 @@ import gnu.jgnu.security.Registry;
  * The implementation of the MD2 <i>Service Provider Interface</i> (<b>SPI</b>)
  * adapter.
  */
-public class MD2Spi extends MessageDigestAdapter
-{
-    /** Trivial 0-arguments constructor. */
-    public MD2Spi()
-    {
-	super(Registry.MD2_HASH);
-    }
+public class MD2Spi extends MessageDigestAdapter {
+	/** Trivial 0-arguments constructor. */
+	public MD2Spi() {
+		super(Registry.MD2_HASH);
+	}
 }

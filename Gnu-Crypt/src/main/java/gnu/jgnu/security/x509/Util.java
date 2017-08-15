@@ -42,181 +42,164 @@ package gnu.jgnu.security.x509;
  *
  * @author Casey Marshall (rsdio@metastatic.org)
  */
-public final class Util
-{
+public final class Util {
 
-    // Constants.
-    // -------------------------------------------------------------------------
+	// Constants.
+	// -------------------------------------------------------------------------
 
-    public static final String HEX = "0123456789abcdef";
+	public static final String HEX = "0123456789abcdef";
 
-    // Class methods.
-    // -------------------------------------------------------------------------
+	// Class methods.
+	// -------------------------------------------------------------------------
 
-    /**
-     * Format an integer into the specified radix, zero-filled.
-     *
-     * @param i
-     *            The integer to format.
-     * @param radix
-     *            The radix to encode to.
-     * @param len
-     *            The target length of the string. The string is zero-padded to
-     *            this length, but may be longer.
-     * @return The formatted integer.
-     */
-    public static String formatInt(int i, int radix, int len)
-    {
-	String s = Integer.toString(i, radix);
-	StringBuilder buf = new StringBuilder();
-	for (int j = 0; j < len - s.length(); j++)
-	    buf.append("0");
-	buf.append(s);
-	return buf.toString();
-    }
-
-    /**
-     * Create a representation of the given byte array similar to the output of
-     * `hexdump -C', which is
-     *
-     * <p>
-     * 
-     * <pre>
-     * OFFSET  SIXTEEN-BYTES-IN-HEX  PRINTABLE-BYTES
-     * </pre>
-     *
-     * <p>
-     * The printable bytes show up as-is if they are printable and not a newline
-     * character, otherwise showing as '.'.
-     *
-     * @param buf
-     *            The bytes to format.
-     * @param off
-     *            The offset to start at.
-     * @param len
-     *            The number of bytes to encode.
-     * @return The formatted string.
-     */
-    public static String hexDump(byte[] buf, int off, int len, String prefix)
-    {
-	String nl = System.getProperty("line.separator");
-	StringBuilder str = new StringBuilder();
-	int i = 0;
-	while (i < len)
-	{
-	    str.append(prefix);
-	    str.append(Util.formatInt(i + off, 16, 8));
-	    str.append("  ");
-	    String s = Util.toHexString(buf, i + off, Math.min(16, len - i),
-		    ' ');
-	    str.append(s);
-	    for (int j = 56 - (56 - s.length()); j < 56; j++)
-		str.append(" ");
-	    for (int j = 0; j < Math.min(16, len - i); j++)
-	    {
-		if ((buf[i + off + j] & 0xFF) < 0x20
-			|| (buf[i + off + j] & 0xFF) > 0x7E)
-		    str.append('.');
-		else
-		    str.append((char) (buf[i + off + j] & 0xFF));
-	    }
-	    str.append(nl);
-	    i += 16;
+	/**
+	 * Format an integer into the specified radix, zero-filled.
+	 *
+	 * @param i
+	 *            The integer to format.
+	 * @param radix
+	 *            The radix to encode to.
+	 * @param len
+	 *            The target length of the string. The string is zero-padded to this
+	 *            length, but may be longer.
+	 * @return The formatted integer.
+	 */
+	public static String formatInt(int i, int radix, int len) {
+		String s = Integer.toString(i, radix);
+		StringBuilder buf = new StringBuilder();
+		for (int j = 0; j < len - s.length(); j++)
+			buf.append("0");
+		buf.append(s);
+		return buf.toString();
 	}
-	return str.toString();
-    }
 
-    /**
-     * See {@link #hexDump(byte[],int,int,String)}.
-     */
-    public static String hexDump(byte[] buf, String prefix)
-    {
-	return hexDump(buf, 0, buf.length, prefix);
-    }
-
-    /**
-     * Convert a hexadecimal string into its byte representation.
-     *
-     * @param hex
-     *            The hexadecimal string.
-     * @return The converted bytes.
-     */
-    public static byte[] toByteArray(String hex)
-    {
-	hex = hex.toLowerCase();
-	byte[] buf = new byte[hex.length() / 2];
-	int j = 0;
-	for (int i = 0; i < buf.length; i++)
-	{
-	    buf[i] = (byte) ((Character.digit(hex.charAt(j++), 16) << 4)
-		    | Character.digit(hex.charAt(j++), 16));
+	/**
+	 * Create a representation of the given byte array similar to the output of
+	 * `hexdump -C', which is
+	 *
+	 * <p>
+	 * 
+	 * <pre>
+	 * OFFSET  SIXTEEN-BYTES-IN-HEX  PRINTABLE-BYTES
+	 * </pre>
+	 *
+	 * <p>
+	 * The printable bytes show up as-is if they are printable and not a newline
+	 * character, otherwise showing as '.'.
+	 *
+	 * @param buf
+	 *            The bytes to format.
+	 * @param off
+	 *            The offset to start at.
+	 * @param len
+	 *            The number of bytes to encode.
+	 * @return The formatted string.
+	 */
+	public static String hexDump(byte[] buf, int off, int len, String prefix) {
+		String nl = System.getProperty("line.separator");
+		StringBuilder str = new StringBuilder();
+		int i = 0;
+		while (i < len) {
+			str.append(prefix);
+			str.append(Util.formatInt(i + off, 16, 8));
+			str.append("  ");
+			String s = Util.toHexString(buf, i + off, Math.min(16, len - i), ' ');
+			str.append(s);
+			for (int j = 56 - (56 - s.length()); j < 56; j++)
+				str.append(" ");
+			for (int j = 0; j < Math.min(16, len - i); j++) {
+				if ((buf[i + off + j] & 0xFF) < 0x20 || (buf[i + off + j] & 0xFF) > 0x7E)
+					str.append('.');
+				else
+					str.append((char) (buf[i + off + j] & 0xFF));
+			}
+			str.append(nl);
+			i += 16;
+		}
+		return str.toString();
 	}
-	return buf;
-    }
 
-    /**
-     * See {@link #toHexString(byte[],int,int)}.
-     */
-    public static String toHexString(byte[] buf)
-    {
-	return Util.toHexString(buf, 0, buf.length);
-    }
-
-    /**
-     * See {@link #toHexString(byte[],int,int,char)}.
-     */
-    public static String toHexString(byte[] buf, char sep)
-    {
-	return Util.toHexString(buf, 0, buf.length, sep);
-    }
-
-    /**
-     * Convert a byte array to a hexadecimal string, as though it were a
-     * big-endian arbitrarily-sized integer.
-     *
-     * @param buf
-     *            The bytes to format.
-     * @param off
-     *            The offset to start at.
-     * @param len
-     *            The number of bytes to format.
-     * @return A hexadecimal representation of the specified bytes.
-     */
-    public static String toHexString(byte[] buf, int off, int len)
-    {
-	StringBuilder str = new StringBuilder();
-	for (int i = 0; i < len; i++)
-	{
-	    str.append(HEX.charAt(buf[i + off] >>> 4 & 0x0F));
-	    str.append(HEX.charAt(buf[i + off] & 0x0F));
+	/**
+	 * See {@link #hexDump(byte[],int,int,String)}.
+	 */
+	public static String hexDump(byte[] buf, String prefix) {
+		return hexDump(buf, 0, buf.length, prefix);
 	}
-	return str.toString();
-    }
 
-    /**
-     * Convert a byte array to a hexadecimal string, separating octets with the
-     * given character.
-     *
-     * @param buf
-     *            The bytes to format.
-     * @param off
-     *            The offset to start at.
-     * @param len
-     *            The number of bytes to format.
-     * @param sep
-     *            The character to insert between octets.
-     * @return A hexadecimal representation of the specified bytes.
-     */
-    public static String toHexString(byte[] buf, int off, int len, char sep)
-    {
-	StringBuilder str = new StringBuilder();
-	for (int i = 0; i < len; i++)
-	{
-	    str.append(HEX.charAt(buf[i + off] >>> 4 & 0x0F));
-	    str.append(HEX.charAt(buf[i + off] & 0x0F));
-	    if (i < len - 1)
-		str.append(sep);
+	/**
+	 * Convert a hexadecimal string into its byte representation.
+	 *
+	 * @param hex
+	 *            The hexadecimal string.
+	 * @return The converted bytes.
+	 */
+	public static byte[] toByteArray(String hex) {
+		hex = hex.toLowerCase();
+		byte[] buf = new byte[hex.length() / 2];
+		int j = 0;
+		for (int i = 0; i < buf.length; i++) {
+			buf[i] = (byte) ((Character.digit(hex.charAt(j++), 16) << 4) | Character.digit(hex.charAt(j++), 16));
+		}
+		return buf;
 	}
-	return str.toString();
-    }
+
+	/**
+	 * See {@link #toHexString(byte[],int,int)}.
+	 */
+	public static String toHexString(byte[] buf) {
+		return Util.toHexString(buf, 0, buf.length);
+	}
+
+	/**
+	 * See {@link #toHexString(byte[],int,int,char)}.
+	 */
+	public static String toHexString(byte[] buf, char sep) {
+		return Util.toHexString(buf, 0, buf.length, sep);
+	}
+
+	/**
+	 * Convert a byte array to a hexadecimal string, as though it were a big-endian
+	 * arbitrarily-sized integer.
+	 *
+	 * @param buf
+	 *            The bytes to format.
+	 * @param off
+	 *            The offset to start at.
+	 * @param len
+	 *            The number of bytes to format.
+	 * @return A hexadecimal representation of the specified bytes.
+	 */
+	public static String toHexString(byte[] buf, int off, int len) {
+		StringBuilder str = new StringBuilder();
+		for (int i = 0; i < len; i++) {
+			str.append(HEX.charAt(buf[i + off] >>> 4 & 0x0F));
+			str.append(HEX.charAt(buf[i + off] & 0x0F));
+		}
+		return str.toString();
+	}
+
+	/**
+	 * Convert a byte array to a hexadecimal string, separating octets with the
+	 * given character.
+	 *
+	 * @param buf
+	 *            The bytes to format.
+	 * @param off
+	 *            The offset to start at.
+	 * @param len
+	 *            The number of bytes to format.
+	 * @param sep
+	 *            The character to insert between octets.
+	 * @return A hexadecimal representation of the specified bytes.
+	 */
+	public static String toHexString(byte[] buf, int off, int len, char sep) {
+		StringBuilder str = new StringBuilder();
+		for (int i = 0; i < len; i++) {
+			str.append(HEX.charAt(buf[i + off] >>> 4 & 0x0F));
+			str.append(HEX.charAt(buf[i + off] & 0x0F));
+			if (i < len - 1)
+				str.append(sep);
+		}
+		return str.toString();
+	}
 }

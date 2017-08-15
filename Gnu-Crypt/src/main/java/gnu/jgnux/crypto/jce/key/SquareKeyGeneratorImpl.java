@@ -39,10 +39,8 @@ package gnu.jgnux.crypto.jce.key;
 
 import gnu.jgnu.security.Registry;
 
-public class SquareKeyGeneratorImpl extends SecretKeyGeneratorImpl
-{
-    public SquareKeyGeneratorImpl()
-    {
-	super(Registry.SQUARE_CIPHER);
-    }
+public class SquareKeyGeneratorImpl extends SecretKeyGeneratorImpl {
+	public SquareKeyGeneratorImpl() {
+		super(Registry.SQUARE_CIPHER);
+	}
 }

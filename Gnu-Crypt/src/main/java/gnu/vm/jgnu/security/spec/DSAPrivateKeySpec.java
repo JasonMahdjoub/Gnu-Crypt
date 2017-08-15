@@ -48,74 +48,68 @@ import gnu.vm.jgnu.security.spec.KeySpec;
  * 
  * @author Mark Benvenuto
  */
-public class DSAPrivateKeySpec implements KeySpec
-{
-    private BigInteger x = null;
+public class DSAPrivateKeySpec implements KeySpec {
+	private BigInteger x = null;
 
-    private BigInteger p = null;
+	private BigInteger p = null;
 
-    private BigInteger q = null;
+	private BigInteger q = null;
 
-    private BigInteger g = null;
+	private BigInteger g = null;
 
-    /**
-     * Constructs a new DSAPrivateKeySpec with the specified x, p, q, and g.
-     * 
-     * @param x
-     *            the private key
-     * @param p
-     *            the prime
-     * @param q
-     *            the sub-prime
-     * @param g
-     *            the base
-     */
-    public DSAPrivateKeySpec(BigInteger x, BigInteger p, BigInteger q, BigInteger g)
-    {
-	this.x = x;
-	this.p = p;
-	this.q = q;
-	this.g = g;
-    }
+	/**
+	 * Constructs a new DSAPrivateKeySpec with the specified x, p, q, and g.
+	 * 
+	 * @param x
+	 *            the private key
+	 * @param p
+	 *            the prime
+	 * @param q
+	 *            the sub-prime
+	 * @param g
+	 *            the base
+	 */
+	public DSAPrivateKeySpec(BigInteger x, BigInteger p, BigInteger q, BigInteger g) {
+		this.x = x;
+		this.p = p;
+		this.q = q;
+		this.g = g;
+	}
 
-    /**
-     * Returns g for the DSA algorithm.
-     * 
-     * @return Returns the requested BigInteger
-     */
-    public BigInteger getG()
-    {
-	return this.g;
-    }
+	/**
+	 * Returns g for the DSA algorithm.
+	 * 
+	 * @return Returns the requested BigInteger
+	 */
+	public BigInteger getG() {
+		return this.g;
+	}
 
-    /**
-     * Returns p for the DSA algorithm.
-     * 
-     * @return Returns the requested BigInteger
-     */
-    public BigInteger getP()
-    {
-	return this.p;
-    }
+	/**
+	 * Returns p for the DSA algorithm.
+	 * 
+	 * @return Returns the requested BigInteger
+	 */
+	public BigInteger getP() {
+		return this.p;
+	}
 
-    /**
-     * Returns p for the DSA algorithm.
-     * 
-     * @return Returns the requested BigInteger
-     */
-    public BigInteger getQ()
-    {
-	return this.q;
-    }
+	/**
+	 * Returns p for the DSA algorithm.
+	 * 
+	 * @return Returns the requested BigInteger
+	 */
+	public BigInteger getQ() {
+		return this.q;
+	}
 
-    /**
-     * Returns private key x for the DSA algorithm.
-     * 
-     * @return Returns the requested BigInteger
-     */
-    public BigInteger getX()
-    {
-	return this.x;
-    }
+	/**
+	 * Returns private key x for the DSA algorithm.
+	 * 
+	 * @return Returns the requested BigInteger
+	 */
+	public BigInteger getX() {
+		return this.x;
+	}
 
 }

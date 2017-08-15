@@ -61,95 +61,82 @@ import gnu.jgnux.crypto.sasl.srp.SRPServer;
 /**
  * The implementation of the {@link SaslServerFactory}.
  */
-public class ServerFactory implements SaslServerFactory
-{
-    // implicit 0-arguments constructor
+public class ServerFactory implements SaslServerFactory {
+	// implicit 0-arguments constructor
 
-    public static final ServerMechanism getInstance(String mechanism)
-    {
-	if (mechanism == null)
-	    return null;
-	mechanism = mechanism.trim().toUpperCase();
-	if (mechanism.equals(Registry.SASL_SRP_MECHANISM))
-	    return new SRPServer();
-	if (mechanism.equals(Registry.SASL_CRAM_MD5_MECHANISM))
-	    return new CramMD5Server();
-	if (mechanism.equals(Registry.SASL_PLAIN_MECHANISM))
-	    return new PlainServer();
-	if (mechanism.equals(Registry.SASL_ANONYMOUS_MECHANISM))
-	    return new AnonymousServer();
-	return null;
-    }
-
-    public static final Set<String> getNames()
-    {
-	return Collections.unmodifiableSet(
-		new HashSet<>(Arrays.asList(getNamesInternal(null))));
-    }
-
-    private static final String[] getNamesInternal(Map<String, ?> props)
-    {
-	String[] all = new String[] { Registry.SASL_SRP_MECHANISM,
-		Registry.SASL_CRAM_MD5_MECHANISM, Registry.SASL_PLAIN_MECHANISM,
-		Registry.SASL_ANONYMOUS_MECHANISM };
-	List<String> result = new ArrayList<>(4);
-	int i;
-	for (i = 0; i < all.length;)
-	    result.add(all[i++]);
-	if (props == null)
-	    return result.toArray(new String[0]); // all
-	if (hasPolicy(Sasl.POLICY_PASS_CREDENTIALS, props)) // none
-	    return new String[0];
-	if (hasPolicy(Sasl.POLICY_NOPLAINTEXT, props))
-	    result.remove(Registry.SASL_PLAIN_MECHANISM);
-	if (hasPolicy(Sasl.POLICY_NOACTIVE, props))
-	{
-	    result.remove(Registry.SASL_CRAM_MD5_MECHANISM);
-	    result.remove(Registry.SASL_PLAIN_MECHANISM);
+	public static final ServerMechanism getInstance(String mechanism) {
+		if (mechanism == null)
+			return null;
+		mechanism = mechanism.trim().toUpperCase();
+		if (mechanism.equals(Registry.SASL_SRP_MECHANISM))
+			return new SRPServer();
+		if (mechanism.equals(Registry.SASL_CRAM_MD5_MECHANISM))
+			return new CramMD5Server();
+		if (mechanism.equals(Registry.SASL_PLAIN_MECHANISM))
+			return new PlainServer();
+		if (mechanism.equals(Registry.SASL_ANONYMOUS_MECHANISM))
+			return new AnonymousServer();
+		return null;
 	}
-	if (hasPolicy(Sasl.POLICY_NODICTIONARY, props))
-	{
-	    result.remove(Registry.SASL_CRAM_MD5_MECHANISM);
-	    result.remove(Registry.SASL_PLAIN_MECHANISM);
-	}
-	if (hasPolicy(Sasl.POLICY_NOANONYMOUS, props))
-	{
-	    result.remove(Registry.SASL_ANONYMOUS_MECHANISM);
-	}
-	if (hasPolicy(Sasl.POLICY_FORWARD_SECRECY, props))
-	{
-	    result.remove(Registry.SASL_CRAM_MD5_MECHANISM);
-	    result.remove(Registry.SASL_ANONYMOUS_MECHANISM);
-	    result.remove(Registry.SASL_PLAIN_MECHANISM);
-	}
-	return result.toArray(new String[0]);
-    }
 
-    private static boolean hasPolicy(String propertyName, Map<String, ?> props)
-    {
-	return "true".equalsIgnoreCase(String.valueOf(props.get(propertyName)));
-    }
-
-    @Override
-    public SaslServer createSaslServer(String mechanism, String protocol, String serverName, Map<String, ?> props, CallbackHandler cbh) throws SaslException
-    {
-	ServerMechanism result = getInstance(mechanism);
-	if (result != null)
-	{
-	    HashMap<String, Object> attributes = new HashMap<>();
-	    if (props != null)
-		attributes.putAll(props);
-	    attributes.put(Registry.SASL_PROTOCOL, protocol);
-	    attributes.put(Registry.SASL_SERVER_NAME, serverName);
-	    attributes.put(Registry.SASL_CALLBACK_HANDLER, cbh);
-	    result.init(attributes);
+	public static final Set<String> getNames() {
+		return Collections.unmodifiableSet(new HashSet<>(Arrays.asList(getNamesInternal(null))));
 	}
-	return result;
-    }
 
-    @Override
-    public String[] getMechanismNames(Map<String, ?> props)
-    {
-	return getNamesInternal(props);
-    }
+	private static final String[] getNamesInternal(Map<String, ?> props) {
+		String[] all = new String[] { Registry.SASL_SRP_MECHANISM, Registry.SASL_CRAM_MD5_MECHANISM,
+				Registry.SASL_PLAIN_MECHANISM, Registry.SASL_ANONYMOUS_MECHANISM };
+		List<String> result = new ArrayList<>(4);
+		int i;
+		for (i = 0; i < all.length;)
+			result.add(all[i++]);
+		if (props == null)
+			return result.toArray(new String[0]); // all
+		if (hasPolicy(Sasl.POLICY_PASS_CREDENTIALS, props)) // none
+			return new String[0];
+		if (hasPolicy(Sasl.POLICY_NOPLAINTEXT, props))
+			result.remove(Registry.SASL_PLAIN_MECHANISM);
+		if (hasPolicy(Sasl.POLICY_NOACTIVE, props)) {
+			result.remove(Registry.SASL_CRAM_MD5_MECHANISM);
+			result.remove(Registry.SASL_PLAIN_MECHANISM);
+		}
+		if (hasPolicy(Sasl.POLICY_NODICTIONARY, props)) {
+			result.remove(Registry.SASL_CRAM_MD5_MECHANISM);
+			result.remove(Registry.SASL_PLAIN_MECHANISM);
+		}
+		if (hasPolicy(Sasl.POLICY_NOANONYMOUS, props)) {
+			result.remove(Registry.SASL_ANONYMOUS_MECHANISM);
+		}
+		if (hasPolicy(Sasl.POLICY_FORWARD_SECRECY, props)) {
+			result.remove(Registry.SASL_CRAM_MD5_MECHANISM);
+			result.remove(Registry.SASL_ANONYMOUS_MECHANISM);
+			result.remove(Registry.SASL_PLAIN_MECHANISM);
+		}
+		return result.toArray(new String[0]);
+	}
+
+	private static boolean hasPolicy(String propertyName, Map<String, ?> props) {
+		return "true".equalsIgnoreCase(String.valueOf(props.get(propertyName)));
+	}
+
+	@Override
+	public SaslServer createSaslServer(String mechanism, String protocol, String serverName, Map<String, ?> props,
+			CallbackHandler cbh) throws SaslException {
+		ServerMechanism result = getInstance(mechanism);
+		if (result != null) {
+			HashMap<String, Object> attributes = new HashMap<>();
+			if (props != null)
+				attributes.putAll(props);
+			attributes.put(Registry.SASL_PROTOCOL, protocol);
+			attributes.put(Registry.SASL_SERVER_NAME, serverName);
+			attributes.put(Registry.SASL_CALLBACK_HANDLER, cbh);
+			result.init(attributes);
+		}
+		return result;
+	}
+
+	@Override
+	public String[] getMechanismNames(Map<String, ?> props) {
+		return getNamesInternal(props);
+	}
 }

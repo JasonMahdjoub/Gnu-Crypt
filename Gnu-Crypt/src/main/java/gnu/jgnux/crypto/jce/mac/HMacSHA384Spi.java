@@ -43,10 +43,8 @@ import gnu.jgnu.security.Registry;
  * The implementation of the HMAC-SHA-384 <i>Service Provider Interface</i>
  * (<b>SPI</b>) adapter.
  */
-public class HMacSHA384Spi extends MacAdapter
-{
-    public HMacSHA384Spi()
-    {
-	super(Registry.HMAC_NAME_PREFIX + Registry.SHA384_HASH);
-    }
+public class HMacSHA384Spi extends MacAdapter {
+	public HMacSHA384Spi() {
+		super(Registry.HMAC_NAME_PREFIX + Registry.SHA384_HASH);
+	}
 }

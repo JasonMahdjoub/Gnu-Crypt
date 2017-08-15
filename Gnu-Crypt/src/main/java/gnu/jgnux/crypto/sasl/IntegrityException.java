@@ -45,45 +45,41 @@ import javax.security.sasl.SaslException;
  * processing of an <i>integrity</i> protection filter, including <i>replay
  * detection</i>.
  */
-public class IntegrityException extends SaslException
-{
-    /**
-     * 
-     */
-    private static final long serialVersionUID = -8000103254361556702L;
+public class IntegrityException extends SaslException {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -8000103254361556702L;
 
-    /**
-     * Constructs a new instance of <code>IntegrityException</code> with no
-     * detail message.
-     */
-    public IntegrityException()
-    {
-	super();
-    }
+	/**
+	 * Constructs a new instance of <code>IntegrityException</code> with no detail
+	 * message.
+	 */
+	public IntegrityException() {
+		super();
+	}
 
-    /**
-     * Constructs a new instance of <code>IntegrityException</code> with the
-     * specified detail message.
-     *
-     * @param s
-     *            the detail message.
-     */
-    public IntegrityException(String s)
-    {
-	super(s);
-    }
+	/**
+	 * Constructs a new instance of <code>IntegrityException</code> with the
+	 * specified detail message.
+	 *
+	 * @param s
+	 *            the detail message.
+	 */
+	public IntegrityException(String s) {
+		super(s);
+	}
 
-    /**
-     * Constructs a new instance of <code>IntegrityException</code> with a
-     * detailed message and a root exception.
-     *
-     * @param s
-     *            possibly null additional detail about the exception.
-     * @param x
-     *            a possibly null root exception that caused this one.
-     */
-    public IntegrityException(String s, Throwable x)
-    {
-	super(s, x);
-    }
+	/**
+	 * Constructs a new instance of <code>IntegrityException</code> with a detailed
+	 * message and a root exception.
+	 *
+	 * @param s
+	 *            possibly null additional detail about the exception.
+	 * @param x
+	 *            a possibly null root exception that caused this one.
+	 */
+	public IntegrityException(String s, Throwable x) {
+		super(s, x);
+	}
 }

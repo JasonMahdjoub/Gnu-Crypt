@@ -65,129 +65,115 @@ import gnu.vm.jgnux.crypto.spec.DHParameterSpec;
  * Eric Rescorla.</li>
  * </ol>
  */
-public abstract class GnuDHKey implements Key, DHKey
-{
-    /**
-     * 
-     */
-    private static final long serialVersionUID = -7491941050790398839L;
+public abstract class GnuDHKey implements Key, DHKey {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -7491941050790398839L;
 
-    /** The public prime q. A prime divisor of p-1. */
-    protected BigInteger q;
+	/** The public prime q. A prime divisor of p-1. */
+	protected BigInteger q;
 
-    /** The public prime p. */
-    protected BigInteger p;
+	/** The public prime p. */
+	protected BigInteger p;
 
-    /** The generator g. */
-    protected BigInteger g;
+	/** The generator g. */
+	protected BigInteger g;
 
-    /**
-     * Identifier of the default encoding format to use when externalizing the
-     * key material.
-     */
-    protected final int defaultFormat;
+	/**
+	 * Identifier of the default encoding format to use when externalizing the key
+	 * material.
+	 */
+	protected final int defaultFormat;
 
-    /** String representation of this key. Cached for speed. */
-    private transient String str;
+	/** String representation of this key. Cached for speed. */
+	private transient String str;
 
-    /**
-     * Trivial protected constructor.
-     *
-     * @param defaultFormat
-     *            the identifier of the encoding format to use by default when
-     *            externalizing the key.
-     * @param q
-     *            a prime divisor of p-1.
-     * @param p
-     *            the public prime.
-     * @param g
-     *            the generator of the group.
-     */
-    protected GnuDHKey(int defaultFormat, BigInteger q, BigInteger p, BigInteger g)
-    {
-	super();
+	/**
+	 * Trivial protected constructor.
+	 *
+	 * @param defaultFormat
+	 *            the identifier of the encoding format to use by default when
+	 *            externalizing the key.
+	 * @param q
+	 *            a prime divisor of p-1.
+	 * @param p
+	 *            the public prime.
+	 * @param g
+	 *            the generator of the group.
+	 */
+	protected GnuDHKey(int defaultFormat, BigInteger q, BigInteger p, BigInteger g) {
+		super();
 
-	this.defaultFormat = defaultFormat <= 0 ? Registry.RAW_ENCODING_ID
-		: defaultFormat;
-	this.q = q;
-	this.p = p;
-	this.g = g;
-    }
-
-    /**
-     * Returns <code>true</code> if the designated object is an instance of
-     * {@link DHKey} and has the same Diffie-Hellman parameter values as this
-     * one.
-     *
-     * @param obj
-     *            the other non-null DH key to compare to.
-     * @return <code>true</code> if the designated object is of the same type
-     *         and value as this one.
-     */
-    @Override
-    public boolean equals(Object obj)
-    {
-	if (obj == null)
-	    return false;
-	if (!(obj instanceof DHKey))
-	    return false;
-	DHKey that = (DHKey) obj;
-	return p.equals(that.getParams().getP())
-		&& g.equals(that.getParams().getG());
-    }
-
-    @Override
-    public String getAlgorithm()
-    {
-	return Registry.DH_KPG;
-    }
-
-    /** @deprecated see getEncoded(int). */
-    @Deprecated
-    @Override
-    public byte[] getEncoded()
-    {
-	return getEncoded(defaultFormat);
-    }
-
-    public abstract byte[] getEncoded(int format);
-
-    @Override
-    public String getFormat()
-    {
-	return FormatUtil.getEncodingShortName(defaultFormat);
-    }
-
-    @Override
-    public DHParameterSpec getParams()
-    {
-	if (q == null)
-	    return new DHParameterSpec(p, g);
-	return new DHParameterSpec(p, g, q.bitLength());
-    }
-
-    public BigInteger getQ()
-    {
-	return q;
-    }
-
-    @Override
-    public String toString()
-    {
-	if (str == null)
-	{
-	    String ls = AccessController
-		    .doPrivileged(new GetPropertyAction("line.separator"));
-	    StringBuilder sb = new StringBuilder(ls).append("defaultFormat=")
-		    .append(defaultFormat).append(",").append(ls);
-	    if (q == null)
-		sb.append("q=null,");
-	    else
-		sb.append("q=0x").append(q.toString(16)).append(",");
-	    sb.append(ls).append("p=0x").append(p.toString(16)).append(",")
-		    .append(ls).append("g=0x").append(g.toString(16));
-	    str = sb.toString();
+		this.defaultFormat = defaultFormat <= 0 ? Registry.RAW_ENCODING_ID : defaultFormat;
+		this.q = q;
+		this.p = p;
+		this.g = g;
 	}
-	return str;
-    }
+
+	/**
+	 * Returns <code>true</code> if the designated object is an instance of
+	 * {@link DHKey} and has the same Diffie-Hellman parameter values as this one.
+	 *
+	 * @param obj
+	 *            the other non-null DH key to compare to.
+	 * @return <code>true</code> if the designated object is of the same type and
+	 *         value as this one.
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null)
+			return false;
+		if (!(obj instanceof DHKey))
+			return false;
+		DHKey that = (DHKey) obj;
+		return p.equals(that.getParams().getP()) && g.equals(that.getParams().getG());
+	}
+
+	@Override
+	public String getAlgorithm() {
+		return Registry.DH_KPG;
+	}
+
+	/** @deprecated see getEncoded(int). */
+	@Deprecated
+	@Override
+	public byte[] getEncoded() {
+		return getEncoded(defaultFormat);
+	}
+
+	public abstract byte[] getEncoded(int format);
+
+	@Override
+	public String getFormat() {
+		return FormatUtil.getEncodingShortName(defaultFormat);
+	}
+
+	@Override
+	public DHParameterSpec getParams() {
+		if (q == null)
+			return new DHParameterSpec(p, g);
+		return new DHParameterSpec(p, g, q.bitLength());
+	}
+
+	public BigInteger getQ() {
+		return q;
+	}
+
+	@Override
+	public String toString() {
+		if (str == null) {
+			String ls = AccessController.doPrivileged(new GetPropertyAction("line.separator"));
+			StringBuilder sb = new StringBuilder(ls).append("defaultFormat=").append(defaultFormat).append(",")
+					.append(ls);
+			if (q == null)
+				sb.append("q=null,");
+			else
+				sb.append("q=0x").append(q.toString(16)).append(",");
+			sb.append(ls).append("p=0x").append(p.toString(16)).append(",").append(ls).append("g=0x")
+					.append(g.toString(16));
+			str = sb.toString();
+		}
+		return str;
+	}
 }

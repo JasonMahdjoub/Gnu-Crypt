@@ -44,149 +44,144 @@ import java.net.ServerSocket;
 /**
  * A server socket that allows clients to connect via the SSL protocol.
  */
-public abstract class SSLServerSocket extends ServerSocket
-{
+public abstract class SSLServerSocket extends ServerSocket {
 
-    // Constructors.
-    // -------------------------------------------------------------------------
+	// Constructors.
+	// -------------------------------------------------------------------------
 
-    protected SSLServerSocket() throws IOException
-    {
-	super();
-	// super(0);
-	// throw new UnsupportedOperationException("1.4 socket methods not
-	// enabled");
-    }
+	protected SSLServerSocket() throws IOException {
+		super();
+		// super(0);
+		// throw new UnsupportedOperationException("1.4 socket methods not
+		// enabled");
+	}
 
-    protected SSLServerSocket(int port) throws IOException
-    {
-	super(port);
-    }
+	protected SSLServerSocket(int port) throws IOException {
+		super(port);
+	}
 
-    protected SSLServerSocket(int port, int backlog) throws IOException
-    {
-	super(port, backlog);
-    }
+	protected SSLServerSocket(int port, int backlog) throws IOException {
+		super(port, backlog);
+	}
 
-    protected SSLServerSocket(int port, int backlog, InetAddress bindAddress) throws IOException
-    {
-	super(port, backlog, bindAddress);
-    }
+	protected SSLServerSocket(int port, int backlog, InetAddress bindAddress) throws IOException {
+		super(port, backlog, bindAddress);
+	}
 
-    // Abstract methods.
-    // -------------------------------------------------------------------------
+	// Abstract methods.
+	// -------------------------------------------------------------------------
 
-    /**
-     * Returns the list of cihper suites that are currently enabled in this
-     * server socket. Sockets accepted by this server socket will only have
-     * these suites enabled.
-     *
-     * @return The enabled cipher suites.
-     */
-    public abstract String[] getEnabledCipherSuites();
+	/**
+	 * Returns the list of cihper suites that are currently enabled in this server
+	 * socket. Sockets accepted by this server socket will only have these suites
+	 * enabled.
+	 *
+	 * @return The enabled cipher suites.
+	 */
+	public abstract String[] getEnabledCipherSuites();
 
-    /**
-     * Returns the list of enabled protocols, such as "SSLv3" and "TLSv1".
-     *
-     * @return The enabled protocols.
-     */
-    public abstract String[] getEnabledProtocols();
+	/**
+	 * Returns the list of enabled protocols, such as "SSLv3" and "TLSv1".
+	 *
+	 * @return The enabled protocols.
+	 */
+	public abstract String[] getEnabledProtocols();
 
-    /**
-     * Returns whether or not sessions will be created, i.e., whether or not
-     * this server socket will allow SSL session resumption.
-     *
-     * @return True if sessions will be created.
-     */
-    public abstract boolean getEnableSessionCreation();
+	/**
+	 * Returns whether or not sessions will be created, i.e., whether or not this
+	 * server socket will allow SSL session resumption.
+	 *
+	 * @return True if sessions will be created.
+	 */
+	public abstract boolean getEnableSessionCreation();
 
-    /**
-     * Returns whether or not this server socket will require clients to
-     * authenticate themselves, such as through a certificate.
-     *
-     * @return True if clients must authenticate themselves.
-     */
-    public abstract boolean getNeedClientAuth();
+	/**
+	 * Returns whether or not this server socket will require clients to
+	 * authenticate themselves, such as through a certificate.
+	 *
+	 * @return True if clients must authenticate themselves.
+	 */
+	public abstract boolean getNeedClientAuth();
 
-    /**
-     * Returns a list of cipher suites that this server socket supports.
-     *
-     * @return The list of supported suites.
-     */
-    public abstract String[] getSupportedCipherSuites();
+	/**
+	 * Returns a list of cipher suites that this server socket supports.
+	 *
+	 * @return The list of supported suites.
+	 */
+	public abstract String[] getSupportedCipherSuites();
 
-    /**
-     * Returns a list of SSL protocols supported by this server socket.
-     *
-     * @return The list of supported protocols.
-     */
-    public abstract String[] getSupportedProtocols();
+	/**
+	 * Returns a list of SSL protocols supported by this server socket.
+	 *
+	 * @return The list of supported protocols.
+	 */
+	public abstract String[] getSupportedProtocols();
 
-    /**
-     * Returns whether or not sockets accepted by this server socket will do
-     * their handshake as the client-side. The default is false.
-     *
-     * @return True if client mode will be used.
-     */
-    public abstract boolean getUseClientMode();
+	/**
+	 * Returns whether or not sockets accepted by this server socket will do their
+	 * handshake as the client-side. The default is false.
+	 *
+	 * @return True if client mode will be used.
+	 */
+	public abstract boolean getUseClientMode();
 
-    /**
-     * Returns whether or not this socket will ask for, but not require, that
-     * connecting clients authenticate themselves. Clients that do not provide
-     * authentication they will still be allowed to connect.
-     *
-     * @return True if this server socket wants client authentication.
-     */
-    public abstract boolean getWantClientAuth();
+	/**
+	 * Returns whether or not this socket will ask for, but not require, that
+	 * connecting clients authenticate themselves. Clients that do not provide
+	 * authentication they will still be allowed to connect.
+	 *
+	 * @return True if this server socket wants client authentication.
+	 */
+	public abstract boolean getWantClientAuth();
 
-    /**
-     * Sets the list enabled cipher suites.
-     *
-     * @param suites
-     *            The cipher suites to enable.
-     */
-    public abstract void setEnabledCipherSuites(String[] suites);
+	/**
+	 * Sets the list enabled cipher suites.
+	 *
+	 * @param suites
+	 *            The cipher suites to enable.
+	 */
+	public abstract void setEnabledCipherSuites(String[] suites);
 
-    /**
-     * Sets the list of enabled protocols.
-     *
-     * @param protocols
-     *            The list of protocols to enable.
-     */
-    public abstract void setEnabledProtocols(String[] protocols);
+	/**
+	 * Sets the list of enabled protocols.
+	 *
+	 * @param protocols
+	 *            The list of protocols to enable.
+	 */
+	public abstract void setEnabledProtocols(String[] protocols);
 
-    /**
-     * Sets whether or not sessions will be created.
-     *
-     * @param enabled
-     *            The new enabled value.
-     */
-    public abstract void setEnableSessionCreation(boolean enabled);
+	/**
+	 * Sets whether or not sessions will be created.
+	 *
+	 * @param enabled
+	 *            The new enabled value.
+	 */
+	public abstract void setEnableSessionCreation(boolean enabled);
 
-    /**
-     * Enabled or disables the requirement that clients authenticate themselves.
-     * When this is set to <code>true</code>, connections will be rejected if
-     * connecting clients do not provide proper authentication.
-     *
-     * @param needAuth
-     *            The new need auth value.
-     */
-    public abstract void setNeedClientAuth(boolean needAuth);
+	/**
+	 * Enabled or disables the requirement that clients authenticate themselves.
+	 * When this is set to <code>true</code>, connections will be rejected if
+	 * connecting clients do not provide proper authentication.
+	 *
+	 * @param needAuth
+	 *            The new need auth value.
+	 */
+	public abstract void setNeedClientAuth(boolean needAuth);
 
-    /**
-     * Sets whether or not sockets accepted by this server socket will be
-     * created in client mode.
-     *
-     * @param clientMode
-     *            The new client mode value.
-     */
-    public abstract void setUseClientMode(boolean clientMode);
+	/**
+	 * Sets whether or not sockets accepted by this server socket will be created in
+	 * client mode.
+	 *
+	 * @param clientMode
+	 *            The new client mode value.
+	 */
+	public abstract void setUseClientMode(boolean clientMode);
 
-    /**
-     * Sets whether or not this server socket will want client authentication.
-     *
-     * @param wantAuth
-     *            The new want auth value.
-     */
-    public abstract void setWantClientAuth(boolean wantAuth);
+	/**
+	 * Sets whether or not this server socket will want client authentication.
+	 *
+	 * @param wantAuth
+	 *            The new want auth value.
+	 */
+	public abstract void setWantClientAuth(boolean wantAuth);
 }

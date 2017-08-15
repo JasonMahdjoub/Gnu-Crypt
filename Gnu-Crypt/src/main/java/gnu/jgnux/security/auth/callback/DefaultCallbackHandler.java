@@ -51,65 +51,56 @@ import gnu.vm.jgnux.security.auth.callback.TextOutputCallback;
  * This trivial implementation of {@link CallbackHandler} sets its
  * {@link Callback} arguments to default values, with no user interaction.
  */
-public class DefaultCallbackHandler extends AbstractCallbackHandler
-{
+public class DefaultCallbackHandler extends AbstractCallbackHandler {
 
-    // Constructor.
-    // -------------------------------------------------------------------------
+	// Constructor.
+	// -------------------------------------------------------------------------
 
-    public DefaultCallbackHandler()
-    {
-	super("DEFAULT");
-    }
+	public DefaultCallbackHandler() {
+		super("DEFAULT");
+	}
 
-    // Instance methods.
-    // -------------------------------------------------------------------------
+	// Instance methods.
+	// -------------------------------------------------------------------------
 
-    @Override
-    protected void handleChoice(ChoiceCallback c)
-    {
-	c.setSelectedIndex(c.getDefaultChoice());
-    }
+	@Override
+	protected void handleChoice(ChoiceCallback c) {
+		c.setSelectedIndex(c.getDefaultChoice());
+	}
 
-    @Override
-    protected void handleConfirmation(ConfirmationCallback c)
-    {
-	if (c.getOptionType() == ConfirmationCallback.YES_NO_OPTION)
-	    c.setSelectedIndex(ConfirmationCallback.NO);
-	else if (c.getOptionType() == ConfirmationCallback.YES_NO_CANCEL_OPTION)
-	    c.setSelectedIndex(ConfirmationCallback.NO);
-	else if (c.getOptionType() == ConfirmationCallback.OK_CANCEL_OPTION)
-	    c.setSelectedIndex(ConfirmationCallback.OK);
-	else
-	    c.setSelectedIndex(c.getDefaultOption());
-    }
+	@Override
+	protected void handleConfirmation(ConfirmationCallback c) {
+		if (c.getOptionType() == ConfirmationCallback.YES_NO_OPTION)
+			c.setSelectedIndex(ConfirmationCallback.NO);
+		else if (c.getOptionType() == ConfirmationCallback.YES_NO_CANCEL_OPTION)
+			c.setSelectedIndex(ConfirmationCallback.NO);
+		else if (c.getOptionType() == ConfirmationCallback.OK_CANCEL_OPTION)
+			c.setSelectedIndex(ConfirmationCallback.OK);
+		else
+			c.setSelectedIndex(c.getDefaultOption());
+	}
 
-    @Override
-    protected void handleLanguage(LanguageCallback c)
-    {
-	c.setLocale(Locale.getDefault());
-    }
+	@Override
+	protected void handleLanguage(LanguageCallback c) {
+		c.setLocale(Locale.getDefault());
+	}
 
-    @Override
-    protected void handleName(NameCallback c)
-    {
-	c.setName(System.getProperty("user.name"));
-    }
+	@Override
+	protected void handleName(NameCallback c) {
+		c.setName(System.getProperty("user.name"));
+	}
 
-    @Override
-    protected void handlePassword(PasswordCallback c)
-    {
-	c.setPassword(new char[0]);
-    }
+	@Override
+	protected void handlePassword(PasswordCallback c) {
+		c.setPassword(new char[0]);
+	}
 
-    @Override
-    protected void handleTextInput(TextInputCallback c)
-    {
-	c.setText("");
-    }
+	@Override
+	protected void handleTextInput(TextInputCallback c) {
+		c.setText("");
+	}
 
-    @Override
-    protected void handleTextOutput(TextOutputCallback c)
-    {
-    }
+	@Override
+	protected void handleTextOutput(TextOutputCallback c) {
+	}
 }

@@ -49,61 +49,56 @@ import gnu.vm.jgnu.security.interfaces.DSAParams;
  *
  * @author Mark Benvenuto
  */
-public class DSAParameterSpec implements AlgorithmParameterSpec, DSAParams
-{
-    private BigInteger p = null;
+public class DSAParameterSpec implements AlgorithmParameterSpec, DSAParams {
+	private BigInteger p = null;
 
-    private BigInteger q = null;
+	private BigInteger q = null;
 
-    private BigInteger g = null;
+	private BigInteger g = null;
 
-    /**
-     * Constructs a new DSAParameterSpec with the specified p, q, and g.
-     *
-     * @param p
-     *            the prime
-     * @param q
-     *            the sub-prime
-     * @param g
-     *            the base
-     */
-    public DSAParameterSpec(BigInteger p, BigInteger q, BigInteger g)
-    {
-	this.p = p;
-	this.q = q;
-	this.g = g;
-    }
+	/**
+	 * Constructs a new DSAParameterSpec with the specified p, q, and g.
+	 *
+	 * @param p
+	 *            the prime
+	 * @param q
+	 *            the sub-prime
+	 * @param g
+	 *            the base
+	 */
+	public DSAParameterSpec(BigInteger p, BigInteger q, BigInteger g) {
+		this.p = p;
+		this.q = q;
+		this.g = g;
+	}
 
-    /**
-     * Returns g for the DSA algorithm.
-     *
-     * @return Returns the requested BigInteger
-     */
-    @Override
-    public BigInteger getG()
-    {
-	return this.g;
-    }
+	/**
+	 * Returns g for the DSA algorithm.
+	 *
+	 * @return Returns the requested BigInteger
+	 */
+	@Override
+	public BigInteger getG() {
+		return this.g;
+	}
 
-    /**
-     * Returns p for the DSA algorithm.
-     *
-     * @return Returns the requested BigInteger
-     */
-    @Override
-    public BigInteger getP()
-    {
-	return this.p;
-    }
+	/**
+	 * Returns p for the DSA algorithm.
+	 *
+	 * @return Returns the requested BigInteger
+	 */
+	@Override
+	public BigInteger getP() {
+		return this.p;
+	}
 
-    /**
-     * Returns p for the DSA algorithm.
-     *
-     * @return Returns the requested BigInteger
-     */
-    @Override
-    public BigInteger getQ()
-    {
-	return this.q;
-    }
+	/**
+	 * Returns p for the DSA algorithm.
+	 *
+	 * @return Returns the requested BigInteger
+	 */
+	@Override
+	public BigInteger getQ() {
+		return this.q;
+	}
 }

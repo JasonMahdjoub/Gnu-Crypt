@@ -42,107 +42,96 @@ import java.io.PrintWriter;
 
 /**
  */
-public class TransformerException extends Exception
-{
-    /**
-     * 
-     */
-    private static final long serialVersionUID = -5320703561392172802L;
+public class TransformerException extends Exception {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -5320703561392172802L;
 
-    private Throwable _exception = null;
+	private Throwable _exception = null;
 
-    public TransformerException()
-    {
-	super();
-    }
+	public TransformerException() {
+		super();
+	}
 
-    public TransformerException(String details)
-    {
-	super(details);
-    }
+	public TransformerException(String details) {
+		super(details);
+	}
 
-    public TransformerException(String details, Throwable cause)
-    {
-	super(details);
+	public TransformerException(String details, Throwable cause) {
+		super(details);
 
-	this._exception = cause;
-    }
+		this._exception = cause;
+	}
 
-    public TransformerException(Throwable cause)
-    {
-	super();
+	public TransformerException(Throwable cause) {
+		super();
 
-	this._exception = cause;
-    }
+		this._exception = cause;
+	}
 
-    @Override
-    public Throwable getCause()
-    {
-	return _exception;
-    }
+	@Override
+	public Throwable getCause() {
+		return _exception;
+	}
 
-    /**
-     * Prints this exception's stack trace to <code>System.err</code>. If this
-     * exception has a root exception; the stack trace of the root exception is
-     * also printed to <code>System.err</code>.
-     */
-    @Override
-    public void printStackTrace()
-    {
-	super.printStackTrace();
-	if (_exception != null)
-	    _exception.printStackTrace();
-    }
+	/**
+	 * Prints this exception's stack trace to <code>System.err</code>. If this
+	 * exception has a root exception; the stack trace of the root exception is also
+	 * printed to <code>System.err</code>.
+	 */
+	@Override
+	public void printStackTrace() {
+		super.printStackTrace();
+		if (_exception != null)
+			_exception.printStackTrace();
+	}
 
-    /**
-     * Prints this exception's stack trace to a print stream. If this exception
-     * has a root exception; the stack trace of the root exception is also
-     * printed to the print stream.
-     *
-     * @param ps
-     *            the non-null print stream to which to print.
-     */
-    @Override
-    public void printStackTrace(PrintStream ps)
-    {
-	super.printStackTrace(ps);
-	if (_exception != null)
-	    _exception.printStackTrace(ps);
-    }
+	/**
+	 * Prints this exception's stack trace to a print stream. If this exception has
+	 * a root exception; the stack trace of the root exception is also printed to
+	 * the print stream.
+	 *
+	 * @param ps
+	 *            the non-null print stream to which to print.
+	 */
+	@Override
+	public void printStackTrace(PrintStream ps) {
+		super.printStackTrace(ps);
+		if (_exception != null)
+			_exception.printStackTrace(ps);
+	}
 
-    /**
-     * Prints this exception's stack trace to a print writer. If this exception
-     * has a root exception; the stack trace of the root exception is also
-     * printed to the print writer.
-     *
-     * @param pw
-     *            the non-null print writer to use for output.
-     */
-    @Override
-    public void printStackTrace(PrintWriter pw)
-    {
-	super.printStackTrace(pw);
-	if (_exception != null)
-	    _exception.printStackTrace(pw);
-    }
+	/**
+	 * Prints this exception's stack trace to a print writer. If this exception has
+	 * a root exception; the stack trace of the root exception is also printed to
+	 * the print writer.
+	 *
+	 * @param pw
+	 *            the non-null print writer to use for output.
+	 */
+	@Override
+	public void printStackTrace(PrintWriter pw) {
+		super.printStackTrace(pw);
+		if (_exception != null)
+			_exception.printStackTrace(pw);
+	}
 
-    /**
-     * Returns the string representation of this exception. The string
-     * representation contains this exception's class name, its detailed
-     * messsage, and if it has a root exception, the string representation of
-     * the root exception. This string representation is meant for debugging and
-     * not meant to be interpreted programmatically.
-     *
-     * @return the non-null string representation of this exception.
-     * @see Throwable#getMessage()
-     */
-    @Override
-    public String toString()
-    {
-	StringBuilder sb = new StringBuilder(this.getClass().getName())
-		.append(": ").append(super.toString());
-	if (_exception != null)
-	    sb.append("; caused by: ").append(_exception.toString());
-	return sb.toString();
-    }
+	/**
+	 * Returns the string representation of this exception. The string
+	 * representation contains this exception's class name, its detailed messsage,
+	 * and if it has a root exception, the string representation of the root
+	 * exception. This string representation is meant for debugging and not meant to
+	 * be interpreted programmatically.
+	 *
+	 * @return the non-null string representation of this exception.
+	 * @see Throwable#getMessage()
+	 */
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder(this.getClass().getName()).append(": ").append(super.toString());
+		if (_exception != null)
+			sb.append("; caused by: ").append(_exception.toString());
+		return sb.toString();
+	}
 }

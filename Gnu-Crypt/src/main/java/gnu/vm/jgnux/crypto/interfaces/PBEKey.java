@@ -47,41 +47,40 @@ import gnu.vm.jgnux.crypto.SecretKey;
  * @author Casey Marshall (csm@gnu.org)
  * @since 1.4
  */
-public interface PBEKey extends SecretKey
-{
-    /** Compatible with JDK1.4. */
-    long serialVersionUID = -1430015993304333921L;
+public interface PBEKey extends SecretKey {
+	/** Compatible with JDK1.4. */
+	long serialVersionUID = -1430015993304333921L;
 
-    /**
-     * Retruns the iteration count, or 0 if not specified.
-     *
-     * @return The iteration count.
-     */
-    int getIterationCount();
+	/**
+	 * Retruns the iteration count, or 0 if not specified.
+	 *
+	 * @return The iteration count.
+	 */
+	int getIterationCount();
 
-    /**
-     * Returns a copy of the password as a character array. It is the caller's
-     * responsibility to zero-out the password when it is no longer in use.
-     *
-     * <p>
-     * Although it is not specified in the documentation, implementations should
-     * not copy or clone the password array, but rather return the reference to
-     * the array itself, so the caller has the ability to erase the password.
-     *
-     * @return The password.
-     */
-    char[] getPassword();
+	/**
+	 * Returns a copy of the password as a character array. It is the caller's
+	 * responsibility to zero-out the password when it is no longer in use.
+	 *
+	 * <p>
+	 * Although it is not specified in the documentation, implementations should not
+	 * copy or clone the password array, but rather return the reference to the
+	 * array itself, so the caller has the ability to erase the password.
+	 *
+	 * @return The password.
+	 */
+	char[] getPassword();
 
-    /**
-     * Returns a copy of the salt. It is the caller's responsibility to zero-out
-     * the salt when it is no longer in use.
-     *
-     * <p>
-     * Although it is not specified in the documentation, implementations should
-     * not copy or clone the salt array, but rather return the reference to the
-     * array itself, so the caller has the ability to erase the salt.
-     *
-     * @return The salt.
-     */
-    byte[] getSalt();
+	/**
+	 * Returns a copy of the salt. It is the caller's responsibility to zero-out the
+	 * salt when it is no longer in use.
+	 *
+	 * <p>
+	 * Although it is not specified in the documentation, implementations should not
+	 * copy or clone the salt array, but rather return the reference to the array
+	 * itself, so the caller has the ability to erase the salt.
+	 *
+	 * @return The salt.
+	 */
+	byte[] getSalt();
 }

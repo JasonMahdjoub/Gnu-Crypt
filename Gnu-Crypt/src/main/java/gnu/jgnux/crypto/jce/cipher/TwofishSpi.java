@@ -43,10 +43,8 @@ import gnu.jgnu.security.Registry;
  * The implementation of the Twofish <i>Service Provider Interface</i>
  * (<b>SPI</b>) adapter.
  */
-public final class TwofishSpi extends CipherAdapter
-{
-    public TwofishSpi()
-    {
-	super(Registry.TWOFISH_CIPHER);
-    }
+public final class TwofishSpi extends CipherAdapter {
+	public TwofishSpi() {
+		super(Registry.TWOFISH_CIPHER);
+	}
 }

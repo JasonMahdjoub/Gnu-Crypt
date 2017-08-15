@@ -44,36 +44,28 @@ import gnu.vm.jgnux.crypto.SecretKey;
 import gnu.vm.jgnux.crypto.spec.DESedeKeySpec;
 import gnu.vm.jgnux.crypto.spec.SecretKeySpec;
 
-public class DESedeSecretKeyFactoryImpl extends SecretKeyFactoryImpl
-{
+public class DESedeSecretKeyFactoryImpl extends SecretKeyFactoryImpl {
 
-    public DESedeSecretKeyFactoryImpl()
-    {
-    }
+	public DESedeSecretKeyFactoryImpl() {
+	}
 
-    @Override
-    protected SecretKey engineGenerateSecret(KeySpec spec) throws InvalidKeySpecException
-    {
-	if (spec instanceof DESedeKeySpec)
-	    return new SecretKeySpec(((DESedeKeySpec) spec).getKey(), "DESede");
-	return super.engineGenerateSecret(spec);
-    }
+	@Override
+	protected SecretKey engineGenerateSecret(KeySpec spec) throws InvalidKeySpecException {
+		if (spec instanceof DESedeKeySpec)
+			return new SecretKeySpec(((DESedeKeySpec) spec).getKey(), "DESede");
+		return super.engineGenerateSecret(spec);
+	}
 
-    @Override
-    protected KeySpec engineGetKeySpec(SecretKey key, Class<?> spec) throws InvalidKeySpecException
-    {
-	if (spec.equals(DESedeKeySpec.class))
-	    try
-	    {
-		return new DESedeKeySpec(key.getEncoded());
-	    }
-	    catch (InvalidKeyException ike)
-	    {
-		InvalidKeySpecException ikse = new InvalidKeySpecException(
-			"can't create DESede key spec");
-		ikse.initCause(ike);
-		throw ikse;
-	    }
-	return super.engineGetKeySpec(key, spec);
-    }
+	@Override
+	protected KeySpec engineGetKeySpec(SecretKey key, Class<?> spec) throws InvalidKeySpecException {
+		if (spec.equals(DESedeKeySpec.class))
+			try {
+				return new DESedeKeySpec(key.getEncoded());
+			} catch (InvalidKeyException ike) {
+				InvalidKeySpecException ikse = new InvalidKeySpecException("can't create DESede key spec");
+				ikse.initCause(ike);
+				throw ikse;
+			}
+		return super.engineGetKeySpec(key, spec);
+	}
 }

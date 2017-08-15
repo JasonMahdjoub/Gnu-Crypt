@@ -116,64 +116,56 @@ import gnu.jgnux.crypto.cipher.IBlockCipher;
  * Techniques</a>, Morris Dworkin.</li>
  * </ol>
  */
-public class OFB extends BaseMode implements Cloneable
-{
-    private byte[] outputBlock;
+public class OFB extends BaseMode implements Cloneable {
+	private byte[] outputBlock;
 
-    /**
-     * Trivial package-private constructor for use by the Factory class.
-     *
-     * @param underlyingCipher
-     *            the underlying cipher implementation.
-     * @param cipherBlockSize
-     *            the underlying cipher block size to use.
-     */
-    OFB(IBlockCipher underlyingCipher, int cipherBlockSize)
-    {
-	super(Registry.OFB_MODE, underlyingCipher, cipherBlockSize);
-    }
+	/**
+	 * Trivial package-private constructor for use by the Factory class.
+	 *
+	 * @param underlyingCipher
+	 *            the underlying cipher implementation.
+	 * @param cipherBlockSize
+	 *            the underlying cipher block size to use.
+	 */
+	OFB(IBlockCipher underlyingCipher, int cipherBlockSize) {
+		super(Registry.OFB_MODE, underlyingCipher, cipherBlockSize);
+	}
 
-    /**
-     * Private constructor for cloning purposes.
-     *
-     * @param that
-     *            the mode to clone.
-     */
-    private OFB(OFB that)
-    {
-	this((IBlockCipher) that.cipher.clone(), that.cipherBlockSize);
-    }
+	/**
+	 * Private constructor for cloning purposes.
+	 *
+	 * @param that
+	 *            the mode to clone.
+	 */
+	private OFB(OFB that) {
+		this((IBlockCipher) that.cipher.clone(), that.cipherBlockSize);
+	}
 
-    @Override
-    public Object clone()
-    {
-	return new OFB(this);
-    }
+	@Override
+	public Object clone() {
+		return new OFB(this);
+	}
 
-    @Override
-    public void decryptBlock(byte[] in, int i, byte[] out, int o)
-    {
-	this.encryptBlock(in, i, out, o);
-    }
+	@Override
+	public void decryptBlock(byte[] in, int i, byte[] out, int o) {
+		this.encryptBlock(in, i, out, o);
+	}
 
-    @Override
-    public void encryptBlock(byte[] in, int i, byte[] out, int o)
-    {
-	cipher.encryptBlock(outputBlock, 0, outputBlock, 0);
-	for (int j = 0; j < cipherBlockSize;)
-	    out[o++] = (byte) (in[i++] ^ outputBlock[j++]);
-    }
+	@Override
+	public void encryptBlock(byte[] in, int i, byte[] out, int o) {
+		cipher.encryptBlock(outputBlock, 0, outputBlock, 0);
+		for (int j = 0; j < cipherBlockSize;)
+			out[o++] = (byte) (in[i++] ^ outputBlock[j++]);
+	}
 
-    @Override
-    public void setup()
-    {
-	if (modeBlockSize != cipherBlockSize)
-	    throw new IllegalArgumentException(IMode.MODE_BLOCK_SIZE);
-	outputBlock = iv.clone();
-    }
+	@Override
+	public void setup() {
+		if (modeBlockSize != cipherBlockSize)
+			throw new IllegalArgumentException(IMode.MODE_BLOCK_SIZE);
+		outputBlock = iv.clone();
+	}
 
-    @Override
-    public void teardown()
-    {
-    }
+	@Override
+	public void teardown() {
+	}
 }

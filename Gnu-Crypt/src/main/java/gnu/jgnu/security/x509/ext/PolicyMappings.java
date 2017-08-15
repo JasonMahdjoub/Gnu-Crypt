@@ -47,58 +47,53 @@ import gnu.jgnu.security.der.DER;
 import gnu.jgnu.security.der.DERReader;
 import gnu.jgnu.security.der.DERValue;
 
-public class PolicyMappings extends Extension.Value
-{
+public class PolicyMappings extends Extension.Value {
 
-    // Constants and fields.
-    // -------------------------------------------------------------------------
+	// Constants and fields.
+	// -------------------------------------------------------------------------
 
-    public static final OID ID = new OID("2.5.29.33");
+	public static final OID ID = new OID("2.5.29.33");
 
-    private final Map<OID, OID> mappings;
+	private final Map<OID, OID> mappings;
 
-    // Constructor.
-    // -------------------------------------------------------------------------
+	// Constructor.
+	// -------------------------------------------------------------------------
 
-    public PolicyMappings(final byte[] encoded) throws IOException
-    {
-	super(encoded);
-	DERReader der = new DERReader(encoded);
-	DERValue maps = der.read();
-	if (!maps.isConstructed())
-	    throw new IOException("malformed PolicyMappings");
-	int len = 0;
-	HashMap<OID, OID> _mappings = new HashMap<>();
-	while (len < maps.getLength())
-	{
-	    DERValue map = der.read();
-	    if (!map.isConstructed())
-		throw new IOException("malformed PolicyMapping");
-	    DERValue val = der.read();
-	    if (val.getTag() != DER.OBJECT_IDENTIFIER)
-		throw new IOException("malformed PolicyMapping");
-	    OID issuerPolicy = (OID) val.getValue();
-	    val = der.read();
-	    if (val.getTag() != DER.OBJECT_IDENTIFIER)
-		throw new IOException("malformed PolicyMapping");
-	    OID subjectPolicy = (OID) val.getValue();
-	    _mappings.put(issuerPolicy, subjectPolicy);
-	    len += map.getEncodedLength();
+	public PolicyMappings(final byte[] encoded) throws IOException {
+		super(encoded);
+		DERReader der = new DERReader(encoded);
+		DERValue maps = der.read();
+		if (!maps.isConstructed())
+			throw new IOException("malformed PolicyMappings");
+		int len = 0;
+		HashMap<OID, OID> _mappings = new HashMap<>();
+		while (len < maps.getLength()) {
+			DERValue map = der.read();
+			if (!map.isConstructed())
+				throw new IOException("malformed PolicyMapping");
+			DERValue val = der.read();
+			if (val.getTag() != DER.OBJECT_IDENTIFIER)
+				throw new IOException("malformed PolicyMapping");
+			OID issuerPolicy = (OID) val.getValue();
+			val = der.read();
+			if (val.getTag() != DER.OBJECT_IDENTIFIER)
+				throw new IOException("malformed PolicyMapping");
+			OID subjectPolicy = (OID) val.getValue();
+			_mappings.put(issuerPolicy, subjectPolicy);
+			len += map.getEncodedLength();
+		}
+		mappings = Collections.unmodifiableMap(_mappings);
 	}
-	mappings = Collections.unmodifiableMap(_mappings);
-    }
 
-    // Instance methods.
-    // -------------------------------------------------------------------------
+	// Instance methods.
+	// -------------------------------------------------------------------------
 
-    public OID getSubjectDomainPolicy(OID issuerDomainPolicy)
-    {
-	return mappings.get(issuerDomainPolicy);
-    }
+	public OID getSubjectDomainPolicy(OID issuerDomainPolicy) {
+		return mappings.get(issuerDomainPolicy);
+	}
 
-    @Override
-    public String toString()
-    {
-	return PolicyMappings.class.getName() + " [ " + mappings + " ]";
-    }
+	@Override
+	public String toString() {
+		return PolicyMappings.class.getName() + " [ " + mappings + " ]";
+	}
 }

@@ -57,99 +57,88 @@ import gnu.vm.jgnu.security.SecureRandom;
  * variant is that the shared secret is the entity <code>S</code> and not
  * <code>H(S)</code>.
  */
-public class SRP6TLSClient extends SRP6KeyAgreement
-{
-    /** The user's identity. */
-    private String I;
+public class SRP6TLSClient extends SRP6KeyAgreement {
+	/** The user's identity. */
+	private String I;
 
-    /** The user's cleartext password. */
-    private byte[] p;
+	/** The user's cleartext password. */
+	private byte[] p;
 
-    /** The user's ephemeral key pair. */
-    private KeyPair userKeyPair;
+	/** The user's ephemeral key pair. */
+	private KeyPair userKeyPair;
 
-    // default 0-arguments constructor
+	// default 0-arguments constructor
 
-    protected OutgoingMessage computeSharedSecret(final IncomingMessage in) throws KeyAgreementException
-    {
-	N = in.readMPI();
-	g = in.readMPI();
-	final BigInteger s = in.readMPI();
-	final BigInteger B = in.readMPI();
-	// generate an ephemeral keypair
-	final SRPKeyPairGenerator kpg = new SRPKeyPairGenerator();
-	final Map<String, Object> attributes = new HashMap<>();
-	if (rnd != null)
-	    attributes.put(SRPKeyPairGenerator.SOURCE_OF_RANDOMNESS, rnd);
-	attributes.put(SRPKeyPairGenerator.SHARED_MODULUS, N);
-	attributes.put(SRPKeyPairGenerator.GENERATOR, g);
-	kpg.setup(attributes);
-	userKeyPair = kpg.generate();
-	final BigInteger A = ((SRPPublicKey) userKeyPair.getPublic()).getY();
-	final BigInteger u = uValue(A, B); // u = H(A | B)
-	final BigInteger x;
-	try
-	{
-	    x = new BigInteger(1, srp.computeX(Util.trim(s), I, p));
+	protected OutgoingMessage computeSharedSecret(final IncomingMessage in) throws KeyAgreementException {
+		N = in.readMPI();
+		g = in.readMPI();
+		final BigInteger s = in.readMPI();
+		final BigInteger B = in.readMPI();
+		// generate an ephemeral keypair
+		final SRPKeyPairGenerator kpg = new SRPKeyPairGenerator();
+		final Map<String, Object> attributes = new HashMap<>();
+		if (rnd != null)
+			attributes.put(SRPKeyPairGenerator.SOURCE_OF_RANDOMNESS, rnd);
+		attributes.put(SRPKeyPairGenerator.SHARED_MODULUS, N);
+		attributes.put(SRPKeyPairGenerator.GENERATOR, g);
+		kpg.setup(attributes);
+		userKeyPair = kpg.generate();
+		final BigInteger A = ((SRPPublicKey) userKeyPair.getPublic()).getY();
+		final BigInteger u = uValue(A, B); // u = H(A | B)
+		final BigInteger x;
+		try {
+			x = new BigInteger(1, srp.computeX(Util.trim(s), I, p));
+		} catch (Exception e) {
+			throw new KeyAgreementException("computeSharedSecret()", e);
+		}
+		// compute S = (B - 3g^x) ^ (a + ux)
+		final BigInteger a = ((SRPPrivateKey) userKeyPair.getPrivate()).getX();
+		final BigInteger S = B.subtract(THREE.multiply(g.modPow(x, N))).modPow(a.add(u.multiply(x)), N);
+		K = S;
+		final OutgoingMessage result = new OutgoingMessage();
+		result.writeMPI(A);
+		complete = true;
+		return result;
 	}
-	catch (Exception e)
-	{
-	    throw new KeyAgreementException("computeSharedSecret()", e);
+
+	@Override
+	protected void engineInit(final Map<String, Object> attributes) throws KeyAgreementException {
+		rnd = (SecureRandom) attributes.get(SOURCE_OF_RANDOMNESS);
+		final String md = (String) attributes.get(HASH_FUNCTION);
+		if (md == null || md.trim().length() == 0)
+			throw new KeyAgreementException("missing hash function");
+		srp = SRP.instance(md);
+		I = (String) attributes.get(USER_IDENTITY);
+		if (I == null)
+			throw new KeyAgreementException("missing user identity");
+		p = (byte[]) attributes.get(USER_PASSWORD);
+		if (p == null)
+			throw new KeyAgreementException("missing user password");
 	}
-	// compute S = (B - 3g^x) ^ (a + ux)
-	final BigInteger a = ((SRPPrivateKey) userKeyPair.getPrivate()).getX();
-	final BigInteger S = B.subtract(THREE.multiply(g.modPow(x, N)))
-		.modPow(a.add(u.multiply(x)), N);
-	K = S;
-	final OutgoingMessage result = new OutgoingMessage();
-	result.writeMPI(A);
-	complete = true;
-	return result;
-    }
 
-    @Override
-    protected void engineInit(final Map<String, Object> attributes) throws KeyAgreementException
-    {
-	rnd = (SecureRandom) attributes.get(SOURCE_OF_RANDOMNESS);
-	final String md = (String) attributes.get(HASH_FUNCTION);
-	if (md == null || md.trim().length() == 0)
-	    throw new KeyAgreementException("missing hash function");
-	srp = SRP.instance(md);
-	I = (String) attributes.get(USER_IDENTITY);
-	if (I == null)
-	    throw new KeyAgreementException("missing user identity");
-	p = (byte[]) attributes.get(USER_PASSWORD);
-	if (p == null)
-	    throw new KeyAgreementException("missing user password");
-    }
-
-    @Override
-    protected OutgoingMessage engineProcessMessage(final IncomingMessage in) throws KeyAgreementException
-    {
-	switch (step)
-	{
-	    case 0:
-		return sendIdentity(in);
-	    case 1:
-		return computeSharedSecret(in);
-	    default:
-		throw new IllegalStateException("unexpected state");
+	@Override
+	protected OutgoingMessage engineProcessMessage(final IncomingMessage in) throws KeyAgreementException {
+		switch (step) {
+		case 0:
+			return sendIdentity(in);
+		case 1:
+			return computeSharedSecret(in);
+		default:
+			throw new IllegalStateException("unexpected state");
+		}
 	}
-    }
 
-    @Override
-    protected void engineReset()
-    {
-	I = null;
-	p = null;
-	userKeyPair = null;
-	super.engineReset();
-    }
+	@Override
+	protected void engineReset() {
+		I = null;
+		p = null;
+		userKeyPair = null;
+		super.engineReset();
+	}
 
-    private OutgoingMessage sendIdentity(final IncomingMessage in) throws KeyAgreementException
-    {
-	final OutgoingMessage result = new OutgoingMessage();
-	result.writeString(I);
-	return result;
-    }
+	private OutgoingMessage sendIdentity(final IncomingMessage in) throws KeyAgreementException {
+		final OutgoingMessage result = new OutgoingMessage();
+		result.writeString(I);
+		return result;
+	}
 }

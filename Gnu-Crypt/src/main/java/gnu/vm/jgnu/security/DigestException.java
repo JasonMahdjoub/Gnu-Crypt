@@ -46,54 +46,49 @@ import gnu.vm.jgnu.security.GeneralSecurityException;
  * @author Aaron M. Renn (arenn@urbanophile.com)
  * @status updated to 1.4
  */
-public class DigestException extends GeneralSecurityException
-{
-    /**
-     * Compatible with JDK 1.1+.
-     */
-    private static final long serialVersionUID = 5821450303093652515L;
+public class DigestException extends GeneralSecurityException {
+	/**
+	 * Compatible with JDK 1.1+.
+	 */
+	private static final long serialVersionUID = 5821450303093652515L;
 
-    /**
-     * Create a new instance with no descriptive message.
-     */
-    public DigestException()
-    {
-    }
+	/**
+	 * Create a new instance with no descriptive message.
+	 */
+	public DigestException() {
+	}
 
-    /**
-     * Create a new instance with a descriptive error message.
-     *
-     * @param msg
-     *            the descriptive message
-     */
-    public DigestException(String msg)
-    {
-	super(msg);
-    }
+	/**
+	 * Create a new instance with a descriptive error message.
+	 *
+	 * @param msg
+	 *            the descriptive message
+	 */
+	public DigestException(String msg) {
+		super(msg);
+	}
 
-    /**
-     * Create a new instance with a descriptive error message and a cause.
-     * 
-     * @param s
-     *            the descriptive error message
-     * @param cause
-     *            the cause
-     * @since 1.5
-     */
-    public DigestException(String s, Throwable cause)
-    {
-	super(s, cause);
-    }
+	/**
+	 * Create a new instance with a descriptive error message and a cause.
+	 * 
+	 * @param s
+	 *            the descriptive error message
+	 * @param cause
+	 *            the cause
+	 * @since 1.5
+	 */
+	public DigestException(String s, Throwable cause) {
+		super(s, cause);
+	}
 
-    /**
-     * Create a new instance with a cause.
-     * 
-     * @param cause
-     *            the cause
-     * @since 1.5
-     */
-    public DigestException(Throwable cause)
-    {
-	super(cause);
-    }
+	/**
+	 * Create a new instance with a cause.
+	 * 
+	 * @param cause
+	 *            the cause
+	 * @since 1.5
+	 */
+	public DigestException(Throwable cause) {
+		super(cause);
+	}
 }

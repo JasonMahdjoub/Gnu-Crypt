@@ -43,20 +43,17 @@ import gnu.vm.jgnu.security.InvalidKeyException;
  * Checked exception thrown to indicate that a weak key has been generated and
  * or specified instead of a valid non-weak value.
  */
-public class WeakKeyException extends InvalidKeyException
-{
-    /**
-     * 
-     */
-    private static final long serialVersionUID = 5549269790978302755L;
+public class WeakKeyException extends InvalidKeyException {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 5549269790978302755L;
 
-    public WeakKeyException()
-    {
-	super();
-    }
+	public WeakKeyException() {
+		super();
+	}
 
-    public WeakKeyException(String msg)
-    {
-	super(msg);
-    }
+	public WeakKeyException(String msg) {
+		super(msg);
+	}
 }

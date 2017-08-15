@@ -57,59 +57,57 @@ import gnu.vm.jgnu.security.spec.AlgorithmParameterSpec;
  * @since 1.4
  * @see KeyGenerator
  */
-public abstract class KeyGeneratorSpi
-{
+public abstract class KeyGeneratorSpi {
 
-    // Constructor.
-    // ------------------------------------------------------------------------
+	// Constructor.
+	// ------------------------------------------------------------------------
 
-    /** Create a new key generator SPI. */
-    public KeyGeneratorSpi()
-    {
-    }
+	/** Create a new key generator SPI. */
+	public KeyGeneratorSpi() {
+	}
 
-    // Abstract instance methods.
-    // ------------------------------------------------------------------------
+	// Abstract instance methods.
+	// ------------------------------------------------------------------------
 
-    /**
-     * Generate a key, returning it as a {@link SecretKey}.
-     *
-     * @return The generated key.
-     */
-    protected abstract SecretKey engineGenerateKey();
+	/**
+	 * Generate a key, returning it as a {@link SecretKey}.
+	 *
+	 * @return The generated key.
+	 */
+	protected abstract SecretKey engineGenerateKey();
 
-    /**
-     * Initialize this key generator with parameters and a source of randomness.
-     *
-     * @param params
-     *            The parameters.
-     * @param random
-     *            The source of randomness.
-     * @throws java.security.InvalidAlgorithmParameterException
-     *             If the parameters are inappropriate for this instance.
-     */
-    protected abstract void engineInit(AlgorithmParameterSpec params, SecureRandom random) throws InvalidAlgorithmParameterException;
+	/**
+	 * Initialize this key generator with parameters and a source of randomness.
+	 *
+	 * @param params
+	 *            The parameters.
+	 * @param random
+	 *            The source of randomness.
+	 * @throws java.security.InvalidAlgorithmParameterException
+	 *             If the parameters are inappropriate for this instance.
+	 */
+	protected abstract void engineInit(AlgorithmParameterSpec params, SecureRandom random)
+			throws InvalidAlgorithmParameterException;
 
-    /**
-     * Initialize this key generator with a key size (in bits) and a source of
-     * randomness.
-     *
-     * @param keySize
-     *            The target key size, in bits.
-     * @param random
-     *            The source of randomness.
-     * @throws java.security.InvalidParameterException
-     *             If the key size is illogical or unsupported.
-     */
-    protected abstract void engineInit(int keySize, SecureRandom random);
+	/**
+	 * Initialize this key generator with a key size (in bits) and a source of
+	 * randomness.
+	 *
+	 * @param keySize
+	 *            The target key size, in bits.
+	 * @param random
+	 *            The source of randomness.
+	 * @throws java.security.InvalidParameterException
+	 *             If the key size is illogical or unsupported.
+	 */
+	protected abstract void engineInit(int keySize, SecureRandom random);
 
-    /**
-     * Initialize this key generator with a source of randomness; the
-     * implementation should use reasonable default parameters (such as
-     * generated key size).
-     *
-     * @param random
-     *            The source of randomness.
-     */
-    protected abstract void engineInit(SecureRandom random);
+	/**
+	 * Initialize this key generator with a source of randomness; the implementation
+	 * should use reasonable default parameters (such as generated key size).
+	 *
+	 * @param random
+	 *            The source of randomness.
+	 */
+	protected abstract void engineInit(SecureRandom random);
 }

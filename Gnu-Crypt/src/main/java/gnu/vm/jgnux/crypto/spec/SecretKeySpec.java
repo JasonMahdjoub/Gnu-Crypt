@@ -53,121 +53,108 @@ import gnu.vm.jgnux.crypto.SecretKey;
  * @see gnu.vm.jgnux.crypto.SecretKey
  * @see gnu.vm.jgnux.crypto.SecretKeyFactory
  */
-public class SecretKeySpec implements KeySpec, SecretKey
-{
+public class SecretKeySpec implements KeySpec, SecretKey {
 
-    // Constants and fields.
-    // ------------------------------------------------------------------------
+	// Constants and fields.
+	// ------------------------------------------------------------------------
 
-    /** Compatible with JDK1.4. */
-    private static final long serialVersionUID = 6577238317307289933L;
+	/** Compatible with JDK1.4. */
+	private static final long serialVersionUID = 6577238317307289933L;
 
-    /** The key bytes. */
-    private byte[] key;
+	/** The key bytes. */
+	private byte[] key;
 
-    /** The algorithm's name. */
-    private String algorithm;
+	/** The algorithm's name. */
+	private String algorithm;
 
-    // Constructors.
-    // ------------------------------------------------------------------------
+	// Constructors.
+	// ------------------------------------------------------------------------
 
-    /**
-     * Create a new secret key spec from part of a byte array.
-     *
-     * @param key
-     *            The key material.
-     * @param off
-     *            The offset at which key material begins.
-     * @param len
-     *            The length of key material.
-     * @param algorithm
-     *            The name of the algorithm using this key.
-     */
-    public SecretKeySpec(byte[] key, int off, int len, String algorithm)
-    {
-	this.key = new byte[len];
-	this.algorithm = algorithm;
-	System.arraycopy(key, off, this.key, 0, len);
-    }
-
-    /**
-     * Create a new secret key spec from an entire byte array.
-     *
-     * @param key
-     *            The key material.
-     * @param algorithm
-     *            The name of the algorithm using this key.
-     */
-    public SecretKeySpec(byte[] key, String algorithm)
-    {
-	this(key, 0, key.length, algorithm);
-    }
-
-    // Instance methods.
-    // ------------------------------------------------------------------------
-
-    @Override
-    public boolean equals(Object o)
-    {
-	if (o instanceof SecretKeySpec)
-	{
-	    byte[] okey = ((SecretKeySpec) o).getEncoded();
-	    if (key.length != okey.length)
-		return false;
-	    for (int i = 0; i < key.length; i++)
-	    {
-		if (key[i] != okey[i])
-		    return false;
-	    }
-	    return algorithm.equals(((SecretKeySpec) o).getAlgorithm());
+	/**
+	 * Create a new secret key spec from part of a byte array.
+	 *
+	 * @param key
+	 *            The key material.
+	 * @param off
+	 *            The offset at which key material begins.
+	 * @param len
+	 *            The length of key material.
+	 * @param algorithm
+	 *            The name of the algorithm using this key.
+	 */
+	public SecretKeySpec(byte[] key, int off, int len, String algorithm) {
+		this.key = new byte[len];
+		this.algorithm = algorithm;
+		System.arraycopy(key, off, this.key, 0, len);
 	}
-	else
-	{
-	    return false;
+
+	/**
+	 * Create a new secret key spec from an entire byte array.
+	 *
+	 * @param key
+	 *            The key material.
+	 * @param algorithm
+	 *            The name of the algorithm using this key.
+	 */
+	public SecretKeySpec(byte[] key, String algorithm) {
+		this(key, 0, key.length, algorithm);
 	}
-    }
 
-    /**
-     * Return the name of the algorithm associated with this secret key.
-     *
-     * @return The algorithm's name.
-     */
-    @Override
-    public String getAlgorithm()
-    {
-	return algorithm;
-    }
+	// Instance methods.
+	// ------------------------------------------------------------------------
 
-    /**
-     * Return the key as a byte array.
-     *
-     * @return The key material.
-     */
-    @Override
-    public byte[] getEncoded()
-    {
-	return key;
-    }
-
-    /**
-     * This key's format, which is always "RAW".
-     *
-     * @return "RAW"
-     */
-    @Override
-    public String getFormat()
-    {
-	return "RAW";
-    }
-
-    @Override
-    public int hashCode()
-    {
-	int code = 0;
-	for (int i = 0; i < key.length; i++)
-	{
-	    code ^= (key[i] & 0xff) << (i << 3 & 31);
+	@Override
+	public boolean equals(Object o) {
+		if (o instanceof SecretKeySpec) {
+			byte[] okey = ((SecretKeySpec) o).getEncoded();
+			if (key.length != okey.length)
+				return false;
+			for (int i = 0; i < key.length; i++) {
+				if (key[i] != okey[i])
+					return false;
+			}
+			return algorithm.equals(((SecretKeySpec) o).getAlgorithm());
+		} else {
+			return false;
+		}
 	}
-	return code ^ algorithm.hashCode();
-    }
+
+	/**
+	 * Return the name of the algorithm associated with this secret key.
+	 *
+	 * @return The algorithm's name.
+	 */
+	@Override
+	public String getAlgorithm() {
+		return algorithm;
+	}
+
+	/**
+	 * Return the key as a byte array.
+	 *
+	 * @return The key material.
+	 */
+	@Override
+	public byte[] getEncoded() {
+		return key;
+	}
+
+	/**
+	 * This key's format, which is always "RAW".
+	 *
+	 * @return "RAW"
+	 */
+	@Override
+	public String getFormat() {
+		return "RAW";
+	}
+
+	@Override
+	public int hashCode() {
+		int code = 0;
+		for (int i = 0; i < key.length; i++) {
+			code ^= (key[i] & 0xff) << (i << 3 & 31);
+		}
+		return code ^ algorithm.hashCode();
+	}
 }

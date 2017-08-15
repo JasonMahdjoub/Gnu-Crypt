@@ -58,101 +58,83 @@ import gnu.jgnu.security.der.DERValue;
  *
  * @author Casey Marshall (csm@gnu.org)
  */
-public class GeneralSubtree
-{
-    private final GeneralName base;
+public class GeneralSubtree {
+	private final GeneralName base;
 
-    private final int minimum;
+	private final int minimum;
 
-    private final int maximum;
+	private final int maximum;
 
-    public GeneralSubtree(byte[] encoded) throws IOException
-    {
-	DERReader reader = new DERReader(encoded);
-	DERValue generalSubtree = reader.read();
+	public GeneralSubtree(byte[] encoded) throws IOException {
+		DERReader reader = new DERReader(encoded);
+		DERValue generalSubtree = reader.read();
 
-	if (!generalSubtree.isConstructed())
-	    throw new IOException("malformed GeneralSubtree");
+		if (!generalSubtree.isConstructed())
+			throw new IOException("malformed GeneralSubtree");
 
-	DERValue generalName = reader.read();
-	base = new GeneralName(generalName.getEncoded());
-	if (generalName.isConstructed())
-	    reader.skip(generalName.getLength());
+		DERValue generalName = reader.read();
+		base = new GeneralName(generalName.getEncoded());
+		if (generalName.isConstructed())
+			reader.skip(generalName.getLength());
 
-	int len = generalName.getEncodedLength();
-	if (len < generalSubtree.getLength())
-	{
-	    DERValue distance = reader.read();
-	    if (distance.getTag() == 0)
-	    {
-		minimum = ((BigInteger) distance.getValue()).intValue();
-		len += distance.getEncodedLength();
-		if (len < generalSubtree.getLength())
-		{
-		    distance = reader.read();
-		    if (distance.getTag() != 1)
-			throw new IOException("unexpected tag "
-				+ distance.getTag()
-				+ " (expected 1 for GeneralSubtree maximum distance)");
-		    maximum = ((BigInteger) distance.getValue()).intValue();
+		int len = generalName.getEncodedLength();
+		if (len < generalSubtree.getLength()) {
+			DERValue distance = reader.read();
+			if (distance.getTag() == 0) {
+				minimum = ((BigInteger) distance.getValue()).intValue();
+				len += distance.getEncodedLength();
+				if (len < generalSubtree.getLength()) {
+					distance = reader.read();
+					if (distance.getTag() != 1)
+						throw new IOException("unexpected tag " + distance.getTag()
+								+ " (expected 1 for GeneralSubtree maximum distance)");
+					maximum = ((BigInteger) distance.getValue()).intValue();
+				} else {
+					maximum = -1;
+				}
+			} else if (distance.getTag() == 1) {
+				minimum = 1;
+				maximum = ((BigInteger) distance.getValue()).intValue();
+			} else {
+				throw new IOException(
+						"unexpected tag " + distance.getTag() + " (expected 0 or 1 for GeneralSubtree distance)");
+			}
+		} else {
+			minimum = 0;
+			maximum = -1;
 		}
-		else
-		{
-		    maximum = -1;
-		}
-	    }
-	    else if (distance.getTag() == 1)
-	    {
-		minimum = 1;
-		maximum = ((BigInteger) distance.getValue()).intValue();
-	    }
-	    else
-	    {
-		throw new IOException("unexpected tag " + distance.getTag()
-			+ " (expected 0 or 1 for GeneralSubtree distance)");
-	    }
 	}
-	else
-	{
-	    minimum = 0;
-	    maximum = -1;
+
+	/**
+	 * Returns the base name.
+	 *
+	 * @return The base name.
+	 */
+	public GeneralName base() {
+		return base;
 	}
-    }
 
-    /**
-     * Returns the base name.
-     *
-     * @return The base name.
-     */
-    public GeneralName base()
-    {
-	return base;
-    }
+	/**
+	 * Returns the maximum base distance, or -1 if this value was not specified.
+	 *
+	 * @return The maximum base distance.
+	 */
+	public int maximum() {
+		return maximum;
+	}
 
-    /**
-     * Returns the maximum base distance, or -1 if this value was not specified.
-     *
-     * @return The maximum base distance.
-     */
-    public int maximum()
-    {
-	return maximum;
-    }
+	/**
+	 * Returns the minimum base distance, possibly zero.
+	 *
+	 * @return The minimum base distance.
+	 */
+	public int minimum() {
+		return minimum;
+	}
 
-    /**
-     * Returns the minimum base distance, possibly zero.
-     *
-     * @return The minimum base distance.
-     */
-    public int minimum()
-    {
-	return minimum;
-    }
-
-    @Override
-    public String toString()
-    {
-	return (GeneralSubtree.class.getName() + " [ base=" + base
-		+ "; minimum=" + minimum + "; maximim=" + maximum + " ]");
-    }
+	@Override
+	public String toString() {
+		return (GeneralSubtree.class.getName() + " [ base=" + base + "; minimum=" + minimum + "; maximim=" + maximum
+				+ " ]");
+	}
 }

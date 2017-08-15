@@ -39,10 +39,8 @@ package gnu.jgnux.crypto.jce.key;
 
 import gnu.jgnu.security.Registry;
 
-public class SerpentKeyGeneratorImpl extends SecretKeyGeneratorImpl
-{
-    public SerpentKeyGeneratorImpl()
-    {
-	super(Registry.SERPENT_CIPHER);
-    }
+public class SerpentKeyGeneratorImpl extends SecretKeyGeneratorImpl {
+	public SerpentKeyGeneratorImpl() {
+		super(Registry.SERPENT_CIPHER);
+	}
 }

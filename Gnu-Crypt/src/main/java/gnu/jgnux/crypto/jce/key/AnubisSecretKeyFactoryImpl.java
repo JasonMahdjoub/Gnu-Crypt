@@ -37,9 +37,7 @@ exception statement from your version.  */
 
 package gnu.jgnux.crypto.jce.key;
 
-public class AnubisSecretKeyFactoryImpl extends SecretKeyFactoryImpl
-{
-    public AnubisSecretKeyFactoryImpl()
-    {
-    }
+public class AnubisSecretKeyFactoryImpl extends SecretKeyFactoryImpl {
+	public AnubisSecretKeyFactoryImpl() {
+	}
 }

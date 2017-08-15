@@ -47,151 +47,139 @@ import java.io.Serializable;
  *
  * @since 1.5
  */
-public class SaslException extends IOException implements Serializable
-{
+public class SaslException extends IOException implements Serializable {
 
-    // Constants and variables
-    // -------------------------------------------------------------------------
+	// Constants and variables
+	// -------------------------------------------------------------------------
 
-    private static final long serialVersionUID = 4579784287983423626L;
+	private static final long serialVersionUID = 4579784287983423626L;
 
-    /**
-     * @serial The possibly null root cause exception.
-     */
-    private Throwable _exception = null;
+	/**
+	 * @serial The possibly null root cause exception.
+	 */
+	private Throwable _exception = null;
 
-    // Constructor(s)
-    // -------------------------------------------------------------------------
+	// Constructor(s)
+	// -------------------------------------------------------------------------
 
-    /**
-     * Constructs a new instance of <code>SaslException</code>. The root
-     * exception and the detailed message are null.
-     */
-    public SaslException()
-    {
-	super();
-    }
+	/**
+	 * Constructs a new instance of <code>SaslException</code>. The root exception
+	 * and the detailed message are null.
+	 */
+	public SaslException() {
+		super();
+	}
 
-    /**
-     * Constructs a new instance of <code>SaslException</code> with a detailed
-     * message. The <code>root</code> exception is <code>null</code>.
-     *
-     * @param detail
-     *            a possibly null string containing details of the exception.
-     * @see Throwable#getMessage()
-     */
-    public SaslException(String detail)
-    {
-	super(detail);
-    }
+	/**
+	 * Constructs a new instance of <code>SaslException</code> with a detailed
+	 * message. The <code>root</code> exception is <code>null</code>.
+	 *
+	 * @param detail
+	 *            a possibly null string containing details of the exception.
+	 * @see Throwable#getMessage()
+	 */
+	public SaslException(String detail) {
+		super(detail);
+	}
 
-    /**
-     * Constructs a new instance of <code>SaslException</code> with a detailed
-     * message and a root exception. For example, a <code>SaslException</code>
-     * might result from a problem with the callback handler, which might throw
-     * a {@link javax.security.auth.callback.UnsupportedCallbackException} if it
-     * does not support the requested callback, or throw an {@link IOException}
-     * if it had problems obtaining data for the callback. The
-     * <code>SaslException</code>'s root exception would be then be the
-     * exception thrown by the callback handler.
-     *
-     * @param detail
-     *            a possibly <code>null</code> string containing details of the
-     *            exception.
-     * @param ex
-     *            a possibly <code>null</code> root exception that caused this
-     *            exception.
-     * @see Throwable#getMessage()
-     * @see #getCause()
-     */
-    public SaslException(String detail, Throwable ex)
-    {
-	super(detail);
-	_exception = ex;
-    }
+	/**
+	 * Constructs a new instance of <code>SaslException</code> with a detailed
+	 * message and a root exception. For example, a <code>SaslException</code> might
+	 * result from a problem with the callback handler, which might throw a
+	 * {@link javax.security.auth.callback.UnsupportedCallbackException} if it does
+	 * not support the requested callback, or throw an {@link IOException} if it had
+	 * problems obtaining data for the callback. The <code>SaslException</code>'s
+	 * root exception would be then be the exception thrown by the callback handler.
+	 *
+	 * @param detail
+	 *            a possibly <code>null</code> string containing details of the
+	 *            exception.
+	 * @param ex
+	 *            a possibly <code>null</code> root exception that caused this
+	 *            exception.
+	 * @see Throwable#getMessage()
+	 * @see #getCause()
+	 */
+	public SaslException(String detail, Throwable ex) {
+		super(detail);
+		_exception = ex;
+	}
 
-    // Class methods
-    // -------------------------------------------------------------------------
+	// Class methods
+	// -------------------------------------------------------------------------
 
-    // Instance methods
-    // -------------------------------------------------------------------------
+	// Instance methods
+	// -------------------------------------------------------------------------
 
-    /**
-     * Returns the cause of this throwable or <code>null</code> if the cause is
-     * nonexistent or unknown. The cause is the throwable that caused this
-     * exception to be thrown.
-     *
-     * @return the possibly <code>null</code> exception that caused this
-     *         exception.
-     */
-    @Override
-    public Throwable getCause()
-    {
-	return _exception;
-    }
+	/**
+	 * Returns the cause of this throwable or <code>null</code> if the cause is
+	 * nonexistent or unknown. The cause is the throwable that caused this exception
+	 * to be thrown.
+	 *
+	 * @return the possibly <code>null</code> exception that caused this exception.
+	 */
+	@Override
+	public Throwable getCause() {
+		return _exception;
+	}
 
-    /**
-     * Prints this exception's stack trace to <code>System.err</code>. If this
-     * exception has a root exception; the stack trace of the root exception is
-     * also printed to <code>System.err</code>.
-     */
-    @Override
-    public void printStackTrace()
-    {
-	super.printStackTrace();
-	if (_exception != null)
-	    _exception.printStackTrace();
-    }
+	/**
+	 * Prints this exception's stack trace to <code>System.err</code>. If this
+	 * exception has a root exception; the stack trace of the root exception is also
+	 * printed to <code>System.err</code>.
+	 */
+	@Override
+	public void printStackTrace() {
+		super.printStackTrace();
+		if (_exception != null)
+			_exception.printStackTrace();
+	}
 
-    /**
-     * Prints this exception's stack trace to a print stream. If this exception
-     * has a root exception; the stack trace of the root exception is also
-     * printed to the print stream.
-     *
-     * @param ps
-     *            the non-null print stream to which to print.
-     */
-    @Override
-    public void printStackTrace(PrintStream ps)
-    {
-	super.printStackTrace(ps);
-	if (_exception != null)
-	    _exception.printStackTrace(ps);
-    }
+	/**
+	 * Prints this exception's stack trace to a print stream. If this exception has
+	 * a root exception; the stack trace of the root exception is also printed to
+	 * the print stream.
+	 *
+	 * @param ps
+	 *            the non-null print stream to which to print.
+	 */
+	@Override
+	public void printStackTrace(PrintStream ps) {
+		super.printStackTrace(ps);
+		if (_exception != null)
+			_exception.printStackTrace(ps);
+	}
 
-    /**
-     * Prints this exception's stack trace to a print writer. If this exception
-     * has a root exception; the stack trace of the root exception is also
-     * printed to the print writer.
-     *
-     * @param pw
-     *            the non-null print writer to use for output.
-     */
-    @Override
-    public void printStackTrace(PrintWriter pw)
-    {
-	super.printStackTrace(pw);
-	if (_exception != null)
-	    _exception.printStackTrace(pw);
-    }
+	/**
+	 * Prints this exception's stack trace to a print writer. If this exception has
+	 * a root exception; the stack trace of the root exception is also printed to
+	 * the print writer.
+	 *
+	 * @param pw
+	 *            the non-null print writer to use for output.
+	 */
+	@Override
+	public void printStackTrace(PrintWriter pw) {
+		super.printStackTrace(pw);
+		if (_exception != null)
+			_exception.printStackTrace(pw);
+	}
 
-    /**
-     * Returns the string representation of this exception. The string
-     * representation contains this exception's class name, its detailed
-     * messsage, and if it has a root exception, the string representation of
-     * the root exception. This string representation is meant for debugging and
-     * not meant to be interpreted programmatically.
-     *
-     * @return the non-null string representation of this exception.
-     * @see Throwable#getMessage()
-     */
-    @Override
-    public String toString()
-    {
-	StringBuilder sb = new StringBuilder(this.getClass().getName())
-		.append(": ").append(super.toString());
-	if (_exception != null)
-	    sb.append("; caused by: ").append(_exception.toString());
-	return sb.toString();
-    }
+	/**
+	 * Returns the string representation of this exception. The string
+	 * representation contains this exception's class name, its detailed messsage,
+	 * and if it has a root exception, the string representation of the root
+	 * exception. This string representation is meant for debugging and not meant to
+	 * be interpreted programmatically.
+	 *
+	 * @return the non-null string representation of this exception.
+	 * @see Throwable#getMessage()
+	 */
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder(this.getClass().getName()).append(": ").append(super.toString());
+		if (_exception != null)
+			sb.append("; caused by: ").append(_exception.toString());
+		return sb.toString();
+	}
 }

@@ -43,15 +43,13 @@ import gnu.jgnu.security.Registry;
  * The implementation of the SHA-256 based SecureRandom <i>Service Provider
  * Interface</i> (<b>SPI</b>) adapter.
  */
-public class Sha256RandomSpi extends SecureRandomAdapter
-{
-    /**
-     * 
-     */
-    private static final long serialVersionUID = -8748894083942397288L;
+public class Sha256RandomSpi extends SecureRandomAdapter {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -8748894083942397288L;
 
-    public Sha256RandomSpi()
-    {
-	super(Registry.SHA256_HASH);
-    }
+	public Sha256RandomSpi() {
+		super(Registry.SHA256_HASH);
+	}
 }

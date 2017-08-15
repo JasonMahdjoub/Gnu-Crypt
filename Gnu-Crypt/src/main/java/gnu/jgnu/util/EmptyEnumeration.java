@@ -50,49 +50,45 @@ import java.util.NoSuchElementException;
  *
  * @author Mark Wielaard (mark@klomp.org)
  */
-public final class EmptyEnumeration<T> implements Enumeration<T>, Serializable
-{
-    /**
-     * 
-     */
-    private static final long serialVersionUID = 4052986788045622965L;
-    /** The only instance of this class */
-    /*
-     * private static final EmptyEnumeration<Object> instance = new
-     * EmptyEnumeration<Object>();
-     */
+public final class EmptyEnumeration<T> implements Enumeration<T>, Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 4052986788045622965L;
+	/** The only instance of this class */
+	/*
+	 * private static final EmptyEnumeration<Object> instance = new
+	 * EmptyEnumeration<Object>();
+	 */
 
-    /**
-     * Returns an instance of this class for Object. It can be shared by
-     * multiple objects and threads.
-     *
-     * @return the common empty enumeration
-     */
-    public static <T> EmptyEnumeration<T> getInstance()
-    {
-	return new EmptyEnumeration<T>();
-    }
+	/**
+	 * Returns an instance of this class for Object. It can be shared by multiple
+	 * objects and threads.
+	 *
+	 * @return the common empty enumeration
+	 */
+	public static <T> EmptyEnumeration<T> getInstance() {
+		return new EmptyEnumeration<T>();
+	}
 
-    /**
-     * Returns false, since there are no elements.
-     *
-     * @return false
-     */
-    @Override
-    public boolean hasMoreElements()
-    {
-	return false;
-    }
+	/**
+	 * Returns false, since there are no elements.
+	 *
+	 * @return false
+	 */
+	@Override
+	public boolean hasMoreElements() {
+		return false;
+	}
 
-    /**
-     * Always throws <code>NoSuchElementException</code>, since it is empty.
-     *
-     * @throws NoSuchElementException
-     *             this is empty
-     */
-    @Override
-    public T nextElement()
-    {
-	throw new NoSuchElementException();
-    }
+	/**
+	 * Always throws <code>NoSuchElementException</code>, since it is empty.
+	 *
+	 * @throws NoSuchElementException
+	 *             this is empty
+	 */
+	@Override
+	public T nextElement() {
+		throw new NoSuchElementException();
+	}
 }

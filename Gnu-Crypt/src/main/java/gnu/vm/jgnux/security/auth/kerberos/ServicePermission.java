@@ -50,142 +50,127 @@ import java.util.Vector;
  *
  * @since 1.4
  */
-public final class ServicePermission extends Permission
-{
-    // FIXME: Enable this when serialization works.
-    // private static final long serialVersionUID = -1227585031618624935L;
+public final class ServicePermission extends Permission {
+	// FIXME: Enable this when serialization works.
+	// private static final long serialVersionUID = -1227585031618624935L;
 
-    /**
-     * 
-     */
-    private static final long serialVersionUID = 2408957135015672185L;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 2408957135015672185L;
 
-    private static final int INITIATE = 1;
+	private static final int INITIATE = 1;
 
-    private static final int ACCEPT = 2;
+	private static final int ACCEPT = 2;
 
-    private int flags;
+	private int flags;
 
-    /**
-     * Create a new service permission with the indicated name and actions.
-     *
-     * The name is the name of the kerberos principal for the service.
-     *
-     * The actions are a comma-separated list of strings. The recognized actions
-     * are "initiate" and "accept". The "initiate" action means that the holder
-     * of the permission can access the service. The "accept" action means that
-     * the holder of the permission can operate as this service.
-     *
-     * @param name
-     *            the prinicpal's name
-     * @param action
-     *            the allowed actions
-     */
-    public ServicePermission(String name, String action)
-    {
-	super(name);
-	parseActions(action);
-    }
-
-    @Override
-    public boolean equals(Object obj)
-    {
-	if (!(obj instanceof ServicePermission))
-	    return false;
-	ServicePermission sp = (ServicePermission) obj;
-	return flags == sp.flags && getName().equals(sp.getName());
-    }
-
-    /**
-     * Return a string representing the actions.
-     */
-    @Override
-    public String getActions()
-    {
-	if (flags == (INITIATE | ACCEPT))
-	    return "initiate,accept";
-	if (flags == INITIATE)
-	    return "initiate";
-	if (flags == ACCEPT)
-	    return "accept";
-	return "";
-    }
-
-    @Override
-    public int hashCode()
-    {
-	return getName().hashCode() + flags;
-    }
-
-    @Override
-    public boolean implies(Permission perm)
-    {
-	if (!(perm instanceof ServicePermission))
-	    return false;
-	ServicePermission sp = (ServicePermission) perm;
-	if ((flags & sp.flags) != sp.flags)
-	    return false;
-	return getName().equals(sp.getName());
-    }
-
-    @Override
-    public PermissionCollection newPermissionCollection()
-    {
-	return new PermissionCollection() {
-	    /**
-	     * 
-	     */
-	    private static final long serialVersionUID = -2992980159867783130L;
-
-	    private Vector<Permission> permissions = new Vector<>();
-
-	    @Override
-	    public void add(Permission perm)
-	    {
-		if (isReadOnly())
-		    throw new SecurityException("readonly");
-		if (!(perm instanceof ServicePermission))
-		    throw new IllegalArgumentException(
-			    "can only add DelegationPermissions");
-		permissions.add(perm);
-	    }
-
-	    @Override
-	    public Enumeration<Permission> elements()
-	    {
-		return permissions.elements();
-	    }
-
-	    @Override
-	    public boolean implies(Permission perm)
-	    {
-		if (!(perm instanceof ServicePermission))
-		    return false;
-		Enumeration<Permission> e = elements();
-		while (e.hasMoreElements())
-		{
-		    ServicePermission sp = (ServicePermission) e.nextElement();
-		    if (sp.implies(perm))
-			return true;
-		}
-		return false;
-	    }
-	};
-    }
-
-    private void parseActions(String actions)
-    {
-	StringTokenizer tok = new StringTokenizer(actions, ",");
-	while (tok.hasMoreTokens())
-	{
-	    String token = tok.nextToken();
-	    if ("accept".equals(token))
-		flags |= ACCEPT;
-	    else if ("initiate".equals(token))
-		flags |= INITIATE;
-	    else
-		throw new IllegalArgumentException(
-			"unrecognized token: " + token);
+	/**
+	 * Create a new service permission with the indicated name and actions.
+	 *
+	 * The name is the name of the kerberos principal for the service.
+	 *
+	 * The actions are a comma-separated list of strings. The recognized actions are
+	 * "initiate" and "accept". The "initiate" action means that the holder of the
+	 * permission can access the service. The "accept" action means that the holder
+	 * of the permission can operate as this service.
+	 *
+	 * @param name
+	 *            the prinicpal's name
+	 * @param action
+	 *            the allowed actions
+	 */
+	public ServicePermission(String name, String action) {
+		super(name);
+		parseActions(action);
 	}
-    }
+
+	@Override
+	public boolean equals(Object obj) {
+		if (!(obj instanceof ServicePermission))
+			return false;
+		ServicePermission sp = (ServicePermission) obj;
+		return flags == sp.flags && getName().equals(sp.getName());
+	}
+
+	/**
+	 * Return a string representing the actions.
+	 */
+	@Override
+	public String getActions() {
+		if (flags == (INITIATE | ACCEPT))
+			return "initiate,accept";
+		if (flags == INITIATE)
+			return "initiate";
+		if (flags == ACCEPT)
+			return "accept";
+		return "";
+	}
+
+	@Override
+	public int hashCode() {
+		return getName().hashCode() + flags;
+	}
+
+	@Override
+	public boolean implies(Permission perm) {
+		if (!(perm instanceof ServicePermission))
+			return false;
+		ServicePermission sp = (ServicePermission) perm;
+		if ((flags & sp.flags) != sp.flags)
+			return false;
+		return getName().equals(sp.getName());
+	}
+
+	@Override
+	public PermissionCollection newPermissionCollection() {
+		return new PermissionCollection() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = -2992980159867783130L;
+
+			private Vector<Permission> permissions = new Vector<>();
+
+			@Override
+			public void add(Permission perm) {
+				if (isReadOnly())
+					throw new SecurityException("readonly");
+				if (!(perm instanceof ServicePermission))
+					throw new IllegalArgumentException("can only add DelegationPermissions");
+				permissions.add(perm);
+			}
+
+			@Override
+			public Enumeration<Permission> elements() {
+				return permissions.elements();
+			}
+
+			@Override
+			public boolean implies(Permission perm) {
+				if (!(perm instanceof ServicePermission))
+					return false;
+				Enumeration<Permission> e = elements();
+				while (e.hasMoreElements()) {
+					ServicePermission sp = (ServicePermission) e.nextElement();
+					if (sp.implies(perm))
+						return true;
+				}
+				return false;
+			}
+		};
+	}
+
+	private void parseActions(String actions) {
+		StringTokenizer tok = new StringTokenizer(actions, ",");
+		while (tok.hasMoreTokens()) {
+			String token = tok.nextToken();
+			if ("accept".equals(token))
+				flags |= ACCEPT;
+			else if ("initiate".equals(token))
+				flags |= INITIATE;
+			else
+				throw new IllegalArgumentException("unrecognized token: " + token);
+		}
+	}
 }

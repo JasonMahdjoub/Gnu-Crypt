@@ -57,64 +57,60 @@ import javax.security.sasl.SaslException;
  *
  * @since 1.5
  */
-public class AuthenticationException extends SaslException
-{
+public class AuthenticationException extends SaslException {
 
-    // Constants and variables
-    // -------------------------------------------------------------------------
+	// Constants and variables
+	// -------------------------------------------------------------------------
 
-    // Constructor(s)
-    // -------------------------------------------------------------------------
+	// Constructor(s)
+	// -------------------------------------------------------------------------
 
-    /**
-     * 
-     */
-    private static final long serialVersionUID = -2596667879565720747L;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -2596667879565720747L;
 
-    /**
-     * Constructs a new instance of <code>AuthenticationException</code>. The
-     * root exception and the detailed message are <code>null</code>.
-     */
-    public AuthenticationException()
-    {
-	super();
-    }
+	/**
+	 * Constructs a new instance of <code>AuthenticationException</code>. The root
+	 * exception and the detailed message are <code>null</code>.
+	 */
+	public AuthenticationException() {
+		super();
+	}
 
-    /**
-     * Constructs a new instance of <code>AuthenticationException</code> with a
-     * detailed message. The root exception is <code>null</code>.
-     *
-     * @param detail
-     *            a possibly <code>null</code> string containing details of the
-     *            exception.
-     * @see Throwable#getMessage()
-     */
-    public AuthenticationException(String detail)
-    {
-	super(detail);
-    }
+	/**
+	 * Constructs a new instance of <code>AuthenticationException</code> with a
+	 * detailed message. The root exception is <code>null</code>.
+	 *
+	 * @param detail
+	 *            a possibly <code>null</code> string containing details of the
+	 *            exception.
+	 * @see Throwable#getMessage()
+	 */
+	public AuthenticationException(String detail) {
+		super(detail);
+	}
 
-    /**
-     * Constructs a new instance of <code>AuthenticationException</code> with a
-     * detailed message and a root exception.
-     *
-     * @param detail
-     *            a possibly <code>null</code> string containing details of the
-     *            exception.
-     * @param ex
-     *            a possibly <code>null</code> root exception that caused this
-     *            exception.
-     * @see Throwable#getMessage()
-     * @see SaslException#getCause()
-     */
-    public AuthenticationException(String detail, Throwable ex)
-    {
-	super(detail, ex);
-    }
+	/**
+	 * Constructs a new instance of <code>AuthenticationException</code> with a
+	 * detailed message and a root exception.
+	 *
+	 * @param detail
+	 *            a possibly <code>null</code> string containing details of the
+	 *            exception.
+	 * @param ex
+	 *            a possibly <code>null</code> root exception that caused this
+	 *            exception.
+	 * @see Throwable#getMessage()
+	 * @see SaslException#getCause()
+	 */
+	public AuthenticationException(String detail, Throwable ex) {
+		super(detail, ex);
+	}
 
-    // Class methods
-    // -------------------------------------------------------------------------
+	// Class methods
+	// -------------------------------------------------------------------------
 
-    // Instance methods
-    // -------------------------------------------------------------------------
+	// Instance methods
+	// -------------------------------------------------------------------------
 }

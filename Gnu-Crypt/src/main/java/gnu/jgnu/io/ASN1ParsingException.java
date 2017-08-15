@@ -40,21 +40,18 @@ package gnu.jgnu.io;
 /**
  * Signals a malformed ASN.1 sequence.
  */
-public class ASN1ParsingException extends java.io.IOException
-{
+public class ASN1ParsingException extends java.io.IOException {
 
-    /**
-    * 
-    */
-    private static final long serialVersionUID = 7724546926889195335L;
+	/**
+	* 
+	*/
+	private static final long serialVersionUID = 7724546926889195335L;
 
-    public ASN1ParsingException()
-    {
-	super();
-    }
+	public ASN1ParsingException() {
+		super();
+	}
 
-    public ASN1ParsingException(String msg)
-    {
-	super(msg);
-    }
+	public ASN1ParsingException(String msg) {
+		super(msg);
+	}
 }

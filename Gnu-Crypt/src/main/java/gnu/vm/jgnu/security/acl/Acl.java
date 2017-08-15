@@ -60,103 +60,101 @@ import java.util.Enumeration;
  *
  * @author Aaron M. Renn (arenn@urbanophile.com)
  */
-public interface Acl extends Owner
-{
+public interface Acl extends Owner {
 
-    /**
-     * This method adds the specified entry to the ACL
-     *
-     * @param caller
-     *            The <code>Principal</code> requesting the addition
-     * @param entry
-     *            The ACL entry to add
-     *
-     * @return <code>true</code> if the entry was added, <code>false</code> if
-     *         there is already an entry of the same type for the
-     *         <code>Principal</code>.
-     *
-     * @exception NotOwnerException
-     *                If the caller is not an owner of this ACL.
-     */
-    boolean addEntry(Principal caller, AclEntry entry) throws NotOwnerException;
+	/**
+	 * This method adds the specified entry to the ACL
+	 *
+	 * @param caller
+	 *            The <code>Principal</code> requesting the addition
+	 * @param entry
+	 *            The ACL entry to add
+	 *
+	 * @return <code>true</code> if the entry was added, <code>false</code> if there
+	 *         is already an entry of the same type for the <code>Principal</code>.
+	 *
+	 * @exception NotOwnerException
+	 *                If the caller is not an owner of this ACL.
+	 */
+	boolean addEntry(Principal caller, AclEntry entry) throws NotOwnerException;
 
-    /**
-     * This method tests whether or not the specified <code>Principal</code> has
-     * the specified <code>Permission</code>
-     *
-     * @param user
-     *            The <code>Principal</code> to test
-     * @param perm
-     *            The <code>Permission</code> to test for
-     *
-     * @return <code>true</code> if the user has been granted the permission,
-     *         <code>false</code> otherwise
-     */
-    boolean checkPermission(Principal user, Permission perm);
+	/**
+	 * This method tests whether or not the specified <code>Principal</code> has the
+	 * specified <code>Permission</code>
+	 *
+	 * @param user
+	 *            The <code>Principal</code> to test
+	 * @param perm
+	 *            The <code>Permission</code> to test for
+	 *
+	 * @return <code>true</code> if the user has been granted the permission,
+	 *         <code>false</code> otherwise
+	 */
+	boolean checkPermission(Principal user, Permission perm);
 
-    /**
-     * This method returns a list of all the entries in the ACL as an
-     * <code>Enumeration</code>.
-     *
-     * @return An enumeration of the ACL entries
-     */
-    Enumeration<AclEntry> entries();
+	/**
+	 * This method returns a list of all the entries in the ACL as an
+	 * <code>Enumeration</code>.
+	 *
+	 * @return An enumeration of the ACL entries
+	 */
+	Enumeration<AclEntry> entries();
 
-    /**
-     * This method returns the name of this ACL.
-     *
-     * @return The name of this ACL
-     */
-    String getName();
+	/**
+	 * This method returns the name of this ACL.
+	 *
+	 * @return The name of this ACL
+	 */
+	String getName();
 
-    /**
-     * This method returns a list of <code>Permission</code>'s that are granted
-     * to a particular <code>Principal</code>. This includes any permissions
-     * that are granted to <code>Group</code>'s to which the
-     * <code>Principal</code> belongs unless they are overridden by a negative
-     * ACL. This permission list is returned as an <code>Enumeration</code>.
-     *
-     * @param user
-     *            The <code>Principal</code> to retrieve permissions for.
-     *
-     * @return A list of permissions for the <code>Principal</code>.
-     */
-    Enumeration<Permission> getPermissions(Principal user);
+	/**
+	 * This method returns a list of <code>Permission</code>'s that are granted to a
+	 * particular <code>Principal</code>. This includes any permissions that are
+	 * granted to <code>Group</code>'s to which the <code>Principal</code> belongs
+	 * unless they are overridden by a negative ACL. This permission list is
+	 * returned as an <code>Enumeration</code>.
+	 *
+	 * @param user
+	 *            The <code>Principal</code> to retrieve permissions for.
+	 *
+	 * @return A list of permissions for the <code>Principal</code>.
+	 */
+	Enumeration<Permission> getPermissions(Principal user);
 
-    /**
-     * This method delets the specified entry from the ACL
-     *
-     * @param caller
-     *            The <code>Principal</code> requesting the deletion.
-     * @param entry
-     *            The ACL entry to delete
-     *
-     * @return <code>true</code> if the entry was deleted, or <code>false</code>
-     *         if this entry was not part of the ACL to begin with
-     *
-     * @exception NotOwnerException
-     *                If the caller is not an owner of this ACL.
-     */
-    boolean removeEntry(Principal caller, AclEntry entry) throws NotOwnerException;
+	/**
+	 * This method delets the specified entry from the ACL
+	 *
+	 * @param caller
+	 *            The <code>Principal</code> requesting the deletion.
+	 * @param entry
+	 *            The ACL entry to delete
+	 *
+	 * @return <code>true</code> if the entry was deleted, or <code>false</code> if
+	 *         this entry was not part of the ACL to begin with
+	 *
+	 * @exception NotOwnerException
+	 *                If the caller is not an owner of this ACL.
+	 */
+	boolean removeEntry(Principal caller, AclEntry entry) throws NotOwnerException;
 
-    /**
-     * This method sets the name of the ACL
-     *
-     * @param caller
-     *            The <code>Principal</code> requesting the action.
-     * @param name
-     *            The new name for this ACL.
-     *
-     * @exception NotOwnerException
-     *                If the caller is not an owner of this ACL.
-     */
-    void setName(Principal caller, String name) throws NotOwnerException;
+	/**
+	 * This method sets the name of the ACL
+	 *
+	 * @param caller
+	 *            The <code>Principal</code> requesting the action.
+	 * @param name
+	 *            The new name for this ACL.
+	 *
+	 * @exception NotOwnerException
+	 *                If the caller is not an owner of this ACL.
+	 */
+	void setName(Principal caller, String name) throws NotOwnerException;
 
-    /**
-     * This method returns the ACL as a <code>String</code>
-     *
-     * @return A <code>String</code> representation of this ACL
-     */
-    @Override
-    String toString();
+	/**
+	 * This method returns the ACL as a <code>String</code>
+	 *
+	 * @return A <code>String</code> representation of this ACL
+	 */
+	@Override
+	String toString();
 }

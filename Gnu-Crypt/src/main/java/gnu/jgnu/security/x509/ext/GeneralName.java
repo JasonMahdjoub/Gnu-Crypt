@@ -71,168 +71,146 @@ import gnu.jgnu.security.x509.Util;
  *
  * @author Casey Marshall (csm@gnu.org)
  */
-public class GeneralName
-{
-    public static enum Kind
-    {
-	otherName(0), rfc822Name(1), dNSName(2), x400Address(3), directoryName(
-		4), ediPartyName(5), uniformResourceIdentifier(
-			6), iPAddress(7), registeredId(8);
+public class GeneralName {
+	public static enum Kind {
+		otherName(0), rfc822Name(1), dNSName(2), x400Address(3), directoryName(4), ediPartyName(
+				5), uniformResourceIdentifier(6), iPAddress(7), registeredId(8);
 
-	public static Kind forTag(final int tag)
-	{
-	    switch (tag)
-	    {
-		case 0:
-		    return otherName;
-		case 1:
-		    return rfc822Name;
-		case 2:
-		    return dNSName;
-		case 3:
-		    return x400Address;
-		case 4:
-		    return directoryName;
-		case 5:
-		    return ediPartyName;
-		case 6:
-		    return uniformResourceIdentifier;
-		case 7:
-		    return iPAddress;
-		case 8:
-		    return registeredId;
-	    }
+		public static Kind forTag(final int tag) {
+			switch (tag) {
+			case 0:
+				return otherName;
+			case 1:
+				return rfc822Name;
+			case 2:
+				return dNSName;
+			case 3:
+				return x400Address;
+			case 4:
+				return directoryName;
+			case 5:
+				return ediPartyName;
+			case 6:
+				return uniformResourceIdentifier;
+			case 7:
+				return iPAddress;
+			case 8:
+				return registeredId;
+			}
 
-	    throw new IllegalArgumentException("invalid tag: " + tag);
+			throw new IllegalArgumentException("invalid tag: " + tag);
+		}
+
+		private int tag;
+
+		private Kind(int tag) {
+			this.tag = tag;
+		}
+
+		public int tag() {
+			return tag;
+		}
 	}
 
-	private int tag;
+	private final Kind kind;
 
-	private Kind(int tag)
-	{
-	    this.tag = tag;
+	private final byte[] name;
+
+	private final byte[] encoded;
+
+	public GeneralName(byte[] encoded) throws IOException {
+		DERReader reader = new DERReader(encoded);
+		DERValue value = reader.read();
+
+		if (value.getTagClass() != DER.CONTEXT)
+			throw new IOException("malformed GeneralName");
+
+		this.encoded = value.getEncoded();
+
+		kind = Kind.forTag(value.getTag());
+		switch (kind) {
+		case otherName:
+			name = value.getEncoded();
+			name[0] = (byte) (DER.CONSTRUCTED | DER.SEQUENCE);
+			// Skip the two fields of the name.
+			reader.read(); // OID
+			reader.read(); // Octet string
+			break;
+
+		case rfc822Name:
+			name = (byte[]) value.getValue();
+			break;
+
+		case dNSName:
+			name = (byte[]) value.getValue();
+			break;
+
+		case x400Address:
+			name = (byte[]) value.getValue();
+			break;
+
+		case directoryName:
+			name = value.getEncoded();
+			name[0] = (byte) (DER.CONSTRUCTED | DER.SEQUENCE);
+			break;
+
+		case ediPartyName:
+			name = value.getEncoded();
+			name[0] = (byte) (DER.CONSTRUCTED | DER.SEQUENCE);
+			break;
+
+		case uniformResourceIdentifier:
+			name = (byte[]) value.getValue();
+			break;
+
+		case iPAddress:
+			name = (byte[]) value.getValue();
+			break;
+
+		case registeredId:
+			name = value.getEncoded();
+			name[0] = DER.OBJECT_IDENTIFIER;
+			break;
+
+		default:
+			name = null; // Not reached.
+		}
 	}
 
-	public int tag()
-	{
-	    return tag;
+	public GeneralName(Kind kind, byte[] name) {
+		this.kind = kind;
+		this.name = name.clone();
+		this.encoded = null;
 	}
-    }
 
-    private final Kind kind;
-
-    private final byte[] name;
-
-    private final byte[] encoded;
-
-    public GeneralName(byte[] encoded) throws IOException
-    {
-	DERReader reader = new DERReader(encoded);
-	DERValue value = reader.read();
-
-	if (value.getTagClass() != DER.CONTEXT)
-	    throw new IOException("malformed GeneralName");
-
-	this.encoded = value.getEncoded();
-
-	kind = Kind.forTag(value.getTag());
-	switch (kind)
-	{
-	    case otherName:
-		name = value.getEncoded();
-		name[0] = (byte) (DER.CONSTRUCTED | DER.SEQUENCE);
-		// Skip the two fields of the name.
-		reader.read(); // OID
-		reader.read(); // Octet string
-		break;
-
-	    case rfc822Name:
-		name = (byte[]) value.getValue();
-		break;
-
-	    case dNSName:
-		name = (byte[]) value.getValue();
-		break;
-
-	    case x400Address:
-		name = (byte[]) value.getValue();
-		break;
-
-	    case directoryName:
-		name = value.getEncoded();
-		name[0] = (byte) (DER.CONSTRUCTED | DER.SEQUENCE);
-		break;
-
-	    case ediPartyName:
-		name = value.getEncoded();
-		name[0] = (byte) (DER.CONSTRUCTED | DER.SEQUENCE);
-		break;
-
-	    case uniformResourceIdentifier:
-		name = (byte[]) value.getValue();
-		break;
-
-	    case iPAddress:
-		name = (byte[]) value.getValue();
-		break;
-
-	    case registeredId:
-		name = value.getEncoded();
-		name[0] = DER.OBJECT_IDENTIFIER;
-		break;
-
-	    default:
-		name = null; // Not reached.
+	public byte[] encoded() {
+		try {
+			return encoded.clone();
+		} catch (NullPointerException npe) {
+			return null;
+		}
 	}
-    }
 
-    public GeneralName(Kind kind, byte[] name)
-    {
-	this.kind = kind;
-	this.name = name.clone();
-	this.encoded = null;
-    }
-
-    public byte[] encoded()
-    {
-	try
-	{
-	    return encoded.clone();
+	@Override
+	public boolean equals(Object o) {
+		try {
+			GeneralName that = (GeneralName) o;
+			return (that.kind() == kind() && Arrays.equals(name, that.name));
+		} catch (ClassCastException cce) {
+			return false;
+		}
 	}
-	catch (NullPointerException npe)
-	{
-	    return null;
+
+	public Kind kind() {
+		return kind;
 	}
-    }
 
-    @Override
-    public boolean equals(Object o)
-    {
-	try
-	{
-	    GeneralName that = (GeneralName) o;
-	    return (that.kind() == kind() && Arrays.equals(name, that.name));
+	public byte[] name() {
+		return name.clone();
 	}
-	catch (ClassCastException cce)
-	{
-	    return false;
+
+	@Override
+	public String toString() {
+		return (super.toString() + " [ kind=" + kind + "; name=" + Util.hexDump(name, "") + " ]");
 	}
-    }
-
-    public Kind kind()
-    {
-	return kind;
-    }
-
-    public byte[] name()
-    {
-	return name.clone();
-    }
-
-    @Override
-    public String toString()
-    {
-	return (super.toString() + " [ kind=" + kind + "; name="
-		+ Util.hexDump(name, "") + " ]");
-    }
 }

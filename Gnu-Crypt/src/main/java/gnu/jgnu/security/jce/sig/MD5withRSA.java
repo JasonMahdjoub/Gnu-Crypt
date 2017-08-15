@@ -44,11 +44,8 @@ import gnu.jgnu.security.sig.rsa.RSAPKCS1V1_5SignatureX509Codec;
  * A JCE Adapter for the RSA PKCS1 (v1.5) signature with MD5 hash and X.509
  * encoding format.
  */
-public class MD5withRSA extends SignatureAdapter
-{
-    public MD5withRSA()
-    {
-	super(Registry.RSA_PKCS1_V1_5_SIG + "-" + Registry.MD5_HASH,
-		new RSAPKCS1V1_5SignatureX509Codec());
-    }
+public class MD5withRSA extends SignatureAdapter {
+	public MD5withRSA() {
+		super(Registry.RSA_PKCS1_V1_5_SIG + "-" + Registry.MD5_HASH, new RSAPKCS1V1_5SignatureX509Codec());
+	}
 }

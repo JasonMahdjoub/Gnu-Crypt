@@ -44,17 +44,15 @@ package gnu.vm.jgnu.security.acl;
  * @author Aaron M. Renn (arenn@urbanophile.com)
  * @status updated to 1.4
  */
-public class AclNotFoundException extends Exception
-{
-    /**
-     * Compatible with JDK 1.1+.
-     */
-    private static final long serialVersionUID = 5684295034092681791L;
+public class AclNotFoundException extends Exception {
+	/**
+	 * Compatible with JDK 1.1+.
+	 */
+	private static final long serialVersionUID = 5684295034092681791L;
 
-    /**
-     * Initializes a new instance of this class with no descriptive message
-     */
-    public AclNotFoundException()
-    {
-    }
+	/**
+	 * Initializes a new instance of this class with no descriptive message
+	 */
+	public AclNotFoundException() {
+	}
 }

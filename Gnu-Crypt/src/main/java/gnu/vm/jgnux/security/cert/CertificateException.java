@@ -48,21 +48,18 @@ package gnu.vm.jgnux.security.cert;
  * in new applications.</b>
  * </p>
  */
-public class CertificateException extends Exception
-{
+public class CertificateException extends Exception {
 
-    /**
-     * 
-     */
-    private static final long serialVersionUID = -1796401668381215848L;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -1796401668381215848L;
 
-    public CertificateException()
-    {
-	super();
-    }
+	public CertificateException() {
+		super();
+	}
 
-    public CertificateException(String msg)
-    {
-	super(msg);
-    }
+	public CertificateException(String msg) {
+		super(msg);
+	}
 }

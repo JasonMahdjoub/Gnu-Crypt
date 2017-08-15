@@ -66,288 +66,271 @@ import gnu.jgnu.security.hash.IMessageDigest;
  * Jakob Jonsson and Burt Kaliski.</li>
  * </ol>
  */
-public class EMSA_PSS implements Cloneable
-{
+public class EMSA_PSS implements Cloneable {
 
-    /**
-     * Returns an instance of this object given a designated name of a hash
-     * function.
-     *
-     * @param mdName
-     *            the canonical name of a hash function.
-     * @return an instance of this object configured for use with the designated
-     *         options.
-     */
-    public static EMSA_PSS getInstance(String mdName)
-    {
-	IMessageDigest hash = HashFactory.getInstance(mdName);
-	return new EMSA_PSS(hash);
-    }
-
-    /** The underlying hash function to use with this instance. */
-    private IMessageDigest hash;
-
-    /** The output size of the hash function in octets. */
-    private int hLen;
-
-    /**
-     * Trivial private constructor to enforce use through Factory method.
-     *
-     * @param hash
-     *            the message digest instance to use with this scheme instance.
-     */
-    private EMSA_PSS(IMessageDigest hash)
-    {
-	super();
-
-	this.hash = hash;
-	hLen = hash.hashSize();
-    }
-
-    @Override
-    public Object clone()
-    {
-	return getInstance(hash.name());
-    }
-
-    /**
-     * The decoding operation EMSA-PSS-Decode recovers the message hash from an
-     * encoded message <code>EM</code> and compares it to the hash of
-     * <code>M</code>.
-     *
-     * @param mHash
-     *            the byte sequence resulting from applying the message digest
-     *            algorithm Hash to the message <i>M</i>.
-     * @param EM
-     *            the <i>encoded message</i>, an octet string of length
-     *            <code>emLen = CEILING(emBits/8).
-     * &#64;param emBits the maximal bit length of the integer OS2IP(EM), at least
-     * <code>8.hLen + 8.sLen + 9</code>.
-     * @param sLen
-     *            the length, in octets, of the expected salt.
-     * @return <code>true</code> if the result of the verification was
-     *         <i>consistent</i> with the expected reseult; and
-     *         <code>false</code> if the result was <i>inconsistent</i>.
-     * @exception IllegalArgumentException
-     *                if an exception occurs.
-     */
-    public boolean decode(byte[] mHash, byte[] EM, int emBits, int sLen)
-    {
-	if (sLen < 0)
-	    throw new IllegalArgumentException("sLen");
-	// 1. If the length of M is greater than the input limitation for the
-	// hash
-	// function (2**61 ? 1 octets for SHA-1) then output 'inconsistent' and
-	// stop.
-	// 2. Let mHash = Hash(M), an octet string of length hLen.
-	if (hLen != mHash.length)
-	{
-	    throw new IllegalArgumentException("wrong hash");
+	/**
+	 * Returns an instance of this object given a designated name of a hash
+	 * function.
+	 *
+	 * @param mdName
+	 *            the canonical name of a hash function.
+	 * @return an instance of this object configured for use with the designated
+	 *         options.
+	 */
+	public static EMSA_PSS getInstance(String mdName) {
+		IMessageDigest hash = HashFactory.getInstance(mdName);
+		return new EMSA_PSS(hash);
 	}
-	// 3. If emBits < 8.hLen + 8.sLen + 9, output 'decoding error' and stop.
-	if (emBits < (8 * hLen + 8 * sLen + 9))
-	{
-	    throw new IllegalArgumentException("decoding error");
-	}
-	int emLen = (emBits + 7) / 8;
-	// 4. If the rightmost octet of EM does not have hexadecimal value bc,
-	// output 'inconsistent' and stop.
-	if ((EM[EM.length - 1] & 0xFF) != 0xBC)
-	{
-	    return false;
-	}
-	// 5. Let maskedDB be the leftmost emLen ? hLen ? 1 octets of EM, and
-	// let
-	// H be the next hLen octets.
-	// 6. If the leftmost 8.emLen ? emBits bits of the leftmost octet in
-	// maskedDB are not all equal to zero, output 'inconsistent' and stop.
-	if ((EM[0] & (0xFF << (8 - (8 * emLen - emBits)))) != 0)
-	{
-	    return false;
-	}
-	byte[] DB = new byte[emLen - hLen - 1];
-	byte[] H = new byte[hLen];
-	System.arraycopy(EM, 0, DB, 0, emLen - hLen - 1);
-	System.arraycopy(EM, emLen - hLen - 1, H, 0, hLen);
-	// 7. Let dbMask = MGF(H, emLen ? hLen ? 1).
-	byte[] dbMask = MGF(H, emLen - hLen - 1);
-	// 8. Let DB = maskedDB XOR dbMask.
-	int i;
-	for (i = 0; i < DB.length; i++)
-	    DB[i] = (byte) (DB[i] ^ dbMask[i]);
-	// 9. Set the leftmost 8.emLen ? emBits bits of DB to zero.
-	DB[0] &= (0xFF >>> (8 * emLen - emBits));
-	// 10. If the emLen -hLen -sLen -2 leftmost octets of DB are not zero or
-	// if the octet at position emLen -hLen -sLen -1 is not equal to 0x01,
-	// output 'inconsistent' and stop.
-	// IMPORTANT (rsn): this is an error in the specs, the index of the 0x01
-	// byte should be emLen -hLen -sLen -2 and not -1! authors have been
-	// advised
-	for (i = 0; i < (emLen - hLen - sLen - 2); i++)
-	{
-	    if (DB[i] != 0)
-	    {
-		return false;
-	    }
-	}
-	if (DB[i] != 0x01)
-	{ // i == emLen -hLen -sLen -2
-	    return false;
-	}
-	// 11. Let salt be the last sLen octets of DB.
-	byte[] salt = new byte[sLen];
-	System.arraycopy(DB, DB.length - sLen, salt, 0, sLen);
-	// 12. Let M0 = 00 00 00 00 00 00 00 00 || mHash || salt;
-	// M0 is an octet string of length 8 + hLen + sLen with eight initial
-	// zero octets.
-	// 13. Let H0 = Hash(M0), an octet string of length hLen.
-	byte[] H0;
-	synchronized (hash)
-	{
-	    for (i = 0; i < 8; i++)
-		hash.update((byte) 0x00);
 
-	    hash.update(mHash, 0, hLen);
-	    hash.update(salt, 0, sLen);
-	    H0 = hash.digest();
-	}
-	// 14. If H = H0, output 'consistent.' Otherwise, output 'inconsistent.'
-	return Arrays.equals(H, H0);
-    }
+	/** The underlying hash function to use with this instance. */
+	private IMessageDigest hash;
 
-    /**
-     * The encoding operation EMSA-PSS-Encode computes the hash of a message
-     * <code>M</code> using a hash function and maps the result to an encoded
-     * message <code>EM</code> of a specified length using a mask generation
-     * function.
-     *
-     * @param mHash
-     *            the byte sequence resulting from applying the message digest
-     *            algorithm Hash to the message <i>M</i>.
-     * @param emBits
-     *            the maximal bit length of the integer OS2IP(EM), at least
-     *            <code>8.hLen + 8.sLen + 9</code>.
-     * @param salt
-     *            the salt to use when encoding the output.
-     * @return the encoded message <code>EM</code>, an octet string of length
-     *         <code>emLen = CEILING(emBits / 8)</code>.
-     * @exception IllegalArgumentException
-     *                if an exception occurs.
-     */
-    public byte[] encode(byte[] mHash, int emBits, byte[] salt)
-    {
-	int sLen = salt.length;
-	// 1. If the length of M is greater than the input limitation for the
-	// hash
-	// function (2**61 - 1 octets for SHA-1) then output "message too long"
-	// and stop.
-	// 2. Let mHash = Hash(M), an octet string of length hLen.
-	if (hLen != mHash.length)
-	    throw new IllegalArgumentException("wrong hash");
-	// 3. If emBits < 8.hLen + 8.sLen + 9, output 'encoding error' and stop.
-	if (emBits < (8 * hLen + 8 * sLen + 9))
-	    throw new IllegalArgumentException("encoding error");
-	int emLen = (emBits + 7) / 8;
-	// 4. Generate a random octet string salt of length sLen; if sLen = 0,
-	// then salt is the empty string.
-	// ...passed as argument to accomodate JCE
-	// 5. Let M0 = 00 00 00 00 00 00 00 00 || mHash || salt;
-	// M0 is an octet string of length 8 + hLen + sLen with eight initial
-	// zero
-	// octets.
-	// 6. Let H = Hash(M0), an octet string of length hLen.
-	byte[] H;
-	int i;
-	synchronized (hash)
-	{
-	    for (i = 0; i < 8; i++)
-		hash.update((byte) 0x00);
+	/** The output size of the hash function in octets. */
+	private int hLen;
 
-	    hash.update(mHash, 0, hLen);
-	    hash.update(salt, 0, sLen);
-	    H = hash.digest();
-	}
-	// 7. Generate an octet string PS consisting of emLen - sLen - hLen - 2
-	// zero octets. The length of PS may be 0.
-	// 8. Let DB = PS || 01 || salt.
-	byte[] DB = new byte[emLen - sLen - hLen - 2 + 1 + sLen];
-	DB[emLen - sLen - hLen - 2] = 0x01;
-	System.arraycopy(salt, 0, DB, emLen - sLen - hLen - 1, sLen);
-	// 9. Let dbMask = MGF(H, emLen - hLen - 1).
-	byte[] dbMask = MGF(H, emLen - hLen - 1);
-	// 10. Let maskedDB = DB XOR dbMask.
-	for (i = 0; i < DB.length; i++)
-	    DB[i] = (byte) (DB[i] ^ dbMask[i]);
-	// 11. Set the leftmost 8emLen - emBits bits of the leftmost octet in
-	// maskedDB to zero.
-	DB[0] &= (0xFF >>> (8 * emLen - emBits));
-	// 12. Let EM = maskedDB || H || bc, where bc is the single octet with
-	// hexadecimal value 0xBC.
-	byte[] result = new byte[emLen];
-	System.arraycopy(DB, 0, result, 0, emLen - hLen - 1);
-	System.arraycopy(H, 0, result, emLen - hLen - 1, hLen);
-	result[emLen - 1] = (byte) 0xBC;
-	// 13. Output EM.
-	return result;
-    }
+	/**
+	 * Trivial private constructor to enforce use through Factory method.
+	 *
+	 * @param hash
+	 *            the message digest instance to use with this scheme instance.
+	 */
+	private EMSA_PSS(IMessageDigest hash) {
+		super();
 
-    /**
-     * A mask generation function takes an octet string of variable length and a
-     * desired output length as input, and outputs an octet string of the
-     * desired length. There may be restrictions on the length of the input and
-     * output octet strings, but such bounds are generally very large. Mask
-     * generation functions are deterministic; the octet string output is
-     * completely determined by the input octet string. The output of a mask
-     * generation function should be pseudorandom, that is, it should be
-     * infeasible to predict, given one part of the output but not the input,
-     * another part of the output. The provable security of RSA-PSS relies on
-     * the random nature of the output of the mask generation function, which in
-     * turn relies on the random nature of the underlying hash function.
-     *
-     * @param Z
-     *            a seed.
-     * @param l
-     *            the desired output length in octets.
-     * @return the mask.
-     * @exception IllegalArgumentException
-     *                if the desired output length is too long.
-     */
-    private byte[] MGF(byte[] Z, int l)
-    {
-	// 1. If l > (2**32).hLen, output 'mask too long' and stop.
-	if (l < 1 || (l & 0xFFFFFFFFL) > ((hLen & 0xFFFFFFFFL) << 32L))
-	    throw new IllegalArgumentException("mask too long");
-	// 2. Let T be the empty octet string.
-	byte[] result = new byte[l];
-	// 3. For i = 0 to CEILING(l/hLen) ? 1, do
-	int limit = ((l + hLen - 1) / hLen) - 1;
-	IMessageDigest hashZ = null;
-	hashZ = (IMessageDigest) hash.clone();
-	hashZ.digest();
-	hashZ.update(Z, 0, Z.length);
-	IMessageDigest hashZC = null;
-	byte[] t;
-	int sofar = 0;
-	int length;
-	for (int i = 0; i < limit; i++)
-	{
-	    // 3.1 Convert i to an octet string C of length 4 with the primitive
-	    // I2OSP: C = I2OSP(i, 4).
-	    // 3.2 Concatenate the hash of the seed Z and C to the octet string
-	    // T:
-	    // T = T || Hash(Z || C)
-	    hashZC = (IMessageDigest) hashZ.clone();
-	    hashZC.update((byte) (i >>> 24));
-	    hashZC.update((byte) (i >>> 16));
-	    hashZC.update((byte) (i >>> 8));
-	    hashZC.update((byte) i);
-	    t = hashZC.digest();
-	    length = l - sofar;
-	    length = (length > hLen ? hLen : length);
-	    System.arraycopy(t, 0, result, sofar, length);
-	    sofar += length;
+		this.hash = hash;
+		hLen = hash.hashSize();
 	}
-	// 4. Output the leading l octets of T as the octet string mask.
-	return result;
-    }
+
+	@Override
+	public Object clone() {
+		return getInstance(hash.name());
+	}
+
+	/**
+	 * The decoding operation EMSA-PSS-Decode recovers the message hash from an
+	 * encoded message <code>EM</code> and compares it to the hash of
+	 * <code>M</code>.
+	 *
+	 * @param mHash
+	 *            the byte sequence resulting from applying the message digest
+	 *            algorithm Hash to the message <i>M</i>.
+	 * @param EM
+	 *            the <i>encoded message</i>, an octet string of length
+	 *            <code>emLen = CEILING(emBits/8).
+	 * &#64;param emBits the maximal bit length of the integer OS2IP(EM), at least
+	 * <code>8.hLen + 8.sLen + 9</code>.
+	 * @param sLen
+	 *            the length, in octets, of the expected salt.
+	 * @return <code>true</code> if the result of the verification was
+	 *         <i>consistent</i> with the expected reseult; and <code>false</code>
+	 *         if the result was <i>inconsistent</i>.
+	 * @exception IllegalArgumentException
+	 *                if an exception occurs.
+	 */
+	public boolean decode(byte[] mHash, byte[] EM, int emBits, int sLen) {
+		if (sLen < 0)
+			throw new IllegalArgumentException("sLen");
+		// 1. If the length of M is greater than the input limitation for the
+		// hash
+		// function (2**61 ? 1 octets for SHA-1) then output 'inconsistent' and
+		// stop.
+		// 2. Let mHash = Hash(M), an octet string of length hLen.
+		if (hLen != mHash.length) {
+			throw new IllegalArgumentException("wrong hash");
+		}
+		// 3. If emBits < 8.hLen + 8.sLen + 9, output 'decoding error' and stop.
+		if (emBits < (8 * hLen + 8 * sLen + 9)) {
+			throw new IllegalArgumentException("decoding error");
+		}
+		int emLen = (emBits + 7) / 8;
+		// 4. If the rightmost octet of EM does not have hexadecimal value bc,
+		// output 'inconsistent' and stop.
+		if ((EM[EM.length - 1] & 0xFF) != 0xBC) {
+			return false;
+		}
+		// 5. Let maskedDB be the leftmost emLen ? hLen ? 1 octets of EM, and
+		// let
+		// H be the next hLen octets.
+		// 6. If the leftmost 8.emLen ? emBits bits of the leftmost octet in
+		// maskedDB are not all equal to zero, output 'inconsistent' and stop.
+		if ((EM[0] & (0xFF << (8 - (8 * emLen - emBits)))) != 0) {
+			return false;
+		}
+		byte[] DB = new byte[emLen - hLen - 1];
+		byte[] H = new byte[hLen];
+		System.arraycopy(EM, 0, DB, 0, emLen - hLen - 1);
+		System.arraycopy(EM, emLen - hLen - 1, H, 0, hLen);
+		// 7. Let dbMask = MGF(H, emLen ? hLen ? 1).
+		byte[] dbMask = MGF(H, emLen - hLen - 1);
+		// 8. Let DB = maskedDB XOR dbMask.
+		int i;
+		for (i = 0; i < DB.length; i++)
+			DB[i] = (byte) (DB[i] ^ dbMask[i]);
+		// 9. Set the leftmost 8.emLen ? emBits bits of DB to zero.
+		DB[0] &= (0xFF >>> (8 * emLen - emBits));
+		// 10. If the emLen -hLen -sLen -2 leftmost octets of DB are not zero or
+		// if the octet at position emLen -hLen -sLen -1 is not equal to 0x01,
+		// output 'inconsistent' and stop.
+		// IMPORTANT (rsn): this is an error in the specs, the index of the 0x01
+		// byte should be emLen -hLen -sLen -2 and not -1! authors have been
+		// advised
+		for (i = 0; i < (emLen - hLen - sLen - 2); i++) {
+			if (DB[i] != 0) {
+				return false;
+			}
+		}
+		if (DB[i] != 0x01) { // i == emLen -hLen -sLen -2
+			return false;
+		}
+		// 11. Let salt be the last sLen octets of DB.
+		byte[] salt = new byte[sLen];
+		System.arraycopy(DB, DB.length - sLen, salt, 0, sLen);
+		// 12. Let M0 = 00 00 00 00 00 00 00 00 || mHash || salt;
+		// M0 is an octet string of length 8 + hLen + sLen with eight initial
+		// zero octets.
+		// 13. Let H0 = Hash(M0), an octet string of length hLen.
+		byte[] H0;
+		synchronized (hash) {
+			for (i = 0; i < 8; i++)
+				hash.update((byte) 0x00);
+
+			hash.update(mHash, 0, hLen);
+			hash.update(salt, 0, sLen);
+			H0 = hash.digest();
+		}
+		// 14. If H = H0, output 'consistent.' Otherwise, output 'inconsistent.'
+		return Arrays.equals(H, H0);
+	}
+
+	/**
+	 * The encoding operation EMSA-PSS-Encode computes the hash of a message
+	 * <code>M</code> using a hash function and maps the result to an encoded
+	 * message <code>EM</code> of a specified length using a mask generation
+	 * function.
+	 *
+	 * @param mHash
+	 *            the byte sequence resulting from applying the message digest
+	 *            algorithm Hash to the message <i>M</i>.
+	 * @param emBits
+	 *            the maximal bit length of the integer OS2IP(EM), at least
+	 *            <code>8.hLen + 8.sLen + 9</code>.
+	 * @param salt
+	 *            the salt to use when encoding the output.
+	 * @return the encoded message <code>EM</code>, an octet string of length
+	 *         <code>emLen = CEILING(emBits / 8)</code>.
+	 * @exception IllegalArgumentException
+	 *                if an exception occurs.
+	 */
+	public byte[] encode(byte[] mHash, int emBits, byte[] salt) {
+		int sLen = salt.length;
+		// 1. If the length of M is greater than the input limitation for the
+		// hash
+		// function (2**61 - 1 octets for SHA-1) then output "message too long"
+		// and stop.
+		// 2. Let mHash = Hash(M), an octet string of length hLen.
+		if (hLen != mHash.length)
+			throw new IllegalArgumentException("wrong hash");
+		// 3. If emBits < 8.hLen + 8.sLen + 9, output 'encoding error' and stop.
+		if (emBits < (8 * hLen + 8 * sLen + 9))
+			throw new IllegalArgumentException("encoding error");
+		int emLen = (emBits + 7) / 8;
+		// 4. Generate a random octet string salt of length sLen; if sLen = 0,
+		// then salt is the empty string.
+		// ...passed as argument to accomodate JCE
+		// 5. Let M0 = 00 00 00 00 00 00 00 00 || mHash || salt;
+		// M0 is an octet string of length 8 + hLen + sLen with eight initial
+		// zero
+		// octets.
+		// 6. Let H = Hash(M0), an octet string of length hLen.
+		byte[] H;
+		int i;
+		synchronized (hash) {
+			for (i = 0; i < 8; i++)
+				hash.update((byte) 0x00);
+
+			hash.update(mHash, 0, hLen);
+			hash.update(salt, 0, sLen);
+			H = hash.digest();
+		}
+		// 7. Generate an octet string PS consisting of emLen - sLen - hLen - 2
+		// zero octets. The length of PS may be 0.
+		// 8. Let DB = PS || 01 || salt.
+		byte[] DB = new byte[emLen - sLen - hLen - 2 + 1 + sLen];
+		DB[emLen - sLen - hLen - 2] = 0x01;
+		System.arraycopy(salt, 0, DB, emLen - sLen - hLen - 1, sLen);
+		// 9. Let dbMask = MGF(H, emLen - hLen - 1).
+		byte[] dbMask = MGF(H, emLen - hLen - 1);
+		// 10. Let maskedDB = DB XOR dbMask.
+		for (i = 0; i < DB.length; i++)
+			DB[i] = (byte) (DB[i] ^ dbMask[i]);
+		// 11. Set the leftmost 8emLen - emBits bits of the leftmost octet in
+		// maskedDB to zero.
+		DB[0] &= (0xFF >>> (8 * emLen - emBits));
+		// 12. Let EM = maskedDB || H || bc, where bc is the single octet with
+		// hexadecimal value 0xBC.
+		byte[] result = new byte[emLen];
+		System.arraycopy(DB, 0, result, 0, emLen - hLen - 1);
+		System.arraycopy(H, 0, result, emLen - hLen - 1, hLen);
+		result[emLen - 1] = (byte) 0xBC;
+		// 13. Output EM.
+		return result;
+	}
+
+	/**
+	 * A mask generation function takes an octet string of variable length and a
+	 * desired output length as input, and outputs an octet string of the desired
+	 * length. There may be restrictions on the length of the input and output octet
+	 * strings, but such bounds are generally very large. Mask generation functions
+	 * are deterministic; the octet string output is completely determined by the
+	 * input octet string. The output of a mask generation function should be
+	 * pseudorandom, that is, it should be infeasible to predict, given one part of
+	 * the output but not the input, another part of the output. The provable
+	 * security of RSA-PSS relies on the random nature of the output of the mask
+	 * generation function, which in turn relies on the random nature of the
+	 * underlying hash function.
+	 *
+	 * @param Z
+	 *            a seed.
+	 * @param l
+	 *            the desired output length in octets.
+	 * @return the mask.
+	 * @exception IllegalArgumentException
+	 *                if the desired output length is too long.
+	 */
+	private byte[] MGF(byte[] Z, int l) {
+		// 1. If l > (2**32).hLen, output 'mask too long' and stop.
+		if (l < 1 || (l & 0xFFFFFFFFL) > ((hLen & 0xFFFFFFFFL) << 32L))
+			throw new IllegalArgumentException("mask too long");
+		// 2. Let T be the empty octet string.
+		byte[] result = new byte[l];
+		// 3. For i = 0 to CEILING(l/hLen) ? 1, do
+		int limit = ((l + hLen - 1) / hLen) - 1;
+		IMessageDigest hashZ = null;
+		hashZ = (IMessageDigest) hash.clone();
+		hashZ.digest();
+		hashZ.update(Z, 0, Z.length);
+		IMessageDigest hashZC = null;
+		byte[] t;
+		int sofar = 0;
+		int length;
+		for (int i = 0; i < limit; i++) {
+			// 3.1 Convert i to an octet string C of length 4 with the primitive
+			// I2OSP: C = I2OSP(i, 4).
+			// 3.2 Concatenate the hash of the seed Z and C to the octet string
+			// T:
+			// T = T || Hash(Z || C)
+			hashZC = (IMessageDigest) hashZ.clone();
+			hashZC.update((byte) (i >>> 24));
+			hashZC.update((byte) (i >>> 16));
+			hashZC.update((byte) (i >>> 8));
+			hashZC.update((byte) i);
+			t = hashZC.digest();
+			length = l - sofar;
+			length = (length > hLen ? hLen : length);
+			System.arraycopy(t, 0, result, sofar, length);
+			sofar += length;
+		}
+		// 4. Output the leading l octets of T as the octet string mask.
+		return result;
+	}
 }

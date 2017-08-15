@@ -41,26 +41,25 @@ package gnu.vm.jgnux.security.auth;
  * An object whose internal state may be <em>refreshed:</em> as in a credential
  * object with a expiry date.
  */
-public interface Refreshable
-{
+public interface Refreshable {
 
-    /**
-     * Tells whether or not this object is current. Refreshable objects that are
-     * not current may need to be refreshed.
-     *
-     * @return Whether this object is current.
-     */
-    boolean isCurrent();
+	/**
+	 * Tells whether or not this object is current. Refreshable objects that are not
+	 * current may need to be refreshed.
+	 *
+	 * @return Whether this object is current.
+	 */
+	boolean isCurrent();
 
-    /**
-     * Refresh this object. The process involved in refreshing an object is
-     * per-implementation dependent.
-     *
-     * @throws RefreshFailedException
-     *             If refreshing this object fails.
-     * @throws SecurityException
-     *             If the caller does not have permission to refresh, or to take
-     *             the steps involved in refreshing, this object.
-     */
-    void refresh() throws RefreshFailedException;
+	/**
+	 * Refresh this object. The process involved in refreshing an object is
+	 * per-implementation dependent.
+	 *
+	 * @throws RefreshFailedException
+	 *             If refreshing this object fails.
+	 * @throws SecurityException
+	 *             If the caller does not have permission to refresh, or to take the
+	 *             steps involved in refreshing, this object.
+	 */
+	void refresh() throws RefreshFailedException;
 }

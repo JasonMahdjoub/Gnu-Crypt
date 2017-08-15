@@ -58,145 +58,127 @@ import gnu.vm.jgnu.security.interfaces.RSAPublicKey;
  * Jakob Jonsson and Burt Kaliski.</li>
  * </ol>
  */
-public class GnuRSAPublicKey extends GnuRSAKey implements PublicKey, RSAPublicKey
-{
-    /**
-     * 
-     */
-    private static final long serialVersionUID = 8252525937299499898L;
+public class GnuRSAPublicKey extends GnuRSAKey implements PublicKey, RSAPublicKey {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 8252525937299499898L;
 
-    /**
-     * A class method that takes the output of the
-     * <code>encodePublicKey()</code> method of an RSA keypair codec object (an
-     * instance implementing {@link IKeyPairCodec} for RSA keys, and
-     * re-constructs an instance of this object.
-     *
-     * @param k
-     *            the contents of a previously encoded instance of this object.
-     * @throws ArrayIndexOutOfBoundsException
-     *             if there is not enough bytes, in <code>k</code>, to represent
-     *             a valid encoding of an instance of this object.
-     * @throws IllegalArgumentException
-     *             if the byte sequence does not represent a valid encoding of
-     *             an instance of this object.
-     */
-    public static GnuRSAPublicKey valueOf(final byte[] k)
-    {
-	// try RAW codec
-	if (k[0] == Registry.MAGIC_RAW_RSA_PUBLIC_KEY[0])
-	    try
-	    {
-		return (GnuRSAPublicKey) new RSAKeyPairRawCodec()
-			.decodePublicKey(k);
-	    }
-	    catch (IllegalArgumentException ignored)
-	    {
-	    }
-	// try X.509 codec
-	return (GnuRSAPublicKey) new RSAKeyPairX509Codec().decodePublicKey(k);
-    }
-
-    /** String representation of this key. Cached for speed. */
-    private transient String str;
-
-    /**
-     * Conveience constructor. Calls the constructor with 3 arguments passing
-     * {@link Registry#RAW_ENCODING_ID} as the identifier of the preferred
-     * encoding format.
-     *
-     * @param n
-     *            the modulus.
-     * @param e
-     *            the public exponent.
-     */
-    public GnuRSAPublicKey(final BigInteger n, final BigInteger e)
-    {
-	this(Registry.RAW_ENCODING_ID, n, e);
-    }
-
-    /**
-     * Constructs a new instance of <code>GnuRSAPublicKey</code> given the
-     * designated arguments.
-     *
-     * @param preferredFormat
-     *            the identifier of the preferred encoding format to use when
-     *            externalizing this key.
-     * @param n
-     *            the modulus.
-     * @param e
-     *            the public exponent.
-     */
-    public GnuRSAPublicKey(int preferredFormat, BigInteger n, BigInteger e)
-    {
-	super(preferredFormat == Registry.ASN1_ENCODING_ID
-		? Registry.X509_ENCODING_ID : preferredFormat, n, e);
-    }
-
-    /**
-     * Returns <code>true</code> if the designated object is an instance of this
-     * class and has the same RSA parameter values as this one.
-     *
-     * @param obj
-     *            the other non-null RSA key to compare to.
-     * @return <code>true</code> if the designated object is of the same type
-     *         and value as this one.
-     */
-    @Override
-    public boolean equals(final Object obj)
-    {
-	if (obj == null)
-	    return false;
-
-	if (!(obj instanceof RSAPublicKey))
-	    return false;
-
-	final RSAPublicKey that = (RSAPublicKey) obj;
-	return super.equals(that)
-		&& getPublicExponent().equals(that.getPublicExponent());
-    }
-
-    /**
-     * Returns the encoded form of this public key according to the designated
-     * format.
-     *
-     * @param format
-     *            the desired format identifier of the resulting encoding.
-     * @return the byte sequence encoding this key according to the designated
-     *         format.
-     * @throws IllegalArgumentException
-     *             if the format is not supported.
-     * @see RSAKeyPairRawCodec
-     */
-    @Override
-    public byte[] getEncoded(final int format)
-    {
-	final byte[] result;
-	switch (format)
-	{
-	    case IKeyPairCodec.RAW_FORMAT:
-		result = new RSAKeyPairRawCodec().encodePublicKey(this);
-		break;
-	    case IKeyPairCodec.X509_FORMAT:
-		result = new RSAKeyPairX509Codec().encodePublicKey(this);
-		break;
-	    default:
-		throw new IllegalArgumentException(
-			"Unsupported encoding format: " + format);
+	/**
+	 * A class method that takes the output of the <code>encodePublicKey()</code>
+	 * method of an RSA keypair codec object (an instance implementing
+	 * {@link IKeyPairCodec} for RSA keys, and re-constructs an instance of this
+	 * object.
+	 *
+	 * @param k
+	 *            the contents of a previously encoded instance of this object.
+	 * @throws ArrayIndexOutOfBoundsException
+	 *             if there is not enough bytes, in <code>k</code>, to represent a
+	 *             valid encoding of an instance of this object.
+	 * @throws IllegalArgumentException
+	 *             if the byte sequence does not represent a valid encoding of an
+	 *             instance of this object.
+	 */
+	public static GnuRSAPublicKey valueOf(final byte[] k) {
+		// try RAW codec
+		if (k[0] == Registry.MAGIC_RAW_RSA_PUBLIC_KEY[0])
+			try {
+				return (GnuRSAPublicKey) new RSAKeyPairRawCodec().decodePublicKey(k);
+			} catch (IllegalArgumentException ignored) {
+			}
+		// try X.509 codec
+		return (GnuRSAPublicKey) new RSAKeyPairX509Codec().decodePublicKey(k);
 	}
-	return result;
-    }
 
-    @Override
-    public String toString()
-    {
-	if (str == null)
-	{
-	    String ls = AccessController
-		    .doPrivileged(new GetPropertyAction("line.separator"));
-	    str = new StringBuilder(this.getClass().getName()).append("(")
-		    .append(super.toString()).append(",").append(ls).append(")")
-		    .toString();
+	/** String representation of this key. Cached for speed. */
+	private transient String str;
+
+	/**
+	 * Conveience constructor. Calls the constructor with 3 arguments passing
+	 * {@link Registry#RAW_ENCODING_ID} as the identifier of the preferred encoding
+	 * format.
+	 *
+	 * @param n
+	 *            the modulus.
+	 * @param e
+	 *            the public exponent.
+	 */
+	public GnuRSAPublicKey(final BigInteger n, final BigInteger e) {
+		this(Registry.RAW_ENCODING_ID, n, e);
 	}
-	return str;
-    }
+
+	/**
+	 * Constructs a new instance of <code>GnuRSAPublicKey</code> given the
+	 * designated arguments.
+	 *
+	 * @param preferredFormat
+	 *            the identifier of the preferred encoding format to use when
+	 *            externalizing this key.
+	 * @param n
+	 *            the modulus.
+	 * @param e
+	 *            the public exponent.
+	 */
+	public GnuRSAPublicKey(int preferredFormat, BigInteger n, BigInteger e) {
+		super(preferredFormat == Registry.ASN1_ENCODING_ID ? Registry.X509_ENCODING_ID : preferredFormat, n, e);
+	}
+
+	/**
+	 * Returns <code>true</code> if the designated object is an instance of this
+	 * class and has the same RSA parameter values as this one.
+	 *
+	 * @param obj
+	 *            the other non-null RSA key to compare to.
+	 * @return <code>true</code> if the designated object is of the same type and
+	 *         value as this one.
+	 */
+	@Override
+	public boolean equals(final Object obj) {
+		if (obj == null)
+			return false;
+
+		if (!(obj instanceof RSAPublicKey))
+			return false;
+
+		final RSAPublicKey that = (RSAPublicKey) obj;
+		return super.equals(that) && getPublicExponent().equals(that.getPublicExponent());
+	}
+
+	/**
+	 * Returns the encoded form of this public key according to the designated
+	 * format.
+	 *
+	 * @param format
+	 *            the desired format identifier of the resulting encoding.
+	 * @return the byte sequence encoding this key according to the designated
+	 *         format.
+	 * @throws IllegalArgumentException
+	 *             if the format is not supported.
+	 * @see RSAKeyPairRawCodec
+	 */
+	@Override
+	public byte[] getEncoded(final int format) {
+		final byte[] result;
+		switch (format) {
+		case IKeyPairCodec.RAW_FORMAT:
+			result = new RSAKeyPairRawCodec().encodePublicKey(this);
+			break;
+		case IKeyPairCodec.X509_FORMAT:
+			result = new RSAKeyPairX509Codec().encodePublicKey(this);
+			break;
+		default:
+			throw new IllegalArgumentException("Unsupported encoding format: " + format);
+		}
+		return result;
+	}
+
+	@Override
+	public String toString() {
+		if (str == null) {
+			String ls = AccessController.doPrivileged(new GetPropertyAction("line.separator"));
+			str = new StringBuilder(this.getClass().getName()).append("(").append(super.toString()).append(",")
+					.append(ls).append(")").toString();
+		}
+		return str;
+	}
 }

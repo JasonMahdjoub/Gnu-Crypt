@@ -54,116 +54,108 @@ import gnu.vm.jgnu.security.MessageDigest;
  * @version 0.0
  * @author Mark Benvenuto (ivymccough@worldnet.att.net)
  */
-public class DigestOutputStream extends FilterOutputStream
-{
-    /**
-     * The message digest for the DigestOutputStream
-     */
-    protected MessageDigest digest;
+public class DigestOutputStream extends FilterOutputStream {
+	/**
+	 * The message digest for the DigestOutputStream
+	 */
+	protected MessageDigest digest;
 
-    // Manages the on flag
-    private boolean state = true;
+	// Manages the on flag
+	private boolean state = true;
 
-    /**
-     * Constructs a new DigestOutputStream. It associates a MessageDigest with
-     * the stream to compute the stream as data is written.
-     *
-     * @param stream
-     *            An OutputStream to associate this stream with
-     * @param digest
-     *            A MessageDigest to hash the stream with
-     */
-    public DigestOutputStream(OutputStream stream, MessageDigest digest)
-    {
-	super(stream);
-	this.digest = digest;
-    }
+	/**
+	 * Constructs a new DigestOutputStream. It associates a MessageDigest with the
+	 * stream to compute the stream as data is written.
+	 *
+	 * @param stream
+	 *            An OutputStream to associate this stream with
+	 * @param digest
+	 *            A MessageDigest to hash the stream with
+	 */
+	public DigestOutputStream(OutputStream stream, MessageDigest digest) {
+		super(stream);
+		this.digest = digest;
+	}
 
-    /**
-     * Returns the MessageDigest associated with this DigestOutputStream
-     *
-     * @return The MessageDigest used to hash this stream
-     */
-    public MessageDigest getMessageDigest()
-    {
-	return digest;
-    }
+	/**
+	 * Returns the MessageDigest associated with this DigestOutputStream
+	 *
+	 * @return The MessageDigest used to hash this stream
+	 */
+	public MessageDigest getMessageDigest() {
+		return digest;
+	}
 
-    /**
-     * Sets the flag specifying if this DigestOutputStream updates the digest in
-     * the write() methods. The default is on;
-     *
-     * @param on
-     *            True means it digests stream, false means it does not
-     */
-    public void on(boolean on)
-    {
-	state = on;
-    }
+	/**
+	 * Sets the flag specifying if this DigestOutputStream updates the digest in the
+	 * write() methods. The default is on;
+	 *
+	 * @param on
+	 *            True means it digests stream, false means it does not
+	 */
+	public void on(boolean on) {
+		state = on;
+	}
 
-    /**
-     * Sets the current MessageDigest to current parameter
-     *
-     * @param digest
-     *            A MessageDigest to associate with this stream
-     */
-    public void setMessageDigest(MessageDigest digest)
-    {
-	this.digest = digest;
-    }
+	/**
+	 * Sets the current MessageDigest to current parameter
+	 *
+	 * @param digest
+	 *            A MessageDigest to associate with this stream
+	 */
+	public void setMessageDigest(MessageDigest digest) {
+		this.digest = digest;
+	}
 
-    /**
-     * Converts the output stream and underlying message digest to a string.
-     *
-     * @return A string representing the output stream and message digest.
-     */
-    @Override
-    public String toString()
-    {
-	return "[Digest Output Stream] " + digest.toString();
-    }
+	/**
+	 * Converts the output stream and underlying message digest to a string.
+	 *
+	 * @return A string representing the output stream and message digest.
+	 */
+	@Override
+	public String toString() {
+		return "[Digest Output Stream] " + digest.toString();
+	}
 
-    /**
-     * Updates the hash if the on flag is true and then writes the bytes to the
-     * underlying output stream.
-     *
-     * @param b
-     *            Bytes to write to the output stream
-     * @param off
-     *            Offset to start to start at in array
-     * @param len
-     *            Length of data to write
-     *
-     * @exception IOException
-     *                if the underlying output stream cannot write the bytes,
-     *                this is thrown.
-     */
-    @Override
-    public void write(byte[] b, int off, int len) throws IOException
-    {
-	if (state)
-	    digest.update(b, off, len);
+	/**
+	 * Updates the hash if the on flag is true and then writes the bytes to the
+	 * underlying output stream.
+	 *
+	 * @param b
+	 *            Bytes to write to the output stream
+	 * @param off
+	 *            Offset to start to start at in array
+	 * @param len
+	 *            Length of data to write
+	 *
+	 * @exception IOException
+	 *                if the underlying output stream cannot write the bytes, this
+	 *                is thrown.
+	 */
+	@Override
+	public void write(byte[] b, int off, int len) throws IOException {
+		if (state)
+			digest.update(b, off, len);
 
-	out.write(b, off, len);
-    }
+		out.write(b, off, len);
+	}
 
-    /**
-     * Updates the hash if the on flag is true and then writes a byte to the
-     * underlying output stream.
-     *
-     * @param b
-     *            A byte to write to the output stream
-     *
-     * @exception IOException
-     *                if the underlying output stream cannot write the byte,
-     *                this is thrown.
-     */
-    @Override
-    public void write(int b) throws IOException
-    {
-	if (state)
-	    digest.update((byte) b);
+	/**
+	 * Updates the hash if the on flag is true and then writes a byte to the
+	 * underlying output stream.
+	 *
+	 * @param b
+	 *            A byte to write to the output stream
+	 *
+	 * @exception IOException
+	 *                if the underlying output stream cannot write the byte, this is
+	 *                thrown.
+	 */
+	@Override
+	public void write(int b) throws IOException {
+		if (state)
+			digest.update((byte) b);
 
-	out.write(b);
-    }
+		out.write(b);
+	}
 }

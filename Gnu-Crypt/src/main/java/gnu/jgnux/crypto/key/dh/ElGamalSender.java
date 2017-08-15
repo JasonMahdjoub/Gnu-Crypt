@@ -52,58 +52,52 @@ import gnu.vm.jgnux.crypto.interfaces.DHPublicKey;
  *
  * @see ElGamalKeyAgreement
  */
-public class ElGamalSender extends ElGamalKeyAgreement
-{
-    /** The recipient's public key. */
-    private DHPublicKey B;
+public class ElGamalSender extends ElGamalKeyAgreement {
+	/** The recipient's public key. */
+	private DHPublicKey B;
 
-    // default 0-arguments constructor
+	// default 0-arguments constructor
 
-    private OutgoingMessage computeSharedSecret(IncomingMessage in) throws KeyAgreementException
-    {
-	BigInteger p = B.getParams().getP();
-	BigInteger g = B.getParams().getG();
-	BigInteger yb = B.getY();
-	// A chooses a random integer x, 1 <= x <= p-2
-	// rfc-2631 restricts x to only be in [2, p-1]
-	BigInteger p_minus_2 = p.subtract(TWO);
-	byte[] xBytes = new byte[(p_minus_2.bitLength() + 7) / 8];
-	BigInteger x;
-	do
-	{
-	    nextRandomBytes(xBytes);
-	    x = new BigInteger(1, xBytes);
-	} while (x.compareTo(TWO) >= 0 && x.compareTo(p_minus_2) <= 0);
-	// A sends B the message: g^x mod p
-	OutgoingMessage result = new OutgoingMessage();
-	result.writeMPI(g.modPow(x, p));
-	// A computes the key as K = (yb)^x mod p
-	ZZ = yb.modPow(x, p); // ZZ = (yb ^ xa) mod p
-	complete = true;
-	return result;
-    }
-
-    @Override
-    protected void engineInit(Map<String, Object> attributes) throws KeyAgreementException
-    {
-	rnd = (SecureRandom) attributes.get(SOURCE_OF_RANDOMNESS);
-	// One-time setup (key generation and publication). Each user B
-	// generates
-	// a keypair and publishes its public key
-	B = (DHPublicKey) attributes.get(KA_ELGAMAL_RECIPIENT_PUBLIC_KEY);
-	if (B == null)
-	    throw new KeyAgreementException("missing recipient public key");
-    }
-
-    @Override
-    protected OutgoingMessage engineProcessMessage(IncomingMessage in) throws KeyAgreementException
-    {
-	switch (step)
-	{
-	    case 0:
-		return computeSharedSecret(in);
-	    default:
-		throw new IllegalStateException("unexpected state");
+	private OutgoingMessage computeSharedSecret(IncomingMessage in) throws KeyAgreementException {
+		BigInteger p = B.getParams().getP();
+		BigInteger g = B.getParams().getG();
+		BigInteger yb = B.getY();
+		// A chooses a random integer x, 1 <= x <= p-2
+		// rfc-2631 restricts x to only be in [2, p-1]
+		BigInteger p_minus_2 = p.subtract(TWO);
+		byte[] xBytes = new byte[(p_minus_2.bitLength() + 7) / 8];
+		BigInteger x;
+		do {
+			nextRandomBytes(xBytes);
+			x = new BigInteger(1, xBytes);
+		} while (x.compareTo(TWO) >= 0 && x.compareTo(p_minus_2) <= 0);
+		// A sends B the message: g^x mod p
+		OutgoingMessage result = new OutgoingMessage();
+		result.writeMPI(g.modPow(x, p));
+		// A computes the key as K = (yb)^x mod p
+		ZZ = yb.modPow(x, p); // ZZ = (yb ^ xa) mod p
+		complete = true;
+		return result;
 	}
-    }
+
+	@Override
+	protected void engineInit(Map<String, Object> attributes) throws KeyAgreementException {
+		rnd = (SecureRandom) attributes.get(SOURCE_OF_RANDOMNESS);
+		// One-time setup (key generation and publication). Each user B
+		// generates
+		// a keypair and publishes its public key
+		B = (DHPublicKey) attributes.get(KA_ELGAMAL_RECIPIENT_PUBLIC_KEY);
+		if (B == null)
+			throw new KeyAgreementException("missing recipient public key");
+	}
+
+	@Override
+	protected OutgoingMessage engineProcessMessage(IncomingMessage in) throws KeyAgreementException {
+		switch (step) {
+		case 0:
+			return computeSharedSecret(in);
+		default:
+			throw new IllegalStateException("unexpected state");
+		}
+	}
 }

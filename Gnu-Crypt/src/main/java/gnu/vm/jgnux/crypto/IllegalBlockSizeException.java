@@ -45,25 +45,22 @@ import java.security.GeneralSecurityException;
  *
  * @author Casey Marshall (csm@gnu.org)
  */
-public class IllegalBlockSizeException extends GeneralSecurityException
-{
+public class IllegalBlockSizeException extends GeneralSecurityException {
 
-    // Constant.
-    // ------------------------------------------------------------------------
+	// Constant.
+	// ------------------------------------------------------------------------
 
-    /** Serialization constant. */
-    private static final long serialVersionUID = -1965144811953540392L;
+	/** Serialization constant. */
+	private static final long serialVersionUID = -1965144811953540392L;
 
-    // Constructors.
-    // ------------------------------------------------------------------------
+	// Constructors.
+	// ------------------------------------------------------------------------
 
-    public IllegalBlockSizeException()
-    {
-	super();
-    }
+	public IllegalBlockSizeException() {
+		super();
+	}
 
-    public IllegalBlockSizeException(String message)
-    {
-	super(message);
-    }
+	public IllegalBlockSizeException(String message) {
+		super(message);
+	}
 }

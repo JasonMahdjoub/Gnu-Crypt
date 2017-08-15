@@ -61,68 +61,66 @@ import gnu.vm.jgnux.security.auth.callback.CallbackHandler;
  *
  * @since 1.5
  */
-public interface SaslServerFactory
-{
+public interface SaslServerFactory {
 
-    /**
-     * Creates a {@link SaslServer} instance using the parameters supplied. It
-     * returns <code>null</code> if no {@link SaslServer} instance can be
-     * created using the parameters supplied. Throws {@link SaslException} if it
-     * cannot create a {@link SaslServer} because of an error.
-     *
-     * @param mechanism
-     *            the non-null IANA-registered name of a SASL mechanism (e.g.
-     *            "GSSAPI", "CRAM-MD5").
-     * @param protocol
-     *            the non-null string name of the protocol for which the
-     *            authentication is being performed (e.g. "ldap").
-     * @param serverName
-     *            the non-null fully qualified host name of the server to
-     *            authenticate to.
-     * @param props
-     *            the possibly null set of properties used to select the SASL
-     *            mechanism and to configure the authentication exchange of the
-     *            selected mechanism. See the {@link Sasl} class for a list of
-     *            standard properties. Other, possibly mechanism-specific,
-     *            properties can be included. Properties not relevant to the
-     *            selected mechanism are ignored.
-     * @param cbh
-     *            the possibly null callback handler to used by the SASL
-     *            mechanisms to get further information from the
-     *            application/library to complete the authentication. For
-     *            example, a SASL mechanism might require the authentication ID,
-     *            password and realm from the caller. The authentication ID is
-     *            requested by using a
-     *            {@link javax.security.auth.callback.NameCallback}. The
-     *            password is requested by using a
-     *            {@link javax.security.auth.callback.PasswordCallback}. The
-     *            realm is requested by using a {@link RealmChoiceCallback} if
-     *            there is a list of realms to choose from, and by using a
-     *            {@link RealmCallback} if the realm must be entered.
-     * @return a possibly null {@link SaslServer} created using the parameters
-     *         supplied. If <code>null</code> is returned, it means that this
-     *         factory cannot produce a {@link SaslServer} using the parameters
-     *         supplied.
-     * @throws SaslException
-     *             if a SaslServer instance cannot be created because of an
-     *             error.
-     */
-    SaslServer createSaslServer(String mechanism, String protocol, String serverName, Map<String, ?> props, CallbackHandler cbh) throws SaslException;
+	/**
+	 * Creates a {@link SaslServer} instance using the parameters supplied. It
+	 * returns <code>null</code> if no {@link SaslServer} instance can be created
+	 * using the parameters supplied. Throws {@link SaslException} if it cannot
+	 * create a {@link SaslServer} because of an error.
+	 *
+	 * @param mechanism
+	 *            the non-null IANA-registered name of a SASL mechanism (e.g.
+	 *            "GSSAPI", "CRAM-MD5").
+	 * @param protocol
+	 *            the non-null string name of the protocol for which the
+	 *            authentication is being performed (e.g. "ldap").
+	 * @param serverName
+	 *            the non-null fully qualified host name of the server to
+	 *            authenticate to.
+	 * @param props
+	 *            the possibly null set of properties used to select the SASL
+	 *            mechanism and to configure the authentication exchange of the
+	 *            selected mechanism. See the {@link Sasl} class for a list of
+	 *            standard properties. Other, possibly mechanism-specific,
+	 *            properties can be included. Properties not relevant to the
+	 *            selected mechanism are ignored.
+	 * @param cbh
+	 *            the possibly null callback handler to used by the SASL mechanisms
+	 *            to get further information from the application/library to
+	 *            complete the authentication. For example, a SASL mechanism might
+	 *            require the authentication ID, password and realm from the caller.
+	 *            The authentication ID is requested by using a
+	 *            {@link javax.security.auth.callback.NameCallback}. The password is
+	 *            requested by using a
+	 *            {@link javax.security.auth.callback.PasswordCallback}. The realm
+	 *            is requested by using a {@link RealmChoiceCallback} if there is a
+	 *            list of realms to choose from, and by using a
+	 *            {@link RealmCallback} if the realm must be entered.
+	 * @return a possibly null {@link SaslServer} created using the parameters
+	 *         supplied. If <code>null</code> is returned, it means that this
+	 *         factory cannot produce a {@link SaslServer} using the parameters
+	 *         supplied.
+	 * @throws SaslException
+	 *             if a SaslServer instance cannot be created because of an error.
+	 */
+	SaslServer createSaslServer(String mechanism, String protocol, String serverName, Map<String, ?> props,
+			CallbackHandler cbh) throws SaslException;
 
-    /**
-     * Returns an array of names of mechanisms that match the specified
-     * mechanism selection policies.
-     *
-     * @param props
-     *            the possibly <code>null</code> set of properties used to
-     *            specify the security policy of the SASL mechanisms. For
-     *            example, if props contains the {@link Sasl#POLICY_NOPLAINTEXT}
-     *            property with the value <code>"true"</code>, then the factory
-     *            must not return any SASL mechanisms that are susceptible to
-     *            simple plain passive attacks. See the {@link Sasl} class for a
-     *            complete list of policy properties. Non-policy related
-     *            properties, if present in props, are ignored.
-     * @return a non-null array containing IANA-registered SASL mechanism names.
-     */
-    String[] getMechanismNames(Map<String, ?> props);
+	/**
+	 * Returns an array of names of mechanisms that match the specified mechanism
+	 * selection policies.
+	 *
+	 * @param props
+	 *            the possibly <code>null</code> set of properties used to specify
+	 *            the security policy of the SASL mechanisms. For example, if props
+	 *            contains the {@link Sasl#POLICY_NOPLAINTEXT} property with the
+	 *            value <code>"true"</code>, then the factory must not return any
+	 *            SASL mechanisms that are susceptible to simple plain passive
+	 *            attacks. See the {@link Sasl} class for a complete list of policy
+	 *            properties. Non-policy related properties, if present in props,
+	 *            are ignored.
+	 * @return a non-null array containing IANA-registered SASL mechanism names.
+	 */
+	String[] getMechanismNames(Map<String, ?> props);
 }

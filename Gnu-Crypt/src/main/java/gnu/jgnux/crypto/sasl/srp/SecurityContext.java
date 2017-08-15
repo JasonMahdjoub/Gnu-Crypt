@@ -40,107 +40,95 @@ package gnu.jgnux.crypto.sasl.srp;
 /**
  * A package-private placeholder for an SRP security context.
  */
-class SecurityContext
-{
-    private String mdName;
+class SecurityContext {
+	private String mdName;
 
-    private byte[] sid;
+	private byte[] sid;
 
-    private byte[] K;
+	private byte[] K;
 
-    private byte[] cIV;
+	private byte[] cIV;
 
-    private byte[] sIV;
+	private byte[] sIV;
 
-    private boolean replayDetection;
+	private boolean replayDetection;
 
-    private int inCounter;
+	private int inCounter;
 
-    private int outCounter;
+	private int outCounter;
 
-    private IALG inMac;
+	private IALG inMac;
 
-    private IALG outMac;
+	private IALG outMac;
 
-    private CALG inCipher;
+	private CALG inCipher;
 
-    private CALG outCipher;
+	private CALG outCipher;
 
-    SecurityContext(final String mdName, final byte[] sid, final byte[] K, final byte[] cIV, final byte[] sIV, final boolean replayDetection, final int inCounter, final int outCounter, final IALG inMac, final IALG outMac, final CALG inCipher, final CALG outCipher)
-    {
-	super();
+	SecurityContext(final String mdName, final byte[] sid, final byte[] K, final byte[] cIV, final byte[] sIV,
+			final boolean replayDetection, final int inCounter, final int outCounter, final IALG inMac,
+			final IALG outMac, final CALG inCipher, final CALG outCipher) {
+		super();
 
-	this.mdName = mdName;
-	this.sid = sid;
-	this.K = K;
-	this.cIV = cIV;
-	this.sIV = sIV;
-	this.replayDetection = replayDetection;
-	this.inCounter = inCounter;
-	this.outCounter = outCounter;
-	this.inMac = inMac;
-	this.outMac = outMac;
-	this.inCipher = inCipher;
-	this.outCipher = outCipher;
-    }
+		this.mdName = mdName;
+		this.sid = sid;
+		this.K = K;
+		this.cIV = cIV;
+		this.sIV = sIV;
+		this.replayDetection = replayDetection;
+		this.inCounter = inCounter;
+		this.outCounter = outCounter;
+		this.inMac = inMac;
+		this.outMac = outMac;
+		this.inCipher = inCipher;
+		this.outCipher = outCipher;
+	}
 
-    byte[] getClientIV()
-    {
-	return cIV;
-    }
+	byte[] getClientIV() {
+		return cIV;
+	}
 
-    CALG getInCipher()
-    {
-	return inCipher;
-    }
+	CALG getInCipher() {
+		return inCipher;
+	}
 
-    int getInCounter()
-    {
-	return inCounter;
-    }
+	int getInCounter() {
+		return inCounter;
+	}
 
-    IALG getInMac()
-    {
-	return inMac;
-    }
+	IALG getInMac() {
+		return inMac;
+	}
 
-    byte[] getK()
-    {
-	return K;
-    }
+	byte[] getK() {
+		return K;
+	}
 
-    String getMdName()
-    {
-	return mdName;
-    }
+	String getMdName() {
+		return mdName;
+	}
 
-    CALG getOutCipher()
-    {
-	return outCipher;
-    }
+	CALG getOutCipher() {
+		return outCipher;
+	}
 
-    int getOutCounter()
-    {
-	return outCounter;
-    }
+	int getOutCounter() {
+		return outCounter;
+	}
 
-    IALG getOutMac()
-    {
-	return outMac;
-    }
+	IALG getOutMac() {
+		return outMac;
+	}
 
-    byte[] getServerIV()
-    {
-	return sIV;
-    }
+	byte[] getServerIV() {
+		return sIV;
+	}
 
-    byte[] getSID()
-    {
-	return sid;
-    }
+	byte[] getSID() {
+		return sid;
+	}
 
-    boolean hasReplayDetection()
-    {
-	return replayDetection;
-    }
+	boolean hasReplayDetection() {
+		return replayDetection;
+	}
 }

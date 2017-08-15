@@ -48,43 +48,36 @@ import java.security.PrivilegedAction;
  * String port = AccessController.doPrivileged(action);
  * </code>
  */
-public class GetPropertyAction implements PrivilegedAction<String>
-{
-    String name;
+public class GetPropertyAction implements PrivilegedAction<String> {
+	String name;
 
-    String value = null;
+	String value = null;
 
-    public GetPropertyAction()
-    {
-    }
+	public GetPropertyAction() {
+	}
 
-    public GetPropertyAction(String propName)
-    {
-	setParameters(propName);
-    }
+	public GetPropertyAction(String propName) {
+		setParameters(propName);
+	}
 
-    public GetPropertyAction(String propName, String defaultValue)
-    {
-	setParameters(propName, defaultValue);
-    }
+	public GetPropertyAction(String propName, String defaultValue) {
+		setParameters(propName, defaultValue);
+	}
 
-    @Override
-    public String run()
-    {
-	return System.getProperty(name, value);
-    }
+	@Override
+	public String run() {
+		return System.getProperty(name, value);
+	}
 
-    public GetPropertyAction setParameters(String propName)
-    {
-	this.name = propName;
-	this.value = null;
-	return this;
-    }
+	public GetPropertyAction setParameters(String propName) {
+		this.name = propName;
+		this.value = null;
+		return this;
+	}
 
-    public GetPropertyAction setParameters(String propName, String defaultValue)
-    {
-	this.name = propName;
-	this.value = defaultValue;
-	return this;
-    }
+	public GetPropertyAction setParameters(String propName, String defaultValue) {
+		this.name = propName;
+		this.value = defaultValue;
+		return this;
+	}
 }

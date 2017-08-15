@@ -46,124 +46,111 @@ import java.util.Iterator;
  * to four elements specified via one of the constructors, or with a collection
  * of arbitrary size.
  */
-public final class SimpleList extends AbstractList<Object>
-{
-    private final Object[] elements;
+public final class SimpleList extends AbstractList<Object> {
+	private final Object[] elements;
 
-    /**
-     * Create the empty list.
-     */
-    public SimpleList()
-    {
-	elements = null;
-    }
+	/**
+	 * Create the empty list.
+	 */
+	public SimpleList() {
+		elements = null;
+	}
 
-    /**
-     * Create an n-tuple of arbitrary size. Even if the supplied collection has
-     * no natural order, the created n-tuple will have the order that the
-     * elements are returned by the collection's iterator.
-     *
-     * @param c
-     *            The collection.
-     */
-    public SimpleList(Collection<Object> c)
-    {
-	elements = new Object[c.size()];
-	int i = 0;
-	for (Iterator<Object> it = c.iterator(); it.hasNext()
-		&& i < elements.length;)
-	    elements[i++] = it.next();
-    }
+	/**
+	 * Create an n-tuple of arbitrary size. Even if the supplied collection has no
+	 * natural order, the created n-tuple will have the order that the elements are
+	 * returned by the collection's iterator.
+	 *
+	 * @param c
+	 *            The collection.
+	 */
+	public SimpleList(Collection<Object> c) {
+		elements = new Object[c.size()];
+		int i = 0;
+		for (Iterator<Object> it = c.iterator(); it.hasNext() && i < elements.length;)
+			elements[i++] = it.next();
+	}
 
-    /**
-     * Create a singleton list.
-     *
-     * @param element
-     *            The first element.
-     */
-    public SimpleList(final Object element)
-    {
-	elements = new Object[1];
-	elements[0] = element;
-    }
+	/**
+	 * Create a singleton list.
+	 *
+	 * @param element
+	 *            The first element.
+	 */
+	public SimpleList(final Object element) {
+		elements = new Object[1];
+		elements[0] = element;
+	}
 
-    /**
-     * Create an ordered pair (2-tuple).
-     *
-     * @param e1
-     *            The first element.
-     * @param e2
-     *            The second element.
-     */
-    public SimpleList(final Object e1, final Object e2)
-    {
-	elements = new Object[2];
-	elements[0] = e1;
-	elements[1] = e2;
-    }
+	/**
+	 * Create an ordered pair (2-tuple).
+	 *
+	 * @param e1
+	 *            The first element.
+	 * @param e2
+	 *            The second element.
+	 */
+	public SimpleList(final Object e1, final Object e2) {
+		elements = new Object[2];
+		elements[0] = e1;
+		elements[1] = e2;
+	}
 
-    /**
-     * Create a 3-tuple.
-     *
-     * @param e1
-     *            The first element.
-     * @param e2
-     *            The second element.
-     * @param e3
-     *            The third element.
-     */
-    public SimpleList(final Object e1, final Object e2, final Object e3)
-    {
-	elements = new Object[3];
-	elements[0] = e1;
-	elements[1] = e2;
-	elements[2] = e3;
-    }
+	/**
+	 * Create a 3-tuple.
+	 *
+	 * @param e1
+	 *            The first element.
+	 * @param e2
+	 *            The second element.
+	 * @param e3
+	 *            The third element.
+	 */
+	public SimpleList(final Object e1, final Object e2, final Object e3) {
+		elements = new Object[3];
+		elements[0] = e1;
+		elements[1] = e2;
+		elements[2] = e3;
+	}
 
-    /**
-     * Create a 4-tuple.
-     *
-     * @param e1
-     *            The first element.
-     * @param e2
-     *            The second element.
-     * @param e3
-     *            The third element.
-     * @param e4
-     *            The fourth element.
-     */
-    public SimpleList(final Object e1, final Object e2, final Object e3, final Object e4)
-    {
-	elements = new Object[4];
-	elements[0] = e1;
-	elements[1] = e2;
-	elements[2] = e3;
-	elements[3] = e4;
-    }
+	/**
+	 * Create a 4-tuple.
+	 *
+	 * @param e1
+	 *            The first element.
+	 * @param e2
+	 *            The second element.
+	 * @param e3
+	 *            The third element.
+	 * @param e4
+	 *            The fourth element.
+	 */
+	public SimpleList(final Object e1, final Object e2, final Object e3, final Object e4) {
+		elements = new Object[4];
+		elements[0] = e1;
+		elements[1] = e2;
+		elements[2] = e3;
+		elements[3] = e4;
+	}
 
-    @Override
-    public Object get(int index)
-    {
-	if (elements == null)
-	    throw new IndexOutOfBoundsException("list is empty");
-	if (index < 0 || index >= elements.length)
-	    throw new IndexOutOfBoundsException(
-		    "index=" + index + ", size=" + size());
-	return elements[index];
-    }
+	@Override
+	public Object get(int index) {
+		if (elements == null)
+			throw new IndexOutOfBoundsException("list is empty");
+		if (index < 0 || index >= elements.length)
+			throw new IndexOutOfBoundsException("index=" + index + ", size=" + size());
+		return elements[index];
+	}
 
-    @Override
-    public int size()
-    {
-	if (elements == null)
-	    return 0;
-	return elements.length;
-    }
+	@Override
+	public int size() {
+		if (elements == null)
+			return 0;
+		return elements.length;
+	}
 
-    @Override
-    public String toString()
-    {
-	return SimpleList.class.getName() + "(" + size() + ") "
-		+ super.toString();
-    }
+	@Override
+	public String toString() {
+		return SimpleList.class.getName() + "(" + size() + ") " + super.toString();
+	}
 }

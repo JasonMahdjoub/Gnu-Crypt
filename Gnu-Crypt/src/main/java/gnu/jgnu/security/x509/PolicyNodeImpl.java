@@ -46,184 +46,163 @@ import java.util.Set;
 import gnu.vm.jgnu.security.cert.PolicyNode;
 import gnu.vm.jgnu.security.cert.PolicyQualifierInfo;
 
-public final class PolicyNodeImpl implements PolicyNode
-{
+public final class PolicyNodeImpl implements PolicyNode {
 
-    // Fields.
-    // -------------------------------------------------------------------------
+	// Fields.
+	// -------------------------------------------------------------------------
 
-    private String policy;
+	private String policy;
 
-    private final Set<String> expectedPolicies;
+	private final Set<String> expectedPolicies;
 
-    private final Set<PolicyQualifierInfo> qualifiers;
+	private final Set<PolicyQualifierInfo> qualifiers;
 
-    private final Set<PolicyNodeImpl> children;
+	private final Set<PolicyNodeImpl> children;
 
-    private PolicyNodeImpl parent;
+	private PolicyNodeImpl parent;
 
-    private int depth;
+	private int depth;
 
-    private boolean critical;
+	private boolean critical;
 
-    private boolean readOnly;
+	private boolean readOnly;
 
-    // Constructors.
-    // -------------------------------------------------------------------------
+	// Constructors.
+	// -------------------------------------------------------------------------
 
-    public PolicyNodeImpl()
-    {
-	expectedPolicies = new HashSet<>();
-	qualifiers = new HashSet<>();
-	children = new HashSet<>();
-	readOnly = false;
-	critical = false;
-    }
-
-    // Instance methods.
-    // -------------------------------------------------------------------------
-
-    public void addAllExpectedPolicies(Set<String> policies)
-    {
-	if (readOnly)
-	    throw new IllegalStateException("read only");
-	expectedPolicies.addAll(policies);
-    }
-
-    public void addAllPolicyQualifiers(Collection<? extends PolicyQualifierInfo> qualifiers)
-    {
-	/*
-	 * for (Iterator<? extends PolicyQualifierInfo> it =
-	 * qualifiers.iterator(); it.hasNext(); ) { if (!(it.next() instanceof
-	 * PolicyQualifierInfo)) throw new IllegalArgumentException
-	 * ("can only add PolicyQualifierInfos"); }
-	 */
-	this.qualifiers.addAll(qualifiers);
-    }
-
-    public void addChild(PolicyNodeImpl node)
-    {
-	if (readOnly)
-	    throw new IllegalStateException("read only");
-	if (node.getParent() != null)
-	    throw new IllegalStateException("already a child node");
-	node.parent = this;
-	node.setDepth(depth + 1);
-	children.add(node);
-    }
-
-    public void addExpectedPolicy(String policy)
-    {
-	if (readOnly)
-	    throw new IllegalStateException("read only");
-	expectedPolicies.add(policy);
-    }
-
-    public void addPolicyQualifier(PolicyQualifierInfo qualifier)
-    {
-	if (readOnly)
-	    throw new IllegalStateException("read only");
-	qualifiers.add(qualifier);
-    }
-
-    @Override
-    public Iterator<PolicyNodeImpl> getChildren()
-    {
-	return Collections.unmodifiableSet(children).iterator();
-    }
-
-    @Override
-    public int getDepth()
-    {
-	return depth;
-    }
-
-    @Override
-    public Set<String> getExpectedPolicies()
-    {
-	return Collections.unmodifiableSet(expectedPolicies);
-    }
-
-    @Override
-    public PolicyNode getParent()
-    {
-	return parent;
-    }
-
-    @Override
-    public Set<PolicyQualifierInfo> getPolicyQualifiers()
-    {
-	return Collections.unmodifiableSet(qualifiers);
-    }
-
-    @Override
-    public String getValidPolicy()
-    {
-	return policy;
-    }
-
-    @Override
-    public boolean isCritical()
-    {
-	return critical;
-    }
-
-    public void setCritical(boolean critical)
-    {
-	if (readOnly)
-	    throw new IllegalStateException("read only");
-	this.critical = critical;
-    }
-
-    public void setDepth(int depth)
-    {
-	if (readOnly)
-	    throw new IllegalStateException("read only");
-	this.depth = depth;
-    }
-
-    public void setReadOnly()
-    {
-	if (readOnly)
-	    return;
-	readOnly = true;
-	for (Iterator<PolicyNodeImpl> it = getChildren(); it.hasNext();)
-	    it.next().setReadOnly();
-    }
-
-    public void setValidPolicy(String policy)
-    {
-	if (readOnly)
-	    throw new IllegalStateException("read only");
-	this.policy = policy;
-    }
-
-    @Override
-    public String toString()
-    {
-	StringBuilder buf = new StringBuilder();
-	for (int i = 0; i < depth; i++)
-	    buf.append("  ");
-	buf.append("(");
-	buf.append(PolicyNodeImpl.class.getName());
-	buf.append(" (oid ");
-	buf.append(policy);
-	buf.append(") (depth ");
-	buf.append(depth);
-	buf.append(") (qualifiers ");
-	buf.append(qualifiers);
-	buf.append(") (critical ");
-	buf.append(critical);
-	buf.append(") (expectedPolicies ");
-	buf.append(expectedPolicies);
-	buf.append(") (children (");
-	final String nl = System.getProperty("line.separator");
-	for (Iterator<PolicyNodeImpl> it = getChildren(); it.hasNext();)
-	{
-	    buf.append(nl);
-	    buf.append(it.next().toString());
+	public PolicyNodeImpl() {
+		expectedPolicies = new HashSet<>();
+		qualifiers = new HashSet<>();
+		children = new HashSet<>();
+		readOnly = false;
+		critical = false;
 	}
-	buf.append(")))");
-	return buf.toString();
-    }
+
+	// Instance methods.
+	// -------------------------------------------------------------------------
+
+	public void addAllExpectedPolicies(Set<String> policies) {
+		if (readOnly)
+			throw new IllegalStateException("read only");
+		expectedPolicies.addAll(policies);
+	}
+
+	public void addAllPolicyQualifiers(Collection<? extends PolicyQualifierInfo> qualifiers) {
+		/*
+		 * for (Iterator<? extends PolicyQualifierInfo> it = qualifiers.iterator();
+		 * it.hasNext(); ) { if (!(it.next() instanceof PolicyQualifierInfo)) throw new
+		 * IllegalArgumentException ("can only add PolicyQualifierInfos"); }
+		 */
+		this.qualifiers.addAll(qualifiers);
+	}
+
+	public void addChild(PolicyNodeImpl node) {
+		if (readOnly)
+			throw new IllegalStateException("read only");
+		if (node.getParent() != null)
+			throw new IllegalStateException("already a child node");
+		node.parent = this;
+		node.setDepth(depth + 1);
+		children.add(node);
+	}
+
+	public void addExpectedPolicy(String policy) {
+		if (readOnly)
+			throw new IllegalStateException("read only");
+		expectedPolicies.add(policy);
+	}
+
+	public void addPolicyQualifier(PolicyQualifierInfo qualifier) {
+		if (readOnly)
+			throw new IllegalStateException("read only");
+		qualifiers.add(qualifier);
+	}
+
+	@Override
+	public Iterator<PolicyNodeImpl> getChildren() {
+		return Collections.unmodifiableSet(children).iterator();
+	}
+
+	@Override
+	public int getDepth() {
+		return depth;
+	}
+
+	@Override
+	public Set<String> getExpectedPolicies() {
+		return Collections.unmodifiableSet(expectedPolicies);
+	}
+
+	@Override
+	public PolicyNode getParent() {
+		return parent;
+	}
+
+	@Override
+	public Set<PolicyQualifierInfo> getPolicyQualifiers() {
+		return Collections.unmodifiableSet(qualifiers);
+	}
+
+	@Override
+	public String getValidPolicy() {
+		return policy;
+	}
+
+	@Override
+	public boolean isCritical() {
+		return critical;
+	}
+
+	public void setCritical(boolean critical) {
+		if (readOnly)
+			throw new IllegalStateException("read only");
+		this.critical = critical;
+	}
+
+	public void setDepth(int depth) {
+		if (readOnly)
+			throw new IllegalStateException("read only");
+		this.depth = depth;
+	}
+
+	public void setReadOnly() {
+		if (readOnly)
+			return;
+		readOnly = true;
+		for (Iterator<PolicyNodeImpl> it = getChildren(); it.hasNext();)
+			it.next().setReadOnly();
+	}
+
+	public void setValidPolicy(String policy) {
+		if (readOnly)
+			throw new IllegalStateException("read only");
+		this.policy = policy;
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder buf = new StringBuilder();
+		for (int i = 0; i < depth; i++)
+			buf.append("  ");
+		buf.append("(");
+		buf.append(PolicyNodeImpl.class.getName());
+		buf.append(" (oid ");
+		buf.append(policy);
+		buf.append(") (depth ");
+		buf.append(depth);
+		buf.append(") (qualifiers ");
+		buf.append(qualifiers);
+		buf.append(") (critical ");
+		buf.append(critical);
+		buf.append(") (expectedPolicies ");
+		buf.append(expectedPolicies);
+		buf.append(") (children (");
+		final String nl = System.getProperty("line.separator");
+		for (Iterator<PolicyNodeImpl> it = getChildren(); it.hasNext();) {
+			buf.append(nl);
+			buf.append(it.next().toString());
+		}
+		buf.append(")))");
+		return buf.toString();
+	}
 }

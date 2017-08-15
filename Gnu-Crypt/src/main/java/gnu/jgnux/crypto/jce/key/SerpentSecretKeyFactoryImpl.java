@@ -37,9 +37,7 @@ exception statement from your version.  */
 
 package gnu.jgnux.crypto.jce.key;
 
-public class SerpentSecretKeyFactoryImpl extends SecretKeyFactoryImpl
-{
-    public SerpentSecretKeyFactoryImpl()
-    {
-    }
+public class SerpentSecretKeyFactoryImpl extends SecretKeyFactoryImpl {
+	public SerpentSecretKeyFactoryImpl() {
+	}
 }

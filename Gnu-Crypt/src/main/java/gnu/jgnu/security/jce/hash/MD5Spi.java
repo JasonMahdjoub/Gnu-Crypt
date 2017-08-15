@@ -43,10 +43,8 @@ import gnu.jgnu.security.Registry;
  * The implementation of the MD5 <i>Service Provider Interface</i> (<b>SPI</b>)
  * adapter.
  */
-public class MD5Spi extends MessageDigestAdapter
-{
-    public MD5Spi()
-    {
-	super(Registry.MD5_HASH);
-    }
+public class MD5Spi extends MessageDigestAdapter {
+	public MD5Spi() {
+		super(Registry.MD5_HASH);
+	}
 }

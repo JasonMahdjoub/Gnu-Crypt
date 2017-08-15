@@ -45,45 +45,40 @@ import java.util.List;
 import gnu.jgnu.security.der.DERReader;
 import gnu.jgnu.security.der.DERValue;
 
-public class GeneralNames
-{
+public class GeneralNames {
 
-    // Instance methods.
-    // -------------------------------------------------------------------------
+	// Instance methods.
+	// -------------------------------------------------------------------------
 
-    private List<GeneralName> names;
+	private List<GeneralName> names;
 
-    // Constructor.
-    // -------------------------------------------------------------------------
+	// Constructor.
+	// -------------------------------------------------------------------------
 
-    public GeneralNames(final byte[] encoded) throws IOException
-    {
-	names = new LinkedList<GeneralName>();
-	DERReader der = new DERReader(encoded);
-	DERValue nameList = der.read();
-	if (!nameList.isConstructed())
-	    throw new IOException("malformed GeneralNames");
-	int len = 0;
-	while (len < nameList.getLength())
-	{
-	    DERValue name = der.read();
-	    GeneralName generalName = new GeneralName(name.getEncoded());
-	    names.add(generalName);
-	    len += name.getEncodedLength();
+	public GeneralNames(final byte[] encoded) throws IOException {
+		names = new LinkedList<GeneralName>();
+		DERReader der = new DERReader(encoded);
+		DERValue nameList = der.read();
+		if (!nameList.isConstructed())
+			throw new IOException("malformed GeneralNames");
+		int len = 0;
+		while (len < nameList.getLength()) {
+			DERValue name = der.read();
+			GeneralName generalName = new GeneralName(name.getEncoded());
+			names.add(generalName);
+			len += name.getEncodedLength();
+		}
 	}
-    }
 
-    // Instance methods.
-    // -------------------------------------------------------------------------
+	// Instance methods.
+	// -------------------------------------------------------------------------
 
-    public List<GeneralName> getNames()
-    {
-	return Collections.unmodifiableList(names);
-    }
+	public List<GeneralName> getNames() {
+		return Collections.unmodifiableList(names);
+	}
 
-    @Override
-    public String toString()
-    {
-	return GeneralNames.class.getName() + " [ " + names + " ]";
-    }
+	@Override
+	public String toString() {
+		return GeneralNames.class.getName() + " [ " + names + " ]";
+	}
 }

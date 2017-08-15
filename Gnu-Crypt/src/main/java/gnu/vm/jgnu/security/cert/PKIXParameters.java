@@ -57,512 +57,466 @@ import gnu.vm.jgnu.security.KeyStoreException;
  * @see CertPathBuilder
  * @since 1.4
  */
-public class PKIXParameters implements CertPathParameters
-{
+public class PKIXParameters implements CertPathParameters {
 
-    // Fields.
-    // ------------------------------------------------------------------------
+	// Fields.
+	// ------------------------------------------------------------------------
 
-    /** The trusted certificates. */
-    private final Set<TrustAnchor> trustAnchors;
+	/** The trusted certificates. */
+	private final Set<TrustAnchor> trustAnchors;
 
-    /** The set of initial policy identifiers. */
-    private final Set<String> initPolicies;
+	/** The set of initial policy identifiers. */
+	private final Set<String> initPolicies;
 
-    /** The list of certificate stores. */
-    private final List<CertStore> certStores;
+	/** The list of certificate stores. */
+	private final List<CertStore> certStores;
 
-    /** The list of path checkers. */
-    private final List<PKIXCertPathChecker> pathCheckers;
+	/** The list of path checkers. */
+	private final List<PKIXCertPathChecker> pathCheckers;
 
-    /** The revocation enabled flag. */
-    private boolean revocationEnabled;
+	/** The revocation enabled flag. */
+	private boolean revocationEnabled;
 
-    /** The explicit policy required flag. */
-    private boolean exPolicyRequired;
+	/** The explicit policy required flag. */
+	private boolean exPolicyRequired;
 
-    /** The policy mapping inhibited flag. */
-    private boolean policyMappingInhibited;
+	/** The policy mapping inhibited flag. */
+	private boolean policyMappingInhibited;
 
-    /** The any policy inhibited flag. */
-    private boolean anyPolicyInhibited;
+	/** The any policy inhibited flag. */
+	private boolean anyPolicyInhibited;
 
-    /** The policy qualifiers rejected flag. */
-    private boolean policyQualRejected;
+	/** The policy qualifiers rejected flag. */
+	private boolean policyQualRejected;
 
-    /** The target validation date. */
-    private Date date;
+	/** The target validation date. */
+	private Date date;
 
-    /** The signature algorithm provider. */
-    private String sigProvider;
+	/** The signature algorithm provider. */
+	private String sigProvider;
 
-    /** The target constraints. */
-    private CertSelector targetConstraints;
+	/** The target constraints. */
+	private CertSelector targetConstraints;
 
-    // Constructors.
-    // ------------------------------------------------------------------------
+	// Constructors.
+	// ------------------------------------------------------------------------
 
-    /**
-     * Default constructor.
-     */
-    private PKIXParameters()
-    {
-	trustAnchors = new HashSet<>();
-	initPolicies = new HashSet<>();
-	certStores = new LinkedList<>();
-	pathCheckers = new LinkedList<>();
-	revocationEnabled = true;
-	exPolicyRequired = false;
-	policyMappingInhibited = false;
-	anyPolicyInhibited = false;
-	policyQualRejected = true;
-    }
-
-    /**
-     * Create a new PKIXParameters object, populating the trusted certificates
-     * set with all certificates found in the given key store. All certificates
-     * found in the key store are assumed to be trusted by this constructor.
-     *
-     * @param keystore
-     *            The key store.
-     * @throws KeyStoreException
-     *             If the certificates cannot be retrieved from the key store.
-     * @throws InvalidAlgorithmParameterException
-     *             If there are no certificates in the key store.
-     * @throws NullPointerException
-     *             If <i>keystore</i> is null.
-     */
-    public PKIXParameters(KeyStore keystore) throws KeyStoreException, InvalidAlgorithmParameterException
-    {
-	this();
-	for (Enumeration<String> e = keystore.aliases(); e.hasMoreElements();)
-	{
-	    String alias = e.nextElement();
-	    if (!keystore.isCertificateEntry(alias))
-		continue;
-	    Certificate cert = keystore.getCertificate(alias);
-	    if (cert instanceof X509Certificate)
-		trustAnchors.add(new TrustAnchor((X509Certificate) cert, null));
+	/**
+	 * Default constructor.
+	 */
+	private PKIXParameters() {
+		trustAnchors = new HashSet<>();
+		initPolicies = new HashSet<>();
+		certStores = new LinkedList<>();
+		pathCheckers = new LinkedList<>();
+		revocationEnabled = true;
+		exPolicyRequired = false;
+		policyMappingInhibited = false;
+		anyPolicyInhibited = false;
+		policyQualRejected = true;
 	}
-	if (trustAnchors.isEmpty())
-	    throw new InvalidAlgorithmParameterException(
-		    "no certs in the key store");
-    }
 
-    /**
-     * Copying constructor for cloning.
-     *
-     * @param that
-     *            The instance being cloned.
-     */
-    private PKIXParameters(PKIXParameters that)
-    {
-	this();
-	this.trustAnchors.addAll(that.trustAnchors);
-	this.initPolicies.addAll(that.initPolicies);
-	this.certStores.addAll(that.certStores);
-	this.pathCheckers.addAll(that.pathCheckers);
-	this.revocationEnabled = that.revocationEnabled;
-	this.exPolicyRequired = that.exPolicyRequired;
-	this.policyMappingInhibited = that.policyMappingInhibited;
-	this.anyPolicyInhibited = that.anyPolicyInhibited;
-	this.policyQualRejected = that.policyQualRejected;
-	this.date = that.date;
-	this.sigProvider = that.sigProvider;
-	this.targetConstraints = that.targetConstraints != null
-		? (CertSelector) that.targetConstraints.clone() : null;
-    }
-
-    /**
-     * Create a new PKIXParameters object, populating the trusted certificates
-     * set with the elements of the given set, each of which must be a
-     * {@link TrustAnchor}.
-     *
-     * @param trustAnchors
-     *            The set of trust anchors.
-     * @throws InvalidAlgorithmParameterException
-     *             If there are no certificates in the set.
-     * @throws NullPointerException
-     *             If <i>trustAnchors</i> is null.
-     * @throws ClassCastException
-     *             If every element in <i>trustAnchors</i> is not a
-     *             {@link TrustAnchor}.
-     */
-    public PKIXParameters(Set<TrustAnchor> trustAnchors) throws InvalidAlgorithmParameterException
-    {
-	this();
-	setTrustAnchors(trustAnchors);
-    }
-
-    // Instance methods.
-    // ------------------------------------------------------------------------
-
-    /**
-     * Add a certificate path checker.
-     *
-     * @param checker
-     *            The certificate path checker to add.
-     */
-    public void addCertPathChecker(PKIXCertPathChecker checker)
-    {
-	if (checker != null)
-	    pathCheckers.add(checker);
-    }
-
-    /**
-     * Add a {@link CertStore} to the list of cert stores.
-     *
-     * @param store
-     *            The CertStore to add.
-     */
-    public void addCertStore(CertStore store)
-    {
-	if (store != null)
-	    certStores.add(store);
-    }
-
-    /**
-     * Returns a copy of these parameters.
-     *
-     * @return The copy.
-     */
-    @Override
-    public Object clone()
-    {
-	return new PKIXParameters(this);
-    }
-
-    /**
-     * Returns an immutable list of all certificate path checkers.
-     *
-     * @return An immutable list of all certificate path checkers.
-     */
-    public List<PKIXCertPathChecker> getCertPathCheckers()
-    {
-	return Collections.unmodifiableList(pathCheckers);
-    }
-
-    /**
-     * Returns an immutable list of cert stores. This method never returns null.
-     *
-     * @return The list of cert stores.
-     */
-    public List<CertStore> getCertStores()
-    {
-	return Collections.unmodifiableList(certStores);
-    }
-
-    /**
-     * Returns the date for which the certificate path should be validated, or
-     * null if the current time should be used. The date object is copied to
-     * prevent subsequent modification.
-     *
-     * @return The date, or null if not set.
-     */
-    public Date getDate()
-    {
-	return date != null ? (Date) date.clone() : null;
-    }
-
-    /**
-     * Returns the set of initial policy identifiers (as OID strings). If any
-     * policy is accepted, this method returns the empty set.
-     *
-     * @return An immutable set of initial policy OID strings, or the empty set
-     *         if any policy is acceptable.
-     */
-    public Set<String> getInitialPolicies()
-    {
-	return Collections.unmodifiableSet(initPolicies);
-    }
-
-    /**
-     * Returns the value of the <i>policy qualifiers enabled</i> flag. The
-     * default value of this flag is <code>true</code>.
-     *
-     * @return The <i>policy qualifiers enabled</i> flag.
-     */
-    public boolean getPolicyQualifiersRejected()
-    {
-	return policyQualRejected;
-    }
-
-    /**
-     * Returns the signature algorithm provider, or null if not set.
-     *
-     * @return The signature algorithm provider, or null if not set.
-     */
-    public String getSigProvider()
-    {
-	return sigProvider;
-    }
-
-    /**
-     * Returns the constraints placed on the target certificate, or null if
-     * there are none. The target constraints are copied to prevent subsequent
-     * modification.
-     *
-     * @return The target constraints, or null.
-     */
-    public CertSelector getTargetCertConstraints()
-    {
-	return targetConstraints != null
-		? (CertSelector) targetConstraints.clone() : null;
-    }
-
-    /**
-     * Returns an immutable set of trust anchors. The set returned will never be
-     * null and will never be empty.
-     *
-     * @return A (never null, never empty) immutable set of trust anchors.
-     */
-    public Set<TrustAnchor> getTrustAnchors()
-    {
-	return Collections.unmodifiableSet(trustAnchors);
-    }
-
-    /**
-     * Returns the value of the <i>any policy inhibited</i> flag. The default
-     * value of this flag is <code>false</code>.
-     *
-     * @return The <i>any policy inhibited</i> flag.
-     */
-    public boolean isAnyPolicyInhibited()
-    {
-	return anyPolicyInhibited;
-    }
-
-    /**
-     * Returns the value of the <i>explicit policy required</i> flag. The
-     * default value of this flag is <code>false</code>.
-     *
-     * @return The <i>explicit policy required</i> flag.
-     */
-    public boolean isExplicitPolicyRequired()
-    {
-	return exPolicyRequired;
-    }
-
-    /**
-     * Returns the value of the <i>policy mapping inhibited</i> flag. The
-     * default value of this flag is <code>false</code>.
-     *
-     * @return The <i>policy mapping inhibited</i> flag.
-     */
-    public boolean isPolicyMappingInhibited()
-    {
-	return policyMappingInhibited;
-    }
-
-    /**
-     * Returns the value of the <i>revocation enabled</i> flag. The default
-     * value for this flag is <code>true</code>.
-     *
-     * @return The <i>revocation enabled</i> flag.
-     */
-    public boolean isRevocationEnabled()
-    {
-	return revocationEnabled;
-    }
-
-    /**
-     * Sets the value of the <i>any policy inhibited</i> flag.
-     *
-     * @param value
-     *            The new value.
-     */
-    public void setAnyPolicyInhibited(boolean value)
-    {
-	anyPolicyInhibited = value;
-    }
-
-    /**
-     * Sets the certificate path checkers. If the argument is null, the list of
-     * checkers will merely be cleared.
-     *
-     * @param pathCheckers
-     *            The new list of certificate path checkers.
-     * @throws ClassCastException
-     *             If any element of <i>pathCheckers</i> is not a
-     *             {@link PKIXCertPathChecker}.
-     */
-    public void setCertPathCheckers(List<PKIXCertPathChecker> pathCheckers)
-    {
-	this.pathCheckers.clear();
-	if (pathCheckers == null)
-	    return;
-	for (Iterator<PKIXCertPathChecker> i = pathCheckers.iterator(); i
-		.hasNext();)
-	{
-	    this.pathCheckers.add(i.next());
+	/**
+	 * Create a new PKIXParameters object, populating the trusted certificates set
+	 * with all certificates found in the given key store. All certificates found in
+	 * the key store are assumed to be trusted by this constructor.
+	 *
+	 * @param keystore
+	 *            The key store.
+	 * @throws KeyStoreException
+	 *             If the certificates cannot be retrieved from the key store.
+	 * @throws InvalidAlgorithmParameterException
+	 *             If there are no certificates in the key store.
+	 * @throws NullPointerException
+	 *             If <i>keystore</i> is null.
+	 */
+	public PKIXParameters(KeyStore keystore) throws KeyStoreException, InvalidAlgorithmParameterException {
+		this();
+		for (Enumeration<String> e = keystore.aliases(); e.hasMoreElements();) {
+			String alias = e.nextElement();
+			if (!keystore.isCertificateEntry(alias))
+				continue;
+			Certificate cert = keystore.getCertificate(alias);
+			if (cert instanceof X509Certificate)
+				trustAnchors.add(new TrustAnchor((X509Certificate) cert, null));
+		}
+		if (trustAnchors.isEmpty())
+			throw new InvalidAlgorithmParameterException("no certs in the key store");
 	}
-    }
 
-    /**
-     * Set the cert stores. If the argument is null the list of cert stores will
-     * be empty.
-     *
-     * @param certStores
-     *            The cert stores.
-     */
-    public void setCertStores(List<CertStore> certStores)
-    {
-	this.certStores.clear();
-	if (certStores == null)
-	    return;
-	for (Iterator<CertStore> i = certStores.iterator(); i.hasNext();)
-	{
-	    this.certStores.add(i.next());
+	/**
+	 * Copying constructor for cloning.
+	 *
+	 * @param that
+	 *            The instance being cloned.
+	 */
+	private PKIXParameters(PKIXParameters that) {
+		this();
+		this.trustAnchors.addAll(that.trustAnchors);
+		this.initPolicies.addAll(that.initPolicies);
+		this.certStores.addAll(that.certStores);
+		this.pathCheckers.addAll(that.pathCheckers);
+		this.revocationEnabled = that.revocationEnabled;
+		this.exPolicyRequired = that.exPolicyRequired;
+		this.policyMappingInhibited = that.policyMappingInhibited;
+		this.anyPolicyInhibited = that.anyPolicyInhibited;
+		this.policyQualRejected = that.policyQualRejected;
+		this.date = that.date;
+		this.sigProvider = that.sigProvider;
+		this.targetConstraints = that.targetConstraints != null ? (CertSelector) that.targetConstraints.clone() : null;
 	}
-    }
 
-    /**
-     * Sets the date for which the certificate path should be validated, or null
-     * if the current time should be used.
-     *
-     * @param date
-     *            The new date, or null.
-     */
-    public void setDate(Date date)
-    {
-	if (date != null)
-	    this.date = (Date) date.clone();
-	else
-	    this.date = null;
-    }
-
-    /**
-     * Sets the value of the <i>explicit policy required</i> flag.
-     *
-     * @param value
-     *            The new value.
-     */
-    public void setExplicitPolicyRequired(boolean value)
-    {
-	exPolicyRequired = value;
-    }
-
-    /**
-     * Sets the initial policy identifiers (as OID strings). If the argument is
-     * null or the empty set, then any policy identifier will be accepted.
-     *
-     * @param initPolicies
-     *            The new set of policy strings, or null.
-     * @throws ClassCastException
-     *             If any element in <i>initPolicies</i> is not a string.
-     */
-    public void setInitialPolicies(Set<String> initPolicies)
-    {
-	this.initPolicies.clear();
-	if (initPolicies == null)
-	    return;
-	for (Iterator<String> i = initPolicies.iterator(); i.hasNext();)
-	{
-	    this.initPolicies.add(i.next());
+	/**
+	 * Create a new PKIXParameters object, populating the trusted certificates set
+	 * with the elements of the given set, each of which must be a
+	 * {@link TrustAnchor}.
+	 *
+	 * @param trustAnchors
+	 *            The set of trust anchors.
+	 * @throws InvalidAlgorithmParameterException
+	 *             If there are no certificates in the set.
+	 * @throws NullPointerException
+	 *             If <i>trustAnchors</i> is null.
+	 * @throws ClassCastException
+	 *             If every element in <i>trustAnchors</i> is not a
+	 *             {@link TrustAnchor}.
+	 */
+	public PKIXParameters(Set<TrustAnchor> trustAnchors) throws InvalidAlgorithmParameterException {
+		this();
+		setTrustAnchors(trustAnchors);
 	}
-    }
 
-    /**
-     * Sets the value of the <i>policy mapping inhibited</i> flag.
-     *
-     * @param value
-     *            The new value.
-     */
-    public void setPolicyMappingInhibited(boolean value)
-    {
-	policyMappingInhibited = value;
-    }
+	// Instance methods.
+	// ------------------------------------------------------------------------
 
-    /**
-     * Sets the value of the <i>policy qualifiers enabled</i> flag.
-     *
-     * @param value
-     *            The new value.
-     */
-    public void setPolicyQualifiersRejected(boolean value)
-    {
-	policyQualRejected = value;
-    }
-
-    /**
-     * Sets the value of the <i>revocation enabled</i> flag.
-     *
-     * @param value
-     *            The new value.
-     */
-    public void setRevocationEnabled(boolean value)
-    {
-	revocationEnabled = value;
-    }
-
-    /**
-     * Sets the signature algorithm provider, or null if there is no preferred
-     * provider.
-     *
-     * @param sigProvider
-     *            The signature provider name.
-     */
-    public void setSigProvider(String sigProvider)
-    {
-	this.sigProvider = sigProvider;
-    }
-
-    /**
-     * Sets the constraints placed on the target certificate.
-     *
-     * @param targetConstraints
-     *            The target constraints.
-     */
-    public void setTargetCertConstraints(CertSelector targetConstraints)
-    {
-	this.targetConstraints = targetConstraints != null
-		? (CertSelector) targetConstraints.clone() : null;
-    }
-
-    /**
-     * Sets the trust anchors of this class, replacing the current trust anchors
-     * with those in the given set. The supplied set is copied to prevent
-     * modification.
-     *
-     * @param trustAnchors
-     *            The new set of trust anchors.
-     * @throws InvalidAlgorithmParameterException
-     *             If there are no certificates in the set.
-     * @throws NullPointerException
-     *             If <i>trustAnchors</i> is null.
-     * @throws ClassCastException
-     *             If every element in <i>trustAnchors</i> is not a
-     *             {@link TrustAnchor}.
-     */
-    public void setTrustAnchors(Set<TrustAnchor> trustAnchors) throws InvalidAlgorithmParameterException
-    {
-	if (trustAnchors.isEmpty())
-	    throw new InvalidAlgorithmParameterException("no trust anchors");
-	this.trustAnchors.clear();
-	for (Iterator<TrustAnchor> i = trustAnchors.iterator(); i.hasNext();)
-	{
-	    this.trustAnchors.add(i.next());
+	/**
+	 * Add a certificate path checker.
+	 *
+	 * @param checker
+	 *            The certificate path checker to add.
+	 */
+	public void addCertPathChecker(PKIXCertPathChecker checker) {
+		if (checker != null)
+			pathCheckers.add(checker);
 	}
-    }
 
-    /**
-     * Returns a printable representation of these parameters.
-     *
-     * @return A printable representation of these parameters.
-     */
-    @Override
-    public String toString()
-    {
-	return "[ Trust Anchors: " + trustAnchors + "; Initial Policy OIDs="
-		+ (initPolicies != null ? initPolicies.toString() : "any")
-		+ "; Validity Date=" + date + "; Signature Provider="
-		+ sigProvider + "; Default Revocation Enabled="
-		+ revocationEnabled + "; Explicit Policy Required="
-		+ exPolicyRequired + "; Policy Mapping Inhibited="
-		+ policyMappingInhibited + "; Any Policy Inhibited="
-		+ anyPolicyInhibited + "; Policy Qualifiers Rejected="
-		+ policyQualRejected + "; Target Cert Contstraints="
-		+ targetConstraints + "; Certification Path Checkers="
-		+ pathCheckers + "; CertStores=" + certStores + " ]";
-    }
+	/**
+	 * Add a {@link CertStore} to the list of cert stores.
+	 *
+	 * @param store
+	 *            The CertStore to add.
+	 */
+	public void addCertStore(CertStore store) {
+		if (store != null)
+			certStores.add(store);
+	}
+
+	/**
+	 * Returns a copy of these parameters.
+	 *
+	 * @return The copy.
+	 */
+	@Override
+	public Object clone() {
+		return new PKIXParameters(this);
+	}
+
+	/**
+	 * Returns an immutable list of all certificate path checkers.
+	 *
+	 * @return An immutable list of all certificate path checkers.
+	 */
+	public List<PKIXCertPathChecker> getCertPathCheckers() {
+		return Collections.unmodifiableList(pathCheckers);
+	}
+
+	/**
+	 * Returns an immutable list of cert stores. This method never returns null.
+	 *
+	 * @return The list of cert stores.
+	 */
+	public List<CertStore> getCertStores() {
+		return Collections.unmodifiableList(certStores);
+	}
+
+	/**
+	 * Returns the date for which the certificate path should be validated, or null
+	 * if the current time should be used. The date object is copied to prevent
+	 * subsequent modification.
+	 *
+	 * @return The date, or null if not set.
+	 */
+	public Date getDate() {
+		return date != null ? (Date) date.clone() : null;
+	}
+
+	/**
+	 * Returns the set of initial policy identifiers (as OID strings). If any policy
+	 * is accepted, this method returns the empty set.
+	 *
+	 * @return An immutable set of initial policy OID strings, or the empty set if
+	 *         any policy is acceptable.
+	 */
+	public Set<String> getInitialPolicies() {
+		return Collections.unmodifiableSet(initPolicies);
+	}
+
+	/**
+	 * Returns the value of the <i>policy qualifiers enabled</i> flag. The default
+	 * value of this flag is <code>true</code>.
+	 *
+	 * @return The <i>policy qualifiers enabled</i> flag.
+	 */
+	public boolean getPolicyQualifiersRejected() {
+		return policyQualRejected;
+	}
+
+	/**
+	 * Returns the signature algorithm provider, or null if not set.
+	 *
+	 * @return The signature algorithm provider, or null if not set.
+	 */
+	public String getSigProvider() {
+		return sigProvider;
+	}
+
+	/**
+	 * Returns the constraints placed on the target certificate, or null if there
+	 * are none. The target constraints are copied to prevent subsequent
+	 * modification.
+	 *
+	 * @return The target constraints, or null.
+	 */
+	public CertSelector getTargetCertConstraints() {
+		return targetConstraints != null ? (CertSelector) targetConstraints.clone() : null;
+	}
+
+	/**
+	 * Returns an immutable set of trust anchors. The set returned will never be
+	 * null and will never be empty.
+	 *
+	 * @return A (never null, never empty) immutable set of trust anchors.
+	 */
+	public Set<TrustAnchor> getTrustAnchors() {
+		return Collections.unmodifiableSet(trustAnchors);
+	}
+
+	/**
+	 * Returns the value of the <i>any policy inhibited</i> flag. The default value
+	 * of this flag is <code>false</code>.
+	 *
+	 * @return The <i>any policy inhibited</i> flag.
+	 */
+	public boolean isAnyPolicyInhibited() {
+		return anyPolicyInhibited;
+	}
+
+	/**
+	 * Returns the value of the <i>explicit policy required</i> flag. The default
+	 * value of this flag is <code>false</code>.
+	 *
+	 * @return The <i>explicit policy required</i> flag.
+	 */
+	public boolean isExplicitPolicyRequired() {
+		return exPolicyRequired;
+	}
+
+	/**
+	 * Returns the value of the <i>policy mapping inhibited</i> flag. The default
+	 * value of this flag is <code>false</code>.
+	 *
+	 * @return The <i>policy mapping inhibited</i> flag.
+	 */
+	public boolean isPolicyMappingInhibited() {
+		return policyMappingInhibited;
+	}
+
+	/**
+	 * Returns the value of the <i>revocation enabled</i> flag. The default value
+	 * for this flag is <code>true</code>.
+	 *
+	 * @return The <i>revocation enabled</i> flag.
+	 */
+	public boolean isRevocationEnabled() {
+		return revocationEnabled;
+	}
+
+	/**
+	 * Sets the value of the <i>any policy inhibited</i> flag.
+	 *
+	 * @param value
+	 *            The new value.
+	 */
+	public void setAnyPolicyInhibited(boolean value) {
+		anyPolicyInhibited = value;
+	}
+
+	/**
+	 * Sets the certificate path checkers. If the argument is null, the list of
+	 * checkers will merely be cleared.
+	 *
+	 * @param pathCheckers
+	 *            The new list of certificate path checkers.
+	 * @throws ClassCastException
+	 *             If any element of <i>pathCheckers</i> is not a
+	 *             {@link PKIXCertPathChecker}.
+	 */
+	public void setCertPathCheckers(List<PKIXCertPathChecker> pathCheckers) {
+		this.pathCheckers.clear();
+		if (pathCheckers == null)
+			return;
+		for (Iterator<PKIXCertPathChecker> i = pathCheckers.iterator(); i.hasNext();) {
+			this.pathCheckers.add(i.next());
+		}
+	}
+
+	/**
+	 * Set the cert stores. If the argument is null the list of cert stores will be
+	 * empty.
+	 *
+	 * @param certStores
+	 *            The cert stores.
+	 */
+	public void setCertStores(List<CertStore> certStores) {
+		this.certStores.clear();
+		if (certStores == null)
+			return;
+		for (Iterator<CertStore> i = certStores.iterator(); i.hasNext();) {
+			this.certStores.add(i.next());
+		}
+	}
+
+	/**
+	 * Sets the date for which the certificate path should be validated, or null if
+	 * the current time should be used.
+	 *
+	 * @param date
+	 *            The new date, or null.
+	 */
+	public void setDate(Date date) {
+		if (date != null)
+			this.date = (Date) date.clone();
+		else
+			this.date = null;
+	}
+
+	/**
+	 * Sets the value of the <i>explicit policy required</i> flag.
+	 *
+	 * @param value
+	 *            The new value.
+	 */
+	public void setExplicitPolicyRequired(boolean value) {
+		exPolicyRequired = value;
+	}
+
+	/**
+	 * Sets the initial policy identifiers (as OID strings). If the argument is null
+	 * or the empty set, then any policy identifier will be accepted.
+	 *
+	 * @param initPolicies
+	 *            The new set of policy strings, or null.
+	 * @throws ClassCastException
+	 *             If any element in <i>initPolicies</i> is not a string.
+	 */
+	public void setInitialPolicies(Set<String> initPolicies) {
+		this.initPolicies.clear();
+		if (initPolicies == null)
+			return;
+		for (Iterator<String> i = initPolicies.iterator(); i.hasNext();) {
+			this.initPolicies.add(i.next());
+		}
+	}
+
+	/**
+	 * Sets the value of the <i>policy mapping inhibited</i> flag.
+	 *
+	 * @param value
+	 *            The new value.
+	 */
+	public void setPolicyMappingInhibited(boolean value) {
+		policyMappingInhibited = value;
+	}
+
+	/**
+	 * Sets the value of the <i>policy qualifiers enabled</i> flag.
+	 *
+	 * @param value
+	 *            The new value.
+	 */
+	public void setPolicyQualifiersRejected(boolean value) {
+		policyQualRejected = value;
+	}
+
+	/**
+	 * Sets the value of the <i>revocation enabled</i> flag.
+	 *
+	 * @param value
+	 *            The new value.
+	 */
+	public void setRevocationEnabled(boolean value) {
+		revocationEnabled = value;
+	}
+
+	/**
+	 * Sets the signature algorithm provider, or null if there is no preferred
+	 * provider.
+	 *
+	 * @param sigProvider
+	 *            The signature provider name.
+	 */
+	public void setSigProvider(String sigProvider) {
+		this.sigProvider = sigProvider;
+	}
+
+	/**
+	 * Sets the constraints placed on the target certificate.
+	 *
+	 * @param targetConstraints
+	 *            The target constraints.
+	 */
+	public void setTargetCertConstraints(CertSelector targetConstraints) {
+		this.targetConstraints = targetConstraints != null ? (CertSelector) targetConstraints.clone() : null;
+	}
+
+	/**
+	 * Sets the trust anchors of this class, replacing the current trust anchors
+	 * with those in the given set. The supplied set is copied to prevent
+	 * modification.
+	 *
+	 * @param trustAnchors
+	 *            The new set of trust anchors.
+	 * @throws InvalidAlgorithmParameterException
+	 *             If there are no certificates in the set.
+	 * @throws NullPointerException
+	 *             If <i>trustAnchors</i> is null.
+	 * @throws ClassCastException
+	 *             If every element in <i>trustAnchors</i> is not a
+	 *             {@link TrustAnchor}.
+	 */
+	public void setTrustAnchors(Set<TrustAnchor> trustAnchors) throws InvalidAlgorithmParameterException {
+		if (trustAnchors.isEmpty())
+			throw new InvalidAlgorithmParameterException("no trust anchors");
+		this.trustAnchors.clear();
+		for (Iterator<TrustAnchor> i = trustAnchors.iterator(); i.hasNext();) {
+			this.trustAnchors.add(i.next());
+		}
+	}
+
+	/**
+	 * Returns a printable representation of these parameters.
+	 *
+	 * @return A printable representation of these parameters.
+	 */
+	@Override
+	public String toString() {
+		return "[ Trust Anchors: " + trustAnchors + "; Initial Policy OIDs="
+				+ (initPolicies != null ? initPolicies.toString() : "any") + "; Validity Date=" + date
+				+ "; Signature Provider=" + sigProvider + "; Default Revocation Enabled=" + revocationEnabled
+				+ "; Explicit Policy Required=" + exPolicyRequired + "; Policy Mapping Inhibited="
+				+ policyMappingInhibited + "; Any Policy Inhibited=" + anyPolicyInhibited
+				+ "; Policy Qualifiers Rejected=" + policyQualRejected + "; Target Cert Contstraints="
+				+ targetConstraints + "; Certification Path Checkers=" + pathCheckers + "; CertStores=" + certStores
+				+ " ]";
+	}
 }

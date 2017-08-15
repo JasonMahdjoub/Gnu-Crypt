@@ -43,10 +43,8 @@ import gnu.jgnu.security.Registry;
  * The implementation of the Square <i>Service Provider Interface</i>
  * (<b>SPI</b>) adapter.
  */
-public final class SquareSpi extends CipherAdapter
-{
-    public SquareSpi()
-    {
-	super(Registry.SQUARE_CIPHER);
-    }
+public final class SquareSpi extends CipherAdapter {
+	public SquareSpi() {
+		super(Registry.SQUARE_CIPHER);
+	}
 }

@@ -44,31 +44,28 @@ import javax.net.ssl.ManagerFactoryParameters;
 /**
  * Trust manager parameters for certification paths.
  */
-public class CertPathTrustManagerParameters implements ManagerFactoryParameters
-{
-    private final CertPathParameters params;
+public class CertPathTrustManagerParameters implements ManagerFactoryParameters {
+	private final CertPathParameters params;
 
-    /**
-     * Creates a new trust manager parameter instance. The argument is cloned to
-     * prevent modification of this instance.
-     *
-     * @param params
-     *            The certificate path parameters.
-     * @throws NullPointerException
-     *             If params is null.
-     */
-    public CertPathTrustManagerParameters(final CertPathParameters params)
-    {
-	this.params = (CertPathParameters) params.clone();
-    }
+	/**
+	 * Creates a new trust manager parameter instance. The argument is cloned to
+	 * prevent modification of this instance.
+	 *
+	 * @param params
+	 *            The certificate path parameters.
+	 * @throws NullPointerException
+	 *             If params is null.
+	 */
+	public CertPathTrustManagerParameters(final CertPathParameters params) {
+		this.params = (CertPathParameters) params.clone();
+	}
 
-    /**
-     * Returns a copy of the certificate path parameters.
-     *
-     * @return A copy of the certificate path parameters.
-     */
-    public CertPathParameters getParameters()
-    {
-	return (CertPathParameters) params.clone();
-    }
+	/**
+	 * Returns a copy of the certificate path parameters.
+	 *
+	 * @return A copy of the certificate path parameters.
+	 */
+	public CertPathParameters getParameters() {
+		return (CertPathParameters) params.clone();
+	}
 }

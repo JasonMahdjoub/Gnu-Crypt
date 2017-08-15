@@ -48,48 +48,45 @@ package gnu.vm.jgnu.security.cert;
  * 
  * @since JDK 1.2
  */
-public abstract class CRL
-{
+public abstract class CRL {
 
-    private String type;
+	private String type;
 
-    /**
-     * Creates a new CRL for the specified type. An example is "X.509".
-     * 
-     * @param type
-     *            the standard name for the CRL type.
-     */
-    protected CRL(String type)
-    {
-	this.type = type;
-    }
+	/**
+	 * Creates a new CRL for the specified type. An example is "X.509".
+	 * 
+	 * @param type
+	 *            the standard name for the CRL type.
+	 */
+	protected CRL(String type) {
+		this.type = type;
+	}
 
-    /**
-     * Returns the CRL type.
-     * 
-     * @return a string representing the CRL type
-     */
-    public final String getType()
-    {
-	return type;
-    }
+	/**
+	 * Returns the CRL type.
+	 * 
+	 * @return a string representing the CRL type
+	 */
+	public final String getType() {
+		return type;
+	}
 
-    /**
-     * Determines whether or not the specified Certificate is revoked.
-     * 
-     * @param cert
-     *            A certificate to check if it is revoked
-     * 
-     * @return true if the certificate is revoked, false otherwise.
-     */
-    public abstract boolean isRevoked(Certificate cert);
+	/**
+	 * Determines whether or not the specified Certificate is revoked.
+	 * 
+	 * @param cert
+	 *            A certificate to check if it is revoked
+	 * 
+	 * @return true if the certificate is revoked, false otherwise.
+	 */
+	public abstract boolean isRevoked(Certificate cert);
 
-    /**
-     * Returns a string representing the CRL.
-     * 
-     * @return a string representing the CRL.
-     */
-    @Override
-    public abstract String toString();
+	/**
+	 * Returns a string representing the CRL.
+	 * 
+	 * @return a string representing the CRL.
+	 */
+	@Override
+	public abstract String toString();
 
 }

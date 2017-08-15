@@ -44,84 +44,75 @@ import gnu.vm.jgnu.security.spec.AlgorithmParameterSpec;
  * Block cipher parameters in GNU are the cipher's name, its block and key
  * sizes, and an optional initialization vector.
  */
-public class BlockCipherParameterSpec implements AlgorithmParameterSpec
-{
-    /** The initialization vector. */
-    protected byte[] iv;
+public class BlockCipherParameterSpec implements AlgorithmParameterSpec {
+	/** The initialization vector. */
+	protected byte[] iv;
 
-    /** The cipher's block size, in bytes. */
-    protected int blockSize;
+	/** The cipher's block size, in bytes. */
+	protected int blockSize;
 
-    /** The cipher's key size, in bytes. */
-    protected int keySize;
+	/** The cipher's key size, in bytes. */
+	protected int keySize;
 
-    /**
-     * Create a new parameter specification.
-     *
-     * @param iv
-     *            The initialization vector, or <code>null</code> if there is no
-     *            IV.
-     * @param blockSize
-     *            The cipher's block size, in bytes.
-     * @param keySize
-     *            The cipher's key size, in bytes.
-     */
-    public BlockCipherParameterSpec(byte[] iv, int blockSize, int keySize)
-    {
-	this.iv = (iv != null) ? (byte[]) iv.clone() : null;
-	this.blockSize = blockSize;
-	this.keySize = keySize;
-    }
+	/**
+	 * Create a new parameter specification.
+	 *
+	 * @param iv
+	 *            The initialization vector, or <code>null</code> if there is no IV.
+	 * @param blockSize
+	 *            The cipher's block size, in bytes.
+	 * @param keySize
+	 *            The cipher's key size, in bytes.
+	 */
+	public BlockCipherParameterSpec(byte[] iv, int blockSize, int keySize) {
+		this.iv = (iv != null) ? (byte[]) iv.clone() : null;
+		this.blockSize = blockSize;
+		this.keySize = keySize;
+	}
 
-    /**
-     * Create a new parameter specification with no IV.
-     *
-     * @param blockSize
-     *            The cipher's block size, in bytes.
-     * @param keySize
-     *            The cipher's key size, in bytes.
-     */
-    public BlockCipherParameterSpec(int blockSize, int keySize)
-    {
-	this(null, blockSize, keySize);
-    }
+	/**
+	 * Create a new parameter specification with no IV.
+	 *
+	 * @param blockSize
+	 *            The cipher's block size, in bytes.
+	 * @param keySize
+	 *            The cipher's key size, in bytes.
+	 */
+	public BlockCipherParameterSpec(int blockSize, int keySize) {
+		this(null, blockSize, keySize);
+	}
 
-    /**
-     * Get the block size of the cipher these parameters are for.
-     *
-     * @return The block size.
-     */
-    public int getBlockSize()
-    {
-	return blockSize;
-    }
+	/**
+	 * Get the block size of the cipher these parameters are for.
+	 *
+	 * @return The block size.
+	 */
+	public int getBlockSize() {
+		return blockSize;
+	}
 
-    /**
-     * Get the initialization vector for the cipher, or <code>null</code> if
-     * there is no IV.
-     *
-     * @return The IV.
-     */
-    public byte[] getIV()
-    {
-	return iv;
-    }
+	/**
+	 * Get the initialization vector for the cipher, or <code>null</code> if there
+	 * is no IV.
+	 *
+	 * @return The IV.
+	 */
+	public byte[] getIV() {
+		return iv;
+	}
 
-    /**
-     * Get the key size of the cipher these parameters are for.
-     *
-     * @return The block size.
-     */
-    public int getKeySize()
-    {
-	return keySize;
-    }
+	/**
+	 * Get the key size of the cipher these parameters are for.
+	 *
+	 * @return The block size.
+	 */
+	public int getKeySize() {
+		return keySize;
+	}
 
-    @Override
-    public String toString()
-    {
-	return getClass().getName() + " { "
-		+ ((iv != null) ? ("IV=" + Util.toString(iv)) + ", " : "")
-		+ "BS=" + blockSize + ", KS=" + keySize + " }";
-    }
+	@Override
+	public String toString() {
+		return getClass().getName() + " { " + ((iv != null) ? ("IV=" + Util.toString(iv)) + ", " : "") + "BS="
+				+ blockSize + ", KS=" + keySize + " }";
+	}
 }

@@ -46,54 +46,49 @@ import gnu.vm.jgnu.security.GeneralSecurityException;
  * @author Aaron M. Renn (arenn@urbanophile.com)
  * @status updated to 1.4
  */
-public class NoSuchAlgorithmException extends GeneralSecurityException
-{
-    /**
-     * Compatible with JDK 1.1+.
-     */
-    private static final long serialVersionUID = -7443947487218346562L;
+public class NoSuchAlgorithmException extends GeneralSecurityException {
+	/**
+	 * Compatible with JDK 1.1+.
+	 */
+	private static final long serialVersionUID = -7443947487218346562L;
 
-    /**
-     * Create a new instance with no descriptive error message.
-     */
-    public NoSuchAlgorithmException()
-    {
-    }
+	/**
+	 * Create a new instance with no descriptive error message.
+	 */
+	public NoSuchAlgorithmException() {
+	}
 
-    /**
-     * Create a new instance with a descriptive error message.
-     *
-     * @param msg
-     *            the descriptive error message
-     */
-    public NoSuchAlgorithmException(String msg)
-    {
-	super(msg);
-    }
+	/**
+	 * Create a new instance with a descriptive error message.
+	 *
+	 * @param msg
+	 *            the descriptive error message
+	 */
+	public NoSuchAlgorithmException(String msg) {
+		super(msg);
+	}
 
-    /**
-     * Create a new instance with a descriptive error message and a cause.
-     * 
-     * @param s
-     *            the descriptive error message
-     * @param cause
-     *            the cause
-     * @since 1.5
-     */
-    public NoSuchAlgorithmException(String s, Throwable cause)
-    {
-	super(s, cause);
-    }
+	/**
+	 * Create a new instance with a descriptive error message and a cause.
+	 * 
+	 * @param s
+	 *            the descriptive error message
+	 * @param cause
+	 *            the cause
+	 * @since 1.5
+	 */
+	public NoSuchAlgorithmException(String s, Throwable cause) {
+		super(s, cause);
+	}
 
-    /**
-     * Create a new instance with a cause.
-     * 
-     * @param cause
-     *            the cause
-     * @since 1.5
-     */
-    public NoSuchAlgorithmException(Throwable cause)
-    {
-	super(cause);
-    }
+	/**
+	 * Create a new instance with a cause.
+	 * 
+	 * @param cause
+	 *            the cause
+	 * @since 1.5
+	 */
+	public NoSuchAlgorithmException(Throwable cause) {
+		super(cause);
+	}
 }

@@ -84,106 +84,95 @@ import gnu.jgnux.crypto.cipher.IBlockCipher;
  * Counter Mode</a>, David A. McGrew.</li>
  * </ol>
  */
-public class ICM extends BaseMode implements Cloneable
-{
-    /** The integer value 256 as a BigInteger. */
-    private static final BigInteger TWO_FIFTY_SIX = new BigInteger("256");
+public class ICM extends BaseMode implements Cloneable {
+	/** The integer value 256 as a BigInteger. */
+	private static final BigInteger TWO_FIFTY_SIX = new BigInteger("256");
 
-    /** Maximum number of blocks per segment. */
-    private BigInteger maxBlocksPerSegment;
+	/** Maximum number of blocks per segment. */
+	private BigInteger maxBlocksPerSegment;
 
-    /** A work constant. */
-    private BigInteger counterRange;
+	/** A work constant. */
+	private BigInteger counterRange;
 
-    /** The initial counter for a given keystream segment. */
-    private BigInteger C0;
+	/** The initial counter for a given keystream segment. */
+	private BigInteger C0;
 
-    /** The index of the next block for a given keystream segment. */
-    private BigInteger blockNdx;
+	/** The index of the next block for a given keystream segment. */
+	private BigInteger blockNdx;
 
-    /**
-     * Trivial package-private constructor for use by the Factory class.
-     *
-     * @param underlyingCipher
-     *            the underlying cipher implementation.
-     * @param cipherBlockSize
-     *            the underlying cipher block size to use.
-     */
-    ICM(IBlockCipher underlyingCipher, int cipherBlockSize)
-    {
-	super(Registry.ICM_MODE, underlyingCipher, cipherBlockSize);
-    }
-
-    /**
-     * Private constructor for cloning purposes.
-     *
-     * @param that
-     *            the instance to clone.
-     */
-    private ICM(ICM that)
-    {
-	this((IBlockCipher) that.cipher.clone(), that.cipherBlockSize);
-    }
-
-    @Override
-    public Object clone()
-    {
-	return new ICM(this);
-    }
-
-    @Override
-    public void decryptBlock(byte[] in, int i, byte[] out, int o)
-    {
-	icm(in, i, out, o);
-    }
-
-    @Override
-    public void encryptBlock(byte[] in, int i, byte[] out, int o)
-    {
-	icm(in, i, out, o);
-    }
-
-    private void icm(byte[] in, int inOffset, byte[] out, int outOffset)
-    {
-	if (blockNdx.compareTo(maxBlocksPerSegment) >= 0)
-	    throw new RuntimeException("Maximum blocks for segment reached");
-	BigInteger Ci = C0.add(blockNdx).modPow(BigInteger.ONE, counterRange);
-	byte[] result = Ci.toByteArray();
-	int limit = result.length;
-	int ndx = 0;
-	if (limit < cipherBlockSize)
-	{
-	    byte[] data = new byte[cipherBlockSize];
-	    System.arraycopy(result, 0, data, cipherBlockSize - limit, limit);
-	    result = data;
+	/**
+	 * Trivial package-private constructor for use by the Factory class.
+	 *
+	 * @param underlyingCipher
+	 *            the underlying cipher implementation.
+	 * @param cipherBlockSize
+	 *            the underlying cipher block size to use.
+	 */
+	ICM(IBlockCipher underlyingCipher, int cipherBlockSize) {
+		super(Registry.ICM_MODE, underlyingCipher, cipherBlockSize);
 	}
-	else if (limit > cipherBlockSize)
-	    ndx = limit - cipherBlockSize;
 
-	cipher.encryptBlock(result, ndx, result, ndx);
-	blockNdx = blockNdx.add(BigInteger.ONE); // increment blockNdx
-	for (int i = 0; i < modeBlockSize; i++) // xor result with input block
-	    out[outOffset++] = (byte) (in[inOffset++] ^ result[ndx++]);
-    }
+	/**
+	 * Private constructor for cloning purposes.
+	 *
+	 * @param that
+	 *            the instance to clone.
+	 */
+	private ICM(ICM that) {
+		this((IBlockCipher) that.cipher.clone(), that.cipherBlockSize);
+	}
 
-    @Override
-    public void setup()
-    {
-	if (modeBlockSize != cipherBlockSize)
-	    throw new IllegalArgumentException();
-	counterRange = TWO_FIFTY_SIX.pow(cipherBlockSize);
-	maxBlocksPerSegment = TWO_FIFTY_SIX.pow(cipherBlockSize / 2);
-	BigInteger r = new BigInteger(1, iv);
-	C0 = maxBlocksPerSegment.add(r).modPow(BigInteger.ONE, counterRange);
-	blockNdx = BigInteger.ZERO;
-    }
+	@Override
+	public Object clone() {
+		return new ICM(this);
+	}
 
-    @Override
-    public void teardown()
-    {
-	counterRange = null;
-	maxBlocksPerSegment = null;
-	C0 = null;
-	blockNdx = null;
-    }
+	@Override
+	public void decryptBlock(byte[] in, int i, byte[] out, int o) {
+		icm(in, i, out, o);
+	}
+
+	@Override
+	public void encryptBlock(byte[] in, int i, byte[] out, int o) {
+		icm(in, i, out, o);
+	}
+
+	private void icm(byte[] in, int inOffset, byte[] out, int outOffset) {
+		if (blockNdx.compareTo(maxBlocksPerSegment) >= 0)
+			throw new RuntimeException("Maximum blocks for segment reached");
+		BigInteger Ci = C0.add(blockNdx).modPow(BigInteger.ONE, counterRange);
+		byte[] result = Ci.toByteArray();
+		int limit = result.length;
+		int ndx = 0;
+		if (limit < cipherBlockSize) {
+			byte[] data = new byte[cipherBlockSize];
+			System.arraycopy(result, 0, data, cipherBlockSize - limit, limit);
+			result = data;
+		} else if (limit > cipherBlockSize)
+			ndx = limit - cipherBlockSize;
+
+		cipher.encryptBlock(result, ndx, result, ndx);
+		blockNdx = blockNdx.add(BigInteger.ONE); // increment blockNdx
+		for (int i = 0; i < modeBlockSize; i++) // xor result with input block
+			out[outOffset++] = (byte) (in[inOffset++] ^ result[ndx++]);
+	}
+
+	@Override
+	public void setup() {
+		if (modeBlockSize != cipherBlockSize)
+			throw new IllegalArgumentException();
+		counterRange = TWO_FIFTY_SIX.pow(cipherBlockSize);
+		maxBlocksPerSegment = TWO_FIFTY_SIX.pow(cipherBlockSize / 2);
+		BigInteger r = new BigInteger(1, iv);
+		C0 = maxBlocksPerSegment.add(r).modPow(BigInteger.ONE, counterRange);
+		blockNdx = BigInteger.ZERO;
+	}
+
+	@Override
+	public void teardown() {
+		counterRange = null;
+		maxBlocksPerSegment = null;
+		C0 = null;
+		blockNdx = null;
+	}
 }

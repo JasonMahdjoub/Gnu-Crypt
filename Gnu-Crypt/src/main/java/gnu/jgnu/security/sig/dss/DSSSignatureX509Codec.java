@@ -98,101 +98,89 @@ import gnu.vm.jgnu.security.InvalidParameterException;
  * ...
  * </pre>
  */
-public class DSSSignatureX509Codec implements ISignatureCodec
-{
-    // implicit 0-arguments constructor
+public class DSSSignatureX509Codec implements ISignatureCodec {
+	// implicit 0-arguments constructor
 
-    /**
-     * Decodes a <i>signature</i> as defined in the documentation of this class.
-     *
-     * @param input
-     *            the byte array to unmarshall into a valid DSS signature
-     *            instance; i.e. an array of two MPIs. MUST NOT be null.
-     * @return an array of two MPIs, <code>r</code> and <code>s</code> in this
-     *         order, decoded from the designated <code>input</code>.
-     * @throw InvalidParameterException if an exception occurs during the
-     *        unmarshalling process.
-     */
-    @Override
-    public Object decodeSignature(byte[] input)
-    {
-	if (input == null)
-	    throw new InvalidParameterException("Input bytes MUST NOT be null");
+	/**
+	 * Decodes a <i>signature</i> as defined in the documentation of this class.
+	 *
+	 * @param input
+	 *            the byte array to unmarshall into a valid DSS signature instance;
+	 *            i.e. an array of two MPIs. MUST NOT be null.
+	 * @return an array of two MPIs, <code>r</code> and <code>s</code> in this
+	 *         order, decoded from the designated <code>input</code>.
+	 * @throw InvalidParameterException if an exception occurs during the
+	 *        unmarshalling process.
+	 */
+	@Override
+	public Object decodeSignature(byte[] input) {
+		if (input == null)
+			throw new InvalidParameterException("Input bytes MUST NOT be null");
 
-	BigInteger r, s;
-	DERReader der = new DERReader(input);
-	try
-	{
-	    DERValue derDssSigValue = der.read();
-	    DerUtil.checkIsConstructed(derDssSigValue,
-		    "Wrong Dss-Sig-Value field");
+		BigInteger r, s;
+		DERReader der = new DERReader(input);
+		try {
+			DERValue derDssSigValue = der.read();
+			DerUtil.checkIsConstructed(derDssSigValue, "Wrong Dss-Sig-Value field");
 
-	    DERValue val = der.read();
-	    DerUtil.checkIsBigInteger(val, "Wrong R field");
-	    r = (BigInteger) val.getValue();
-	    val = der.read();
-	    DerUtil.checkIsBigInteger(val, "Wrong S field");
-	    s = (BigInteger) val.getValue();
-	}
-	catch (IOException x)
-	{
-	    InvalidParameterException y = new InvalidParameterException();
-	    y.initCause(x);
-	    throw y;
+			DERValue val = der.read();
+			DerUtil.checkIsBigInteger(val, "Wrong R field");
+			r = (BigInteger) val.getValue();
+			val = der.read();
+			DerUtil.checkIsBigInteger(val, "Wrong S field");
+			s = (BigInteger) val.getValue();
+		} catch (IOException x) {
+			InvalidParameterException y = new InvalidParameterException();
+			y.initCause(x);
+			throw y;
+		}
+
+		return new BigInteger[] { r, s };
 	}
 
-	return new BigInteger[] { r, s };
-    }
+	/**
+	 * Encodes a DSS Signature output as the <i>signature</i> raw bytes which can be
+	 * used to construct an ASN.1 DER-encoded BIT STRING as defined in the
+	 * documentation of this class.
+	 *
+	 * @param signature
+	 *            the output of the DSS signature algorithm; i.e. the value returned
+	 *            by the invocation of
+	 *            {@link gnu.jgnu.security.sig.ISignature#sign()} method. In the
+	 *            case of a DSS signature this is an array of two MPIs called
+	 *            <code>r</code> and <code>s</code>.
+	 * @return the raw bytes of a DSS signature which could be then used as the
+	 *         contents of a BIT STRING as per rfc-2459.
+	 * @throws InvalidParameterException
+	 *             if an exception occurs during the marshalling process.
+	 */
+	@Override
+	public byte[] encodeSignature(Object signature) {
+		BigInteger[] rs = (BigInteger[]) signature;
 
-    /**
-     * Encodes a DSS Signature output as the <i>signature</i> raw bytes which
-     * can be used to construct an ASN.1 DER-encoded BIT STRING as defined in
-     * the documentation of this class.
-     *
-     * @param signature
-     *            the output of the DSS signature algorithm; i.e. the value
-     *            returned by the invocation of
-     *            {@link gnu.jgnu.security.sig.ISignature#sign()} method. In the
-     *            case of a DSS signature this is an array of two MPIs called
-     *            <code>r</code> and <code>s</code>.
-     * @return the raw bytes of a DSS signature which could be then used as the
-     *         contents of a BIT STRING as per rfc-2459.
-     * @throws InvalidParameterException
-     *             if an exception occurs during the marshalling process.
-     */
-    @Override
-    public byte[] encodeSignature(Object signature)
-    {
-	BigInteger[] rs = (BigInteger[]) signature;
+		DERValue derR = new DERValue(DER.INTEGER, rs[0]);
+		DERValue derS = new DERValue(DER.INTEGER, rs[1]);
 
-	DERValue derR = new DERValue(DER.INTEGER, rs[0]);
-	DERValue derS = new DERValue(DER.INTEGER, rs[1]);
+		ArrayList<DERValue> dssSigValue = new ArrayList<>(2);
+		dssSigValue.add(derR);
+		dssSigValue.add(derS);
+		DERValue derDssSigValue = new DERValue(DER.CONSTRUCTED | DER.SEQUENCE, dssSigValue);
+		byte[] result;
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		try {
+			DERWriter.write(baos, derDssSigValue);
+			result = baos.toByteArray();
+		} catch (IOException x) {
+			InvalidParameterException y = new InvalidParameterException();
+			y.initCause(x);
+			throw y;
+		}
 
-	ArrayList<DERValue> dssSigValue = new ArrayList<>(2);
-	dssSigValue.add(derR);
-	dssSigValue.add(derS);
-	DERValue derDssSigValue = new DERValue(DER.CONSTRUCTED | DER.SEQUENCE,
-		dssSigValue);
-	byte[] result;
-	ByteArrayOutputStream baos = new ByteArrayOutputStream();
-	try
-	{
-	    DERWriter.write(baos, derDssSigValue);
-	    result = baos.toByteArray();
-	}
-	catch (IOException x)
-	{
-	    InvalidParameterException y = new InvalidParameterException();
-	    y.initCause(x);
-	    throw y;
+		return result;
 	}
 
-	return result;
-    }
-
-    @Override
-    public int getFormatID()
-    {
-	return Registry.X509_ENCODING_ID;
-    }
+	@Override
+	public int getFormatID() {
+		return Registry.X509_ENCODING_ID;
+	}
 }

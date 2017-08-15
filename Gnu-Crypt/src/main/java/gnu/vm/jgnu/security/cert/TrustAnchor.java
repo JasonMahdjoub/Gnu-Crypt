@@ -46,144 +46,133 @@ import gnu.vm.jgnu.security.PublicKey;
  *
  * @author Casey Marshall (rsdio@metastatic.org)
  */
-public class TrustAnchor
-{
+public class TrustAnchor {
 
-    // Fields.
-    // ------------------------------------------------------------------------
+	// Fields.
+	// ------------------------------------------------------------------------
 
-    /** The certificate authority's distinguished name. */
-    private final X500DistinguishedName caName;
+	/** The certificate authority's distinguished name. */
+	private final X500DistinguishedName caName;
 
-    /** The certficate authority's public key. */
-    private final PublicKey caKey;
+	/** The certficate authority's public key. */
+	private final PublicKey caKey;
 
-    /** The certficate authority's certificate. */
-    private final X509Certificate trustedCert;
+	/** The certficate authority's certificate. */
+	private final X509Certificate trustedCert;
 
-    /** The encoded name constraints bytes. */
-    private final byte[] nameConstraints;
+	/** The encoded name constraints bytes. */
+	private final byte[] nameConstraints;
 
-    // Constnuctors.
-    // ------------------------------------------------------------------------
+	// Constnuctors.
+	// ------------------------------------------------------------------------
 
-    /**
-     * Create a new trust anchor from a certificate authority's distinguished
-     * name, public key, and (optional) name constraints.
-     *
-     * <p>
-     * If the <i>nameConstraints</i> argument in non-null, it will be copied to
-     * prevent modification.
-     *
-     * @params caName The CA's distinguished name.
-     * @params caKey The CA's public key.
-     * @params nameConstraints The encoded nameConstraints.
-     */
-    public TrustAnchor(String caName, PublicKey caKey, byte[] nameConstraints)
-    {
-	if (caName == null || caKey == null)
-	    throw new NullPointerException();
-	if (caName.length() == 0)
-	    throw new IllegalArgumentException();
-	trustedCert = null;
-	this.caName = new X500DistinguishedName(caName);
-	this.caKey = caKey;
-	if (nameConstraints != null)
-	    this.nameConstraints = nameConstraints.clone();
-	else
-	    this.nameConstraints = null;
-    }
+	/**
+	 * Create a new trust anchor from a certificate authority's distinguished name,
+	 * public key, and (optional) name constraints.
+	 *
+	 * <p>
+	 * If the <i>nameConstraints</i> argument in non-null, it will be copied to
+	 * prevent modification.
+	 *
+	 * @params caName The CA's distinguished name.
+	 * @params caKey The CA's public key.
+	 * @params nameConstraints The encoded nameConstraints.
+	 */
+	public TrustAnchor(String caName, PublicKey caKey, byte[] nameConstraints) {
+		if (caName == null || caKey == null)
+			throw new NullPointerException();
+		if (caName.length() == 0)
+			throw new IllegalArgumentException();
+		trustedCert = null;
+		this.caName = new X500DistinguishedName(caName);
+		this.caKey = caKey;
+		if (nameConstraints != null)
+			this.nameConstraints = nameConstraints.clone();
+		else
+			this.nameConstraints = null;
+	}
 
-    /**
-     * Create a new trust anchor from a certificate and (optional) name
-     * constraints.
-     *
-     * <p>
-     * If the <i>nameConstraints</i> argument in non-null, it will be copied to
-     * prevent modification.
-     *
-     * @param trustedCert
-     *            The trusted certificate.
-     * @param nameConstraints
-     *            The encoded nameConstraints.
-     */
-    public TrustAnchor(X509Certificate trustedCert, byte[] nameConstraints)
-    {
-	if (trustedCert == null)
-	    throw new NullPointerException();
-	this.trustedCert = trustedCert;
-	caName = null;
-	caKey = null;
-	if (nameConstraints != null)
-	    this.nameConstraints = nameConstraints.clone();
-	else
-	    this.nameConstraints = null;
-    }
+	/**
+	 * Create a new trust anchor from a certificate and (optional) name constraints.
+	 *
+	 * <p>
+	 * If the <i>nameConstraints</i> argument in non-null, it will be copied to
+	 * prevent modification.
+	 *
+	 * @param trustedCert
+	 *            The trusted certificate.
+	 * @param nameConstraints
+	 *            The encoded nameConstraints.
+	 */
+	public TrustAnchor(X509Certificate trustedCert, byte[] nameConstraints) {
+		if (trustedCert == null)
+			throw new NullPointerException();
+		this.trustedCert = trustedCert;
+		caName = null;
+		caKey = null;
+		if (nameConstraints != null)
+			this.nameConstraints = nameConstraints.clone();
+		else
+			this.nameConstraints = null;
+	}
 
-    // Instance methods.
-    // ------------------------------------------------------------------------
+	// Instance methods.
+	// ------------------------------------------------------------------------
 
-    /**
-     * Return the certificate authority's distinguished name, or null if none
-     * was specified.
-     *
-     * @return The CA's distinguished name.
-     */
-    public final String getCAName()
-    {
-	if (caName != null)
-	    return caName.toString();
-	return null;
-    }
+	/**
+	 * Return the certificate authority's distinguished name, or null if none was
+	 * specified.
+	 *
+	 * @return The CA's distinguished name.
+	 */
+	public final String getCAName() {
+		if (caName != null)
+			return caName.toString();
+		return null;
+	}
 
-    /**
-     * Return the certificate authority's public key, or null if none was
-     * specified.
-     *
-     * @return The CA's public key.
-     */
-    public final PublicKey getCAPublicKey()
-    {
-	return caKey;
-    }
+	/**
+	 * Return the certificate authority's public key, or null if none was specified.
+	 *
+	 * @return The CA's public key.
+	 */
+	public final PublicKey getCAPublicKey() {
+		return caKey;
+	}
 
-    /**
-     * Return the encoded name constraints, or null if none was specified.
-     *
-     * <p>
-     * The name constraints byte array is copied when this method is called to
-     * prevent modification.
-     *
-     * @return The encoded name constraints.
-     */
-    public final byte[] getNameConstraints()
-    {
-	if (nameConstraints == null)
-	    return null;
-	return nameConstraints.clone();
-    }
+	/**
+	 * Return the encoded name constraints, or null if none was specified.
+	 *
+	 * <p>
+	 * The name constraints byte array is copied when this method is called to
+	 * prevent modification.
+	 *
+	 * @return The encoded name constraints.
+	 */
+	public final byte[] getNameConstraints() {
+		if (nameConstraints == null)
+			return null;
+		return nameConstraints.clone();
+	}
 
-    /**
-     * Return the trusted certificate, or null if none was specified.
-     *
-     * @return The trusted certificate.
-     */
-    public final X509Certificate getTrustedCert()
-    {
-	return trustedCert;
-    }
+	/**
+	 * Return the trusted certificate, or null if none was specified.
+	 *
+	 * @return The trusted certificate.
+	 */
+	public final X509Certificate getTrustedCert() {
+		return trustedCert;
+	}
 
-    /**
-     * Return a printable representation of this trust anchor.
-     *
-     * @return The printable representation.
-     */
-    @Override
-    public String toString()
-    {
-	if (trustedCert == null)
-	    return "[ Trusted CA Public Key=" + caKey
-		    + ", Trusted CA Issuer Name=" + caName.toString() + " ]";
-	return "[ Trusted CA Certificate=" + trustedCert + " ]";
-    }
+	/**
+	 * Return a printable representation of this trust anchor.
+	 *
+	 * @return The printable representation.
+	 */
+	@Override
+	public String toString() {
+		if (trustedCert == null)
+			return "[ Trusted CA Public Key=" + caKey + ", Trusted CA Issuer Name=" + caName.toString() + " ]";
+		return "[ Trusted CA Certificate=" + trustedCert + " ]";
+	}
 }

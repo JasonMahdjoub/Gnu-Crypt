@@ -56,106 +56,83 @@ import gnu.vm.jgnu.security.InvalidKeyException;
 /**
  * The CRAM-MD5 SASL server-side mechanism.
  */
-public class CramMD5Server extends ServerMechanism implements SaslServer
-{
-    private byte[] msgID;
+public class CramMD5Server extends ServerMechanism implements SaslServer {
+	private byte[] msgID;
 
-    public CramMD5Server()
-    {
-	super(Registry.SASL_CRAM_MD5_MECHANISM);
-    }
+	public CramMD5Server() {
+		super(Registry.SASL_CRAM_MD5_MECHANISM);
+	}
 
-    @Override
-    public byte[] evaluateResponse(final byte[] response) throws SaslException
-    {
-	if (state == 0)
-	{
-	    msgID = CramMD5Util.createMsgID();
-	    state++;
-	    return msgID;
+	@Override
+	public byte[] evaluateResponse(final byte[] response) throws SaslException {
+		if (state == 0) {
+			msgID = CramMD5Util.createMsgID();
+			state++;
+			return msgID;
+		}
+		final String responseStr = new String(response);
+		final int index = responseStr.lastIndexOf(" ");
+		final String username = responseStr.substring(0, index);
+		final byte[] responseDigest;
+		try {
+			responseDigest = responseStr.substring(index + 1).getBytes("UTF-8");
+		} catch (UnsupportedEncodingException x) {
+			throw new AuthenticationException("evaluateResponse()", x);
+		}
+		// Look up the password
+		final char[] password = lookupPassword(username);
+		// Compute the digest
+		byte[] digest;
+		try {
+			digest = CramMD5Util.createHMac(password, msgID);
+		} catch (InvalidKeyException x) {
+			throw new AuthenticationException("evaluateResponse()", x);
+		}
+		try {
+			digest = Util.toString(digest).toLowerCase().getBytes("UTF-8");
+		} catch (UnsupportedEncodingException x) {
+			throw new AuthenticationException("evaluateResponse()", x);
+		}
+		// Compare the received and computed digests
+		if (!Arrays.equals(digest, responseDigest))
+			throw new AuthenticationException("Digest mismatch");
+		state++;
+		return null;
 	}
-	final String responseStr = new String(response);
-	final int index = responseStr.lastIndexOf(" ");
-	final String username = responseStr.substring(0, index);
-	final byte[] responseDigest;
-	try
-	{
-	    responseDigest = responseStr.substring(index + 1).getBytes("UTF-8");
-	}
-	catch (UnsupportedEncodingException x)
-	{
-	    throw new AuthenticationException("evaluateResponse()", x);
-	}
-	// Look up the password
-	final char[] password = lookupPassword(username);
-	// Compute the digest
-	byte[] digest;
-	try
-	{
-	    digest = CramMD5Util.createHMac(password, msgID);
-	}
-	catch (InvalidKeyException x)
-	{
-	    throw new AuthenticationException("evaluateResponse()", x);
-	}
-	try
-	{
-	    digest = Util.toString(digest).toLowerCase().getBytes("UTF-8");
-	}
-	catch (UnsupportedEncodingException x)
-	{
-	    throw new AuthenticationException("evaluateResponse()", x);
-	}
-	// Compare the received and computed digests
-	if (!Arrays.equals(digest, responseDigest))
-	    throw new AuthenticationException("Digest mismatch");
-	state++;
-	return null;
-    }
 
-    @Override
-    protected String getNegotiatedQOP()
-    {
-	return Registry.QOP_AUTH;
-    }
-
-    @Override
-    protected void initMechanism()
-    {
-    }
-
-    @Override
-    public boolean isComplete()
-    {
-	return (state == 2);
-    }
-
-    private char[] lookupPassword(final String userName) throws SaslException
-    {
-	try
-	{
-	    if (!authenticator.contains(userName))
-		throw new NoSuchUserException(userName);
-	    final Map<String, String> userID = new HashMap<>();
-	    userID.put(Registry.SASL_USERNAME, userName);
-	    final Map<String, String> credentials = authenticator
-		    .lookup(userID);
-	    final String password = credentials.get(Registry.SASL_PASSWORD);
-	    if (password == null)
-		throw new AuthenticationException("lookupPassword()",
-			new InternalError());
-	    return password.toCharArray();
+	@Override
+	protected String getNegotiatedQOP() {
+		return Registry.QOP_AUTH;
 	}
-	catch (IOException x)
-	{
-	    if (x instanceof SaslException)
-		throw (SaslException) x;
-	    throw new AuthenticationException("lookupPassword()", x);
-	}
-    }
 
-    @Override
-    protected void resetMechanism()
-    {
-    }
+	@Override
+	protected void initMechanism() {
+	}
+
+	@Override
+	public boolean isComplete() {
+		return (state == 2);
+	}
+
+	private char[] lookupPassword(final String userName) throws SaslException {
+		try {
+			if (!authenticator.contains(userName))
+				throw new NoSuchUserException(userName);
+			final Map<String, String> userID = new HashMap<>();
+			userID.put(Registry.SASL_USERNAME, userName);
+			final Map<String, String> credentials = authenticator.lookup(userID);
+			final String password = credentials.get(Registry.SASL_PASSWORD);
+			if (password == null)
+				throw new AuthenticationException("lookupPassword()", new InternalError());
+			return password.toCharArray();
+		} catch (IOException x) {
+			if (x instanceof SaslException)
+				throw (SaslException) x;
+			throw new AuthenticationException("lookupPassword()", x);
+		}
+	}
+
+	@Override
+	protected void resetMechanism() {
+	}
 }

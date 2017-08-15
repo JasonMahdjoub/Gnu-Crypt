@@ -47,105 +47,92 @@ import gnu.vm.jgnu.security.BasicPermission;
 /**
  * @since 1.4
  */
-public final class DelegationPermission extends BasicPermission
-{
-    // FIXME: Enable this when serialization works.
-    // private static final long serialVersionUID = 883133252142523922L;
+public final class DelegationPermission extends BasicPermission {
+	// FIXME: Enable this when serialization works.
+	// private static final long serialVersionUID = 883133252142523922L;
 
-    /**
-     * 
-     */
-    private static final long serialVersionUID = 1856715989726978931L;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1856715989726978931L;
 
-    private static void checkSyntax(String name)
-    {
-	int index = name.indexOf('"', 1);
-	int len = name.length();
-	if (name.charAt(0) != '"' || name.charAt(len - 1) != '"' || index == -1
-		|| index + 3 >= len || name.charAt(index + 1) != ' '
-		|| name.charAt(index + 2) != '"')
-	    // FIXME: better message here.
-	    throw new IllegalArgumentException("invalid syntax for principals");
-    }
+	private static void checkSyntax(String name) {
+		int index = name.indexOf('"', 1);
+		int len = name.length();
+		if (name.charAt(0) != '"' || name.charAt(len - 1) != '"' || index == -1 || index + 3 >= len
+				|| name.charAt(index + 1) != ' ' || name.charAt(index + 2) != '"')
+			// FIXME: better message here.
+			throw new IllegalArgumentException("invalid syntax for principals");
+	}
 
-    /**
-     * Create a new instance with the given name.
-     */
-    public DelegationPermission(String name)
-    {
-	super(name);
-	checkSyntax(name);
-    }
+	/**
+	 * Create a new instance with the given name.
+	 */
+	public DelegationPermission(String name) {
+		super(name);
+		checkSyntax(name);
+	}
 
-    /**
-     * Create a new instance with the given name and actions.
-     *
-     * The name consists of two parts: first the subordinate service principal,
-     * then the target service principal. Each principal is surrounded by
-     * quotes; the two are separated by a space.
-     *
-     * @param name
-     *            the name
-     * @param actions
-     *            the actions; this is ignored
-     */
-    public DelegationPermission(String name, String actions)
-    {
-	super(name, actions);
-	checkSyntax(name);
-    }
+	/**
+	 * Create a new instance with the given name and actions.
+	 *
+	 * The name consists of two parts: first the subordinate service principal, then
+	 * the target service principal. Each principal is surrounded by quotes; the two
+	 * are separated by a space.
+	 *
+	 * @param name
+	 *            the name
+	 * @param actions
+	 *            the actions; this is ignored
+	 */
+	public DelegationPermission(String name, String actions) {
+		super(name, actions);
+		checkSyntax(name);
+	}
 
-    @Override
-    public boolean implies(Permission perm)
-    {
-	return equals(perm);
-    }
+	@Override
+	public boolean implies(Permission perm) {
+		return equals(perm);
+	}
 
-    @Override
-    public PermissionCollection newPermissionCollection()
-    {
-	// FIXME: don't know how to serialize here. I suspect this
-	// class has to have a particular name, etc ...
-	return new PermissionCollection() {
-	    /**
-	     * 
-	     */
-	    private static final long serialVersionUID = 9184531723067817832L;
+	@Override
+	public PermissionCollection newPermissionCollection() {
+		// FIXME: don't know how to serialize here. I suspect this
+		// class has to have a particular name, etc ...
+		return new PermissionCollection() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 9184531723067817832L;
 
-	    private Vector<Permission> permissions = new Vector<>();
+			private Vector<Permission> permissions = new Vector<>();
 
-	    @Override
-	    public void add(Permission perm)
-	    {
-		if (isReadOnly())
-		    throw new SecurityException("readonly");
-		if (!(perm instanceof DelegationPermission))
-		    throw new IllegalArgumentException(
-			    "can only add DelegationPermissions");
-		permissions.add(perm);
-	    }
+			@Override
+			public void add(Permission perm) {
+				if (isReadOnly())
+					throw new SecurityException("readonly");
+				if (!(perm instanceof DelegationPermission))
+					throw new IllegalArgumentException("can only add DelegationPermissions");
+				permissions.add(perm);
+			}
 
-	    @Override
-	    public Enumeration<Permission> elements()
-	    {
-		return permissions.elements();
-	    }
+			@Override
+			public Enumeration<Permission> elements() {
+				return permissions.elements();
+			}
 
-	    @Override
-	    public boolean implies(Permission perm)
-	    {
-		if (!(perm instanceof DelegationPermission))
-		    return false;
-		Enumeration<Permission> e = elements();
-		while (e.hasMoreElements())
-		{
-		    DelegationPermission dp = (DelegationPermission) e
-			    .nextElement();
-		    if (dp.implies(perm))
-			return true;
-		}
-		return false;
-	    }
-	};
-    }
+			@Override
+			public boolean implies(Permission perm) {
+				if (!(perm instanceof DelegationPermission))
+					return false;
+				Enumeration<Permission> e = elements();
+				while (e.hasMoreElements()) {
+					DelegationPermission dp = (DelegationPermission) e.nextElement();
+					if (dp.implies(perm))
+						return true;
+				}
+				return false;
+			}
+		};
+	}
 }

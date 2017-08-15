@@ -44,65 +44,58 @@ import gnu.jgnu.security.OID;
 import gnu.jgnu.security.der.DERReader;
 import gnu.jgnu.security.der.DERValue;
 
-public class PolicyConstraint extends Extension.Value
-{
+public class PolicyConstraint extends Extension.Value {
 
-    // Constants and fields.
-    // -------------------------------------------------------------------------
+	// Constants and fields.
+	// -------------------------------------------------------------------------
 
-    public static final OID ID = new OID("2.5.29.36");
+	public static final OID ID = new OID("2.5.29.36");
 
-    private final int requireExplicitPolicy;
+	private final int requireExplicitPolicy;
 
-    private final int inhibitPolicyMapping;
+	private final int inhibitPolicyMapping;
 
-    // Constructors.
-    // -------------------------------------------------------------------------
+	// Constructors.
+	// -------------------------------------------------------------------------
 
-    public PolicyConstraint(final byte[] encoded) throws IOException
-    {
-	super(encoded);
-	int rpc = -1, ipm = -1;
-	DERReader der = new DERReader(encoded);
-	DERValue pc = der.read();
-	if (!pc.isConstructed())
-	    throw new IOException("malformed PolicyConstraints");
-	DERValue val;
-	int len = pc.getLength();
-	while (len > 0)
-	{
-	    val = der.read();
-	    if (val.getTag() == 0)
-		rpc = new BigInteger((byte[]) val.getValue()).intValue();
-	    else if (val.getTag() == 1)
-		ipm = new BigInteger((byte[]) val.getValue()).intValue();
-	    else
-		throw new IOException("invalid policy constraint");
-	    len -= val.getEncodedLength();
+	public PolicyConstraint(final byte[] encoded) throws IOException {
+		super(encoded);
+		int rpc = -1, ipm = -1;
+		DERReader der = new DERReader(encoded);
+		DERValue pc = der.read();
+		if (!pc.isConstructed())
+			throw new IOException("malformed PolicyConstraints");
+		DERValue val;
+		int len = pc.getLength();
+		while (len > 0) {
+			val = der.read();
+			if (val.getTag() == 0)
+				rpc = new BigInteger((byte[]) val.getValue()).intValue();
+			else if (val.getTag() == 1)
+				ipm = new BigInteger((byte[]) val.getValue()).intValue();
+			else
+				throw new IOException("invalid policy constraint");
+			len -= val.getEncodedLength();
+		}
+
+		requireExplicitPolicy = rpc;
+		inhibitPolicyMapping = ipm;
 	}
 
-	requireExplicitPolicy = rpc;
-	inhibitPolicyMapping = ipm;
-    }
+	// Instance methods.
+	// -------------------------------------------------------------------------
 
-    // Instance methods.
-    // -------------------------------------------------------------------------
+	public int getInhibitPolicyMapping() {
+		return inhibitPolicyMapping;
+	}
 
-    public int getInhibitPolicyMapping()
-    {
-	return inhibitPolicyMapping;
-    }
+	public int getRequireExplicitPolicy() {
+		return requireExplicitPolicy;
+	}
 
-    public int getRequireExplicitPolicy()
-    {
-	return requireExplicitPolicy;
-    }
-
-    @Override
-    public String toString()
-    {
-	return PolicyConstraint.class.getName() + " [ requireExplicitPolicy="
-		+ requireExplicitPolicy + " inhibitPolicyMapping="
-		+ inhibitPolicyMapping + " ]";
-    }
+	@Override
+	public String toString() {
+		return PolicyConstraint.class.getName() + " [ requireExplicitPolicy=" + requireExplicitPolicy
+				+ " inhibitPolicyMapping=" + inhibitPolicyMapping + " ]";
+	}
 }

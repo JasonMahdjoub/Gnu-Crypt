@@ -53,99 +53,99 @@ import gnu.vm.jgnu.security.spec.AlgorithmParameterSpec;
  * @author Casey Marshall (csm@gnu.org)
  * @since 1.4
  */
-public abstract class ExemptionMechanismSpi
-{
+public abstract class ExemptionMechanismSpi {
 
-    // Constructor.
-    // ------------------------------------------------------------------------
+	// Constructor.
+	// ------------------------------------------------------------------------
 
-    /**
-     * Create a new exemption mechanism SPI.
-     */
-    public ExemptionMechanismSpi()
-    {
-    }
+	/**
+	 * Create a new exemption mechanism SPI.
+	 */
+	public ExemptionMechanismSpi() {
+	}
 
-    // Abstract instance methods.
-    // ------------------------------------------------------------------------
+	// Abstract instance methods.
+	// ------------------------------------------------------------------------
 
-    /**
-     * Return a key blob for the key that this mechanism was initialized with.
-     *
-     * @return The key blob.
-     * @throws gnu.vm.jgnux.crypto.ExemptionMechanismException
-     *             If generating the blob fails.
-     */
-    protected abstract byte[] engineGenExemptionBlob() throws ExemptionMechanismException;
+	/**
+	 * Return a key blob for the key that this mechanism was initialized with.
+	 *
+	 * @return The key blob.
+	 * @throws gnu.vm.jgnux.crypto.ExemptionMechanismException
+	 *             If generating the blob fails.
+	 */
+	protected abstract byte[] engineGenExemptionBlob() throws ExemptionMechanismException;
 
-    /**
-     * Generate a key blob for the key that this mechanism was initialized with,
-     * storing it into the given byte array.
-     *
-     * @param output
-     *            The destination for the key blob.
-     * @param outputOffset
-     *            The index in the output array to start.
-     * @return The size of the key blob.
-     * @throws gnu.vm.jgnux.crypto.ExemptionMechanismException
-     *             If generating the blob fails.
-     * @throws gnu.vm.jgnux.crypto.ShortBufferException
-     *             If the output array is not large enough for the key blob.
-     */
-    protected abstract int engineGenExemptionBlob(byte[] output, int outputOffset) throws ExemptionMechanismException, ShortBufferException;
+	/**
+	 * Generate a key blob for the key that this mechanism was initialized with,
+	 * storing it into the given byte array.
+	 *
+	 * @param output
+	 *            The destination for the key blob.
+	 * @param outputOffset
+	 *            The index in the output array to start.
+	 * @return The size of the key blob.
+	 * @throws gnu.vm.jgnux.crypto.ExemptionMechanismException
+	 *             If generating the blob fails.
+	 * @throws gnu.vm.jgnux.crypto.ShortBufferException
+	 *             If the output array is not large enough for the key blob.
+	 */
+	protected abstract int engineGenExemptionBlob(byte[] output, int outputOffset)
+			throws ExemptionMechanismException, ShortBufferException;
 
-    /**
-     * Get the size of the output blob given an input key size. The actual blob
-     * may be shorter than the value returned by this method. Both values are in
-     * bytes.
-     *
-     * @param inputLength
-     *            The input size.
-     * @return The output size.
-     */
-    protected abstract int engineGetOutputSize(int inputLength);
+	/**
+	 * Get the size of the output blob given an input key size. The actual blob may
+	 * be shorter than the value returned by this method. Both values are in bytes.
+	 *
+	 * @param inputLength
+	 *            The input size.
+	 * @return The output size.
+	 */
+	protected abstract int engineGetOutputSize(int inputLength);
 
-    /**
-     * Initialize this mechanism with a key.
-     *
-     * @param key
-     *            The key.
-     * @throws gnu.vm.jgnux.crypto.ExemptionMechanismException
-     *             If generating the blob fails.
-     * @throws java.security.InvalidKeyException
-     *             If the supplied key cannot be used.
-     */
-    protected abstract void engineInit(Key key) throws ExemptionMechanismException, InvalidKeyException;
+	/**
+	 * Initialize this mechanism with a key.
+	 *
+	 * @param key
+	 *            The key.
+	 * @throws gnu.vm.jgnux.crypto.ExemptionMechanismException
+	 *             If generating the blob fails.
+	 * @throws java.security.InvalidKeyException
+	 *             If the supplied key cannot be used.
+	 */
+	protected abstract void engineInit(Key key) throws ExemptionMechanismException, InvalidKeyException;
 
-    /**
-     * Initialize this mechanism with a key and parameters.
-     *
-     * @param key
-     *            The key.
-     * @param params
-     *            The parameters.
-     * @throws gnu.vm.jgnux.crypto.ExemptionMechanismException
-     *             If generating the blob fails.
-     * @throws java.security.InvalidAlgorithmParameterExceptin
-     *             If the supplied parameters are inappropriate.
-     * @throws java.security.InvalidKeyException
-     *             If the supplied key cannot be used.
-     */
-    protected abstract void engineInit(Key key, AlgorithmParameters params) throws ExemptionMechanismException, InvalidAlgorithmParameterException, InvalidKeyException;
+	/**
+	 * Initialize this mechanism with a key and parameters.
+	 *
+	 * @param key
+	 *            The key.
+	 * @param params
+	 *            The parameters.
+	 * @throws gnu.vm.jgnux.crypto.ExemptionMechanismException
+	 *             If generating the blob fails.
+	 * @throws java.security.InvalidAlgorithmParameterExceptin
+	 *             If the supplied parameters are inappropriate.
+	 * @throws java.security.InvalidKeyException
+	 *             If the supplied key cannot be used.
+	 */
+	protected abstract void engineInit(Key key, AlgorithmParameters params)
+			throws ExemptionMechanismException, InvalidAlgorithmParameterException, InvalidKeyException;
 
-    /**
-     * Initialize this mechanism with a key and parameters.
-     *
-     * @param key
-     *            The key.
-     * @param params
-     *            The parameters.
-     * @throws gnu.vm.jgnux.crypto.ExemptionMechanismException
-     *             If generating the blob fails.
-     * @throws java.security.InvalidAlgorithmParameterExceptin
-     *             If the supplied parameters are inappropriate.
-     * @throws java.security.InvalidKeyException
-     *             If the supplied key cannot be used.
-     */
-    protected abstract void engineInit(Key key, AlgorithmParameterSpec params) throws ExemptionMechanismException, InvalidAlgorithmParameterException, InvalidKeyException;
+	/**
+	 * Initialize this mechanism with a key and parameters.
+	 *
+	 * @param key
+	 *            The key.
+	 * @param params
+	 *            The parameters.
+	 * @throws gnu.vm.jgnux.crypto.ExemptionMechanismException
+	 *             If generating the blob fails.
+	 * @throws java.security.InvalidAlgorithmParameterExceptin
+	 *             If the supplied parameters are inappropriate.
+	 * @throws java.security.InvalidKeyException
+	 *             If the supplied key cannot be used.
+	 */
+	protected abstract void engineInit(Key key, AlgorithmParameterSpec params)
+			throws ExemptionMechanismException, InvalidAlgorithmParameterException, InvalidKeyException;
 }

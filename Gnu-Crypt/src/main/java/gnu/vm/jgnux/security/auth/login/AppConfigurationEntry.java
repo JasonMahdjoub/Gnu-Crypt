@@ -41,107 +41,95 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-public class AppConfigurationEntry
-{
-    // Fields.
-    // -------------------------------------------------------------------------
+public class AppConfigurationEntry {
+	// Fields.
+	// -------------------------------------------------------------------------
 
-    public static class LoginModuleControlFlag
-    {
+	public static class LoginModuleControlFlag {
 
-	// Constants.
-	// -----------------------------------------------------------------------
+		// Constants.
+		// -----------------------------------------------------------------------
 
-	public static final LoginModuleControlFlag OPTIONAL = new LoginModuleControlFlag();
+		public static final LoginModuleControlFlag OPTIONAL = new LoginModuleControlFlag();
 
-	public static final LoginModuleControlFlag REQUIRED = new LoginModuleControlFlag();
+		public static final LoginModuleControlFlag REQUIRED = new LoginModuleControlFlag();
 
-	public static final LoginModuleControlFlag REQUISITE = new LoginModuleControlFlag();
+		public static final LoginModuleControlFlag REQUISITE = new LoginModuleControlFlag();
 
-	public static final LoginModuleControlFlag SUFFICIENT = new LoginModuleControlFlag();
+		public static final LoginModuleControlFlag SUFFICIENT = new LoginModuleControlFlag();
+
+		// Constructor.
+		// -----------------------------------------------------------------------
+
+		private LoginModuleControlFlag() {
+		}
+
+		// Instance methods.
+		// -----------------------------------------------------------------------
+
+		@Override
+		public String toString() {
+			if (this == LoginModuleControlFlag.REQUIRED)
+				return "REQUIRED";
+			if (this == LoginModuleControlFlag.REQUISITE)
+				return "REQUISITE";
+			if (this == LoginModuleControlFlag.SUFFICIENT)
+				return "SUFFICIENT";
+			if (this == LoginModuleControlFlag.OPTIONAL)
+				return "OPTIONAL";
+			return "???";
+		}
+	}
+
+	private final String loginModuleName;
+
+	private final LoginModuleControlFlag controlFlag;
 
 	// Constructor.
-	// -----------------------------------------------------------------------
+	// -------------------------------------------------------------------------
 
-	private LoginModuleControlFlag()
-	{
-	}
+	private final Map<String, ?> options;
 
 	// Instance methods.
-	// -----------------------------------------------------------------------
+	// -------------------------------------------------------------------------
+
+	public AppConfigurationEntry(final String loginModuleName, final LoginModuleControlFlag controlFlag,
+			final Map<String, ?> options) {
+		if (loginModuleName == null || loginModuleName.length() == 0)
+			throw new IllegalArgumentException("module name cannot be null nor empty");
+
+		if (LoginModuleControlFlag.OPTIONAL != controlFlag && LoginModuleControlFlag.REQUIRED != controlFlag
+				&& LoginModuleControlFlag.REQUISITE != controlFlag && LoginModuleControlFlag.SUFFICIENT != controlFlag)
+			throw new IllegalArgumentException("invalid controlFlag");
+
+		if (options == null)
+			throw new IllegalArgumentException("options cannot be null");
+
+		this.loginModuleName = loginModuleName;
+		this.controlFlag = controlFlag;
+		this.options = Collections.unmodifiableMap(new HashMap<>(options));
+	}
+
+	public LoginModuleControlFlag getControlFlag() {
+		return controlFlag;
+	}
+
+	public String getLoginModuleName() {
+		return loginModuleName;
+	}
+
+	// Object methods ----------------------------------------------------------
+
+	public Map<String, ?> getOptions() {
+		return options;
+	}
+
+	// Inner class.
+	// -------------------------------------------------------------------------
 
 	@Override
-	public String toString()
-	{
-	    if (this == LoginModuleControlFlag.REQUIRED)
-		return "REQUIRED";
-	    if (this == LoginModuleControlFlag.REQUISITE)
-		return "REQUISITE";
-	    if (this == LoginModuleControlFlag.SUFFICIENT)
-		return "SUFFICIENT";
-	    if (this == LoginModuleControlFlag.OPTIONAL)
-		return "OPTIONAL";
-	    return "???";
+	public String toString() {
+
+		return loginModuleName + "\t" + String.valueOf(controlFlag) + "\t" + String.valueOf(options);
 	}
-    }
-
-    private final String loginModuleName;
-
-    private final LoginModuleControlFlag controlFlag;
-
-    // Constructor.
-    // -------------------------------------------------------------------------
-
-    private final Map<String, ?> options;
-
-    // Instance methods.
-    // -------------------------------------------------------------------------
-
-    public AppConfigurationEntry(final String loginModuleName, final LoginModuleControlFlag controlFlag, final Map<String, ?> options)
-    {
-	if (loginModuleName == null || loginModuleName.length() == 0)
-	    throw new IllegalArgumentException(
-		    "module name cannot be null nor empty");
-
-	if (LoginModuleControlFlag.OPTIONAL != controlFlag
-		&& LoginModuleControlFlag.REQUIRED != controlFlag
-		&& LoginModuleControlFlag.REQUISITE != controlFlag
-		&& LoginModuleControlFlag.SUFFICIENT != controlFlag)
-	    throw new IllegalArgumentException("invalid controlFlag");
-
-	if (options == null)
-	    throw new IllegalArgumentException("options cannot be null");
-
-	this.loginModuleName = loginModuleName;
-	this.controlFlag = controlFlag;
-	this.options = Collections.unmodifiableMap(new HashMap<>(options));
-    }
-
-    public LoginModuleControlFlag getControlFlag()
-    {
-	return controlFlag;
-    }
-
-    public String getLoginModuleName()
-    {
-	return loginModuleName;
-    }
-
-    // Object methods ----------------------------------------------------------
-
-    public Map<String, ?> getOptions()
-    {
-	return options;
-    }
-
-    // Inner class.
-    // -------------------------------------------------------------------------
-
-    @Override
-    public String toString()
-    {
-
-	return loginModuleName + "\t" + String.valueOf(controlFlag) + "\t"
-		+ String.valueOf(options);
-    }
 }

@@ -43,15 +43,13 @@ import gnu.jgnu.security.Registry;
  * The implementation of the Tiger based SecureRandom <i>Service Provider
  * Interface</i> (<b>SPI</b>) adapter.
  */
-public class TigerRandomSpi extends SecureRandomAdapter
-{
-    /**
-     * 
-     */
-    private static final long serialVersionUID = -4562391018186836733L;
+public class TigerRandomSpi extends SecureRandomAdapter {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -4562391018186836733L;
 
-    public TigerRandomSpi()
-    {
-	super(Registry.TIGER_HASH);
-    }
+	public TigerRandomSpi() {
+		super(Registry.TIGER_HASH);
+	}
 }

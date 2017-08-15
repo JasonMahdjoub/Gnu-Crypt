@@ -48,79 +48,66 @@ import java.util.Iterator;
 import gnu.jgnu.security.Registry;
 import gnu.vm.jgnu.security.cert.Certificate;
 
-public class GnuPublicKeyring extends BaseKeyring implements IPublicKeyring
-{
-    public static final int USAGE = Registry.GKR_CERTIFICATES;
+public class GnuPublicKeyring extends BaseKeyring implements IPublicKeyring {
+	public static final int USAGE = Registry.GKR_CERTIFICATES;
 
-    public GnuPublicKeyring()
-    {
-    }
-
-    public GnuPublicKeyring(String mac, int macLen)
-    {
-	keyring = new PasswordAuthenticatedEntry(mac, macLen, new Properties());
-	keyring2 = new CompressedEntry(new Properties());
-	keyring.add(keyring2);
-    }
-
-    @Override
-    public boolean containsCertificate(String alias)
-    {
-	boolean result = false;
-	if (containsAlias(alias))
-	    for (Iterator<Entry> it = get(alias).iterator(); it.hasNext();)
-		if (it.next() instanceof CertificateEntry)
-		{
-		    result = true;
-		    break;
-		}
-	return result;
-    }
-
-    @Override
-    public Certificate getCertificate(String alias)
-    {
-	Certificate result = null;
-	if (containsAlias(alias))
-	    for (Iterator<Entry> it = get(alias).iterator(); it.hasNext();)
-	    {
-		Entry e = it.next();
-		if (e instanceof CertificateEntry)
-		{
-		    result = ((CertificateEntry) e).getCertificate();
-		    break;
-		}
-	    }
-	return result;
-    }
-
-    @Override
-    protected void load(InputStream in, char[] password) throws IOException
-    {
-	if (in.read() != USAGE)
-	    throw new MalformedKeyringException("incompatible keyring usage");
-	if (in.read() != PasswordAuthenticatedEntry.TYPE)
-	    throw new MalformedKeyringException(
-		    "expecting password-authenticated entry tag");
-	DataInputStream dis = new DataInputStream(in);
-	keyring = PasswordAuthenticatedEntry.decode(dis, password);
-    }
-
-    @Override
-    public void putCertificate(String alias, Certificate cert)
-    {
-	if (!containsCertificate(alias))
-	{
-	    Properties p = new Properties();
-	    p.put("alias", fixAlias(alias));
-	    add(new CertificateEntry(cert, new Date(), p));
+	public GnuPublicKeyring() {
 	}
-    }
 
-    @Override
-    protected void store(OutputStream out, char[] password) throws IOException
-    {
-	out.write(USAGE);
-	keyring.encode(new DataOutputStream(out), password);
-    }
+	public GnuPublicKeyring(String mac, int macLen) {
+		keyring = new PasswordAuthenticatedEntry(mac, macLen, new Properties());
+		keyring2 = new CompressedEntry(new Properties());
+		keyring.add(keyring2);
+	}
+
+	@Override
+	public boolean containsCertificate(String alias) {
+		boolean result = false;
+		if (containsAlias(alias))
+			for (Iterator<Entry> it = get(alias).iterator(); it.hasNext();)
+				if (it.next() instanceof CertificateEntry) {
+					result = true;
+					break;
+				}
+		return result;
+	}
+
+	@Override
+	public Certificate getCertificate(String alias) {
+		Certificate result = null;
+		if (containsAlias(alias))
+			for (Iterator<Entry> it = get(alias).iterator(); it.hasNext();) {
+				Entry e = it.next();
+				if (e instanceof CertificateEntry) {
+					result = ((CertificateEntry) e).getCertificate();
+					break;
+				}
+			}
+		return result;
+	}
+
+	@Override
+	protected void load(InputStream in, char[] password) throws IOException {
+		if (in.read() != USAGE)
+			throw new MalformedKeyringException("incompatible keyring usage");
+		if (in.read() != PasswordAuthenticatedEntry.TYPE)
+			throw new MalformedKeyringException("expecting password-authenticated entry tag");
+		DataInputStream dis = new DataInputStream(in);
+		keyring = PasswordAuthenticatedEntry.decode(dis, password);
+	}
+
+	@Override
+	public void putCertificate(String alias, Certificate cert) {
+		if (!containsCertificate(alias)) {
+			Properties p = new Properties();
+			p.put("alias", fixAlias(alias));
+			add(new CertificateEntry(cert, new Date(), p));
+		}
+	}
+
+	@Override
+	protected void store(OutputStream out, char[] password) throws IOException {
+		out.write(USAGE);
+		keyring.encode(new DataOutputStream(out), password);
+	}
 }

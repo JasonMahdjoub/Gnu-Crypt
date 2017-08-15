@@ -43,11 +43,9 @@ import gnu.jgnu.security.Registry;
  * The implementation of the Tiger <i>Service Provider Interface</i>
  * (<b>SPI</b>) adapter.
  */
-public class TigerSpi extends MessageDigestAdapter
-{
-    /** Trivial 0-arguments constructor. */
-    public TigerSpi()
-    {
-	super(Registry.TIGER_HASH);
-    }
+public class TigerSpi extends MessageDigestAdapter {
+	/** Trivial 0-arguments constructor. */
+	public TigerSpi() {
+		super(Registry.TIGER_HASH);
+	}
 }

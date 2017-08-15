@@ -42,36 +42,32 @@ import java.util.List;
 
 import gnu.jgnu.security.OID;
 
-public class SubjectAlternativeNames extends Extension.Value
-{
+public class SubjectAlternativeNames extends Extension.Value {
 
-    // Constants and fields.
-    // -------------------------------------------------------------------------
+	// Constants and fields.
+	// -------------------------------------------------------------------------
 
-    public static final OID ID = new OID("2.5.29.17");
+	public static final OID ID = new OID("2.5.29.17");
 
-    private final GeneralNames names;
+	private final GeneralNames names;
 
-    // Constructor.
-    // -------------------------------------------------------------------------
+	// Constructor.
+	// -------------------------------------------------------------------------
 
-    public SubjectAlternativeNames(final byte[] encoded) throws IOException
-    {
-	super(encoded);
-	names = new GeneralNames(encoded);
-    }
+	public SubjectAlternativeNames(final byte[] encoded) throws IOException {
+		super(encoded);
+		names = new GeneralNames(encoded);
+	}
 
-    // Instance method.
-    // -------------------------------------------------------------------------
+	// Instance method.
+	// -------------------------------------------------------------------------
 
-    public List<GeneralName> getNames()
-    {
-	return names.getNames();
-    }
+	public List<GeneralName> getNames() {
+		return names.getNames();
+	}
 
-    @Override
-    public String toString()
-    {
-	return SubjectAlternativeNames.class.getName() + " [ " + names + " ]";
-    }
+	@Override
+	public String toString() {
+		return SubjectAlternativeNames.class.getName() + " [ " + names + " ]";
+	}
 }

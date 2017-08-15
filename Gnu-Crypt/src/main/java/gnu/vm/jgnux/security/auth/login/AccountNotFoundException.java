@@ -44,25 +44,22 @@ import javax.security.auth.login.AccountException;
  * 
  * @since 1.5
  */
-public class AccountNotFoundException extends AccountException
-{
-    private static final long serialVersionUID = 1498349563916294614L;
+public class AccountNotFoundException extends AccountException {
+	private static final long serialVersionUID = 1498349563916294614L;
 
-    /**
-     * Create a new exception object.
-     */
-    public AccountNotFoundException()
-    {
-    }
+	/**
+	 * Create a new exception object.
+	 */
+	public AccountNotFoundException() {
+	}
 
-    /**
-     * Create a new exception with the given detail message.
-     * 
-     * @param message
-     *            the detail message
-     */
-    public AccountNotFoundException(String message)
-    {
-	super(message);
-    }
+	/**
+	 * Create a new exception with the given detail message.
+	 * 
+	 * @param message
+	 *            the detail message
+	 */
+	public AccountNotFoundException(String message) {
+		super(message);
+	}
 }

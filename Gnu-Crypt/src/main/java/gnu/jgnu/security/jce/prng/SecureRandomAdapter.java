@@ -73,139 +73,107 @@ import gnu.vm.jgnu.security.SecureRandomSpi;
  * by this class and all its sub-classes.
  * </p>
  */
-public abstract class SecureRandomAdapter extends SecureRandomSpi
-{
+public abstract class SecureRandomAdapter extends SecureRandomSpi {
 
-    /**
-     * 
-     */
-    private static final long serialVersionUID = 999603727925481878L;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 999603727925481878L;
 
-    /** The name of the message digest algorithm used by the adaptee. */
-    // private String mdName;
+	/** The name of the message digest algorithm used by the adaptee. */
+	// private String mdName;
 
-    private static final Logger logger = Logger
-	    .getLogger(SecureRandom.class.getName());
+	private static final Logger logger = Logger.getLogger(SecureRandom.class.getName());
 
-    private static final String SECURERANDOM_SOURCE = "securerandom.source";
+	private static final String SECURERANDOM_SOURCE = "securerandom.source";
 
-    private static final String JAVA_SECURITY_EGD = "java.security.egd";
+	private static final String JAVA_SECURITY_EGD = "java.security.egd";
 
-    public static final byte[] getSeed(int numBytes)
-    {
-	URL sourceUrl = null;
-	String urlStr = null;
+	public static final byte[] getSeed(int numBytes) {
+		URL sourceUrl = null;
+		String urlStr = null;
 
-	byte[] buffer = new byte[numBytes];
+		byte[] buffer = new byte[numBytes];
 
-	GetSecurityPropertyAction action = new GetSecurityPropertyAction(
-		SECURERANDOM_SOURCE);
-	try
-	{
-	    urlStr = AccessController.doPrivileged(action);
+		GetSecurityPropertyAction action = new GetSecurityPropertyAction(SECURERANDOM_SOURCE);
+		try {
+			urlStr = AccessController.doPrivileged(action);
 
-	    if (urlStr != null)
-		sourceUrl = new URL(urlStr);
-	}
-	catch (MalformedURLException ignored)
-	{
-	    logger.log(Level.WARNING,
-		    SECURERANDOM_SOURCE + " property is malformed: {0}",
-		    urlStr);
-	}
-	if (sourceUrl == null)
-	{
-	    try
-	    {
-		urlStr = System.getProperty(JAVA_SECURITY_EGD);
-		if (urlStr != null)
-		    sourceUrl = new URL(urlStr);
-	    }
-	    catch (MalformedURLException mue)
-	    {
-		logger.log(Level.WARNING,
-			JAVA_SECURITY_EGD + " property is malformed: {0}",
-			urlStr);
-	    }
-	}
-	if (sourceUrl != null)
-	{
-
-	    try
-	    {
-		File file = new File(sourceUrl.toURI());
-		try (InputStream in = new FileInputStream(file))
-		{
-		    in.read(buffer);
-		    return buffer;
+			if (urlStr != null)
+				sourceUrl = new URL(urlStr);
+		} catch (MalformedURLException ignored) {
+			logger.log(Level.WARNING, SECURERANDOM_SOURCE + " property is malformed: {0}", urlStr);
 		}
-		/*
-		 * InputStream in = sourceUrl.openStream(); in.read(buffer);
-		 * return buffer;
-		 */
-	    }
-	    catch (IOException ioe)
-	    {
-		logger.log(Level.FINE, "error reading random bytes", ioe);
-	    }
-	    catch (URISyntaxException e)
-	    {
-	    }
+		if (sourceUrl == null) {
+			try {
+				urlStr = System.getProperty(JAVA_SECURITY_EGD);
+				if (urlStr != null)
+					sourceUrl = new URL(urlStr);
+			} catch (MalformedURLException mue) {
+				logger.log(Level.WARNING, JAVA_SECURITY_EGD + " property is malformed: {0}", urlStr);
+			}
+		}
+		if (sourceUrl != null) {
+
+			try {
+				File file = new File(sourceUrl.toURI());
+				try (InputStream in = new FileInputStream(file)) {
+					in.read(buffer);
+					return buffer;
+				}
+				/*
+				 * InputStream in = sourceUrl.openStream(); in.read(buffer); return buffer;
+				 */
+			} catch (IOException ioe) {
+				logger.log(Level.FINE, "error reading random bytes", ioe);
+			} catch (URISyntaxException e) {
+			}
+		}
+
+		// If we get here, we did not get any seed from a property URL.
+		VMSecureRandom.generateSeed(buffer, 0, buffer.length);
+		return buffer;
 	}
 
-	// If we get here, we did not get any seed from a property URL.
-	VMSecureRandom.generateSeed(buffer, 0, buffer.length);
-	return buffer;
-    }
+	private boolean isSeeded = false;
 
-    private boolean isSeeded = false;
+	/** Our underlying prng instance. */
+	private MDGenerator adaptee = new MDGenerator();
 
-    /** Our underlying prng instance. */
-    private MDGenerator adaptee = new MDGenerator();
+	/**
+	 * <p>
+	 * Trivial protected constructor.
+	 * </p>
+	 *
+	 * @param mdName
+	 *            the canonical name of the underlying hash algorithm.
+	 */
+	protected SecureRandomAdapter(String mdName) {
+		super();
 
-    /**
-     * <p>
-     * Trivial protected constructor.
-     * </p>
-     *
-     * @param mdName
-     *            the canonical name of the underlying hash algorithm.
-     */
-    protected SecureRandomAdapter(String mdName)
-    {
-	super();
-
-	// this.mdName = mdName;
-	adaptee.init(
-		Collections.singletonMap((Object) MDGenerator.MD_NAME, mdName));
-    }
-
-    @Override
-    public byte[] engineGenerateSeed(int numBytes)
-    {
-	return getSeed(numBytes);
-    }
-
-    @Override
-    public void engineNextBytes(byte[] bytes)
-    {
-	if (!isSeeded)
-	{
-	    engineSetSeed(engineGenerateSeed(32));
+		// this.mdName = mdName;
+		adaptee.init(Collections.singletonMap((Object) MDGenerator.MD_NAME, mdName));
 	}
-	try
-	{
-	    adaptee.nextBytes(bytes, 0, bytes.length);
-	}
-	catch (LimitReachedException ignored)
-	{
-	}
-    }
 
-    @Override
-    public void engineSetSeed(byte[] seed)
-    {
-	adaptee.addRandomBytes(seed);
-	isSeeded = true;
-    }
+	@Override
+	public byte[] engineGenerateSeed(int numBytes) {
+		return getSeed(numBytes);
+	}
+
+	@Override
+	public void engineNextBytes(byte[] bytes) {
+		if (!isSeeded) {
+			engineSetSeed(engineGenerateSeed(32));
+		}
+		try {
+			adaptee.nextBytes(bytes, 0, bytes.length);
+		} catch (LimitReachedException ignored) {
+		}
+	}
+
+	@Override
+	public void engineSetSeed(byte[] seed) {
+		adaptee.addRandomBytes(seed);
+		isSeeded = true;
+	}
 }

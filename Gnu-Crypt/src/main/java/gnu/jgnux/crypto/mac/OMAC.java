@@ -58,256 +58,216 @@ import gnu.vm.jgnu.security.InvalidKeyException;
  * CBC MAC</a></i>.</li>
  * </ol>
  */
-public class OMAC implements IMac
-{
-    private static final byte C1 = (byte) 0x87;
+public class OMAC implements IMac {
+	private static final byte C1 = (byte) 0x87;
 
-    private static final byte C2 = 0x1b;
+	private static final byte C2 = 0x1b;
 
-    // Test key for OMAC-AES-128
-    private static final byte[] KEY0 = Util
-	    .toBytesFromString("2b7e151628aed2a6abf7158809cf4f3c");
+	// Test key for OMAC-AES-128
+	private static final byte[] KEY0 = Util.toBytesFromString("2b7e151628aed2a6abf7158809cf4f3c");
 
-    // Test MAC for zero-length input.
-    private static final byte[] DIGEST0 = Util
-	    .toBytesFromString("bb1d6929e95937287fa37d129b756746");
+	// Test MAC for zero-length input.
+	private static final byte[] DIGEST0 = Util.toBytesFromString("bb1d6929e95937287fa37d129b756746");
 
-    // private static Boolean valid;
-    private final IBlockCipher cipher;
+	// private static Boolean valid;
+	private final IBlockCipher cipher;
 
-    private final String name;
+	private final String name;
 
-    // private IMode mode;
-    private int blockSize;
+	// private IMode mode;
+	private int blockSize;
 
-    private int outputSize;
+	private int outputSize;
 
-    private byte[] Lu, Lu2;
+	private byte[] Lu, Lu2;
 
-    private byte[] M;
+	private byte[] M;
 
-    private byte[] Y;
+	private byte[] Y;
 
-    private boolean init;
+	private boolean init;
 
-    private int index;
+	private int index;
 
-    public OMAC(IBlockCipher cipher)
-    {
-	this.cipher = cipher;
-	this.name = "OMAC-" + cipher.name();
-    }
-
-    @Override
-    public Object clone()
-    {
-	return new OMAC(cipher);
-    }
-
-    @Override
-    public byte[] digest()
-    {
-	byte[] b = new byte[outputSize];
-	digest(b, 0);
-	return b;
-    }
-
-    public void digest(byte[] out, int off)
-    {
-	if (!init)
-	    throw new IllegalStateException("not initialized");
-	if (off < 0 || off + outputSize > out.length)
-	    throw new IndexOutOfBoundsException("size=" + out.length + "; off="
-		    + off + "; len=" + outputSize);
-	byte[] T = new byte[blockSize];
-	byte[] L = Lu;
-	if (index < blockSize)
-	{
-	    M[index++] = (byte) 0x80;
-	    while (index < blockSize)
-		M[index++] = 0;
-	    L = Lu2;
+	public OMAC(IBlockCipher cipher) {
+		this.cipher = cipher;
+		this.name = "OMAC-" + cipher.name();
 	}
-	for (int i = 0; i < blockSize; i++)
-	    T[i] = (byte) (M[i] ^ Y[i] ^ L[i]);
-	cipher.encryptBlock(T, 0, T, 0);
-	System.arraycopy(T, 0, out, off, outputSize);
-	reset();
-    }
 
-    @Override
-    public void init(Map<Object, Object> attrib) throws InvalidKeyException
-    {
-	HashMap<Object, Object> attrib2 = new HashMap<>();
-	attrib2.put(IBlockCipher.KEY_MATERIAL, attrib.get(MAC_KEY_MATERIAL));
-	cipher.reset();
-	cipher.init(attrib2);
-	blockSize = cipher.currentBlockSize();
-	Integer os = (Integer) attrib.get(TRUNCATED_SIZE);
-	if (os != null)
-	{
-	    outputSize = os.intValue();
-	    if (outputSize < 0 || outputSize > blockSize)
-		throw new IllegalArgumentException(
-			"truncated size out of range");
+	@Override
+	public Object clone() {
+		return new OMAC(cipher);
 	}
-	else
-	    outputSize = blockSize;
 
-	byte[] L = new byte[blockSize];
-	cipher.encryptBlock(L, 0, L, 0);
-	if (Lu != null)
-	{
-	    Arrays.fill(Lu, (byte) 0);
-	    if (Lu.length != blockSize)
-		Lu = new byte[blockSize];
+	@Override
+	public byte[] digest() {
+		byte[] b = new byte[outputSize];
+		digest(b, 0);
+		return b;
 	}
-	else
-	    Lu = new byte[blockSize];
-	if (Lu2 != null)
-	{
-	    Arrays.fill(Lu2, (byte) 0);
-	    if (Lu2.length != blockSize)
-		Lu2 = new byte[blockSize];
-	}
-	else
-	    Lu2 = new byte[blockSize];
 
-	boolean msb = (L[0] & 0x80) != 0;
-	for (int i = 0; i < blockSize; i++)
-	{
-	    Lu[i] = (byte) (L[i] << 1 & 0xFF);
-	    if (i + 1 < blockSize)
-		Lu[i] |= (byte) ((L[i + 1] & 0x80) >> 7);
+	public void digest(byte[] out, int off) {
+		if (!init)
+			throw new IllegalStateException("not initialized");
+		if (off < 0 || off + outputSize > out.length)
+			throw new IndexOutOfBoundsException("size=" + out.length + "; off=" + off + "; len=" + outputSize);
+		byte[] T = new byte[blockSize];
+		byte[] L = Lu;
+		if (index < blockSize) {
+			M[index++] = (byte) 0x80;
+			while (index < blockSize)
+				M[index++] = 0;
+			L = Lu2;
+		}
+		for (int i = 0; i < blockSize; i++)
+			T[i] = (byte) (M[i] ^ Y[i] ^ L[i]);
+		cipher.encryptBlock(T, 0, T, 0);
+		System.arraycopy(T, 0, out, off, outputSize);
+		reset();
 	}
-	if (msb)
-	{
-	    if (blockSize == 16)
-		Lu[Lu.length - 1] ^= C1;
-	    else if (blockSize == 8)
-		Lu[Lu.length - 1] ^= C2;
-	    else
-		throw new IllegalArgumentException(
-			"unsupported cipher block size: " + blockSize);
-	}
-	msb = (Lu[0] & 0x80) != 0;
-	for (int i = 0; i < blockSize; i++)
-	{
-	    Lu2[i] = (byte) (Lu[i] << 1 & 0xFF);
-	    if (i + 1 < blockSize)
-		Lu2[i] |= (byte) ((Lu[i + 1] & 0x80) >> 7);
-	}
-	if (msb)
-	{
-	    if (blockSize == 16)
-		Lu2[Lu2.length - 1] ^= C1;
-	    else
-		Lu2[Lu2.length - 1] ^= C2;
-	}
-	if (M != null)
-	{
-	    Arrays.fill(M, (byte) 0);
-	    if (M.length != blockSize)
-		M = new byte[blockSize];
-	}
-	else
-	    M = new byte[blockSize];
-	if (Y != null)
-	{
-	    Arrays.fill(Y, (byte) 0);
-	    if (Y.length != blockSize)
-		Y = new byte[blockSize];
-	}
-	else
-	    Y = new byte[blockSize];
 
-	index = 0;
-	init = true;
-    }
+	@Override
+	public void init(Map<Object, Object> attrib) throws InvalidKeyException {
+		HashMap<Object, Object> attrib2 = new HashMap<>();
+		attrib2.put(IBlockCipher.KEY_MATERIAL, attrib.get(MAC_KEY_MATERIAL));
+		cipher.reset();
+		cipher.init(attrib2);
+		blockSize = cipher.currentBlockSize();
+		Integer os = (Integer) attrib.get(TRUNCATED_SIZE);
+		if (os != null) {
+			outputSize = os.intValue();
+			if (outputSize < 0 || outputSize > blockSize)
+				throw new IllegalArgumentException("truncated size out of range");
+		} else
+			outputSize = blockSize;
 
-    @Override
-    public int macSize()
-    {
-	return outputSize;
-    }
+		byte[] L = new byte[blockSize];
+		cipher.encryptBlock(L, 0, L, 0);
+		if (Lu != null) {
+			Arrays.fill(Lu, (byte) 0);
+			if (Lu.length != blockSize)
+				Lu = new byte[blockSize];
+		} else
+			Lu = new byte[blockSize];
+		if (Lu2 != null) {
+			Arrays.fill(Lu2, (byte) 0);
+			if (Lu2.length != blockSize)
+				Lu2 = new byte[blockSize];
+		} else
+			Lu2 = new byte[blockSize];
 
-    @Override
-    public String name()
-    {
-	return name;
-    }
+		boolean msb = (L[0] & 0x80) != 0;
+		for (int i = 0; i < blockSize; i++) {
+			Lu[i] = (byte) (L[i] << 1 & 0xFF);
+			if (i + 1 < blockSize)
+				Lu[i] |= (byte) ((L[i + 1] & 0x80) >> 7);
+		}
+		if (msb) {
+			if (blockSize == 16)
+				Lu[Lu.length - 1] ^= C1;
+			else if (blockSize == 8)
+				Lu[Lu.length - 1] ^= C2;
+			else
+				throw new IllegalArgumentException("unsupported cipher block size: " + blockSize);
+		}
+		msb = (Lu[0] & 0x80) != 0;
+		for (int i = 0; i < blockSize; i++) {
+			Lu2[i] = (byte) (Lu[i] << 1 & 0xFF);
+			if (i + 1 < blockSize)
+				Lu2[i] |= (byte) ((Lu[i + 1] & 0x80) >> 7);
+		}
+		if (msb) {
+			if (blockSize == 16)
+				Lu2[Lu2.length - 1] ^= C1;
+			else
+				Lu2[Lu2.length - 1] ^= C2;
+		}
+		if (M != null) {
+			Arrays.fill(M, (byte) 0);
+			if (M.length != blockSize)
+				M = new byte[blockSize];
+		} else
+			M = new byte[blockSize];
+		if (Y != null) {
+			Arrays.fill(Y, (byte) 0);
+			if (Y.length != blockSize)
+				Y = new byte[blockSize];
+		} else
+			Y = new byte[blockSize];
 
-    private void process()
-    {
-	for (int i = 0; i < blockSize; i++)
-	    M[i] = (byte) (M[i] ^ Y[i]);
-	cipher.encryptBlock(M, 0, Y, 0);
-    }
-
-    @Override
-    public void reset()
-    {
-	index = 0;
-	if (Y != null)
-	    Arrays.fill(Y, (byte) 0);
-	if (M != null)
-	    Arrays.fill(M, (byte) 0);
-    }
-
-    @Override
-    public boolean selfTest()
-    {
-	OMAC mac = new OMAC(CipherFactory.getInstance(Registry.AES_CIPHER));
-	mac.reset();
-	Map<Object, Object> attr = new HashMap<>();
-	attr.put(MAC_KEY_MATERIAL, KEY0);
-	byte[] digest = null;
-	try
-	{
-	    mac.init(attr);
-	    digest = mac.digest();
-	}
-	catch (Exception x)
-	{
-	    return false;
-	}
-	if (digest == null)
-	    return false;
-	return Arrays.equals(DIGEST0, digest);
-    }
-
-    @Override
-    public void update(byte b)
-    {
-	if (!init)
-	    throw new IllegalStateException("not initialized");
-	if (index == M.length)
-	{
-	    process();
-	    index = 0;
-	}
-	M[index++] = b;
-    }
-
-    @Override
-    public void update(byte[] buf, int off, int len)
-    {
-	if (!init)
-	    throw new IllegalStateException("not initialized");
-	if (off < 0 || len < 0 || off + len > buf.length)
-	    throw new IndexOutOfBoundsException(
-		    "size=" + buf.length + "; off=" + off + "; len=" + len);
-	for (int i = 0; i < len;)
-	{
-	    if (index == blockSize)
-	    {
-		process();
 		index = 0;
-	    }
-	    int count = Math.min(blockSize - index, len - i);
-	    System.arraycopy(buf, off + i, M, index, count);
-	    index += count;
-	    i += count;
+		init = true;
 	}
-    }
+
+	@Override
+	public int macSize() {
+		return outputSize;
+	}
+
+	@Override
+	public String name() {
+		return name;
+	}
+
+	private void process() {
+		for (int i = 0; i < blockSize; i++)
+			M[i] = (byte) (M[i] ^ Y[i]);
+		cipher.encryptBlock(M, 0, Y, 0);
+	}
+
+	@Override
+	public void reset() {
+		index = 0;
+		if (Y != null)
+			Arrays.fill(Y, (byte) 0);
+		if (M != null)
+			Arrays.fill(M, (byte) 0);
+	}
+
+	@Override
+	public boolean selfTest() {
+		OMAC mac = new OMAC(CipherFactory.getInstance(Registry.AES_CIPHER));
+		mac.reset();
+		Map<Object, Object> attr = new HashMap<>();
+		attr.put(MAC_KEY_MATERIAL, KEY0);
+		byte[] digest = null;
+		try {
+			mac.init(attr);
+			digest = mac.digest();
+		} catch (Exception x) {
+			return false;
+		}
+		if (digest == null)
+			return false;
+		return Arrays.equals(DIGEST0, digest);
+	}
+
+	@Override
+	public void update(byte b) {
+		if (!init)
+			throw new IllegalStateException("not initialized");
+		if (index == M.length) {
+			process();
+			index = 0;
+		}
+		M[index++] = b;
+	}
+
+	@Override
+	public void update(byte[] buf, int off, int len) {
+		if (!init)
+			throw new IllegalStateException("not initialized");
+		if (off < 0 || len < 0 || off + len > buf.length)
+			throw new IndexOutOfBoundsException("size=" + buf.length + "; off=" + off + "; len=" + len);
+		for (int i = 0; i < len;) {
+			if (index == blockSize) {
+				process();
+				index = 0;
+			}
+			int count = Math.min(blockSize - index, len - i);
+			System.arraycopy(buf, off + i, M, index, count);
+			index += count;
+			i += count;
+		}
+	}
 }

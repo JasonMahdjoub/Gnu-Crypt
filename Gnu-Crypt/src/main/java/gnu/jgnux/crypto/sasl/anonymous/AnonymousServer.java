@@ -49,42 +49,33 @@ import gnu.jgnux.crypto.sasl.ServerMechanism;
 /**
  * The ANONYMOUS server-side mechanism.
  */
-public class AnonymousServer extends ServerMechanism implements SaslServer
-{
-    public AnonymousServer()
-    {
-	super(Registry.SASL_ANONYMOUS_MECHANISM);
-    }
-
-    @Override
-    public byte[] evaluateResponse(final byte[] response) throws SaslException
-    {
-	if (response == null)
-	    return null;
-	try
-	{
-	    authorizationID = new String(response, "UTF-8");
+public class AnonymousServer extends ServerMechanism implements SaslServer {
+	public AnonymousServer() {
+		super(Registry.SASL_ANONYMOUS_MECHANISM);
 	}
-	catch (UnsupportedEncodingException x)
-	{
-	    throw new AuthenticationException("evaluateResponse()", x);
-	}
-	if (AnonymousUtil.isValidTraceInformation(authorizationID))
-	{
-	    this.complete = true;
-	    return null;
-	}
-	authorizationID = null;
-	throw new AuthenticationException("Invalid email address");
-    }
 
-    @Override
-    protected void initMechanism()
-    {
-    }
+	@Override
+	public byte[] evaluateResponse(final byte[] response) throws SaslException {
+		if (response == null)
+			return null;
+		try {
+			authorizationID = new String(response, "UTF-8");
+		} catch (UnsupportedEncodingException x) {
+			throw new AuthenticationException("evaluateResponse()", x);
+		}
+		if (AnonymousUtil.isValidTraceInformation(authorizationID)) {
+			this.complete = true;
+			return null;
+		}
+		authorizationID = null;
+		throw new AuthenticationException("Invalid email address");
+	}
 
-    @Override
-    protected void resetMechanism()
-    {
-    }
+	@Override
+	protected void initMechanism() {
+	}
+
+	@Override
+	protected void resetMechanism() {
+	}
 }

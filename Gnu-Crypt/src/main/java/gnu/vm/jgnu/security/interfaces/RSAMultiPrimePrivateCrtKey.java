@@ -50,63 +50,62 @@ import java.security.spec.RSAOtherPrimeInfo;
  * @see RSAPrivateKey
  * @see RSAPrivateCrtKey
  */
-public interface RSAMultiPrimePrivateCrtKey extends RSAPrivateKey
-{
-    // Constants
-    // --------------------------------------------------------------------------
+public interface RSAMultiPrimePrivateCrtKey extends RSAPrivateKey {
+	// Constants
+	// --------------------------------------------------------------------------
 
-    long serialVersionUID = 618058533534628008L;
+	long serialVersionUID = 618058533534628008L;
 
-    // Methods
-    // --------------------------------------------------------------------------
+	// Methods
+	// --------------------------------------------------------------------------
 
-    /**
-     * Returns the CRT Coefficient.
-     *
-     * @return the CRT Coefficient.
-     */
-    BigInteger getCrtCoefficient();
+	/**
+	 * Returns the CRT Coefficient.
+	 *
+	 * @return the CRT Coefficient.
+	 */
+	BigInteger getCrtCoefficient();
 
-    /**
-     * Returns the <i>OtherPrimeInfo</i> triplet MPIs or <code>null</code> if
-     * there are only two known prime factors (p and q).
-     *
-     * @return the <i>OtherPrimeInfo</i> INTEGERs.
-     */
-    RSAOtherPrimeInfo[] getOtherPrimeInfo();
+	/**
+	 * Returns the <i>OtherPrimeInfo</i> triplet MPIs or <code>null</code> if there
+	 * are only two known prime factors (p and q).
+	 *
+	 * @return the <i>OtherPrimeInfo</i> INTEGERs.
+	 */
+	RSAOtherPrimeInfo[] getOtherPrimeInfo();
 
-    /**
-     * Returns the prime's exponent p.
-     *
-     * @return the prime's exponent p.
-     */
-    BigInteger getPrimeExponentP();
+	/**
+	 * Returns the prime's exponent p.
+	 *
+	 * @return the prime's exponent p.
+	 */
+	BigInteger getPrimeExponentP();
 
-    /**
-     * Returns the prime's exponent q.
-     *
-     * @return the prime's exponent q.
-     */
-    BigInteger getPrimeExponentQ();
+	/**
+	 * Returns the prime's exponent q.
+	 *
+	 * @return the prime's exponent q.
+	 */
+	BigInteger getPrimeExponentQ();
 
-    /**
-     * Returns the prime p.
-     *
-     * @return the prime p.
-     */
-    BigInteger getPrimeP();
+	/**
+	 * Returns the prime p.
+	 *
+	 * @return the prime p.
+	 */
+	BigInteger getPrimeP();
 
-    /**
-     * Returns the prime q.
-     *
-     * @return the prime q.
-     */
-    BigInteger getPrimeQ();
+	/**
+	 * Returns the prime q.
+	 *
+	 * @return the prime q.
+	 */
+	BigInteger getPrimeQ();
 
-    /**
-     * Returns the public exponent.
-     *
-     * @return the public exponent.
-     */
-    BigInteger getPublicExponent();
+	/**
+	 * Returns the public exponent.
+	 *
+	 * @return the public exponent.
+	 */
+	BigInteger getPublicExponent();
 }

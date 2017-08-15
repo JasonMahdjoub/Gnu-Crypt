@@ -49,55 +49,51 @@ import java.security.Permission;
  * @see AccessController
  * @status updated to 1.4
  */
-public class AccessControlException extends SecurityException
-{
-    /**
-     * Compatible with JDK 1.1+.
-     */
-    private static final long serialVersionUID = 5138225684096988535L;
+public class AccessControlException extends SecurityException {
+	/**
+	 * Compatible with JDK 1.1+.
+	 */
+	private static final long serialVersionUID = 5138225684096988535L;
 
-    /**
-     * The <code>Permission</code> associated with this exception.
-     *
-     * @serial the permission
-     */
-    private final Permission perm;
+	/**
+	 * The <code>Permission</code> associated with this exception.
+	 *
+	 * @serial the permission
+	 */
+	private final Permission perm;
 
-    /**
-     * Create a new instance with a descriptive error message, and a null
-     * <code>Permission</code> object.
-     *
-     * @param msg
-     *            the descriptive error message
-     */
-    public AccessControlException(String msg)
-    {
-	this(msg, null);
-    }
+	/**
+	 * Create a new instance with a descriptive error message, and a null
+	 * <code>Permission</code> object.
+	 *
+	 * @param msg
+	 *            the descriptive error message
+	 */
+	public AccessControlException(String msg) {
+		this(msg, null);
+	}
 
-    /**
-     * Create a new instance with a descriptive error message and an associated
-     * <code>Permission</code> object.
-     *
-     * @param msg
-     *            the descriptive error message
-     * @param perm
-     *            the permission that caused this
-     */
-    public AccessControlException(String msg, Permission perm)
-    {
-	super(msg);
-	this.perm = perm;
-    }
+	/**
+	 * Create a new instance with a descriptive error message and an associated
+	 * <code>Permission</code> object.
+	 *
+	 * @param msg
+	 *            the descriptive error message
+	 * @param perm
+	 *            the permission that caused this
+	 */
+	public AccessControlException(String msg, Permission perm) {
+		super(msg);
+		this.perm = perm;
+	}
 
-    /**
-     * This method returns the <code>Permission</code> object that caused this
-     * exception to be thrown.
-     *
-     * @return the denied permission, or null
-     */
-    public Permission getPermission()
-    {
-	return perm;
-    }
+	/**
+	 * This method returns the <code>Permission</code> object that caused this
+	 * exception to be thrown.
+	 *
+	 * @return the denied permission, or null
+	 */
+	public Permission getPermission() {
+		return perm;
+	}
 }

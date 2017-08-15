@@ -57,46 +57,41 @@ import gnu.jgnu.security.Registry;
  * <li><a href="http://www.rsasecurity.com/">RSA Security</a>.</li>
  * </ol>
  */
-public final class PKCS7 extends BasePad
-{
+public final class PKCS7 extends BasePad {
 
-    /**
-     * Trivial package-private constructor for use by the <i>Factory</i> class.
-     *
-     * @see PadFactory
-     */
-    PKCS7()
-    {
-	super(Registry.PKCS7_PAD);
-    }
+	/**
+	 * Trivial package-private constructor for use by the <i>Factory</i> class.
+	 *
+	 * @see PadFactory
+	 */
+	PKCS7() {
+		super(Registry.PKCS7_PAD);
+	}
 
-    @Override
-    public byte[] pad(byte[] in, int offset, int length)
-    {
-	int padLength = blockSize;
-	if (length % blockSize != 0)
-	    padLength = blockSize - length % blockSize;
-	byte[] result = new byte[padLength];
-	for (int i = 0; i < padLength;)
-	    result[i++] = (byte) padLength;
-	return result;
-    }
+	@Override
+	public byte[] pad(byte[] in, int offset, int length) {
+		int padLength = blockSize;
+		if (length % blockSize != 0)
+			padLength = blockSize - length % blockSize;
+		byte[] result = new byte[padLength];
+		for (int i = 0; i < padLength;)
+			result[i++] = (byte) padLength;
+		return result;
+	}
 
-    @Override
-    public void setup()
-    {
-	if (blockSize < 2 || blockSize > 256)
-	    throw new IllegalArgumentException();
-    }
+	@Override
+	public void setup() {
+		if (blockSize < 2 || blockSize > 256)
+			throw new IllegalArgumentException();
+	}
 
-    @Override
-    public int unpad(byte[] in, int offset, int length) throws WrongPaddingException
-    {
-	int limit = offset + length;
-	int result = in[--limit] & 0xFF;
-	for (int i = 0; i < result - 1; i++)
-	    if (result != (in[--limit] & 0xFF))
-		throw new WrongPaddingException();
-	return result;
-    }
+	@Override
+	public int unpad(byte[] in, int offset, int length) throws WrongPaddingException {
+		int limit = offset + length;
+		int result = in[--limit] & 0xFF;
+		for (int i = 0; i < result - 1; i++)
+			if (result != (in[--limit] & 0xFF))
+				throw new WrongPaddingException();
+		return result;
+	}
 }

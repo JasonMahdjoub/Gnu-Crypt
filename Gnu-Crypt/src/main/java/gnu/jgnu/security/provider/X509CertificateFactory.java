@@ -58,232 +58,186 @@ import gnu.vm.jgnu.security.cert.CertificateEncodingException;
 import gnu.vm.jgnu.security.cert.CertificateException;
 import gnu.vm.jgnu.security.cert.CertificateFactorySpi;
 
-public class X509CertificateFactory extends CertificateFactorySpi
-{
-    public static final String BEGIN_CERTIFICATE = "-----BEGIN CERTIFICATE-----";
+public class X509CertificateFactory extends CertificateFactorySpi {
+	public static final String BEGIN_CERTIFICATE = "-----BEGIN CERTIFICATE-----";
 
-    public static final String END_CERTIFICATE = "-----END CERTIFICATE-----";
+	public static final String END_CERTIFICATE = "-----END CERTIFICATE-----";
 
-    public static final String BEGIN_X509_CRL = "-----BEGIN X509 CRL-----";
+	public static final String BEGIN_X509_CRL = "-----BEGIN X509 CRL-----";
 
-    public static final String END_X509_CRL = "-----END X509 CRL-----";
+	public static final String END_X509_CRL = "-----END X509 CRL-----";
 
-    public X509CertificateFactory()
-    {
-	super();
-    }
-
-    @Override
-    public Certificate engineGenerateCertificate(InputStream inStream) throws CertificateException
-    {
-	try
-	{
-	    return generateCert(inStream);
+	public X509CertificateFactory() {
+		super();
 	}
-	catch (IOException ioe)
-	{
-	    CertificateException ce = new CertificateException(
-		    ioe.getMessage());
-	    ce.initCause(ioe);
-	    throw ce;
+
+	@Override
+	public Certificate engineGenerateCertificate(InputStream inStream) throws CertificateException {
+		try {
+			return generateCert(inStream);
+		} catch (IOException ioe) {
+			CertificateException ce = new CertificateException(ioe.getMessage());
+			ce.initCause(ioe);
+			throw ce;
+		}
 	}
-    }
 
-    @Override
-    public Collection<X509Certificate> engineGenerateCertificates(InputStream inStream) throws CertificateException
-    {
-	LinkedList<X509Certificate> certs = new LinkedList<>();
-	while (true)
-	{
-	    try
-	    {
-		certs.add(generateCert(inStream));
-	    }
-	    catch (EOFException eof)
-	    {
-		break;
-	    }
-	    catch (IOException ioe)
-	    {
-		CertificateException ce = new CertificateException(
-			ioe.getMessage());
-		ce.initCause(ioe);
-		throw ce;
-	    }
+	@Override
+	public Collection<X509Certificate> engineGenerateCertificates(InputStream inStream) throws CertificateException {
+		LinkedList<X509Certificate> certs = new LinkedList<>();
+		while (true) {
+			try {
+				certs.add(generateCert(inStream));
+			} catch (EOFException eof) {
+				break;
+			} catch (IOException ioe) {
+				CertificateException ce = new CertificateException(ioe.getMessage());
+				ce.initCause(ioe);
+				throw ce;
+			}
+		}
+		return certs;
 	}
-	return certs;
-    }
 
-    @Override
-    public CertPath engineGenerateCertPath(InputStream in) throws CertificateEncodingException
-    {
-	return new X509CertPath(in);
-    }
-
-    @Override
-    public CertPath engineGenerateCertPath(InputStream in, String encoding) throws CertificateEncodingException
-    {
-	return new X509CertPath(in, encoding);
-    }
-
-    @Override
-    public CertPath engineGenerateCertPath(List<? extends Certificate> certs)
-    {
-	return new X509CertPath(certs);
-    }
-
-    @Override
-    public CRL engineGenerateCRL(InputStream inStream) throws CRLException
-    {
-	try
-	{
-	    return generateCRL(inStream);
+	@Override
+	public CertPath engineGenerateCertPath(InputStream in) throws CertificateEncodingException {
+		return new X509CertPath(in);
 	}
-	catch (IOException ioe)
-	{
-	    CRLException crle = new CRLException(ioe.getMessage());
-	    crle.initCause(ioe);
-	    throw crle;
+
+	@Override
+	public CertPath engineGenerateCertPath(InputStream in, String encoding) throws CertificateEncodingException {
+		return new X509CertPath(in, encoding);
 	}
-    }
 
-    @Override
-    public Collection<X509CRL> engineGenerateCRLs(InputStream inStream) throws CRLException
-    {
-	LinkedList<X509CRL> crls = new LinkedList<>();
-	while (true)
-	{
-	    try
-	    {
-		crls.add(generateCRL(inStream));
-	    }
-	    catch (EOFException eof)
-	    {
-		break;
-	    }
-	    catch (IOException ioe)
-	    {
-		CRLException crle = new CRLException(ioe.getMessage());
-		crle.initCause(ioe);
-		throw crle;
-	    }
+	@Override
+	public CertPath engineGenerateCertPath(List<? extends Certificate> certs) {
+		return new X509CertPath(certs);
 	}
-	return crls;
-    }
 
-    @Override
-    public Iterator<String> engineGetCertPathEncodings()
-    {
-	return X509CertPath.ENCODINGS.iterator();
-    }
+	@Override
+	public CRL engineGenerateCRL(InputStream inStream) throws CRLException {
+		try {
+			return generateCRL(inStream);
+		} catch (IOException ioe) {
+			CRLException crle = new CRLException(ioe.getMessage());
+			crle.initCause(ioe);
+			throw crle;
+		}
+	}
 
-    private X509Certificate generateCert(InputStream inStream) throws IOException, CertificateException
-    {
-	if (inStream == null)
-	    throw new CertificateException("missing input stream");
-	if (!inStream.markSupported())
-	    inStream = new BufferedInputStream(inStream, 8192);
-	inStream.mark(20);
-	int i = inStream.read();
-	if (i == -1)
-	    throw new EOFException();
-	// If the input is in binary DER format, the first byte MUST be
-	// 0x30, which stands for the ASN.1 [UNIVERSAL 16], which is the
-	// UNIVERSAL SEQUENCE, with the CONSTRUCTED bit (0x20) set.
-	//
-	// So if we do not see 0x30 here we will assume it is in Base-64.
-	if (i != 0x30)
-	{
-	    inStream.reset();
-	    StringBuilder line = new StringBuilder(80);
-	    do
-	    {
-		line.setLength(0);
-		do
-		{
-		    i = inStream.read();
-		    if (i == -1)
-			throw new EOFException();
-		    if (i != '\n' && i != '\r')
-			line.append((char) i);
-		} while (i != '\n' && i != '\r');
-	    } while (!line.toString().equals(BEGIN_CERTIFICATE));
-	    X509Certificate ret = new X509Certificate(new BufferedInputStream(
-		    new Base64InputStream(inStream), 8192));
-	    line.setLength(0);
-	    line.append('-'); // Base64InputStream will eat this.
-	    do
-	    {
-		i = inStream.read();
+	@Override
+	public Collection<X509CRL> engineGenerateCRLs(InputStream inStream) throws CRLException {
+		LinkedList<X509CRL> crls = new LinkedList<>();
+		while (true) {
+			try {
+				crls.add(generateCRL(inStream));
+			} catch (EOFException eof) {
+				break;
+			} catch (IOException ioe) {
+				CRLException crle = new CRLException(ioe.getMessage());
+				crle.initCause(ioe);
+				throw crle;
+			}
+		}
+		return crls;
+	}
+
+	@Override
+	public Iterator<String> engineGetCertPathEncodings() {
+		return X509CertPath.ENCODINGS.iterator();
+	}
+
+	private X509Certificate generateCert(InputStream inStream) throws IOException, CertificateException {
+		if (inStream == null)
+			throw new CertificateException("missing input stream");
+		if (!inStream.markSupported())
+			inStream = new BufferedInputStream(inStream, 8192);
+		inStream.mark(20);
+		int i = inStream.read();
 		if (i == -1)
-		    throw new EOFException();
-		if (i != '\n' && i != '\r')
-		    line.append((char) i);
-	    } while (i != '\n' && i != '\r');
-	    // XXX ???
-	    if (!line.toString().equals(END_CERTIFICATE))
-		throw new CertificateException("no end-of-certificate marker");
-	    return ret;
-	}
-	else
-	{
-	    inStream.reset();
-	    return new X509Certificate(inStream);
-	}
-    }
-
-    private X509CRL generateCRL(InputStream inStream) throws IOException, CRLException
-    {
-	if (inStream == null)
-	    throw new CRLException("missing input stream");
-	if (!inStream.markSupported())
-	    inStream = new BufferedInputStream(inStream, 8192);
-	inStream.mark(20);
-	int i = inStream.read();
-	if (i == -1)
-	    throw new EOFException();
-	// If the input is in binary DER format, the first byte MUST be
-	// 0x30, which stands for the ASN.1 [UNIVERSAL 16], which is the
-	// UNIVERSAL SEQUENCE, with the CONSTRUCTED bit (0x20) set.
-	//
-	// So if we do not see 0x30 here we will assume it is in Base-64.
-	if (i != 0x30)
-	{
-	    inStream.reset();
-	    StringBuilder line = new StringBuilder(80);
-	    do
-	    {
-		line.setLength(0);
-		do
-		{
-		    i = inStream.read();
-		    if (i == -1)
 			throw new EOFException();
-		    if (i != '\n' && i != '\r')
-			line.append((char) i);
-		} while (i != '\n' && i != '\r');
-	    } while (!line.toString().startsWith(BEGIN_X509_CRL));
-	    X509CRL ret = new X509CRL(new BufferedInputStream(
-		    new Base64InputStream(inStream), 8192));
-	    line.setLength(0);
-	    line.append('-'); // Base64InputStream will eat this.
-	    do
-	    {
-		i = inStream.read();
+		// If the input is in binary DER format, the first byte MUST be
+		// 0x30, which stands for the ASN.1 [UNIVERSAL 16], which is the
+		// UNIVERSAL SEQUENCE, with the CONSTRUCTED bit (0x20) set.
+		//
+		// So if we do not see 0x30 here we will assume it is in Base-64.
+		if (i != 0x30) {
+			inStream.reset();
+			StringBuilder line = new StringBuilder(80);
+			do {
+				line.setLength(0);
+				do {
+					i = inStream.read();
+					if (i == -1)
+						throw new EOFException();
+					if (i != '\n' && i != '\r')
+						line.append((char) i);
+				} while (i != '\n' && i != '\r');
+			} while (!line.toString().equals(BEGIN_CERTIFICATE));
+			X509Certificate ret = new X509Certificate(new BufferedInputStream(new Base64InputStream(inStream), 8192));
+			line.setLength(0);
+			line.append('-'); // Base64InputStream will eat this.
+			do {
+				i = inStream.read();
+				if (i == -1)
+					throw new EOFException();
+				if (i != '\n' && i != '\r')
+					line.append((char) i);
+			} while (i != '\n' && i != '\r');
+			// XXX ???
+			if (!line.toString().equals(END_CERTIFICATE))
+				throw new CertificateException("no end-of-certificate marker");
+			return ret;
+		} else {
+			inStream.reset();
+			return new X509Certificate(inStream);
+		}
+	}
+
+	private X509CRL generateCRL(InputStream inStream) throws IOException, CRLException {
+		if (inStream == null)
+			throw new CRLException("missing input stream");
+		if (!inStream.markSupported())
+			inStream = new BufferedInputStream(inStream, 8192);
+		inStream.mark(20);
+		int i = inStream.read();
 		if (i == -1)
-		    throw new EOFException();
-		if (i != '\n' && i != '\r')
-		    line.append((char) i);
-	    } while (i != '\n' && i != '\r');
-	    // XXX ???
-	    if (!line.toString().startsWith(END_X509_CRL))
-		throw new CRLException("no end-of-CRL marker");
-	    return ret;
+			throw new EOFException();
+		// If the input is in binary DER format, the first byte MUST be
+		// 0x30, which stands for the ASN.1 [UNIVERSAL 16], which is the
+		// UNIVERSAL SEQUENCE, with the CONSTRUCTED bit (0x20) set.
+		//
+		// So if we do not see 0x30 here we will assume it is in Base-64.
+		if (i != 0x30) {
+			inStream.reset();
+			StringBuilder line = new StringBuilder(80);
+			do {
+				line.setLength(0);
+				do {
+					i = inStream.read();
+					if (i == -1)
+						throw new EOFException();
+					if (i != '\n' && i != '\r')
+						line.append((char) i);
+				} while (i != '\n' && i != '\r');
+			} while (!line.toString().startsWith(BEGIN_X509_CRL));
+			X509CRL ret = new X509CRL(new BufferedInputStream(new Base64InputStream(inStream), 8192));
+			line.setLength(0);
+			line.append('-'); // Base64InputStream will eat this.
+			do {
+				i = inStream.read();
+				if (i == -1)
+					throw new EOFException();
+				if (i != '\n' && i != '\r')
+					line.append((char) i);
+			} while (i != '\n' && i != '\r');
+			// XXX ???
+			if (!line.toString().startsWith(END_X509_CRL))
+				throw new CRLException("no end-of-CRL marker");
+			return ret;
+		} else {
+			inStream.reset();
+			return new X509CRL(inStream);
+		}
 	}
-	else
-	{
-	    inStream.reset();
-	    return new X509CRL(inStream);
-	}
-    }
 }

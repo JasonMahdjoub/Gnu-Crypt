@@ -43,23 +43,20 @@ import javax.security.auth.login.CredentialException;
  * An exception that signals an attempt to login with a credential that has
  * expired.
  */
-public class CredentialExpiredException extends CredentialException
-{
+public class CredentialExpiredException extends CredentialException {
 
-    // Constant.
-    // -------------------------------------------------------------------------
+	// Constant.
+	// -------------------------------------------------------------------------
 
-    private static final long serialVersionUID = -5344739593859737937L;
+	private static final long serialVersionUID = -5344739593859737937L;
 
-    // Constructors.
-    // -------------------------------------------------------------------------
+	// Constructors.
+	// -------------------------------------------------------------------------
 
-    public CredentialExpiredException()
-    {
-    }
+	public CredentialExpiredException() {
+	}
 
-    public CredentialExpiredException(String message)
-    {
-	super(message);
-    }
+	public CredentialExpiredException(String message) {
+		super(message);
+	}
 }

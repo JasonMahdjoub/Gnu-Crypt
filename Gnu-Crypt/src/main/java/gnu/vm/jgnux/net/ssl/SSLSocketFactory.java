@@ -46,147 +46,140 @@ import gnu.vm.jgnux.net.SocketFactory;
  * A socket factory for creating <i>Secure Socket Layer</i> (<b>SSL</b>)
  * sockets.
  */
-public abstract class SSLSocketFactory extends SocketFactory
-{
-    // Constants.
-    // -------------------------------------------------------------------------
+public abstract class SSLSocketFactory extends SocketFactory {
+	// Constants.
+	// -------------------------------------------------------------------------
 
-    // private static SSLContext context;
+	// private static SSLContext context;
 
-    // Constructor.
-    // -------------------------------------------------------------------------
+	// Constructor.
+	// -------------------------------------------------------------------------
 
-    public SSLSocketFactory()
-    {
-	super();
-    }
+	public SSLSocketFactory() {
+		super();
+	}
 
-    // Class methods.
-    // -------------------------------------------------------------------------
+	// Class methods.
+	// -------------------------------------------------------------------------
 
-    /**
-     * Returns a default implementation of a SSL socket factory.
-     *
-     * <p>
-     * To control the class that gets returned by this method, set the security
-     * property "ssl.SocketFactory.provider" to the class name of a concrete
-     * implementation of this class. If not set, a system-dependent
-     * implementation will be used.
-     * </p>
-     *
-     * <p>
-     * The implementation returned is created by the first implementation of the
-     * {@link SSLContext} class found, which is initialized with default
-     * parameters. To control the key and trust manager factory algorithms used
-     * as defaults, set the security properties
-     * "ssl.keyManagerFactory.algorithm" and "ssl.trustManagerFactory.algorithm"
-     * to the appropriate names.
-     * </p>
-     *
-     * <p>
-     * Using this method is not recommended. Instead, use the methods of
-     * {@link SSLContext}, which provide much better control over the creation
-     * of socket factories.
-     * </p>
-     *
-     * @return The default socket factory.
-     * @throws RuntimeException
-     *             If no default can be created.
-     */
-    /*
-     * public static synchronized SocketFactory getDefault() { try { String s =
-     * Security.getProperty("ssl.SocketFactory.provider"); ClassLoader cl =
-     * ClassLoader.getSystemClassLoader(); if (s != null && cl != null) { return
-     * (SocketFactory) cl.loadClass(s).newInstance(); } } catch (Exception e) {
-     * } if (context == null) { KeyManager[] km = null; TrustManager[] tm =
-     * null;
-     * 
-     * // 1. Determine which algorithms to use for the key and trust // manager
-     * factories. String kmAlg = KeyManagerFactory.getDefaultAlgorithm(); String
-     * tmAlg = TrustManagerFactory.getDefaultAlgorithm();
-     * 
-     * // 2. Try to initialize the factories with default parameters. try {
-     * KeyManagerFactory kmf = KeyManagerFactory.getInstance(kmAlg);
-     * kmf.init(null, null); km = kmf.getKeyManagers(); } catch (Exception ex) {
-     * } try { TrustManagerFactory tmf = TrustManagerFactory.getInstance(tmAlg);
-     * tmf.init((KeyStore) null); tm = tmf.getTrustManagers(); } catch
-     * (Exception ex) { }
-     * 
-     * // 3. Create and initialize a context. try { context =
-     * SSLContext.getInstance("SSLv3"); context.init(km, tm, null); } catch
-     * (Exception ex) { return new ErrorSocketFactory(new RuntimeException(
-     * "error instantiating default socket factory: " + ex.toString(), ex)); } }
-     * try { return context.getSocketFactory(); } catch (Exception e) { } return
-     * new ErrorSocketFactory(new RuntimeException(
-     * "no SSLSocketFactory implementation available")); }
-     */
+	/**
+	 * Returns a default implementation of a SSL socket factory.
+	 *
+	 * <p>
+	 * To control the class that gets returned by this method, set the security
+	 * property "ssl.SocketFactory.provider" to the class name of a concrete
+	 * implementation of this class. If not set, a system-dependent implementation
+	 * will be used.
+	 * </p>
+	 *
+	 * <p>
+	 * The implementation returned is created by the first implementation of the
+	 * {@link SSLContext} class found, which is initialized with default parameters.
+	 * To control the key and trust manager factory algorithms used as defaults, set
+	 * the security properties "ssl.keyManagerFactory.algorithm" and
+	 * "ssl.trustManagerFactory.algorithm" to the appropriate names.
+	 * </p>
+	 *
+	 * <p>
+	 * Using this method is not recommended. Instead, use the methods of
+	 * {@link SSLContext}, which provide much better control over the creation of
+	 * socket factories.
+	 * </p>
+	 *
+	 * @return The default socket factory.
+	 * @throws RuntimeException
+	 *             If no default can be created.
+	 */
+	/*
+	 * public static synchronized SocketFactory getDefault() { try { String s =
+	 * Security.getProperty("ssl.SocketFactory.provider"); ClassLoader cl =
+	 * ClassLoader.getSystemClassLoader(); if (s != null && cl != null) { return
+	 * (SocketFactory) cl.loadClass(s).newInstance(); } } catch (Exception e) { } if
+	 * (context == null) { KeyManager[] km = null; TrustManager[] tm = null;
+	 * 
+	 * // 1. Determine which algorithms to use for the key and trust // manager
+	 * factories. String kmAlg = KeyManagerFactory.getDefaultAlgorithm(); String
+	 * tmAlg = TrustManagerFactory.getDefaultAlgorithm();
+	 * 
+	 * // 2. Try to initialize the factories with default parameters. try {
+	 * KeyManagerFactory kmf = KeyManagerFactory.getInstance(kmAlg); kmf.init(null,
+	 * null); km = kmf.getKeyManagers(); } catch (Exception ex) { } try {
+	 * TrustManagerFactory tmf = TrustManagerFactory.getInstance(tmAlg);
+	 * tmf.init((KeyStore) null); tm = tmf.getTrustManagers(); } catch (Exception
+	 * ex) { }
+	 * 
+	 * // 3. Create and initialize a context. try { context =
+	 * SSLContext.getInstance("SSLv3"); context.init(km, tm, null); } catch
+	 * (Exception ex) { return new ErrorSocketFactory(new RuntimeException(
+	 * "error instantiating default socket factory: " + ex.toString(), ex)); } } try
+	 * { return context.getSocketFactory(); } catch (Exception e) { } return new
+	 * ErrorSocketFactory(new RuntimeException(
+	 * "no SSLSocketFactory implementation available")); }
+	 */
 
-    /*
-     * private static final class ErrorSocketFactory extends SSLSocketFactory {
-     * private RuntimeException x;
-     * 
-     * ErrorSocketFactory(RuntimeException x) { this.x = x; }
-     * 
-     * public Socket createSocket() throws IOException { throw (IOException) new
-     * IOException().initCause(x); }
-     * 
-     * public Socket createSocket(String host, int port) throws IOException {
-     * throw (IOException) new IOException().initCause(x); }
-     * 
-     * public Socket createSocket(String host, int port, InetAddress localHost,
-     * int localPort) throws IOException { throw (IOException) new
-     * IOException().initCause(x); }
-     * 
-     * public Socket createSocket(InetAddress host, int port) throws IOException
-     * { throw (IOException) new IOException().initCause(x); }
-     * 
-     * public Socket createSocket(InetAddress hast, int port, InetAddress
-     * localHost, int localPort) throws IOException { throw (IOException) new
-     * IOException().initCause(x); }
-     * 
-     * public String[] getDefaultCipherSuites() { throw new RuntimeException(x);
-     * }
-     * 
-     * public String[] getSupportedCipherSuites() { throw new
-     * RuntimeException(x); }
-     * 
-     * public Socket createSocket(Socket s, String host, int port, boolean
-     * autoClose) throws IOException { throw new RuntimeException(x); } }
-     */
+	/*
+	 * private static final class ErrorSocketFactory extends SSLSocketFactory {
+	 * private RuntimeException x;
+	 * 
+	 * ErrorSocketFactory(RuntimeException x) { this.x = x; }
+	 * 
+	 * public Socket createSocket() throws IOException { throw (IOException) new
+	 * IOException().initCause(x); }
+	 * 
+	 * public Socket createSocket(String host, int port) throws IOException { throw
+	 * (IOException) new IOException().initCause(x); }
+	 * 
+	 * public Socket createSocket(String host, int port, InetAddress localHost, int
+	 * localPort) throws IOException { throw (IOException) new
+	 * IOException().initCause(x); }
+	 * 
+	 * public Socket createSocket(InetAddress host, int port) throws IOException {
+	 * throw (IOException) new IOException().initCause(x); }
+	 * 
+	 * public Socket createSocket(InetAddress hast, int port, InetAddress localHost,
+	 * int localPort) throws IOException { throw (IOException) new
+	 * IOException().initCause(x); }
+	 * 
+	 * public String[] getDefaultCipherSuites() { throw new RuntimeException(x); }
+	 * 
+	 * public String[] getSupportedCipherSuites() { throw new RuntimeException(x); }
+	 * 
+	 * public Socket createSocket(Socket s, String host, int port, boolean
+	 * autoClose) throws IOException { throw new RuntimeException(x); } }
+	 */
 
-    // Abstract methods.
-    // -------------------------------------------------------------------------
+	// Abstract methods.
+	// -------------------------------------------------------------------------
 
-    /**
-     * Creates a SSL socket wrapped around an existing socket.
-     *
-     * @param socket
-     *            The socket to wrap.
-     * @param host
-     *            The host the socket is connected to.
-     * @param port
-     *            The port the socket is connected to.
-     * @param autoClose
-     *            Whether or not the wrapped socket should be closed
-     *            automatically.
-     * @return The new SSL socket.
-     * @throws IOException
-     *             If the socket could not be created.
-     */
-    public abstract Socket createSocket(Socket socket, String host, int port, boolean autoClose) throws IOException;
+	/**
+	 * Creates a SSL socket wrapped around an existing socket.
+	 *
+	 * @param socket
+	 *            The socket to wrap.
+	 * @param host
+	 *            The host the socket is connected to.
+	 * @param port
+	 *            The port the socket is connected to.
+	 * @param autoClose
+	 *            Whether or not the wrapped socket should be closed automatically.
+	 * @return The new SSL socket.
+	 * @throws IOException
+	 *             If the socket could not be created.
+	 */
+	public abstract Socket createSocket(Socket socket, String host, int port, boolean autoClose) throws IOException;
 
-    /**
-     * Returns the list of cipher suites that will be enabled in sockets created
-     * by this factory.
-     *
-     * @return The default cipher suites.
-     */
-    public abstract String[] getDefaultCipherSuites();
+	/**
+	 * Returns the list of cipher suites that will be enabled in sockets created by
+	 * this factory.
+	 *
+	 * @return The default cipher suites.
+	 */
+	public abstract String[] getDefaultCipherSuites();
 
-    /**
-     * Returns the list of all cipher suites supported by this factory.
-     *
-     * @return The list of supported cipher suites.
-     */
-    public abstract String[] getSupportedCipherSuites();
+	/**
+	 * Returns the list of all cipher suites supported by this factory.
+	 *
+	 * @return The list of supported cipher suites.
+	 */
+	public abstract String[] getSupportedCipherSuites();
 }

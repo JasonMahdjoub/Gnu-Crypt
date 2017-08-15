@@ -37,22 +37,21 @@ exception statement from your version. */
 
 package gnu.vm.jgnu.security.cert;
 
-public interface CertSelector extends Cloneable
-{
+public interface CertSelector extends Cloneable {
 
-    /**
-     * Returns a copy of this CertSelector.
-     *
-     * @return The copy.
-     */
-    Object clone();
+	/**
+	 * Returns a copy of this CertSelector.
+	 *
+	 * @return The copy.
+	 */
+	Object clone();
 
-    /**
-     * Match a certificate according to this selector's criteria.
-     *
-     * @param cert
-     *            The certificate to match.
-     * @return true if the certificate matches thin criteria.
-     */
-    boolean match(Certificate cert);
+	/**
+	 * Match a certificate according to this selector's criteria.
+	 *
+	 * @param cert
+	 *            The certificate to match.
+	 * @return true if the certificate matches thin criteria.
+	 */
+	boolean match(Certificate cert);
 }

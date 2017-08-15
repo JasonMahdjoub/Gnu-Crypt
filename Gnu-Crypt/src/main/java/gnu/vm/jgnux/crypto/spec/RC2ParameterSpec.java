@@ -48,128 +48,113 @@ import gnu.vm.jgnu.security.spec.AlgorithmParameterSpec;
  * @author Casey Marshall (csm@gnu.org)
  * @since 1.4
  */
-public class RC2ParameterSpec implements AlgorithmParameterSpec
-{
+public class RC2ParameterSpec implements AlgorithmParameterSpec {
 
-    // Constants and fields.
-    // ------------------------------------------------------------------------
+	// Constants and fields.
+	// ------------------------------------------------------------------------
 
-    /** The length of an RC2 IV, in bytes. */
-    private static final int RC2_IV_LENGTH = 8;
+	/** The length of an RC2 IV, in bytes. */
+	private static final int RC2_IV_LENGTH = 8;
 
-    /** The effective key length, in bits. */
-    private int effectiveKeyBits;
+	/** The effective key length, in bits. */
+	private int effectiveKeyBits;
 
-    /** The initialization vector. */
-    private byte[] iv;
+	/** The initialization vector. */
+	private byte[] iv;
 
-    // Constructors.
-    // ------------------------------------------------------------------------
+	// Constructors.
+	// ------------------------------------------------------------------------
 
-    /**
-     * Create RC2 parameters without an IV.
-     *
-     * @param effectiveKeyBits
-     *            The number of effective key bits.
-     */
-    public RC2ParameterSpec(int effectiveKeyBits)
-    {
-	this.effectiveKeyBits = effectiveKeyBits;
-    }
-
-    /**
-     * Create RC2 parameters with an IV.
-     *
-     * @param effectiveKeyBits
-     *            The number of effective key bits.
-     * @param iv
-     *            The IV; the first eight bytes of this array are used.
-     */
-    public RC2ParameterSpec(int effectiveKeyBits, byte[] iv)
-    {
-	this(effectiveKeyBits, iv, 0);
-    }
-
-    /**
-     * Create RC2 parameters with an IV.
-     *
-     * @param effectiveKeyBits
-     *            The number of effective key bits.
-     * @param iv
-     *            The IV; the first eight bytes of this array after
-     *            <code>offset</code> are used.
-     * @param offset
-     *            From whence to start in the array.
-     */
-    public RC2ParameterSpec(int effectiveKeyBits, byte[] iv, int offset)
-    {
-	if (iv.length - offset < RC2_IV_LENGTH)
-	{
-	    throw new IllegalArgumentException("IV too short");
+	/**
+	 * Create RC2 parameters without an IV.
+	 *
+	 * @param effectiveKeyBits
+	 *            The number of effective key bits.
+	 */
+	public RC2ParameterSpec(int effectiveKeyBits) {
+		this.effectiveKeyBits = effectiveKeyBits;
 	}
-	this.effectiveKeyBits = effectiveKeyBits;
-	this.iv = new byte[RC2_IV_LENGTH];
-	System.arraycopy(iv, offset, this.iv, 0, RC2_IV_LENGTH);
-    }
 
-    // Instance methods.
-    // ------------------------------------------------------------------------
+	/**
+	 * Create RC2 parameters with an IV.
+	 *
+	 * @param effectiveKeyBits
+	 *            The number of effective key bits.
+	 * @param iv
+	 *            The IV; the first eight bytes of this array are used.
+	 */
+	public RC2ParameterSpec(int effectiveKeyBits, byte[] iv) {
+		this(effectiveKeyBits, iv, 0);
+	}
 
-    @Override
-    public boolean equals(Object o)
-    {
-	if (this == o)
-	    return true;
-	byte[] oiv = ((RC2ParameterSpec) o).getIV();
-	if (iv != oiv)
-	{
-	    if (iv == null || oiv == null)
-		return false;
-	    if (iv.length != oiv.length)
-		return false;
-	    for (int i = 0; i < iv.length; i++)
-	    {
-		if (iv[i] != oiv[i])
-		{
-		    return false;
+	/**
+	 * Create RC2 parameters with an IV.
+	 *
+	 * @param effectiveKeyBits
+	 *            The number of effective key bits.
+	 * @param iv
+	 *            The IV; the first eight bytes of this array after
+	 *            <code>offset</code> are used.
+	 * @param offset
+	 *            From whence to start in the array.
+	 */
+	public RC2ParameterSpec(int effectiveKeyBits, byte[] iv, int offset) {
+		if (iv.length - offset < RC2_IV_LENGTH) {
+			throw new IllegalArgumentException("IV too short");
 		}
-	    }
+		this.effectiveKeyBits = effectiveKeyBits;
+		this.iv = new byte[RC2_IV_LENGTH];
+		System.arraycopy(iv, offset, this.iv, 0, RC2_IV_LENGTH);
 	}
-	return effectiveKeyBits == ((RC2ParameterSpec) o).getEffectiveKeyBits();
-    }
 
-    /**
-     * Get the number of effective key bits.
-     *
-     * @return The numer of effective key bits.
-     */
-    public int getEffectiveKeyBits()
-    {
-	return effectiveKeyBits;
-    }
+	// Instance methods.
+	// ------------------------------------------------------------------------
 
-    /**
-     * Return the initialization vector, or <code>null</code> if none was
-     * specified.
-     *
-     * @return The IV, or null.
-     */
-    public byte[] getIV()
-    {
-	return iv;
-    }
-
-    @Override
-    public int hashCode()
-    {
-	int code = effectiveKeyBits;
-	if (iv != null)
-	{
-	    for (int i = 0; i < RC2_IV_LENGTH; i++)
-	    {
-		code += iv[i];
-	    }
+	@Override
+	public boolean equals(Object o) {
+		if (this == o)
+			return true;
+		byte[] oiv = ((RC2ParameterSpec) o).getIV();
+		if (iv != oiv) {
+			if (iv == null || oiv == null)
+				return false;
+			if (iv.length != oiv.length)
+				return false;
+			for (int i = 0; i < iv.length; i++) {
+				if (iv[i] != oiv[i]) {
+					return false;
+				}
+			}
+		}
+		return effectiveKeyBits == ((RC2ParameterSpec) o).getEffectiveKeyBits();
 	}
-	return code;
-    }
+
+	/**
+	 * Get the number of effective key bits.
+	 *
+	 * @return The numer of effective key bits.
+	 */
+	public int getEffectiveKeyBits() {
+		return effectiveKeyBits;
+	}
+
+	/**
+	 * Return the initialization vector, or <code>null</code> if none was specified.
+	 *
+	 * @return The IV, or null.
+	 */
+	public byte[] getIV() {
+		return iv;
+	}
+
+	@Override
+	public int hashCode() {
+		int code = effectiveKeyBits;
+		if (iv != null) {
+			for (int i = 0; i < RC2_IV_LENGTH; i++) {
+				code += iv[i];
+			}
+		}
+		return code;
+	}
 }

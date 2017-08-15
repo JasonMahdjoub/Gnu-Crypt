@@ -45,87 +45,86 @@ import gnu.vm.jgnu.security.SecureRandom;
  *
  * @author Casey Marshall (rsdio@metastatic.org)
  */
-public abstract class SSLContextSpi
-{
+public abstract class SSLContextSpi {
 
-    // Constructor.
-    // -------------------------------------------------------------------
+	// Constructor.
+	// -------------------------------------------------------------------
 
-    /**
-     * Create a new SSLContextSpi.
-     */
-    public SSLContextSpi()
-    {
-	super();
-    }
+	/**
+	 * Create a new SSLContextSpi.
+	 */
+	public SSLContextSpi() {
+		super();
+	}
 
-    // Abstract methods.
-    // -------------------------------------------------------------------
+	// Abstract methods.
+	// -------------------------------------------------------------------
 
-    // Sun, you've broken existing applications by introducing new
-    // abstract methods! Goodjob!!!
+	// Sun, you've broken existing applications by introducing new
+	// abstract methods! Goodjob!!!
 
-    /**
-     * Returns a new {@link SSLEngine} for this context.
-     *
-     * @return A new SSLEngine.
-     * @since 1.5
-     */
-    protected abstract SSLEngine engineCreateSSLEngine();
+	/**
+	 * Returns a new {@link SSLEngine} for this context.
+	 *
+	 * @return A new SSLEngine.
+	 * @since 1.5
+	 */
+	protected abstract SSLEngine engineCreateSSLEngine();
 
-    /**
-     * Returns a new {@link SSLEngine} for this context, for the given host name
-     * and port number.
-     *
-     * @param host
-     *            The local host name.
-     * @param port
-     *            The local port number.
-     * @return A new SSLEngine.
-     * @since 1.5
-     */
-    protected abstract SSLEngine engineCreateSSLEngine(String host, int port);
+	/**
+	 * Returns a new {@link SSLEngine} for this context, for the given host name and
+	 * port number.
+	 *
+	 * @param host
+	 *            The local host name.
+	 * @param port
+	 *            The local port number.
+	 * @return A new SSLEngine.
+	 * @since 1.5
+	 */
+	protected abstract SSLEngine engineCreateSSLEngine(String host, int port);
 
-    /**
-     * Returns the set of SSL sessions available for client connections.
-     *
-     * @return The set of SSL sessions available for client connections.
-     */
-    protected abstract SSLSessionContext engineGetClientSessionContext();
+	/**
+	 * Returns the set of SSL sessions available for client connections.
+	 *
+	 * @return The set of SSL sessions available for client connections.
+	 */
+	protected abstract SSLSessionContext engineGetClientSessionContext();
 
-    /**
-     * Returns the set of SSL sessions available for server connections.
-     *
-     * @return The set of SSL sessions available for server connections.
-     */
-    protected abstract SSLSessionContext engineGetServerSessionContext();
+	/**
+	 * Returns the set of SSL sessions available for server connections.
+	 *
+	 * @return The set of SSL sessions available for server connections.
+	 */
+	protected abstract SSLSessionContext engineGetServerSessionContext();
 
-    /**
-     * Returns the SSL server socket factory.
-     *
-     * @return The SSL server socket factory.
-     */
-    protected abstract SSLServerSocketFactory engineGetServerSocketFactory();
+	/**
+	 * Returns the SSL server socket factory.
+	 *
+	 * @return The SSL server socket factory.
+	 */
+	protected abstract SSLServerSocketFactory engineGetServerSocketFactory();
 
-    /**
-     * Returns the SSL client socket factory.
-     *
-     * @return The SSL client socket factory.
-     */
-    protected abstract SSLSocketFactory engineGetSocketFactory();
+	/**
+	 * Returns the SSL client socket factory.
+	 *
+	 * @return The SSL client socket factory.
+	 */
+	protected abstract SSLSocketFactory engineGetSocketFactory();
 
-    /**
-     * Initialize this context with key and trust managers, and a source of
-     * randomness. All of the parameters are optional.
-     *
-     * @param keyManagers
-     *            The set of key managers.
-     * @param trustManagers
-     *            The set of trust managers.
-     * @param random
-     *            The source of randomness.
-     * @throws KeyManagementException
-     *             If this context cannot be initialized with these parameters.
-     */
-    protected abstract void engineInit(KeyManager[] keyManagers, TrustManager[] trustManagers, SecureRandom random) throws KeyManagementException;
+	/**
+	 * Initialize this context with key and trust managers, and a source of
+	 * randomness. All of the parameters are optional.
+	 *
+	 * @param keyManagers
+	 *            The set of key managers.
+	 * @param trustManagers
+	 *            The set of trust managers.
+	 * @param random
+	 *            The source of randomness.
+	 * @throws KeyManagementException
+	 *             If this context cannot be initialized with these parameters.
+	 */
+	protected abstract void engineInit(KeyManager[] keyManagers, TrustManager[] trustManagers, SecureRandom random)
+			throws KeyManagementException;
 }

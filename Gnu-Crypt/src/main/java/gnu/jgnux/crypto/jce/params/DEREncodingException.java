@@ -37,21 +37,18 @@ exception statement from your version.  */
 
 package gnu.jgnux.crypto.jce.params;
 
-class DEREncodingException extends java.io.IOException
-{
+class DEREncodingException extends java.io.IOException {
 
-    /**
-     * 
-     */
-    private static final long serialVersionUID = 3098204322607975436L;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 3098204322607975436L;
 
-    public DEREncodingException()
-    {
-	super();
-    }
+	public DEREncodingException() {
+		super();
+	}
 
-    public DEREncodingException(String msg)
-    {
-	super(msg);
-    }
+	public DEREncodingException(String msg) {
+		super(msg);
+	}
 }

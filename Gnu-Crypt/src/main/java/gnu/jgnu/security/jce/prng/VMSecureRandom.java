@@ -51,89 +51,75 @@ package gnu.jgnu.security.jce.prng;
  * system facility, such as a system entropy gathering device or hardware random
  * number generator.
  */
-final class VMSecureRandom
-{
+final class VMSecureRandom {
 
-    static class Spinner implements Runnable
-    {
-	volatile byte value;
+	static class Spinner implements Runnable {
+		volatile byte value;
 
-	volatile boolean running;
+		volatile boolean running;
 
-	Spinner(final byte initial)
-	{
-	    value = initial;
+		Spinner(final byte initial) {
+			value = initial;
+		}
+
+		@Override
+		public void run() {
+			running = true;
+			while (running)
+				value++;
+		}
+
+		void stop() {
+			running = false;
+		}
 	}
 
-	@Override
-	public void run()
-	{
-	    running = true;
-	    while (running)
-		value++;
+	/**
+	 * Generate a random seed. Implementations are free to generate fewer random
+	 * bytes than are requested, and leave the remaining bytes of the destination
+	 * buffer as zeros. Implementations SHOULD, however, make a best-effort attempt
+	 * to satisfy the request.
+	 *
+	 * @param buffer
+	 *            The destination buffer.
+	 * @param offset
+	 *            The offset in the buffer to start putting bytes.
+	 * @param length
+	 *            The number of random bytes to generate.
+	 */
+	static int generateSeed(byte[] buffer, int offset, int length) {
+		if (length < 0)
+			throw new IllegalArgumentException("length must be nonnegative");
+		if (offset < 0 || offset + length > buffer.length)
+			throw new IndexOutOfBoundsException();
+
+		Spinner[] spinners = new Spinner[8];
+		int n = 0x1;
+		for (int i = 0; i < spinners.length; i++) {
+			spinners[i] = new Spinner((byte) n);
+			Thread t = new Thread(spinners[i]);
+			t.start();
+			n <<= 1;
+		}
+
+		// Wait until at least one spinner has started.
+		while (!(spinners[0].running || spinners[1].running || spinners[2].running || spinners[3].running
+				|| spinners[4].running || spinners[5].running || spinners[6].running || spinners[7].running)) {
+			Thread.yield();
+		}
+
+		for (int i = offset; i < length; i++) {
+			buffer[i] = (byte) (spinners[0].value ^ spinners[1].value ^ spinners[2].value ^ spinners[3].value
+					^ spinners[4].value ^ spinners[5].value ^ spinners[6].value ^ spinners[7].value);
+			Thread.yield();
+		}
+
+		for (int i = 0; i < spinners.length; i++)
+			spinners[i].stop();
+
+		return length;
 	}
 
-	void stop()
-	{
-	    running = false;
-	}
-    }
-
-    /**
-     * Generate a random seed. Implementations are free to generate fewer random
-     * bytes than are requested, and leave the remaining bytes of the
-     * destination buffer as zeros. Implementations SHOULD, however, make a
-     * best-effort attempt to satisfy the request.
-     *
-     * @param buffer
-     *            The destination buffer.
-     * @param offset
-     *            The offset in the buffer to start putting bytes.
-     * @param length
-     *            The number of random bytes to generate.
-     */
-    static int generateSeed(byte[] buffer, int offset, int length)
-    {
-	if (length < 0)
-	    throw new IllegalArgumentException("length must be nonnegative");
-	if (offset < 0 || offset + length > buffer.length)
-	    throw new IndexOutOfBoundsException();
-
-	Spinner[] spinners = new Spinner[8];
-	int n = 0x1;
-	for (int i = 0; i < spinners.length; i++)
-	{
-	    spinners[i] = new Spinner((byte) n);
-	    Thread t = new Thread(spinners[i]);
-	    t.start();
-	    n <<= 1;
-	}
-
-	// Wait until at least one spinner has started.
-	while (!(spinners[0].running || spinners[1].running
-		|| spinners[2].running || spinners[3].running
-		|| spinners[4].running || spinners[5].running
-		|| spinners[6].running || spinners[7].running))
-	{
-	    Thread.yield();
-	}
-
-	for (int i = offset; i < length; i++)
-	{
-	    buffer[i] = (byte) (spinners[0].value ^ spinners[1].value
-		    ^ spinners[2].value ^ spinners[3].value ^ spinners[4].value
-		    ^ spinners[5].value ^ spinners[6].value
-		    ^ spinners[7].value);
-	    Thread.yield();
-	}
-
-	for (int i = 0; i < spinners.length; i++)
-	    spinners[i].stop();
-
-	return length;
-    }
-
-    private VMSecureRandom()
-    {
-    } // Prohibits instantiation.
+	private VMSecureRandom() {
+	} // Prohibits instantiation.
 }

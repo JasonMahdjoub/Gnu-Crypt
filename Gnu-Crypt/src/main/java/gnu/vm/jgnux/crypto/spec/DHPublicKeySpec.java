@@ -48,71 +48,66 @@ import gnu.vm.jgnu.security.spec.KeySpec;
  * @since 1.4
  * @see DHPrivateKeySpec
  */
-public class DHPublicKeySpec implements KeySpec
-{
+public class DHPublicKeySpec implements KeySpec {
 
-    // Variables.
-    // ------------------------------------------------------------------------
+	// Variables.
+	// ------------------------------------------------------------------------
 
-    /** The base generator. */
-    private BigInteger g;
+	/** The base generator. */
+	private BigInteger g;
 
-    /** The prime modulus. */
-    private BigInteger p;
+	/** The prime modulus. */
+	private BigInteger p;
 
-    /** The public value. */
-    private BigInteger y;
+	/** The public value. */
+	private BigInteger y;
 
-    // Constructors.
-    // ------------------------------------------------------------------------
+	// Constructors.
+	// ------------------------------------------------------------------------
 
-    /**
-     * Create a new Diffie-Hellman public key spec.
-     *
-     * @param y
-     *            The public value.
-     * @param p
-     *            The prime modulus.
-     * @param g
-     *            The base generator.
-     */
-    public DHPublicKeySpec(BigInteger y, BigInteger p, BigInteger g)
-    {
-	this.y = y;
-	this.p = p;
-	this.g = g;
-    }
+	/**
+	 * Create a new Diffie-Hellman public key spec.
+	 *
+	 * @param y
+	 *            The public value.
+	 * @param p
+	 *            The prime modulus.
+	 * @param g
+	 *            The base generator.
+	 */
+	public DHPublicKeySpec(BigInteger y, BigInteger p, BigInteger g) {
+		this.y = y;
+		this.p = p;
+		this.g = g;
+	}
 
-    // Instance methods.
-    // ------------------------------------------------------------------------
+	// Instance methods.
+	// ------------------------------------------------------------------------
 
-    /**
-     * Get the base generator.
-     *
-     * @return The base generator.
-     */
-    public BigInteger getG()
-    {
-	return g;
-    }
+	/**
+	 * Get the base generator.
+	 *
+	 * @return The base generator.
+	 */
+	public BigInteger getG() {
+		return g;
+	}
 
-    /**
-     * Get the prime modulus.
-     *
-     * @return The prime modulus.
-     */
-    public BigInteger getP()
-    {
-	return p;
-    }
+	/**
+	 * Get the prime modulus.
+	 *
+	 * @return The prime modulus.
+	 */
+	public BigInteger getP() {
+		return p;
+	}
 
-    /**
-     * Get the public value.
-     *
-     * @return The public value.
-     */
-    public BigInteger getY()
-    {
-	return y;
-    }
+	/**
+	 * Get the public value.
+	 *
+	 * @return The public value.
+	 */
+	public BigInteger getY() {
+		return y;
+	}
 }

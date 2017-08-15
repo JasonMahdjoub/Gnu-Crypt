@@ -51,65 +51,58 @@ import gnu.vm.jgnux.crypto.KeyGeneratorSpi;
 import gnu.vm.jgnux.crypto.SecretKey;
 import gnu.vm.jgnux.crypto.spec.SecretKeySpec;
 
-public class SecretKeyGeneratorImpl extends KeyGeneratorSpi
-{
-    protected final int defaultKeySize;
+public class SecretKeyGeneratorImpl extends KeyGeneratorSpi {
+	protected final int defaultKeySize;
 
-    protected final List<Integer> keySizes;
+	protected final List<Integer> keySizes;
 
-    protected final String algorithm;
+	protected final String algorithm;
 
-    protected boolean init;
+	protected boolean init;
 
-    protected int currentKeySize;
+	protected int currentKeySize;
 
-    protected SecureRandom random;
+	protected SecureRandom random;
 
-    protected SecretKeyGeneratorImpl(final String algorithm)
-    {
-	this.algorithm = algorithm;
-	IBlockCipher cipher = CipherFactory.getInstance(algorithm);
-	if (cipher == null)
-	    throw new IllegalArgumentException("no such cipher: " + algorithm);
-	defaultKeySize = cipher.defaultKeySize();
-	keySizes = new LinkedList<>();
-	for (Iterator<Integer> it = cipher.keySizes(); it.hasNext();)
-	    keySizes.add(it.next());
-	init = false;
-    }
+	protected SecretKeyGeneratorImpl(final String algorithm) {
+		this.algorithm = algorithm;
+		IBlockCipher cipher = CipherFactory.getInstance(algorithm);
+		if (cipher == null)
+			throw new IllegalArgumentException("no such cipher: " + algorithm);
+		defaultKeySize = cipher.defaultKeySize();
+		keySizes = new LinkedList<>();
+		for (Iterator<Integer> it = cipher.keySizes(); it.hasNext();)
+			keySizes.add(it.next());
+		init = false;
+	}
 
-    @Override
-    protected SecretKey engineGenerateKey()
-    {
-	if (!init)
-	    throw new IllegalStateException("not initialized");
-	byte[] buf = new byte[currentKeySize];
-	random.nextBytes(buf);
-	return new SecretKeySpec(buf, algorithm);
-    }
+	@Override
+	protected SecretKey engineGenerateKey() {
+		if (!init)
+			throw new IllegalStateException("not initialized");
+		byte[] buf = new byte[currentKeySize];
+		random.nextBytes(buf);
+		return new SecretKeySpec(buf, algorithm);
+	}
 
-    @Override
-    protected void engineInit(AlgorithmParameterSpec params, SecureRandom random) throws InvalidAlgorithmParameterException
-    {
-	throw new InvalidAlgorithmParameterException(
-		algorithm + " does not support algorithm paramaters");
-    }
+	@Override
+	protected void engineInit(AlgorithmParameterSpec params, SecureRandom random)
+			throws InvalidAlgorithmParameterException {
+		throw new InvalidAlgorithmParameterException(algorithm + " does not support algorithm paramaters");
+	}
 
-    @Override
-    protected void engineInit(int keySize, SecureRandom random)
-    {
-	keySize >>>= 3; // Use bytes.
-	if (!keySizes.contains(Integer.valueOf(keySize)))
-	    throw new InvalidParameterException("unsupported key size: "
-		    + keySize + ", valid sizes are: " + keySizes);
-	currentKeySize = keySize;
-	this.random = random;
-	init = true;
-    }
+	@Override
+	protected void engineInit(int keySize, SecureRandom random) {
+		keySize >>>= 3; // Use bytes.
+		if (!keySizes.contains(Integer.valueOf(keySize)))
+			throw new InvalidParameterException("unsupported key size: " + keySize + ", valid sizes are: " + keySizes);
+		currentKeySize = keySize;
+		this.random = random;
+		init = true;
+	}
 
-    @Override
-    protected void engineInit(SecureRandom random)
-    {
-	engineInit(defaultKeySize << 3, random);
-    }
+	@Override
+	protected void engineInit(SecureRandom random) {
+		engineInit(defaultKeySize << 3, random);
+	}
 }

@@ -42,33 +42,32 @@ package gnu.vm.jgnu.security.cert;
  *
  * @see CertPathBuilder
  */
-public abstract class CertPathBuilderSpi
-{
+public abstract class CertPathBuilderSpi {
 
-    // Constructors.
-    // ------------------------------------------------------------------------
+	// Constructors.
+	// ------------------------------------------------------------------------
 
-    /**
-     * Creates a new CertPathBuilderSpi.
-     */
-    public CertPathBuilderSpi()
-    {
-	super();
-    }
+	/**
+	 * Creates a new CertPathBuilderSpi.
+	 */
+	public CertPathBuilderSpi() {
+		super();
+	}
 
-    // Abstract methods.
-    // ------------------------------------------------------------------------
+	// Abstract methods.
+	// ------------------------------------------------------------------------
 
-    /**
-     * Creates a certificate path from the specified parameters.
-     *
-     * @param params
-     *            The parameters to use.
-     * @return The certificate path result.
-     * @throws CertPathBuilderException
-     *             If the certificate path cannot be built.
-     * @throws java.security.InvalidAlgorithmParameterException
-     *             If the implementation rejects the specified parameters.
-     */
-    public abstract CertPathBuilderResult engineBuild(CertPathParameters params) throws CertPathBuilderException, gnu.vm.jgnu.security.InvalidAlgorithmParameterException;
+	/**
+	 * Creates a certificate path from the specified parameters.
+	 *
+	 * @param params
+	 *            The parameters to use.
+	 * @return The certificate path result.
+	 * @throws CertPathBuilderException
+	 *             If the certificate path cannot be built.
+	 * @throws java.security.InvalidAlgorithmParameterException
+	 *             If the implementation rejects the specified parameters.
+	 */
+	public abstract CertPathBuilderResult engineBuild(CertPathParameters params)
+			throws CertPathBuilderException, gnu.vm.jgnu.security.InvalidAlgorithmParameterException;
 }

@@ -45,54 +45,49 @@ import gnu.vm.jgnu.security.KeyException;
  * @author Warren Levy (warrenl@cygnus.com)
  * @status updated to 1.4
  */
-public class InvalidKeyException extends KeyException
-{
-    /**
-     * Compatible with JDK 1.1+.
-     */
-    private static final long serialVersionUID = 5698479920593359816L;
+public class InvalidKeyException extends KeyException {
+	/**
+	 * Compatible with JDK 1.1+.
+	 */
+	private static final long serialVersionUID = 5698479920593359816L;
 
-    /**
-     * Construct an exception with no message.
-     */
-    public InvalidKeyException()
-    {
-    }
+	/**
+	 * Construct an exception with no message.
+	 */
+	public InvalidKeyException() {
+	}
 
-    /**
-     * Construct an exception with a message.
-     *
-     * @param msg
-     *            the message
-     */
-    public InvalidKeyException(String msg)
-    {
-	super(msg);
-    }
+	/**
+	 * Construct an exception with a message.
+	 *
+	 * @param msg
+	 *            the message
+	 */
+	public InvalidKeyException(String msg) {
+		super(msg);
+	}
 
-    /**
-     * Create a new instance with a descriptive error message and a cause.
-     * 
-     * @param s
-     *            the descriptive error message
-     * @param cause
-     *            the cause
-     * @since 1.5
-     */
-    public InvalidKeyException(String s, Throwable cause)
-    {
-	super(s, cause);
-    }
+	/**
+	 * Create a new instance with a descriptive error message and a cause.
+	 * 
+	 * @param s
+	 *            the descriptive error message
+	 * @param cause
+	 *            the cause
+	 * @since 1.5
+	 */
+	public InvalidKeyException(String s, Throwable cause) {
+		super(s, cause);
+	}
 
-    /**
-     * Create a new instance with a cause.
-     * 
-     * @param cause
-     *            the cause
-     * @since 1.5
-     */
-    public InvalidKeyException(Throwable cause)
-    {
-	super(cause);
-    }
+	/**
+	 * Create a new instance with a cause.
+	 * 
+	 * @param cause
+	 *            the cause
+	 * @since 1.5
+	 */
+	public InvalidKeyException(Throwable cause) {
+		super(cause);
+	}
 }

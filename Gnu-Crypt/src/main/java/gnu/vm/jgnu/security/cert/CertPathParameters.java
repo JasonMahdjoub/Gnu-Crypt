@@ -46,13 +46,12 @@ package gnu.vm.jgnu.security.cert;
  * @see CertPathBuilder
  * @see CertPathValidator
  */
-public interface CertPathParameters extends Cloneable
-{
+public interface CertPathParameters extends Cloneable {
 
-    /**
-     * Makes a copy of this CertPathParameters instance.
-     *
-     * @return The copy.
-     */
-    Object clone();
+	/**
+	 * Makes a copy of this CertPathParameters instance.
+	 *
+	 * @return The copy.
+	 */
+	Object clone();
 }

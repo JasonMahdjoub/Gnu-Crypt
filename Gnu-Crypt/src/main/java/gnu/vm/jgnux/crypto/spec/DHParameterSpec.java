@@ -58,85 +58,79 @@ import gnu.vm.jgnu.security.spec.AlgorithmParameterSpec;
  * @since 1.4
  * @see gnu.vm.jgnux.crypto.KeyAgreement
  */
-public class DHParameterSpec implements AlgorithmParameterSpec
-{
+public class DHParameterSpec implements AlgorithmParameterSpec {
 
-    // Variables.
-    // ------------------------------------------------------------------------
+	// Variables.
+	// ------------------------------------------------------------------------
 
-    /** The base generator g. */
-    private BigInteger g;
+	/** The base generator g. */
+	private BigInteger g;
 
-    /** The prime modulus p. */
-    private BigInteger p;
+	/** The prime modulus p. */
+	private BigInteger p;
 
-    /** The length, in bits, of the private exponent. */
-    private int l;
+	/** The length, in bits, of the private exponent. */
+	private int l;
 
-    // Constructors.
-    // ------------------------------------------------------------------------
+	// Constructors.
+	// ------------------------------------------------------------------------
 
-    /**
-     * Create a new set of Diffie-Hellman parameters.
-     *
-     * @param p
-     *            The prime modulus.
-     * @param g
-     *            The base generator.
-     */
-    public DHParameterSpec(BigInteger p, BigInteger g)
-    {
-	this(p, g, 0);
-    }
+	/**
+	 * Create a new set of Diffie-Hellman parameters.
+	 *
+	 * @param p
+	 *            The prime modulus.
+	 * @param g
+	 *            The base generator.
+	 */
+	public DHParameterSpec(BigInteger p, BigInteger g) {
+		this(p, g, 0);
+	}
 
-    /**
-     * Create a new set of Diffie-Hellman parameters.
-     *
-     * @param p
-     *            The prime modulus.
-     * @param g
-     *            The base generator.
-     * @param l
-     *            The size of the private exponent, in bits.
-     */
-    public DHParameterSpec(BigInteger p, BigInteger g, int l)
-    {
-	this.p = p;
-	this.g = g;
-	this.l = l;
-    }
+	/**
+	 * Create a new set of Diffie-Hellman parameters.
+	 *
+	 * @param p
+	 *            The prime modulus.
+	 * @param g
+	 *            The base generator.
+	 * @param l
+	 *            The size of the private exponent, in bits.
+	 */
+	public DHParameterSpec(BigInteger p, BigInteger g, int l) {
+		this.p = p;
+		this.g = g;
+		this.l = l;
+	}
 
-    // Instance methods.
-    // ------------------------------------------------------------------------
+	// Instance methods.
+	// ------------------------------------------------------------------------
 
-    /**
-     * Get the base generator, <i>g</i>.
-     *
-     * @return The base generator <i>g</i>.
-     */
-    public BigInteger getG()
-    {
-	return g;
-    }
+	/**
+	 * Get the base generator, <i>g</i>.
+	 *
+	 * @return The base generator <i>g</i>.
+	 */
+	public BigInteger getG() {
+		return g;
+	}
 
-    /**
-     * Get the length of the private exponent, in bits.
-     *
-     * @return The length of the private exponent, in bits, or 0 if this has not
-     *         been explicitly set.
-     */
-    public int getL()
-    {
-	return l;
-    }
+	/**
+	 * Get the length of the private exponent, in bits.
+	 *
+	 * @return The length of the private exponent, in bits, or 0 if this has not
+	 *         been explicitly set.
+	 */
+	public int getL() {
+		return l;
+	}
 
-    /**
-     * Get the prime modulus, <i>p</i>.
-     *
-     * @return The prime modulus, <i>p</i>.
-     */
-    public BigInteger getP()
-    {
-	return p;
-    }
+	/**
+	 * Get the prime modulus, <i>p</i>.
+	 *
+	 * @return The prime modulus, <i>p</i>.
+	 */
+	public BigInteger getP() {
+		return p;
+	}
 }

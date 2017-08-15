@@ -51,13 +51,12 @@ package gnu.vm.jgnu.security.cert;
  * @since JDK 1.4
  * @see CertPathValidator
  */
-public interface CertPathValidatorResult extends Cloneable
-{
+public interface CertPathValidatorResult extends Cloneable {
 
-    /**
-     * Returns a copy of this validator result.
-     *
-     * @return The copy.
-     */
-    Object clone();
+	/**
+	 * Returns a copy of this validator result.
+	 *
+	 * @return The copy.
+	 */
+	Object clone();
 }

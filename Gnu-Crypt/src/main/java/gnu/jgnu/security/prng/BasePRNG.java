@@ -42,143 +42,123 @@ import java.util.Map;
 /**
  * An abstract class to facilitate implementing PRNG algorithms.
  */
-public abstract class BasePRNG implements IRandom
-{
-    /** The canonical name prefix of the PRNG algorithm. */
-    protected String name;
+public abstract class BasePRNG implements IRandom {
+	/** The canonical name prefix of the PRNG algorithm. */
+	protected String name;
 
-    /** Indicate if this instance has already been initialised or not. */
-    protected boolean initialised;
+	/** Indicate if this instance has already been initialised or not. */
+	protected boolean initialised;
 
-    /** A temporary buffer to serve random bytes. */
-    protected byte[] buffer;
+	/** A temporary buffer to serve random bytes. */
+	protected byte[] buffer;
 
-    /** The index into buffer of where the next byte will come from. */
-    protected int ndx;
+	/** The index into buffer of where the next byte will come from. */
+	protected int ndx;
 
-    /**
-     * Trivial constructor for use by concrete subclasses.
-     *
-     * @param name
-     *            the canonical name of this instance.
-     */
-    protected BasePRNG(String name)
-    {
-	super();
+	/**
+	 * Trivial constructor for use by concrete subclasses.
+	 *
+	 * @param name
+	 *            the canonical name of this instance.
+	 */
+	protected BasePRNG(String name) {
+		super();
 
-	this.name = name;
-	initialised = false;
-	buffer = new byte[0];
-    }
-
-    @Override
-    public void addRandomByte(byte b)
-    {
-	throw new UnsupportedOperationException(
-		"random state is non-modifiable");
-    }
-
-    @Override
-    public void addRandomBytes(byte[] buffer)
-    {
-	addRandomBytes(buffer, 0, buffer.length);
-    }
-
-    @Override
-    public void addRandomBytes(byte[] buffer, int offset, int length)
-    {
-	throw new UnsupportedOperationException(
-		"random state is non-modifiable");
-    }
-
-    @Override
-    public Object clone() throws CloneNotSupportedException
-    {
-	BasePRNG result = (BasePRNG) super.clone();
-	if (this.buffer != null)
-	    result.buffer = this.buffer.clone();
-
-	return result;
-    }
-
-    public abstract void fillBlock() throws LimitReachedException;
-
-    @Override
-    public void init(Map<Object, ?> attributes)
-    {
-	this.setup(attributes);
-
-	ndx = 0;
-	initialised = true;
-    }
-
-    public boolean isInitialised()
-    {
-	return initialised;
-    }
-
-    @Override
-    public String name()
-    {
-	return name;
-    }
-
-    @Override
-    public byte nextByte() throws IllegalStateException, LimitReachedException
-    {
-	if (!initialised)
-	    throw new IllegalStateException();
-
-	return nextByteInternal();
-    }
-
-    private byte nextByteInternal() throws LimitReachedException
-    {
-	if (ndx >= buffer.length)
-	{
-	    this.fillBlock();
-	    ndx = 0;
+		this.name = name;
+		initialised = false;
+		buffer = new byte[0];
 	}
 
-	return buffer[ndx++];
-    }
-
-    public void nextBytes(byte[] out) throws IllegalStateException, LimitReachedException
-    {
-	nextBytes(out, 0, out.length);
-    }
-
-    @Override
-    public void nextBytes(byte[] out, int offset, int length) throws IllegalStateException, LimitReachedException
-    {
-	if (!initialised)
-	    throw new IllegalStateException("not initialized");
-
-	if (length == 0)
-	    return;
-
-	if (offset < 0 || length < 0 || offset + length > out.length)
-	    throw new ArrayIndexOutOfBoundsException("offset=" + offset
-		    + " length=" + length + " limit=" + out.length);
-	if (ndx >= buffer.length)
-	{
-	    fillBlock();
-	    ndx = 0;
+	@Override
+	public void addRandomByte(byte b) {
+		throw new UnsupportedOperationException("random state is non-modifiable");
 	}
-	int count = 0;
-	while (count < length)
-	{
-	    int amount = Math.min(buffer.length - ndx, length - count);
-	    System.arraycopy(buffer, ndx, out, offset + count, amount);
-	    count += amount;
-	    ndx += amount;
-	    if (ndx >= buffer.length)
-	    {
-		fillBlock();
+
+	@Override
+	public void addRandomBytes(byte[] buffer) {
+		addRandomBytes(buffer, 0, buffer.length);
+	}
+
+	@Override
+	public void addRandomBytes(byte[] buffer, int offset, int length) {
+		throw new UnsupportedOperationException("random state is non-modifiable");
+	}
+
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+		BasePRNG result = (BasePRNG) super.clone();
+		if (this.buffer != null)
+			result.buffer = this.buffer.clone();
+
+		return result;
+	}
+
+	public abstract void fillBlock() throws LimitReachedException;
+
+	@Override
+	public void init(Map<Object, ?> attributes) {
+		this.setup(attributes);
+
 		ndx = 0;
-	    }
+		initialised = true;
 	}
-    }
 
-    public abstract void setup(Map<Object, ?> attributes);
+	public boolean isInitialised() {
+		return initialised;
+	}
+
+	@Override
+	public String name() {
+		return name;
+	}
+
+	@Override
+	public byte nextByte() throws IllegalStateException, LimitReachedException {
+		if (!initialised)
+			throw new IllegalStateException();
+
+		return nextByteInternal();
+	}
+
+	private byte nextByteInternal() throws LimitReachedException {
+		if (ndx >= buffer.length) {
+			this.fillBlock();
+			ndx = 0;
+		}
+
+		return buffer[ndx++];
+	}
+
+	public void nextBytes(byte[] out) throws IllegalStateException, LimitReachedException {
+		nextBytes(out, 0, out.length);
+	}
+
+	@Override
+	public void nextBytes(byte[] out, int offset, int length) throws IllegalStateException, LimitReachedException {
+		if (!initialised)
+			throw new IllegalStateException("not initialized");
+
+		if (length == 0)
+			return;
+
+		if (offset < 0 || length < 0 || offset + length > out.length)
+			throw new ArrayIndexOutOfBoundsException("offset=" + offset + " length=" + length + " limit=" + out.length);
+		if (ndx >= buffer.length) {
+			fillBlock();
+			ndx = 0;
+		}
+		int count = 0;
+		while (count < length) {
+			int amount = Math.min(buffer.length - ndx, length - count);
+			System.arraycopy(buffer, ndx, out, offset + count, amount);
+			count += amount;
+			ndx += amount;
+			if (ndx >= buffer.length) {
+				fillBlock();
+				ndx = 0;
+			}
+		}
+	}
+
+	public abstract void setup(Map<Object, ?> attributes);
 }

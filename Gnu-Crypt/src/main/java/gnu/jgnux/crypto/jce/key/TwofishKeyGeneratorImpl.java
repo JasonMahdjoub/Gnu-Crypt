@@ -39,10 +39,8 @@ package gnu.jgnux.crypto.jce.key;
 
 import gnu.jgnu.security.Registry;
 
-public class TwofishKeyGeneratorImpl extends SecretKeyGeneratorImpl
-{
-    public TwofishKeyGeneratorImpl()
-    {
-	super(Registry.TWOFISH_CIPHER);
-    }
+public class TwofishKeyGeneratorImpl extends SecretKeyGeneratorImpl {
+	public TwofishKeyGeneratorImpl() {
+		super(Registry.TWOFISH_CIPHER);
+	}
 }

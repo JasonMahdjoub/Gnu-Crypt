@@ -50,167 +50,150 @@ import java.util.Map.Entry;
  * and values are simple strings, with the key never being empty and always
  * treated case-insensitively.
  */
-public class Properties implements Cloneable
-{
-    private HashMap<String, String> props;
+public class Properties implements Cloneable {
+	private HashMap<String, String> props;
 
-    /**
-     * Creates a new properties object.
-     */
-    public Properties()
-    {
-	props = new HashMap<>();
-    }
-
-    private String canonicalize(String key)
-    {
-	return key.toLowerCase();
-    }
-
-    /**
-     * Removes all properties from this object.
-     */
-    public void clear()
-    {
-	props.clear();
-    }
-
-    /**
-     * Creates a copy of this properties object.
-     *
-     * @return The copy.
-     */
-    @Override
-    public Properties clone()
-    {
-	Properties result = new Properties();
-	result.props.putAll(props);
-	return result;
-    }
-
-    /**
-     * Tests if this object contains a given property name.
-     *
-     * @param key
-     *            The key to test.
-     * @return True if this object contains the given key.
-     */
-    public boolean containsKey(String key)
-    {
-	if (key == null || key.length() == 0)
-	    return false;
-	return props.containsKey(canonicalize(key));
-    }
-
-    /**
-     * Tests if this object contains a given property value.
-     *
-     * @param value
-     *            The value to test.
-     * @return True if this object contains the given value.
-     */
-    public boolean containsValue(String value)
-    {
-	if (value == null)
-	    return false;
-	return props.containsValue(value);
-    }
-
-    /**
-     * Decodes a set of properties from the given input stream.
-     *
-     * @param in
-     *            The input stream.
-     * @throws IOException
-     *             If an I/O error occurs.
-     */
-    public void decode(DataInputStream in) throws IOException
-    {
-	int len = in.readInt();
-	MeteredInputStream min = new MeteredInputStream(in, len);
-	try (DataInputStream in2 = new DataInputStream(min))
-	{
-	    while (!min.limitReached())
-	    {
-		String name = in2.readUTF();
-		String value = in2.readUTF();
-		put(name, value);
-	    }
+	/**
+	 * Creates a new properties object.
+	 */
+	public Properties() {
+		props = new HashMap<>();
 	}
-    }
 
-    /**
-     * Encodes this set of properties to the given output stream.
-     *
-     * @param out
-     *            The output stream to encode to.
-     * @throws IOException
-     *             If an I/O error occurs.
-     */
-    public void encode(DataOutputStream out) throws IOException
-    {
-	ByteArrayOutputStream buf = new ByteArrayOutputStream();
-	DataOutputStream out2 = new DataOutputStream(buf);
-	for (Iterator<Entry<String, String>> it = props.entrySet()
-		.iterator(); it.hasNext();)
-	{
-	    Entry<String, String> entry = it.next();
-	    out2.writeUTF(entry.getKey());
-	    out2.writeUTF(entry.getValue());
+	private String canonicalize(String key) {
+		return key.toLowerCase();
 	}
-	out.writeInt(buf.size());
-	buf.writeTo(out);
-    }
 
-    /**
-     * Returns the value mapped by the given key, or null if there is no such
-     * mapping.
-     *
-     * @param key
-     */
-    public String get(String key)
-    {
-	if (key == null || key.length() == 0)
-	    return null;
-	return props.get(canonicalize(key));
-    }
+	/**
+	 * Removes all properties from this object.
+	 */
+	public void clear() {
+		props.clear();
+	}
 
-    /**
-     * Adds a new property to this object.
-     *
-     * @param key
-     *            The key, which can neither be null nor empty.
-     * @param value
-     *            The value, which cannot be null.
-     * @return The old value mapped by the key, if any.
-     * @throws IllegalArgumentException
-     *             If either the key or value parameter is null, or if the key
-     *             is empty.
-     */
-    public String put(String key, String value)
-    {
-	if (key == null || value == null || key.length() == 0)
-	    throw new IllegalArgumentException("key nor value can be null");
-	return props.put(canonicalize(key), value);
-    }
+	/**
+	 * Creates a copy of this properties object.
+	 *
+	 * @return The copy.
+	 */
+	@Override
+	public Properties clone() {
+		Properties result = new Properties();
+		result.props.putAll(props);
+		return result;
+	}
 
-    /**
-     * Removes a key and its value from this object.
-     *
-     * @param key
-     *            The key of the property to remove.
-     * @return The old value mapped by the key, if any.
-     */
-    public String remove(String key)
-    {
-	if (key == null || key.length() == 0)
-	    return null;
-	return props.remove(canonicalize(key));
-    }
+	/**
+	 * Tests if this object contains a given property name.
+	 *
+	 * @param key
+	 *            The key to test.
+	 * @return True if this object contains the given key.
+	 */
+	public boolean containsKey(String key) {
+		if (key == null || key.length() == 0)
+			return false;
+		return props.containsKey(canonicalize(key));
+	}
 
-    @Override
-    public String toString()
-    {
-	return props.toString();
-    }
+	/**
+	 * Tests if this object contains a given property value.
+	 *
+	 * @param value
+	 *            The value to test.
+	 * @return True if this object contains the given value.
+	 */
+	public boolean containsValue(String value) {
+		if (value == null)
+			return false;
+		return props.containsValue(value);
+	}
+
+	/**
+	 * Decodes a set of properties from the given input stream.
+	 *
+	 * @param in
+	 *            The input stream.
+	 * @throws IOException
+	 *             If an I/O error occurs.
+	 */
+	public void decode(DataInputStream in) throws IOException {
+		int len = in.readInt();
+		MeteredInputStream min = new MeteredInputStream(in, len);
+		try (DataInputStream in2 = new DataInputStream(min)) {
+			while (!min.limitReached()) {
+				String name = in2.readUTF();
+				String value = in2.readUTF();
+				put(name, value);
+			}
+		}
+	}
+
+	/**
+	 * Encodes this set of properties to the given output stream.
+	 *
+	 * @param out
+	 *            The output stream to encode to.
+	 * @throws IOException
+	 *             If an I/O error occurs.
+	 */
+	public void encode(DataOutputStream out) throws IOException {
+		ByteArrayOutputStream buf = new ByteArrayOutputStream();
+		DataOutputStream out2 = new DataOutputStream(buf);
+		for (Iterator<Entry<String, String>> it = props.entrySet().iterator(); it.hasNext();) {
+			Entry<String, String> entry = it.next();
+			out2.writeUTF(entry.getKey());
+			out2.writeUTF(entry.getValue());
+		}
+		out.writeInt(buf.size());
+		buf.writeTo(out);
+	}
+
+	/**
+	 * Returns the value mapped by the given key, or null if there is no such
+	 * mapping.
+	 *
+	 * @param key
+	 */
+	public String get(String key) {
+		if (key == null || key.length() == 0)
+			return null;
+		return props.get(canonicalize(key));
+	}
+
+	/**
+	 * Adds a new property to this object.
+	 *
+	 * @param key
+	 *            The key, which can neither be null nor empty.
+	 * @param value
+	 *            The value, which cannot be null.
+	 * @return The old value mapped by the key, if any.
+	 * @throws IllegalArgumentException
+	 *             If either the key or value parameter is null, or if the key is
+	 *             empty.
+	 */
+	public String put(String key, String value) {
+		if (key == null || value == null || key.length() == 0)
+			throw new IllegalArgumentException("key nor value can be null");
+		return props.put(canonicalize(key), value);
+	}
+
+	/**
+	 * Removes a key and its value from this object.
+	 *
+	 * @param key
+	 *            The key of the property to remove.
+	 * @return The old value mapped by the key, if any.
+	 */
+	public String remove(String key) {
+		if (key == null || key.length() == 0)
+			return null;
+		return props.remove(canonicalize(key));
+	}
+
+	@Override
+	public String toString() {
+		return props.toString();
+	}
 }

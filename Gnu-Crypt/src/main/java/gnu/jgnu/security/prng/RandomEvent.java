@@ -42,42 +42,36 @@ import java.util.EventObject;
 /**
  * A type for entropy accumulators that will be notified of random events.
  */
-public class RandomEvent extends EventObject
-{
-    /**
-     * 
-     */
-    private static final long serialVersionUID = 2750214083590538430L;
+public class RandomEvent extends EventObject {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 2750214083590538430L;
 
-    private final byte sourceNumber;
+	private final byte sourceNumber;
 
-    private final byte poolNumber;
+	private final byte poolNumber;
 
-    private final byte[] data;
+	private final byte[] data;
 
-    public RandomEvent(Object source, byte sourceNumber, byte poolNumber, byte[] data)
-    {
-	super(source);
-	this.sourceNumber = sourceNumber;
-	this.poolNumber = poolNumber;
-	if (data.length == 0 || data.length > 32)
-	    throw new IllegalArgumentException(
-		    "random events take between 1 and 32 bytes of data");
-	this.data = data.clone();
-    }
+	public RandomEvent(Object source, byte sourceNumber, byte poolNumber, byte[] data) {
+		super(source);
+		this.sourceNumber = sourceNumber;
+		this.poolNumber = poolNumber;
+		if (data.length == 0 || data.length > 32)
+			throw new IllegalArgumentException("random events take between 1 and 32 bytes of data");
+		this.data = data.clone();
+	}
 
-    public byte[] getData()
-    {
-	return data;
-    }
+	public byte[] getData() {
+		return data;
+	}
 
-    public byte getPoolNumber()
-    {
-	return poolNumber;
-    }
+	public byte getPoolNumber() {
+		return poolNumber;
+	}
 
-    public byte getSourceNumber()
-    {
-	return sourceNumber;
-    }
+	public byte getSourceNumber() {
+		return sourceNumber;
+	}
 }

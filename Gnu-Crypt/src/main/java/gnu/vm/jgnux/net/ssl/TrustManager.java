@@ -40,6 +40,5 @@ package gnu.vm.jgnux.net.ssl;
 /**
  * A marker interface for classes that establish the trust of remote hosts.
  */
-public interface TrustManager
-{
+public interface TrustManager {
 }

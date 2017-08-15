@@ -49,54 +49,50 @@ import gnu.vm.jgnu.security.spec.AlgorithmParameterSpec;
  * 
  * @author Mark Benvenuto
  */
-public class RSAKeyGenParameterSpec implements AlgorithmParameterSpec
-{
-    /**
-     * Public Exponent F0 = 3
-     */
-    public static final BigInteger F0 = BigInteger.valueOf(3);
+public class RSAKeyGenParameterSpec implements AlgorithmParameterSpec {
+	/**
+	 * Public Exponent F0 = 3
+	 */
+	public static final BigInteger F0 = BigInteger.valueOf(3);
 
-    /**
-     * Public Exponent F4 = 3
-     */
-    public static final BigInteger F4 = BigInteger.valueOf(65537L);
+	/**
+	 * Public Exponent F4 = 3
+	 */
+	public static final BigInteger F4 = BigInteger.valueOf(65537L);
 
-    private int keysize;
+	private int keysize;
 
-    private BigInteger publicExponent;
+	private BigInteger publicExponent;
 
-    /**
-     * Create a new RSAKeyGenParameterSpec to store the RSA key's keysize and
-     * public exponent
-     * 
-     * @param keysize
-     *            Modulus size of key in bits
-     * @param publicExponent
-     *            - the exponent
-     */
-    public RSAKeyGenParameterSpec(int keysize, BigInteger publicExponent)
-    {
-	this.keysize = keysize;
-	this.publicExponent = publicExponent;
-    }
+	/**
+	 * Create a new RSAKeyGenParameterSpec to store the RSA key's keysize and public
+	 * exponent
+	 * 
+	 * @param keysize
+	 *            Modulus size of key in bits
+	 * @param publicExponent
+	 *            - the exponent
+	 */
+	public RSAKeyGenParameterSpec(int keysize, BigInteger publicExponent) {
+		this.keysize = keysize;
+		this.publicExponent = publicExponent;
+	}
 
-    /**
-     * Return the size of the key.
-     * 
-     * @return the size of the key.
-     */
-    public int getKeysize()
-    {
-	return keysize;
-    }
+	/**
+	 * Return the size of the key.
+	 * 
+	 * @return the size of the key.
+	 */
+	public int getKeysize() {
+		return keysize;
+	}
 
-    /**
-     * Return the public exponent.
-     * 
-     * @return the public exponent.
-     */
-    public BigInteger getPublicExponent()
-    {
-	return publicExponent;
-    }
+	/**
+	 * Return the public exponent.
+	 * 
+	 * @return the public exponent.
+	 */
+	public BigInteger getPublicExponent() {
+		return publicExponent;
+	}
 }

@@ -48,45 +48,37 @@ import gnu.vm.jgnu.security.spec.AlgorithmParameterSpec;
 import gnu.vm.jgnux.crypto.spec.DHGenParameterSpec;
 import gnu.vm.jgnux.crypto.spec.DHParameterSpec;
 
-public class DHKeyPairGeneratorSpi extends KeyPairGeneratorAdapter
-{
-    public DHKeyPairGeneratorSpi()
-    {
-	super(Registry.DH_KPG);
-    }
-
-    @Override
-    public void initialize(AlgorithmParameterSpec params, SecureRandom random) throws InvalidAlgorithmParameterException
-    {
-	HashMap<String, Object> attributes = new HashMap<>();
-	if (params != null)
-	{
-	    if (!(params instanceof DHGenParameterSpec)
-		    && !(params instanceof DHParameterSpec))
-		throw new InvalidAlgorithmParameterException("params");
-
-	    attributes.put(GnuDHKeyPairGenerator.DH_PARAMETERS, params);
+public class DHKeyPairGeneratorSpi extends KeyPairGeneratorAdapter {
+	public DHKeyPairGeneratorSpi() {
+		super(Registry.DH_KPG);
 	}
 
-	if (random != null)
-	    attributes.put(GnuDHKeyPairGenerator.SOURCE_OF_RANDOMNESS, random);
+	@Override
+	public void initialize(AlgorithmParameterSpec params, SecureRandom random)
+			throws InvalidAlgorithmParameterException {
+		HashMap<String, Object> attributes = new HashMap<>();
+		if (params != null) {
+			if (!(params instanceof DHGenParameterSpec) && !(params instanceof DHParameterSpec))
+				throw new InvalidAlgorithmParameterException("params");
 
-	attributes.put(GnuDHKeyPairGenerator.PREFERRED_ENCODING_FORMAT,
-		Integer.valueOf(Registry.ASN1_ENCODING_ID));
-	adaptee.setup(attributes);
-    }
+			attributes.put(GnuDHKeyPairGenerator.DH_PARAMETERS, params);
+		}
 
-    @Override
-    public void initialize(int keysize, SecureRandom random)
-    {
-	HashMap<String, Object> attributes = new HashMap<>();
-	attributes.put(GnuDHKeyPairGenerator.PRIME_SIZE,
-		Integer.valueOf(keysize));
-	if (random != null)
-	    attributes.put(GnuDHKeyPairGenerator.SOURCE_OF_RANDOMNESS, random);
+		if (random != null)
+			attributes.put(GnuDHKeyPairGenerator.SOURCE_OF_RANDOMNESS, random);
 
-	attributes.put(GnuDHKeyPairGenerator.PREFERRED_ENCODING_FORMAT,
-		Integer.valueOf(Registry.ASN1_ENCODING_ID));
-	adaptee.setup(attributes);
-    }
+		attributes.put(GnuDHKeyPairGenerator.PREFERRED_ENCODING_FORMAT, Integer.valueOf(Registry.ASN1_ENCODING_ID));
+		adaptee.setup(attributes);
+	}
+
+	@Override
+	public void initialize(int keysize, SecureRandom random) {
+		HashMap<String, Object> attributes = new HashMap<>();
+		attributes.put(GnuDHKeyPairGenerator.PRIME_SIZE, Integer.valueOf(keysize));
+		if (random != null)
+			attributes.put(GnuDHKeyPairGenerator.SOURCE_OF_RANDOMNESS, random);
+
+		attributes.put(GnuDHKeyPairGenerator.PREFERRED_ENCODING_FORMAT, Integer.valueOf(Registry.ASN1_ENCODING_ID));
+		adaptee.setup(attributes);
+	}
 }

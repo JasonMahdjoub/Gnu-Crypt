@@ -50,50 +50,48 @@ import gnu.vm.jgnu.security.spec.AlgorithmParameterSpec;
  * @since JDK 1.2
  * @author Mark Benvenuto
  */
-public abstract class AlgorithmParameterGeneratorSpi
-{
+public abstract class AlgorithmParameterGeneratorSpi {
 
-    /**
-     * Constructs a new AlgorithmParameterGeneratorSpi
-     */
-    public AlgorithmParameterGeneratorSpi()
-    {
-    }
+	/**
+	 * Constructs a new AlgorithmParameterGeneratorSpi
+	 */
+	public AlgorithmParameterGeneratorSpi() {
+	}
 
-    /**
-     * Generate a new set of AlgorithmParameters.
-     * 
-     * @returns a new set of algorithm parameters
-     */
-    protected abstract AlgorithmParameters engineGenerateParameters();
+	/**
+	 * Generate a new set of AlgorithmParameters.
+	 * 
+	 * @returns a new set of algorithm parameters
+	 */
+	protected abstract AlgorithmParameters engineGenerateParameters();
 
-    /**
-     * Initializes the parameter generator with the specified
-     * AlgorithmParameterSpec and SecureRandom classes.
-     * 
-     * If genParamSpec is an invalid AlgorithmParameterSpec for this
-     * AlgorithmParameterGeneratorSpi then it throws
-     * InvalidAlgorithmParameterException
-     * 
-     * @param genParamSpec
-     *            the AlgorithmParameterSpec class to use
-     * @param random
-     *            the SecureRandom class to use for randomness
-     * 
-     * @throws InvalidAlgorithmParameterException
-     *             genParamSpec is invalid
-     */
-    protected abstract void engineInit(AlgorithmParameterSpec genParamSpec, SecureRandom random) throws InvalidAlgorithmParameterException;
+	/**
+	 * Initializes the parameter generator with the specified AlgorithmParameterSpec
+	 * and SecureRandom classes.
+	 * 
+	 * If genParamSpec is an invalid AlgorithmParameterSpec for this
+	 * AlgorithmParameterGeneratorSpi then it throws
+	 * InvalidAlgorithmParameterException
+	 * 
+	 * @param genParamSpec
+	 *            the AlgorithmParameterSpec class to use
+	 * @param random
+	 *            the SecureRandom class to use for randomness
+	 * 
+	 * @throws InvalidAlgorithmParameterException
+	 *             genParamSpec is invalid
+	 */
+	protected abstract void engineInit(AlgorithmParameterSpec genParamSpec, SecureRandom random)
+			throws InvalidAlgorithmParameterException;
 
-    /**
-     * Initializes the parameter generator with the specified size and
-     * SecureRandom
-     * 
-     * @param size
-     *            the size( in number of bits)
-     * @param random
-     *            the SecureRandom class to use for randomness
-     */
-    protected abstract void engineInit(int size, SecureRandom random);
+	/**
+	 * Initializes the parameter generator with the specified size and SecureRandom
+	 * 
+	 * @param size
+	 *            the size( in number of bits)
+	 * @param random
+	 *            the SecureRandom class to use for randomness
+	 */
+	protected abstract void engineInit(int size, SecureRandom random);
 
 }

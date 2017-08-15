@@ -47,47 +47,41 @@ import javax.net.SocketFactory;
 /**
  * A trivial client socket factory.
  */
-class VanillaSocketFactory extends SocketFactory
-{
+class VanillaSocketFactory extends SocketFactory {
 
-    // Constructor.
-    // ------------------------------------------------------------------
+	// Constructor.
+	// ------------------------------------------------------------------
 
-    VanillaSocketFactory()
-    {
-	super();
-    }
+	VanillaSocketFactory() {
+		super();
+	}
 
-    // Instance methods.
-    // ------------------------------------------------------------------
+	// Instance methods.
+	// ------------------------------------------------------------------
 
-    @Override
-    public Socket createSocket()
-    {
-	return new Socket();
-    }
+	@Override
+	public Socket createSocket() {
+		return new Socket();
+	}
 
-    @Override
-    public Socket createSocket(InetAddress address, int port) throws IOException
-    {
-	return new Socket(address, port);
-    }
+	@Override
+	public Socket createSocket(InetAddress address, int port) throws IOException {
+		return new Socket(address, port);
+	}
 
-    @Override
-    public Socket createSocket(InetAddress address, int port, InetAddress localAddr, int localPort) throws IOException
-    {
-	return new Socket(address, port, localAddr, localPort);
-    }
+	@Override
+	public Socket createSocket(InetAddress address, int port, InetAddress localAddr, int localPort) throws IOException {
+		return new Socket(address, port, localAddr, localPort);
+	}
 
-    @Override
-    public Socket createSocket(String host, int port) throws IOException, UnknownHostException
-    {
-	return new Socket(host, port);
-    }
+	@Override
+	public Socket createSocket(String host, int port) throws IOException, UnknownHostException {
+		return new Socket(host, port);
+	}
 
-    @Override
-    public Socket createSocket(String host, int port, InetAddress localAddr, int localPort) throws IOException, UnknownHostException
-    {
-	return new Socket(host, port, localAddr, localPort);
-    }
+	@Override
+	public Socket createSocket(String host, int port, InetAddress localAddr, int localPort)
+			throws IOException, UnknownHostException {
+		return new Socket(host, port, localAddr, localPort);
+	}
 }

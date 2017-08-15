@@ -82,250 +82,213 @@ import gnu.jgnu.security.der.DERValue;
  * @since 1.4
  * @see java.security.spec.PKCS8EncodedKeySpec
  */
-public class EncryptedPrivateKeyInfo
-{
+public class EncryptedPrivateKeyInfo {
 
-    // Fields.
-    // ------------------------------------------------------------------------
+	// Fields.
+	// ------------------------------------------------------------------------
 
-    /**
-     * Return the OID for the given cipher name.
-     *
-     * @param str
-     *            The string.
-     * @throws NoSuchAlgorithmException
-     *             If the OID is not known.
-     */
-    private static OID getOid(final String str) throws NoSuchAlgorithmException
-    {
-	if (str.equalsIgnoreCase("DSA"))
-	{
-	    return new OID("1.2.840.10040.4.3");
+	/**
+	 * Return the OID for the given cipher name.
+	 *
+	 * @param str
+	 *            The string.
+	 * @throws NoSuchAlgorithmException
+	 *             If the OID is not known.
+	 */
+	private static OID getOid(final String str) throws NoSuchAlgorithmException {
+		if (str.equalsIgnoreCase("DSA")) {
+			return new OID("1.2.840.10040.4.3");
+		}
+		// FIXME add more
+
+		try {
+			return new OID(str);
+		} catch (Throwable t) {
+		}
+		throw new NoSuchAlgorithmException("cannot determine OID for '" + str + "'");
 	}
-	// FIXME add more
 
-	try
-	{
-	    return new OID(str);
+	/** The encrypted data. */
+	private byte[] encryptedData;
+
+	/** The encoded, encrypted key. */
+	private byte[] encoded;
+
+	/** The OID of the encryption algorithm. */
+	private OID algOid;
+
+	/** The encryption algorithm name. */
+	private String algName;
+
+	/** The encryption algorithm's parameters. */
+	private AlgorithmParameters params;
+
+	// Constructors.
+	// ------------------------------------------------------------------------
+
+	/** The encoded ASN.1 algorithm parameters. */
+	private byte[] encodedParams;
+
+	/**
+	 * Create a new <code>EncryptedPrivateKeyInfo</code> object from raw encrypted
+	 * data and the parameters used for encryption.
+	 *
+	 * <p>
+	 * The <code>encryptedData</code> array is cloned.
+	 *
+	 * @param params
+	 *            The encryption algorithm parameters.
+	 * @param encryptedData
+	 *            The encrypted key data.
+	 * @throws java.lang.IllegalArgumentException
+	 *             If the <code>encryptedData</code> array is empty (zero-length).
+	 * @throws java.security.NoSuchAlgorithmException
+	 *             If the algorithm specified in the parameters is not supported.
+	 * @throws java.lang.NullPointerException
+	 *             If <code>encryptedData</code> is null.
+	 */
+	public EncryptedPrivateKeyInfo(AlgorithmParameters params, byte[] encryptedData)
+			throws IllegalArgumentException, NoSuchAlgorithmException {
+		if (encryptedData.length == 0) {
+			throw new IllegalArgumentException("0-length encryptedData");
+		}
+		this.params = params;
+		algName = params.getAlgorithm();
+		algOid = getOid(algName);
+		this.encryptedData = encryptedData.clone();
 	}
-	catch (Throwable t)
-	{
+
+	/**
+	 * Create a new <code>EncryptedPrivateKeyInfo</code> from an encoded
+	 * representation, parsing the ASN.1 sequence.
+	 *
+	 * @param encoded
+	 *            The encoded info.
+	 * @throws java.io.IOException
+	 *             If parsing the encoded data fails.
+	 * @throws java.lang.NullPointerException
+	 *             If <code>encoded</code> is null.
+	 */
+	public EncryptedPrivateKeyInfo(byte[] encoded) throws IOException {
+		this.encoded = encoded.clone();
+		decode();
 	}
-	throw new NoSuchAlgorithmException(
-		"cannot determine OID for '" + str + "'");
-    }
 
-    /** The encrypted data. */
-    private byte[] encryptedData;
-
-    /** The encoded, encrypted key. */
-    private byte[] encoded;
-
-    /** The OID of the encryption algorithm. */
-    private OID algOid;
-
-    /** The encryption algorithm name. */
-    private String algName;
-
-    /** The encryption algorithm's parameters. */
-    private AlgorithmParameters params;
-
-    // Constructors.
-    // ------------------------------------------------------------------------
-
-    /** The encoded ASN.1 algorithm parameters. */
-    private byte[] encodedParams;
-
-    /**
-     * Create a new <code>EncryptedPrivateKeyInfo</code> object from raw
-     * encrypted data and the parameters used for encryption.
-     *
-     * <p>
-     * The <code>encryptedData</code> array is cloned.
-     *
-     * @param params
-     *            The encryption algorithm parameters.
-     * @param encryptedData
-     *            The encrypted key data.
-     * @throws java.lang.IllegalArgumentException
-     *             If the <code>encryptedData</code> array is empty
-     *             (zero-length).
-     * @throws java.security.NoSuchAlgorithmException
-     *             If the algorithm specified in the parameters is not
-     *             supported.
-     * @throws java.lang.NullPointerException
-     *             If <code>encryptedData</code> is null.
-     */
-    public EncryptedPrivateKeyInfo(AlgorithmParameters params, byte[] encryptedData) throws IllegalArgumentException, NoSuchAlgorithmException
-    {
-	if (encryptedData.length == 0)
-	{
-	    throw new IllegalArgumentException("0-length encryptedData");
+	/**
+	 * Create a new <code>EncryptedPrivateKeyInfo</code> from the cipher name and
+	 * the encrytpedData.
+	 *
+	 * <p>
+	 * The <code>encryptedData</code> array is cloned.
+	 *
+	 * @param algName
+	 *            The name of the algorithm (as an object identifier).
+	 * @param encryptedData
+	 *            The encrypted key data.
+	 * @throws java.lang.IllegalArgumentException
+	 *             If the <code>encryptedData</code> array is empty (zero-length).
+	 * @throws java.security.NoSuchAlgorithmException
+	 *             If algName is not the name of a supported algorithm.
+	 * @throws java.lang.NullPointerException
+	 *             If <code>encryptedData</code> is null.
+	 */
+	public EncryptedPrivateKeyInfo(String algName, byte[] encryptedData)
+			throws IllegalArgumentException, NoSuchAlgorithmException, NullPointerException {
+		if (encryptedData.length == 0) {
+			throw new IllegalArgumentException("0-length encryptedData");
+		}
+		this.algName = algName.toString(); // do NP check
+		this.algOid = getOid(algName);
+		this.encryptedData = encryptedData.clone();
 	}
-	this.params = params;
-	algName = params.getAlgorithm();
-	algOid = getOid(algName);
-	this.encryptedData = encryptedData.clone();
-    }
 
-    /**
-     * Create a new <code>EncryptedPrivateKeyInfo</code> from an encoded
-     * representation, parsing the ASN.1 sequence.
-     *
-     * @param encoded
-     *            The encoded info.
-     * @throws java.io.IOException
-     *             If parsing the encoded data fails.
-     * @throws java.lang.NullPointerException
-     *             If <code>encoded</code> is null.
-     */
-    public EncryptedPrivateKeyInfo(byte[] encoded) throws IOException
-    {
-	this.encoded = encoded.clone();
-	decode();
-    }
+	// Instance methods.
+	// ------------------------------------------------------------------------
 
-    /**
-     * Create a new <code>EncryptedPrivateKeyInfo</code> from the cipher name
-     * and the encrytpedData.
-     *
-     * <p>
-     * The <code>encryptedData</code> array is cloned.
-     *
-     * @param algName
-     *            The name of the algorithm (as an object identifier).
-     * @param encryptedData
-     *            The encrypted key data.
-     * @throws java.lang.IllegalArgumentException
-     *             If the <code>encryptedData</code> array is empty
-     *             (zero-length).
-     * @throws java.security.NoSuchAlgorithmException
-     *             If algName is not the name of a supported algorithm.
-     * @throws java.lang.NullPointerException
-     *             If <code>encryptedData</code> is null.
-     */
-    public EncryptedPrivateKeyInfo(String algName, byte[] encryptedData) throws IllegalArgumentException, NoSuchAlgorithmException, NullPointerException
-    {
-	if (encryptedData.length == 0)
-	{
-	    throw new IllegalArgumentException("0-length encryptedData");
+	private void decode() throws IOException {
+		DERReader der = new DERReader(encoded);
+		DERValue val = der.read();
+		if (val.getTag() != DER.SEQUENCE)
+			throw new IOException("malformed EncryptedPrivateKeyInfo");
+		val = der.read();
+		if (val.getTag() != DER.SEQUENCE)
+			throw new IOException("malformed AlgorithmIdentifier");
+		int algpLen = val.getLength();
+		DERValue oid = der.read();
+		if (oid.getTag() != DER.OBJECT_IDENTIFIER)
+			throw new IOException("malformed AlgorithmIdentifier");
+		algOid = (OID) oid.getValue();
+		if (algpLen == 0) {
+			val = der.read();
+			if (val.getTag() != 0) {
+				encodedParams = val.getEncoded();
+				der.read();
+			}
+		} else if (oid.getEncodedLength() < val.getLength()) {
+			val = der.read();
+			encodedParams = val.getEncoded();
+		}
+		val = der.read();
+		if (val.getTag() != DER.OCTET_STRING)
+			throw new IOException("malformed AlgorithmIdentifier");
+		encryptedData = (byte[]) val.getValue();
 	}
-	this.algName = algName.toString(); // do NP check
-	this.algOid = getOid(algName);
-	this.encryptedData = encryptedData.clone();
-    }
 
-    // Instance methods.
-    // ------------------------------------------------------------------------
-
-    private void decode() throws IOException
-    {
-	DERReader der = new DERReader(encoded);
-	DERValue val = der.read();
-	if (val.getTag() != DER.SEQUENCE)
-	    throw new IOException("malformed EncryptedPrivateKeyInfo");
-	val = der.read();
-	if (val.getTag() != DER.SEQUENCE)
-	    throw new IOException("malformed AlgorithmIdentifier");
-	int algpLen = val.getLength();
-	DERValue oid = der.read();
-	if (oid.getTag() != DER.OBJECT_IDENTIFIER)
-	    throw new IOException("malformed AlgorithmIdentifier");
-	algOid = (OID) oid.getValue();
-	if (algpLen == 0)
-	{
-	    val = der.read();
-	    if (val.getTag() != 0)
-	    {
-		encodedParams = val.getEncoded();
-		der.read();
-	    }
+	private void encode() throws IOException {
+		List<DERValue> algId = new ArrayList<>(2);
+		algId.add(new DERValue(DER.OBJECT_IDENTIFIER, algOid));
+		getAlgParameters();
+		if (params != null) {
+			algId.add(DERReader.read(params.getEncoded()));
+		} else {
+			algId.add(new DERValue(DER.NULL, null));
+		}
+		List<DERValue> epki = new ArrayList<>(2);
+		epki.add(new DERValue(DER.CONSTRUCTED | DER.SEQUENCE, algId));
+		epki.add(new DERValue(DER.OCTET_STRING, encryptedData));
+		encoded = new DERValue(DER.CONSTRUCTED | DER.SEQUENCE, epki).getEncoded();
 	}
-	else if (oid.getEncodedLength() < val.getLength())
-	{
-	    val = der.read();
-	    encodedParams = val.getEncoded();
+
+	/**
+	 * Return the name of the cipher used to encrypt this key.
+	 *
+	 * @return The algorithm name.
+	 */
+	public String getAlgName() {
+		return algOid.toString();
 	}
-	val = der.read();
-	if (val.getTag() != DER.OCTET_STRING)
-	    throw new IOException("malformed AlgorithmIdentifier");
-	encryptedData = (byte[]) val.getValue();
-    }
 
-    private void encode() throws IOException
-    {
-	List<DERValue> algId = new ArrayList<>(2);
-	algId.add(new DERValue(DER.OBJECT_IDENTIFIER, algOid));
-	getAlgParameters();
-	if (params != null)
-	{
-	    algId.add(DERReader.read(params.getEncoded()));
+	public AlgorithmParameters getAlgParameters() {
+		if (params == null && encodedParams != null) {
+			try {
+				params = AlgorithmParameters.getInstance(getAlgName());
+				params.init(encodedParams);
+			} catch (NoSuchAlgorithmException ignore) {
+				// FIXME throw exception?
+			} catch (IOException ignore) {
+			}
+		}
+		return params;
 	}
-	else
-	{
-	    algId.add(new DERValue(DER.NULL, null));
+
+	public synchronized byte[] getEncoded() throws IOException {
+		if (encoded == null)
+			encode();
+		return encoded.clone();
 	}
-	List<DERValue> epki = new ArrayList<>(2);
-	epki.add(new DERValue(DER.CONSTRUCTED | DER.SEQUENCE, algId));
-	epki.add(new DERValue(DER.OCTET_STRING, encryptedData));
-	encoded = new DERValue(DER.CONSTRUCTED | DER.SEQUENCE, epki)
-		.getEncoded();
-    }
 
-    /**
-     * Return the name of the cipher used to encrypt this key.
-     *
-     * @return The algorithm name.
-     */
-    public String getAlgName()
-    {
-	return algOid.toString();
-    }
+	// Own methods.
+	// -------------------------------------------------------------------------
 
-    public AlgorithmParameters getAlgParameters()
-    {
-	if (params == null && encodedParams != null)
-	{
-	    try
-	    {
-		params = AlgorithmParameters.getInstance(getAlgName());
-		params.init(encodedParams);
-	    }
-	    catch (NoSuchAlgorithmException ignore)
-	    {
-		// FIXME throw exception?
-	    }
-	    catch (IOException ignore)
-	    {
-	    }
+	public byte[] getEncryptedData() {
+		return encryptedData;
 	}
-	return params;
-    }
 
-    public synchronized byte[] getEncoded() throws IOException
-    {
-	if (encoded == null)
-	    encode();
-	return encoded.clone();
-    }
-
-    // Own methods.
-    // -------------------------------------------------------------------------
-
-    public byte[] getEncryptedData()
-    {
-	return encryptedData;
-    }
-
-    public PKCS8EncodedKeySpec getKeySpec(Cipher cipher) throws InvalidKeySpecException
-    {
-	try
-	{
-	    return new PKCS8EncodedKeySpec(cipher.doFinal(encryptedData));
+	public PKCS8EncodedKeySpec getKeySpec(Cipher cipher) throws InvalidKeySpecException {
+		try {
+			return new PKCS8EncodedKeySpec(cipher.doFinal(encryptedData));
+		} catch (Exception x) {
+			throw new InvalidKeySpecException(x.toString());
+		}
 	}
-	catch (Exception x)
-	{
-	    throw new InvalidKeySpecException(x.toString());
-	}
-    }
 }

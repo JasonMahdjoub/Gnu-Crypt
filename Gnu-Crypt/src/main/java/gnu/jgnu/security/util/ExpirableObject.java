@@ -59,96 +59,85 @@ import javax.security.auth.Destroyable;
  *
  * @see Destroyable
  */
-public abstract class ExpirableObject implements Destroyable
-{
-    /**
-     * The task that destroys the target when the timeout elapses.
-     */
-    private final class Destroyer extends TimerTask
-    {
-	private final ExpirableObject target;
+public abstract class ExpirableObject implements Destroyable {
+	/**
+	 * The task that destroys the target when the timeout elapses.
+	 */
+	private final class Destroyer extends TimerTask {
+		private final ExpirableObject target;
 
-	Destroyer(final ExpirableObject target)
-	{
-	    super();
-	    this.target = target;
+		Destroyer(final ExpirableObject target) {
+			super();
+			this.target = target;
+		}
+
+		@Override
+		public void run() {
+			try {
+				if (!target.isDestroyed())
+					target.doDestroy();
+			} catch (DestroyFailedException dfe) {
+			}
+		}
 	}
 
+	/**
+	 * The default timeout, used in the default constructor.
+	 */
+	public static final long DEFAULT_TIMEOUT = 3600000L;
+
+	/**
+	 * The timer that expires instances.
+	 */
+	private static final Timer EXPIRER = new Timer(true);
+
+	/**
+	 * A reference to the task that will destroy this object when the timeout
+	 * expires.
+	 */
+	private final Destroyer destroyer;
+
+	/**
+	 * Create a new expirable object that will expire after one hour.
+	 */
+	protected ExpirableObject() {
+		this(DEFAULT_TIMEOUT);
+	}
+
+	/**
+	 * Create a new expirable object that will expire after the specified timeout.
+	 *
+	 * @param delay
+	 *            The delay before expiration.
+	 * @throws IllegalArgumentException
+	 *             If <i>delay</i> is negative, or if
+	 *             <code>delay + System.currentTimeMillis()</code> is negative.
+	 */
+	protected ExpirableObject(final long delay) {
+		destroyer = new Destroyer(this);
+		EXPIRER.schedule(destroyer, delay);
+	}
+
+	/**
+	 * Destroys this object. This method calls {@link #doDestroy}, then, if no
+	 * exception is thrown, cancels the task that would destroy this object when the
+	 * timeout is reached.
+	 *
+	 * @throws DestroyFailedException
+	 *             If this operation fails.
+	 */
 	@Override
-	public void run()
-	{
-	    try
-	    {
-		if (!target.isDestroyed())
-		    target.doDestroy();
-	    }
-	    catch (DestroyFailedException dfe)
-	    {
-	    }
+	public final void destroy() throws DestroyFailedException {
+		doDestroy();
+		destroyer.cancel();
 	}
-    }
 
-    /**
-     * The default timeout, used in the default constructor.
-     */
-    public static final long DEFAULT_TIMEOUT = 3600000L;
-
-    /**
-     * The timer that expires instances.
-     */
-    private static final Timer EXPIRER = new Timer(true);
-
-    /**
-     * A reference to the task that will destroy this object when the timeout
-     * expires.
-     */
-    private final Destroyer destroyer;
-
-    /**
-     * Create a new expirable object that will expire after one hour.
-     */
-    protected ExpirableObject()
-    {
-	this(DEFAULT_TIMEOUT);
-    }
-
-    /**
-     * Create a new expirable object that will expire after the specified
-     * timeout.
-     *
-     * @param delay
-     *            The delay before expiration.
-     * @throws IllegalArgumentException
-     *             If <i>delay</i> is negative, or if
-     *             <code>delay + System.currentTimeMillis()</code> is negative.
-     */
-    protected ExpirableObject(final long delay)
-    {
-	destroyer = new Destroyer(this);
-	EXPIRER.schedule(destroyer, delay);
-    }
-
-    /**
-     * Destroys this object. This method calls {@link #doDestroy}, then, if no
-     * exception is thrown, cancels the task that would destroy this object when
-     * the timeout is reached.
-     *
-     * @throws DestroyFailedException
-     *             If this operation fails.
-     */
-    @Override
-    public final void destroy() throws DestroyFailedException
-    {
-	doDestroy();
-	destroyer.cancel();
-    }
-
-    /**
-     * Subclasses must implement this method instead of the
-     * {@link Destroyable#destroy()} method.
-     *
-     * @throws DestroyFailedException
-     *             If this operation fails.
-     */
-    protected abstract void doDestroy() throws DestroyFailedException;
+	/**
+	 * Subclasses must implement this method instead of the
+	 * {@link Destroyable#destroy()} method.
+	 *
+	 * @throws DestroyFailedException
+	 *             If this operation fails.
+	 */
+	protected abstract void doDestroy() throws DestroyFailedException;
 }

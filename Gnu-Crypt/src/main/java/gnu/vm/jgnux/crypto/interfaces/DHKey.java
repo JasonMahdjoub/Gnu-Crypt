@@ -48,13 +48,12 @@ import gnu.vm.jgnux.crypto.spec.DHParameterSpec;
  * @author Casey Marshall (csm@gnu.org)
  * @since 1.4
  */
-public interface DHKey
-{
-    /**
-     * Returns the Diffie-Hellman parameters for this key, which includes the
-     * generator and the prime.
-     *
-     * @return The Diffie-Hellman parameters.
-     */
-    DHParameterSpec getParams();
+public interface DHKey {
+	/**
+	 * Returns the Diffie-Hellman parameters for this key, which includes the
+	 * generator and the prime.
+	 *
+	 * @return The Diffie-Hellman parameters.
+	 */
+	DHParameterSpec getParams();
 }

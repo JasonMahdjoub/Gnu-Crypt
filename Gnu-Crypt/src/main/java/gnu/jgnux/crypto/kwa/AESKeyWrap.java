@@ -58,117 +58,105 @@ import gnu.vm.jgnu.security.InvalidKeyException;
  * Processing</a>.</li>
  * </ol>
  */
-public class AESKeyWrap extends BaseKeyWrappingAlgorithm
-{
-    private static final byte[] DEFAULT_IV = new byte[] { (byte) 0xA6,
-	    (byte) 0xA6, (byte) 0xA6, (byte) 0xA6, (byte) 0xA6, (byte) 0xA6,
-	    (byte) 0xA6, (byte) 0xA6 };
+public class AESKeyWrap extends BaseKeyWrappingAlgorithm {
+	private static final byte[] DEFAULT_IV = new byte[] { (byte) 0xA6, (byte) 0xA6, (byte) 0xA6, (byte) 0xA6,
+			(byte) 0xA6, (byte) 0xA6, (byte) 0xA6, (byte) 0xA6 };
 
-    private Rijndael aes;
+	private Rijndael aes;
 
-    private byte[] iv;
+	private byte[] iv;
 
-    public AESKeyWrap()
-    {
-	super(Registry.AES_KWA);
+	public AESKeyWrap() {
+		super(Registry.AES_KWA);
 
-	aes = new Rijndael();
-    }
+		aes = new Rijndael();
+	}
 
-    @Override
-    protected void engineInit(Map<Object, Object> attributes) throws InvalidKeyException
-    {
-	Map<Object, Object> cipherAttributes = new HashMap<>();
-	cipherAttributes.put(IBlockCipher.CIPHER_BLOCK_SIZE,
-		Integer.valueOf(16));
-	cipherAttributes.put(IBlockCipher.KEY_MATERIAL,
-		attributes.get(KEY_ENCRYPTION_KEY_MATERIAL));
-	aes.reset();
-	aes.init(cipherAttributes);
-	byte[] initialValue = (byte[]) attributes.get(INITIAL_VALUE);
-	iv = initialValue == null ? DEFAULT_IV : (byte[]) initialValue.clone();
-    }
+	@Override
+	protected void engineInit(Map<Object, Object> attributes) throws InvalidKeyException {
+		Map<Object, Object> cipherAttributes = new HashMap<>();
+		cipherAttributes.put(IBlockCipher.CIPHER_BLOCK_SIZE, Integer.valueOf(16));
+		cipherAttributes.put(IBlockCipher.KEY_MATERIAL, attributes.get(KEY_ENCRYPTION_KEY_MATERIAL));
+		aes.reset();
+		aes.init(cipherAttributes);
+		byte[] initialValue = (byte[]) attributes.get(INITIAL_VALUE);
+		iv = initialValue == null ? DEFAULT_IV : (byte[]) initialValue.clone();
+	}
 
-    @Override
-    protected byte[] engineUnwrap(byte[] in, int inOffset, int length) throws KeyUnwrappingException
-    {
-	// TODO: handle input length which is not a multiple of 8 as suggested
-	// by
-	// section 2.2.3.2 of RFC-3394
-	if (length % 8 != 0)
-	    throw new IllegalArgumentException(
-		    "Input length MUST be a multiple of 8");
-	// output is always one block shorter than input
-	byte[] result = new byte[length - 8];
+	@Override
+	protected byte[] engineUnwrap(byte[] in, int inOffset, int length) throws KeyUnwrappingException {
+		// TODO: handle input length which is not a multiple of 8 as suggested
+		// by
+		// section 2.2.3.2 of RFC-3394
+		if (length % 8 != 0)
+			throw new IllegalArgumentException("Input length MUST be a multiple of 8");
+		// output is always one block shorter than input
+		byte[] result = new byte[length - 8];
 
-	// 1. init variables: we'll use out buffer for our R work buffer
-	byte[] A = new byte[8];
-	System.arraycopy(in, inOffset, A, 0, 8);
-	System.arraycopy(in, inOffset + 8, result, 0, result.length);
-	byte[] B = new byte[2 * 8];
-	// 2. compute intermediate values
-	int n = length / 8 - 1;
-	long t;
-	for (int j = 5; j >= 0; j--)
-	    for (int i = n; i >= 1; i--)
-	    {
-		t = (n * j) + i;
-		B[0] = (byte) (A[0] ^ (t >>> 56));
-		B[1] = (byte) (A[1] ^ (t >>> 48));
-		B[2] = (byte) (A[2] ^ (t >>> 40));
-		B[3] = (byte) (A[3] ^ (t >>> 32));
-		B[4] = (byte) (A[4] ^ (t >>> 24));
-		B[5] = (byte) (A[5] ^ (t >>> 16));
-		B[6] = (byte) (A[6] ^ (t >>> 8));
-		B[7] = (byte) (A[7] ^ t);
-		System.arraycopy(result, (i - 1) * 8, B, 8, 8);
-		aes.decryptBlock(B, 0, B, 0);
-		System.arraycopy(B, 0, A, 0, 8);
-		System.arraycopy(B, 8, result, (i - 1) * 8, 8);
-	    }
-	if (!Arrays.equals(A, iv))
-	    throw new KeyUnwrappingException();
+		// 1. init variables: we'll use out buffer for our R work buffer
+		byte[] A = new byte[8];
+		System.arraycopy(in, inOffset, A, 0, 8);
+		System.arraycopy(in, inOffset + 8, result, 0, result.length);
+		byte[] B = new byte[2 * 8];
+		// 2. compute intermediate values
+		int n = length / 8 - 1;
+		long t;
+		for (int j = 5; j >= 0; j--)
+			for (int i = n; i >= 1; i--) {
+				t = (n * j) + i;
+				B[0] = (byte) (A[0] ^ (t >>> 56));
+				B[1] = (byte) (A[1] ^ (t >>> 48));
+				B[2] = (byte) (A[2] ^ (t >>> 40));
+				B[3] = (byte) (A[3] ^ (t >>> 32));
+				B[4] = (byte) (A[4] ^ (t >>> 24));
+				B[5] = (byte) (A[5] ^ (t >>> 16));
+				B[6] = (byte) (A[6] ^ (t >>> 8));
+				B[7] = (byte) (A[7] ^ t);
+				System.arraycopy(result, (i - 1) * 8, B, 8, 8);
+				aes.decryptBlock(B, 0, B, 0);
+				System.arraycopy(B, 0, A, 0, 8);
+				System.arraycopy(B, 8, result, (i - 1) * 8, 8);
+			}
+		if (!Arrays.equals(A, iv))
+			throw new KeyUnwrappingException();
 
-	return result;
-    }
+		return result;
+	}
 
-    @Override
-    protected byte[] engineWrap(byte[] in, int inOffset, int length)
-    {
-	// TODO: handle input length which is not a multiple of 8 as suggested
-	// by
-	// section 2.2.3.2 of RFC-3394
-	if (length % 8 != 0)
-	    throw new IllegalArgumentException(
-		    "Input length MUST be a multiple of 8");
-	int n = length / 8;
-	// output is always one block larger than input
-	byte[] result = new byte[length + 8];
+	@Override
+	protected byte[] engineWrap(byte[] in, int inOffset, int length) {
+		// TODO: handle input length which is not a multiple of 8 as suggested
+		// by
+		// section 2.2.3.2 of RFC-3394
+		if (length % 8 != 0)
+			throw new IllegalArgumentException("Input length MUST be a multiple of 8");
+		int n = length / 8;
+		// output is always one block larger than input
+		byte[] result = new byte[length + 8];
 
-	// 1. init variables: we'll use out buffer for our work buffer;
-	// A will be the first block in out, while R will be the rest
-	System.arraycopy(iv, 0, result, 0, 8);
-	System.arraycopy(in, inOffset, result, 8, length);
-	byte[] B = new byte[2 * 8];
-	// 2. compute intermediate values
-	long t;
-	for (int j = 0; j < 6; j++)
-	    for (int i = 1; i <= n; i++)
-	    {
-		System.arraycopy(result, 0, B, 0, 8);
-		System.arraycopy(result, i * 8, B, 8, 8);
-		aes.encryptBlock(B, 0, B, 0);
-		t = (n * j) + i;
-		result[0] = (byte) (B[0] ^ (t >>> 56));
-		result[1] = (byte) (B[1] ^ (t >>> 48));
-		result[2] = (byte) (B[2] ^ (t >>> 40));
-		result[3] = (byte) (B[3] ^ (t >>> 32));
-		result[4] = (byte) (B[4] ^ (t >>> 24));
-		result[5] = (byte) (B[5] ^ (t >>> 16));
-		result[6] = (byte) (B[6] ^ (t >>> 8));
-		result[7] = (byte) (B[7] ^ t);
-		System.arraycopy(B, 8, result, i * 8, 8);
-	    }
-	return result;
-    }
+		// 1. init variables: we'll use out buffer for our work buffer;
+		// A will be the first block in out, while R will be the rest
+		System.arraycopy(iv, 0, result, 0, 8);
+		System.arraycopy(in, inOffset, result, 8, length);
+		byte[] B = new byte[2 * 8];
+		// 2. compute intermediate values
+		long t;
+		for (int j = 0; j < 6; j++)
+			for (int i = 1; i <= n; i++) {
+				System.arraycopy(result, 0, B, 0, 8);
+				System.arraycopy(result, i * 8, B, 8, 8);
+				aes.encryptBlock(B, 0, B, 0);
+				t = (n * j) + i;
+				result[0] = (byte) (B[0] ^ (t >>> 56));
+				result[1] = (byte) (B[1] ^ (t >>> 48));
+				result[2] = (byte) (B[2] ^ (t >>> 40));
+				result[3] = (byte) (B[3] ^ (t >>> 32));
+				result[4] = (byte) (B[4] ^ (t >>> 24));
+				result[5] = (byte) (B[5] ^ (t >>> 16));
+				result[6] = (byte) (B[6] ^ (t >>> 8));
+				result[7] = (byte) (B[7] ^ t);
+				System.arraycopy(B, 8, result, i * 8, 8);
+			}
+		return result;
+	}
 }

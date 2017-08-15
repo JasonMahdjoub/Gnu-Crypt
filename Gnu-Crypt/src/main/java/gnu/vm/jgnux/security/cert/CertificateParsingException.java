@@ -48,21 +48,18 @@ import javax.security.cert.CertificateException;
  * <b>This class is deprecated. It should not be used in new applications.</b>
  * </p>
  */
-public class CertificateParsingException extends CertificateException
-{
+public class CertificateParsingException extends CertificateException {
 
-    /**
-     * 
-     */
-    private static final long serialVersionUID = 3452177245983602301L;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 3452177245983602301L;
 
-    public CertificateParsingException()
-    {
-	super();
-    }
+	public CertificateParsingException() {
+		super();
+	}
 
-    public CertificateParsingException(String msg)
-    {
-	super(msg);
-    }
+	public CertificateParsingException(String msg) {
+		super(msg);
+	}
 }

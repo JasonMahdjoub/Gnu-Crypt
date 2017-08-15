@@ -43,32 +43,28 @@ import javax.security.sasl.SaslException;
  * A checked exception thrown to indicate that a designated user is already
  * known to the the authentication layer.
  */
-public class UserAlreadyExistsException extends SaslException
-{
-    /**
-     * 
-     */
-    private static final long serialVersionUID = -8474388896542279885L;
+public class UserAlreadyExistsException extends SaslException {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -8474388896542279885L;
 
-    /**
-     * Constructs a <code>UserAlreadyExistsException</code> with no detail
-     * message.
-     */
-    public UserAlreadyExistsException()
-    {
-	super();
-    }
+	/**
+	 * Constructs a <code>UserAlreadyExistsException</code> with no detail message.
+	 */
+	public UserAlreadyExistsException() {
+		super();
+	}
 
-    /**
-     * Constructs a <code>UserAlreadyExistsException</code> with the specified
-     * detail message. In the case of this exception, the detail message
-     * designates the offending username.
-     *
-     * @param userName
-     *            the detail message, which in this case is the username.
-     */
-    public UserAlreadyExistsException(String userName)
-    {
-	super(userName);
-    }
+	/**
+	 * Constructs a <code>UserAlreadyExistsException</code> with the specified
+	 * detail message. In the case of this exception, the detail message designates
+	 * the offending username.
+	 *
+	 * @param userName
+	 *            the detail message, which in this case is the username.
+	 */
+	public UserAlreadyExistsException(String userName) {
+		super(userName);
+	}
 }

@@ -52,60 +52,54 @@ import gnu.jgnu.security.util.PRNG;
  * Processing</a> Section "5.2 Block Encryption Algorithms"; "Padding".</li>
  * </ol>
  */
-public final class ISO10126 extends BasePad
-{
-    /** Used to generate random numbers for padding bytes. */
-    private PRNG prng;
+public final class ISO10126 extends BasePad {
+	/** Used to generate random numbers for padding bytes. */
+	private PRNG prng;
 
-    ISO10126()
-    {
-	super(Registry.ISO10126_PAD);
-	prng = PRNG.getInstance();
-    }
+	ISO10126() {
+		super(Registry.ISO10126_PAD);
+		prng = PRNG.getInstance();
+	}
 
-    @Override
-    public byte[] pad(byte[] in, int offset, int length)
-    {
-	int padLength = blockSize - (length % blockSize);
-	final byte[] pad = new byte[padLength];
+	@Override
+	public byte[] pad(byte[] in, int offset, int length) {
+		int padLength = blockSize - (length % blockSize);
+		final byte[] pad = new byte[padLength];
 
-	// generate random numbers for the padding bytes except for the last
-	// byte
-	prng.nextBytes(pad, 0, padLength - 1);
-	// the last byte contains the number of padding bytes
-	pad[padLength - 1] = (byte) padLength;
+		// generate random numbers for the padding bytes except for the last
+		// byte
+		prng.nextBytes(pad, 0, padLength - 1);
+		// the last byte contains the number of padding bytes
+		pad[padLength - 1] = (byte) padLength;
 
-	return pad;
-    }
+		return pad;
+	}
 
-    /**
-     * The default self-test in the super-class would take too long to finish
-     * with this type of padder --due to the large amount of random data needed.
-     * We override the default test and replace it with a simple one for a
-     * 16-byte block-size (default AES block-size). The Mauve test
-     * TestOfISO10126 will exercise all block-sizes that the default self-test
-     * uses for the other padders.
-     */
-    @Override
-    public boolean selfTest()
-    {
-	return test1BlockSize(16, new byte[1024]);
-    }
+	/**
+	 * The default self-test in the super-class would take too long to finish with
+	 * this type of padder --due to the large amount of random data needed. We
+	 * override the default test and replace it with a simple one for a 16-byte
+	 * block-size (default AES block-size). The Mauve test TestOfISO10126 will
+	 * exercise all block-sizes that the default self-test uses for the other
+	 * padders.
+	 */
+	@Override
+	public boolean selfTest() {
+		return test1BlockSize(16, new byte[1024]);
+	}
 
-    @Override
-    public void setup()
-    {
-	// Nothing to do here
-    }
+	@Override
+	public void setup() {
+		// Nothing to do here
+	}
 
-    @Override
-    public int unpad(byte[] in, int offset, int length) throws WrongPaddingException
-    {
-	// the last byte contains the number of padding bytes
-	int padLength = in[offset + length - 1] & 0xFF;
-	if (padLength > length)
-	    throw new WrongPaddingException();
+	@Override
+	public int unpad(byte[] in, int offset, int length) throws WrongPaddingException {
+		// the last byte contains the number of padding bytes
+		int padLength = in[offset + length - 1] & 0xFF;
+		if (padLength > length)
+			throw new WrongPaddingException();
 
-	return padLength;
-    }
+		return padLength;
+	}
 }

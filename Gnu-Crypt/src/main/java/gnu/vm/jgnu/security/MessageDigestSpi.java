@@ -58,122 +58,115 @@ import gnu.vm.jgnu.security.DigestException;
  * 
  * @author Mark Benvenuto (ivymccough@worldnet.att.net)
  */
-public abstract class MessageDigestSpi
-{
-    /**
-     * Default constructor of the MessageDigestSpi class
-     */
-    public MessageDigestSpi()
-    {
-    }
-
-    /**
-     * Returns a clone of this class.
-     * 
-     * If cloning is not supported, then by default the class throws a
-     * CloneNotSupportedException. The MessageDigestSpi provider implementation
-     * has to overload this class in order to be cloneable.
-     */
-    @Override
-    public Object clone() throws CloneNotSupportedException
-    {
-	return super.clone();
-    }
-
-    /**
-     * Computes the final digest of the stored bytes and returns them. It
-     * performs any necessary padding. The message digest should reset sensitive
-     * data after performing the digest.
-     * 
-     * @return An array of bytes containing the digest
-     */
-    protected abstract byte[] engineDigest();
-
-    /**
-     * Computes the final digest of the stored bytes and returns them. It
-     * performs any necessary padding. The message digest should reset sensitive
-     * data after performing the digest. This method is left concrete for
-     * backwards compatibility with JDK1.1 message digest classes.
-     * 
-     * @param buf
-     *            An array of bytes to store the digest
-     * @param offset
-     *            An offset to start storing the digest at
-     * @param len
-     *            The length of the buffer
-     * @return Returns the length of the buffer
-     * 
-     * @since 1.2
-     */
-    protected int engineDigest(byte[] buf, int offset, int len) throws DigestException
-    {
-	if (engineGetDigestLength() > len)
-	    throw new DigestException("Buffer is too small.");
-
-	byte[] tmp = engineDigest();
-	if (tmp.length > len)
-	    throw new DigestException("Buffer is too small");
-
-	System.arraycopy(tmp, 0, buf, offset, tmp.length);
-	return tmp.length;
-    }
-
-    /**
-     * Returns the length of the digest. It may be overridden by the provider to
-     * return the length of the digest. Default is to return 0. It is concrete
-     * for backwards compatibility with JDK1.1 message digest classes.
-     * 
-     * @return Length of Digest in Bytes
-     * 
-     * @since 1.2
-     */
-    protected int engineGetDigestLength()
-    {
-	return 0;
-    }
-
-    /**
-     * Resets the digest engine. Reinitializes internal variables and clears
-     * sensitive data.
-     */
-    protected abstract void engineReset();
-
-    /**
-     * Updates the digest with the specified byte.
-     * 
-     * @param input
-     *            the byte to update digest with
-     */
-    protected abstract void engineUpdate(byte input);
-
-    /**
-     * Updates the digest with the specified bytes starting with the offset and
-     * proceeding for the specified length.
-     * 
-     * @param input
-     *            the byte array to update digest with
-     * @param offset
-     *            the offset of the byte to start with
-     * @param len
-     *            the number of the bytes to update with
-     */
-    protected abstract void engineUpdate(byte[] input, int offset, int len);
-
-    /**
-     * Updates this digest with the remaining bytes of a byte buffer.
-     *
-     * @param input
-     *            The input buffer.
-     * @since 1.5
-     */
-    protected void engineUpdate(ByteBuffer input)
-    {
-	byte[] buf = new byte[1024];
-	while (input.hasRemaining())
-	{
-	    int n = Math.min(input.remaining(), buf.length);
-	    input.get(buf, 0, n);
-	    engineUpdate(buf, 0, n);
+public abstract class MessageDigestSpi {
+	/**
+	 * Default constructor of the MessageDigestSpi class
+	 */
+	public MessageDigestSpi() {
 	}
-    }
+
+	/**
+	 * Returns a clone of this class.
+	 * 
+	 * If cloning is not supported, then by default the class throws a
+	 * CloneNotSupportedException. The MessageDigestSpi provider implementation has
+	 * to overload this class in order to be cloneable.
+	 */
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+		return super.clone();
+	}
+
+	/**
+	 * Computes the final digest of the stored bytes and returns them. It performs
+	 * any necessary padding. The message digest should reset sensitive data after
+	 * performing the digest.
+	 * 
+	 * @return An array of bytes containing the digest
+	 */
+	protected abstract byte[] engineDigest();
+
+	/**
+	 * Computes the final digest of the stored bytes and returns them. It performs
+	 * any necessary padding. The message digest should reset sensitive data after
+	 * performing the digest. This method is left concrete for backwards
+	 * compatibility with JDK1.1 message digest classes.
+	 * 
+	 * @param buf
+	 *            An array of bytes to store the digest
+	 * @param offset
+	 *            An offset to start storing the digest at
+	 * @param len
+	 *            The length of the buffer
+	 * @return Returns the length of the buffer
+	 * 
+	 * @since 1.2
+	 */
+	protected int engineDigest(byte[] buf, int offset, int len) throws DigestException {
+		if (engineGetDigestLength() > len)
+			throw new DigestException("Buffer is too small.");
+
+		byte[] tmp = engineDigest();
+		if (tmp.length > len)
+			throw new DigestException("Buffer is too small");
+
+		System.arraycopy(tmp, 0, buf, offset, tmp.length);
+		return tmp.length;
+	}
+
+	/**
+	 * Returns the length of the digest. It may be overridden by the provider to
+	 * return the length of the digest. Default is to return 0. It is concrete for
+	 * backwards compatibility with JDK1.1 message digest classes.
+	 * 
+	 * @return Length of Digest in Bytes
+	 * 
+	 * @since 1.2
+	 */
+	protected int engineGetDigestLength() {
+		return 0;
+	}
+
+	/**
+	 * Resets the digest engine. Reinitializes internal variables and clears
+	 * sensitive data.
+	 */
+	protected abstract void engineReset();
+
+	/**
+	 * Updates the digest with the specified byte.
+	 * 
+	 * @param input
+	 *            the byte to update digest with
+	 */
+	protected abstract void engineUpdate(byte input);
+
+	/**
+	 * Updates the digest with the specified bytes starting with the offset and
+	 * proceeding for the specified length.
+	 * 
+	 * @param input
+	 *            the byte array to update digest with
+	 * @param offset
+	 *            the offset of the byte to start with
+	 * @param len
+	 *            the number of the bytes to update with
+	 */
+	protected abstract void engineUpdate(byte[] input, int offset, int len);
+
+	/**
+	 * Updates this digest with the remaining bytes of a byte buffer.
+	 *
+	 * @param input
+	 *            The input buffer.
+	 * @since 1.5
+	 */
+	protected void engineUpdate(ByteBuffer input) {
+		byte[] buf = new byte[1024];
+		while (input.hasRemaining()) {
+			int n = Math.min(input.remaining(), buf.length);
+			input.get(buf, 0, n);
+			engineUpdate(buf, 0, n);
+		}
+	}
 }

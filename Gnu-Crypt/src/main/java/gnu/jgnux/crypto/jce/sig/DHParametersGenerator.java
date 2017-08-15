@@ -58,99 +58,76 @@ import gnu.vm.jgnux.crypto.spec.DHParameterSpec;
 /**
  * A JCE Adapter for a generator of DH parameters.
  */
-public class DHParametersGenerator extends AlgorithmParameterGeneratorSpi
-{
-    private static final Provider GNU_CRYPTO = new GnuCrypto();
+public class DHParametersGenerator extends AlgorithmParameterGeneratorSpi {
+	private static final Provider GNU_CRYPTO = new GnuCrypto();
 
-    /** Size of the prime (public) modulus in bits. */
-    private int modulusSize = -1;
+	/** Size of the prime (public) modulus in bits. */
+	private int modulusSize = -1;
 
-    /** Size of the prime (private) modulus in bits. */
-    private int exponentSize = -1;
+	/** Size of the prime (private) modulus in bits. */
+	private int exponentSize = -1;
 
-    /** User specified source of randomness. */
-    private SecureRandom rnd;
+	/** User specified source of randomness. */
+	private SecureRandom rnd;
 
-    /** Our concrete DH parameters generator. */
-    private RFC2631 rfc2631;
+	/** Our concrete DH parameters generator. */
+	private RFC2631 rfc2631;
 
-    @Override
-    protected AlgorithmParameters engineGenerateParameters()
-    {
-	if (modulusSize < 1)
-	    modulusSize = GnuDHKeyPairGenerator.DEFAULT_PRIME_SIZE;
+	@Override
+	protected AlgorithmParameters engineGenerateParameters() {
+		if (modulusSize < 1)
+			modulusSize = GnuDHKeyPairGenerator.DEFAULT_PRIME_SIZE;
 
-	if (exponentSize < 1)
-	    exponentSize = GnuDHKeyPairGenerator.DEFAULT_EXPONENT_SIZE;
+		if (exponentSize < 1)
+			exponentSize = GnuDHKeyPairGenerator.DEFAULT_EXPONENT_SIZE;
 
-	rfc2631 = new RFC2631(exponentSize, modulusSize, rnd);
-	BigInteger[] params = rfc2631.generateParameters();
-	BigInteger p = params[RFC2631.DH_PARAMS_P];
-	BigInteger g = params[RFC2631.DH_PARAMS_G];
-	int l = params[RFC2631.DH_PARAMS_Q].bitLength();
-	DHParameterSpec spec = new DHParameterSpec(p, g, l);
-	AlgorithmParameters result = null;
-	try
-	{
-	    result = AlgorithmParameters.getInstance(Registry.DH_KPG,
-		    GNU_CRYPTO);
-	    result.init(spec);
-	}
-	catch (NoSuchAlgorithmException ignore)
-	{
-	}
-	catch (InvalidParameterSpecException ignore)
-	{
-	}
-	return result;
-    }
-
-    @Override
-    protected void engineInit(AlgorithmParameterSpec spec, SecureRandom random) throws InvalidAlgorithmParameterException
-    {
-	if (spec instanceof DHParameterSpec)
-	{
-	    DHParameterSpec dhSpec = (DHParameterSpec) spec;
-	    BigInteger p = dhSpec.getP();
-	    int size = p.bitLength();
-	    this.engineInit(size, random);
-	}
-	else if (spec instanceof DHGenParameterSpec)
-	{
-	    DHGenParameterSpec dhSpec = (DHGenParameterSpec) spec;
-	    int size = dhSpec.getPrimeSize();
-	    this.engineInit(size, random);
-	    exponentSize = dhSpec.getExponentSize();
-
-	    if ((exponentSize % 8) != 0
-		    || exponentSize < GnuDHKeyPairGenerator.DEFAULT_EXPONENT_SIZE)
-		throw new InvalidParameterException(
-			"Random exponent size (in bits) "
-				+ "MUST be a multiple of 8, and "
-				+ "greater than or equal to "
-				+ GnuDHKeyPairGenerator.DEFAULT_EXPONENT_SIZE);
-	    if (exponentSize > modulusSize)
-		throw new InvalidParameterException(
-			"Random exponent size (in bits) "
-				+ "MUST be less than that of the "
-				+ "public prime modulus (p)");
+		rfc2631 = new RFC2631(exponentSize, modulusSize, rnd);
+		BigInteger[] params = rfc2631.generateParameters();
+		BigInteger p = params[RFC2631.DH_PARAMS_P];
+		BigInteger g = params[RFC2631.DH_PARAMS_G];
+		int l = params[RFC2631.DH_PARAMS_Q].bitLength();
+		DHParameterSpec spec = new DHParameterSpec(p, g, l);
+		AlgorithmParameters result = null;
+		try {
+			result = AlgorithmParameters.getInstance(Registry.DH_KPG, GNU_CRYPTO);
+			result.init(spec);
+		} catch (NoSuchAlgorithmException ignore) {
+		} catch (InvalidParameterSpecException ignore) {
+		}
+		return result;
 	}
 
-	throw new InvalidAlgorithmParameterException(
-		"Wrong AlgorithmParameterSpec type: "
-			+ spec.getClass().getName());
-    }
+	@Override
+	protected void engineInit(AlgorithmParameterSpec spec, SecureRandom random)
+			throws InvalidAlgorithmParameterException {
+		if (spec instanceof DHParameterSpec) {
+			DHParameterSpec dhSpec = (DHParameterSpec) spec;
+			BigInteger p = dhSpec.getP();
+			int size = p.bitLength();
+			this.engineInit(size, random);
+		} else if (spec instanceof DHGenParameterSpec) {
+			DHGenParameterSpec dhSpec = (DHGenParameterSpec) spec;
+			int size = dhSpec.getPrimeSize();
+			this.engineInit(size, random);
+			exponentSize = dhSpec.getExponentSize();
 
-    @Override
-    protected void engineInit(int size, SecureRandom random)
-    {
-	if ((size % 256) != 0
-		|| size < GnuDHKeyPairGenerator.DEFAULT_PRIME_SIZE)
-	    throw new InvalidParameterException(
-		    "Prime modulus (p) size (in bits) "
-			    + "MUST be a multiple of 256, and "
-			    + "greater than or equal to 1024");
-	this.modulusSize = size;
-	this.rnd = random;
-    }
+			if ((exponentSize % 8) != 0 || exponentSize < GnuDHKeyPairGenerator.DEFAULT_EXPONENT_SIZE)
+				throw new InvalidParameterException("Random exponent size (in bits) " + "MUST be a multiple of 8, and "
+						+ "greater than or equal to " + GnuDHKeyPairGenerator.DEFAULT_EXPONENT_SIZE);
+			if (exponentSize > modulusSize)
+				throw new InvalidParameterException("Random exponent size (in bits) " + "MUST be less than that of the "
+						+ "public prime modulus (p)");
+		}
+
+		throw new InvalidAlgorithmParameterException("Wrong AlgorithmParameterSpec type: " + spec.getClass().getName());
+	}
+
+	@Override
+	protected void engineInit(int size, SecureRandom random) {
+		if ((size % 256) != 0 || size < GnuDHKeyPairGenerator.DEFAULT_PRIME_SIZE)
+			throw new InvalidParameterException("Prime modulus (p) size (in bits) " + "MUST be a multiple of 256, and "
+					+ "greater than or equal to 1024");
+		this.modulusSize = size;
+		this.rnd = random;
+	}
 }

@@ -53,160 +53,131 @@ import gnu.jgnu.security.der.DERReader;
 import gnu.jgnu.security.der.DERValue;
 import gnu.vm.jgnu.security.cert.PolicyQualifierInfo;
 
-public class CertificatePolicies extends Extension.Value
-{
+public class CertificatePolicies extends Extension.Value {
 
-    // Constants and fields.
-    // -------------------------------------------------------------------------
+	// Constants and fields.
+	// -------------------------------------------------------------------------
 
-    public static final OID ID = new OID("2.5.29.32");
+	public static final OID ID = new OID("2.5.29.32");
 
-    private final List<OID> policies;
+	private final List<OID> policies;
 
-    private final Map<OID, List<PolicyQualifierInfo>> policyQualifierInfos;
+	private final Map<OID, List<PolicyQualifierInfo>> policyQualifierInfos;
 
-    // Constructor.
-    // -------------------------------------------------------------------------
+	// Constructor.
+	// -------------------------------------------------------------------------
 
-    public CertificatePolicies(final byte[] encoded) throws IOException
-    {
-	super(encoded);
-	DERReader der = new DERReader(encoded);
-	DERValue pol = der.read();
-	if (!pol.isConstructed())
-	    throw new IOException("malformed CertificatePolicies");
+	public CertificatePolicies(final byte[] encoded) throws IOException {
+		super(encoded);
+		DERReader der = new DERReader(encoded);
+		DERValue pol = der.read();
+		if (!pol.isConstructed())
+			throw new IOException("malformed CertificatePolicies");
 
-	int len = 0;
-	LinkedList<OID> policyList = new LinkedList<OID>();
-	HashMap<OID, List<PolicyQualifierInfo>> qualifierMap = new HashMap<OID, List<PolicyQualifierInfo>>();
-	while (len < pol.getLength())
-	{
-	    DERValue policyInfo = der.read();
-	    if (!policyInfo.isConstructed())
-		throw new IOException("malformed PolicyInformation");
-	    DERValue val = der.read();
-	    if (val.getTag() != DER.OBJECT_IDENTIFIER)
-		throw new IOException("malformed CertPolicyId");
-	    OID policyId = (OID) val.getValue();
-	    policyList.add(policyId);
-	    if (val.getEncodedLength() < policyInfo.getLength())
-	    {
-		DERValue qual = der.read();
-		int len2 = 0;
-		LinkedList<PolicyQualifierInfo> quals = new LinkedList<PolicyQualifierInfo>();
-		while (len2 < qual.getLength())
-		{
-		    val = der.read();
-		    quals.add(new PolicyQualifierInfo(val.getEncoded()));
-		    der.skip(val.getLength());
-		    len2 += val.getEncodedLength();
-		}
-		qualifierMap.put(policyId, quals);
-	    }
-	    len += policyInfo.getEncodedLength();
-	}
-
-	policies = Collections.unmodifiableList(policyList);
-	policyQualifierInfos = Collections.unmodifiableMap(qualifierMap);
-    }
-
-    public CertificatePolicies(final List<OID> policies, final Map<OID, List<PolicyQualifierInfo>> policyQualifierInfos)
-    {
-	for (Iterator<Entry<OID, List<PolicyQualifierInfo>>> it = policyQualifierInfos
-		.entrySet().iterator(); it.hasNext();)
-	{
-	    Entry<OID, List<PolicyQualifierInfo>> e = it.next();
-	    if (!(e.getKey() instanceof OID) || !policies.contains(e.getKey()))
-		throw new IllegalArgumentException(
-			"policyQualifierInfos keys must be OIDs");
-	    if (!(e.getValue() instanceof List))
-		throw new IllegalArgumentException(
-			"policyQualifierInfos values must be Lists of PolicyQualifierInfos");
-	    for (Iterator<PolicyQualifierInfo> it2 = e.getValue().iterator(); it
-		    .hasNext();)
-		if (!(it2.next() instanceof PolicyQualifierInfo))
-		    throw new IllegalArgumentException(
-			    "policyQualifierInfos values must be Lists of PolicyQualifierInfos");
-	}
-	this.policies = Collections
-		.unmodifiableList(new ArrayList<OID>(policies));
-	this.policyQualifierInfos = Collections
-		.unmodifiableMap(new HashMap<OID, List<PolicyQualifierInfo>>(
-			policyQualifierInfos));
-    }
-
-    // Instance methods.
-    // -------------------------------------------------------------------------
-
-    @Override
-    public byte[] getEncoded()
-    {
-	if (encoded == null)
-	{
-	    List<DERValue> pol = new ArrayList<DERValue>(policies.size());
-	    for (Iterator<OID> it = policies.iterator(); it.hasNext();)
-	    {
-		OID policy = it.next();
-		List<PolicyQualifierInfo> qualifiers = getPolicyQualifierInfos(
-			policy);
-		List<DERValue> l = new ArrayList<DERValue>(
-			qualifiers == null ? 1 : 2);
-		l.add(new DERValue(DER.OBJECT_IDENTIFIER, policy));
-		if (qualifiers != null)
-		{
-		    List<DERValue> ll = new ArrayList<DERValue>(
-			    qualifiers.size());
-		    for (Iterator<PolicyQualifierInfo> it2 = qualifiers
-			    .iterator(); it.hasNext();)
-		    {
-			PolicyQualifierInfo info = it2.next();
-			try
-			{
-			    ll.add(DERReader.read(info.getEncoded()));
+		int len = 0;
+		LinkedList<OID> policyList = new LinkedList<OID>();
+		HashMap<OID, List<PolicyQualifierInfo>> qualifierMap = new HashMap<OID, List<PolicyQualifierInfo>>();
+		while (len < pol.getLength()) {
+			DERValue policyInfo = der.read();
+			if (!policyInfo.isConstructed())
+				throw new IOException("malformed PolicyInformation");
+			DERValue val = der.read();
+			if (val.getTag() != DER.OBJECT_IDENTIFIER)
+				throw new IOException("malformed CertPolicyId");
+			OID policyId = (OID) val.getValue();
+			policyList.add(policyId);
+			if (val.getEncodedLength() < policyInfo.getLength()) {
+				DERValue qual = der.read();
+				int len2 = 0;
+				LinkedList<PolicyQualifierInfo> quals = new LinkedList<PolicyQualifierInfo>();
+				while (len2 < qual.getLength()) {
+					val = der.read();
+					quals.add(new PolicyQualifierInfo(val.getEncoded()));
+					der.skip(val.getLength());
+					len2 += val.getEncodedLength();
+				}
+				qualifierMap.put(policyId, quals);
 			}
-			catch (IOException ioe)
-			{
-			}
-		    }
-		    l.add(new DERValue(DER.CONSTRUCTED | DER.SEQUENCE, ll));
+			len += policyInfo.getEncodedLength();
 		}
-		pol.add(new DERValue(DER.CONSTRUCTED | DER.SEQUENCE, l));
-	    }
-	    encoded = new DERValue(DER.CONSTRUCTED | DER.SEQUENCE, pol)
-		    .getEncoded();
+
+		policies = Collections.unmodifiableList(policyList);
+		policyQualifierInfos = Collections.unmodifiableMap(qualifierMap);
 	}
-	return encoded.clone();
-    }
 
-    public List<OID> getPolicies()
-    {
-	return policies;
-    }
-
-    public List<PolicyQualifierInfo> getPolicyQualifierInfos(OID oid)
-    {
-	return policyQualifierInfos.get(oid);
-    }
-
-    /**
-     * Returns the list of policy OIDs, formatted as dotted-decimal strings.
-     *
-     * @return
-     */
-    public List<String> getPolicyStrings()
-    {
-	List<String> l = new ArrayList<String>(policies.size());
-	for (OID oid : policies)
-	{
-	    l.add(oid.toString());
+	public CertificatePolicies(final List<OID> policies,
+			final Map<OID, List<PolicyQualifierInfo>> policyQualifierInfos) {
+		for (Iterator<Entry<OID, List<PolicyQualifierInfo>>> it = policyQualifierInfos.entrySet().iterator(); it
+				.hasNext();) {
+			Entry<OID, List<PolicyQualifierInfo>> e = it.next();
+			if (!(e.getKey() instanceof OID) || !policies.contains(e.getKey()))
+				throw new IllegalArgumentException("policyQualifierInfos keys must be OIDs");
+			if (!(e.getValue() instanceof List))
+				throw new IllegalArgumentException("policyQualifierInfos values must be Lists of PolicyQualifierInfos");
+			for (Iterator<PolicyQualifierInfo> it2 = e.getValue().iterator(); it.hasNext();)
+				if (!(it2.next() instanceof PolicyQualifierInfo))
+					throw new IllegalArgumentException(
+							"policyQualifierInfos values must be Lists of PolicyQualifierInfos");
+		}
+		this.policies = Collections.unmodifiableList(new ArrayList<OID>(policies));
+		this.policyQualifierInfos = Collections
+				.unmodifiableMap(new HashMap<OID, List<PolicyQualifierInfo>>(policyQualifierInfos));
 	}
-	return l;
-    }
 
-    @Override
-    public String toString()
-    {
-	return CertificatePolicies.class.getName() + " [ policies=" + policies
-		+ " policyQualifierInfos=" + policyQualifierInfos + " ]";
-    }
+	// Instance methods.
+	// -------------------------------------------------------------------------
+
+	@Override
+	public byte[] getEncoded() {
+		if (encoded == null) {
+			List<DERValue> pol = new ArrayList<DERValue>(policies.size());
+			for (Iterator<OID> it = policies.iterator(); it.hasNext();) {
+				OID policy = it.next();
+				List<PolicyQualifierInfo> qualifiers = getPolicyQualifierInfos(policy);
+				List<DERValue> l = new ArrayList<DERValue>(qualifiers == null ? 1 : 2);
+				l.add(new DERValue(DER.OBJECT_IDENTIFIER, policy));
+				if (qualifiers != null) {
+					List<DERValue> ll = new ArrayList<DERValue>(qualifiers.size());
+					for (Iterator<PolicyQualifierInfo> it2 = qualifiers.iterator(); it.hasNext();) {
+						PolicyQualifierInfo info = it2.next();
+						try {
+							ll.add(DERReader.read(info.getEncoded()));
+						} catch (IOException ioe) {
+						}
+					}
+					l.add(new DERValue(DER.CONSTRUCTED | DER.SEQUENCE, ll));
+				}
+				pol.add(new DERValue(DER.CONSTRUCTED | DER.SEQUENCE, l));
+			}
+			encoded = new DERValue(DER.CONSTRUCTED | DER.SEQUENCE, pol).getEncoded();
+		}
+		return encoded.clone();
+	}
+
+	public List<OID> getPolicies() {
+		return policies;
+	}
+
+	public List<PolicyQualifierInfo> getPolicyQualifierInfos(OID oid) {
+		return policyQualifierInfos.get(oid);
+	}
+
+	/**
+	 * Returns the list of policy OIDs, formatted as dotted-decimal strings.
+	 *
+	 * @return
+	 */
+	public List<String> getPolicyStrings() {
+		List<String> l = new ArrayList<String>(policies.size());
+		for (OID oid : policies) {
+			l.add(oid.toString());
+		}
+		return l;
+	}
+
+	@Override
+	public String toString() {
+		return CertificatePolicies.class.getName() + " [ policies=" + policies + " policyQualifierInfos="
+				+ policyQualifierInfos + " ]";
+	}
 }

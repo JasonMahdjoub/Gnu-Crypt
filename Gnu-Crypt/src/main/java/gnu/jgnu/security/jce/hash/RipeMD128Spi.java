@@ -43,10 +43,8 @@ import gnu.jgnu.security.Registry;
  * The implementation of the RIPEMD-128 <i>Service Provider Interface</i>
  * (<b>SPI</b>) adapter.
  */
-public class RipeMD128Spi extends MessageDigestAdapter
-{
-    public RipeMD128Spi()
-    {
-	super(Registry.RIPEMD128_HASH);
-    }
+public class RipeMD128Spi extends MessageDigestAdapter {
+	public RipeMD128Spi() {
+		super(Registry.RIPEMD128_HASH);
+	}
 }

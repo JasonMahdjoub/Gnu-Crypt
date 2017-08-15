@@ -46,28 +46,25 @@ import gnu.vm.jgnu.security.GeneralSecurityException;
  * @since 1.2
  * @status updated to 1.4
  */
-public class UnrecoverableKeyException extends GeneralSecurityException
-{
-    /**
-     * Compatible with JDK 1.2+.
-     */
-    private static final long serialVersionUID = 7275063078190151277L;
+public class UnrecoverableKeyException extends GeneralSecurityException {
+	/**
+	 * Compatible with JDK 1.2+.
+	 */
+	private static final long serialVersionUID = 7275063078190151277L;
 
-    /**
-     * Create an instance with no descriptive error message.
-     */
-    public UnrecoverableKeyException()
-    {
-    }
+	/**
+	 * Create an instance with no descriptive error message.
+	 */
+	public UnrecoverableKeyException() {
+	}
 
-    /**
-     * Create an instance with a descriptive error message.
-     *
-     * @param msg
-     *            the descriptive error message
-     */
-    public UnrecoverableKeyException(String msg)
-    {
-	super(msg);
-    }
+	/**
+	 * Create an instance with a descriptive error message.
+	 *
+	 * @param msg
+	 *            the descriptive error message
+	 */
+	public UnrecoverableKeyException(String msg) {
+		super(msg);
+	}
 }

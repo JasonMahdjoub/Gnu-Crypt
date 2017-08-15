@@ -70,18 +70,16 @@ import gnu.jgnux.crypto.key.OutgoingMessage;
  * Thomas J. Wu.</li>
  * </ol>
  */
-public class SRP6SaslClient extends SRP6TLSClient
-{
-    // default 0-arguments constructor
+public class SRP6SaslClient extends SRP6TLSClient {
+	// default 0-arguments constructor
 
-    @Override
-    protected OutgoingMessage computeSharedSecret(final IncomingMessage in) throws KeyAgreementException
-    {
-	final OutgoingMessage result = super.computeSharedSecret(in);
-	final byte[] sBytes = Util.trim(K);
-	final IMessageDigest hash = srp.newDigest();
-	hash.update(sBytes, 0, sBytes.length);
-	K = new BigInteger(1, hash.digest());
-	return result;
-    }
+	@Override
+	protected OutgoingMessage computeSharedSecret(final IncomingMessage in) throws KeyAgreementException {
+		final OutgoingMessage result = super.computeSharedSecret(in);
+		final byte[] sBytes = Util.trim(K);
+		final IMessageDigest hash = srp.newDigest();
+		hash.update(sBytes, 0, sBytes.length);
+		K = new BigInteger(1, hash.digest());
+		return result;
+	}
 }

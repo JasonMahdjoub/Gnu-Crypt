@@ -45,40 +45,38 @@ import gnu.vm.jgnu.security.cert.Certificate;
  *
  * @see IKeyring
  */
-public interface IPublicKeyring extends IKeyring
-{
-    /**
-     * Tests if this keyring contains a certificate entry with the specified
-     * <code>alias</code>.
-     *
-     * @param alias
-     *            The alias of the certificate to check.
-     * @return <code>true</code> if this keyring contains a certificate entry
-     *         that has the given <code>alias</code>; <code>false</code>
-     *         otherwise.
-     */
-    boolean containsCertificate(String alias);
+public interface IPublicKeyring extends IKeyring {
+	/**
+	 * Tests if this keyring contains a certificate entry with the specified
+	 * <code>alias</code>.
+	 *
+	 * @param alias
+	 *            The alias of the certificate to check.
+	 * @return <code>true</code> if this keyring contains a certificate entry that
+	 *         has the given <code>alias</code>; <code>false</code> otherwise.
+	 */
+	boolean containsCertificate(String alias);
 
-    /**
-     * Returns a certificate that has the given <code>alias</code>, or
-     * <code>null</code> if this keyring has no such entry.
-     *
-     * @param alias
-     *            The alias of the certificate to find.
-     * @return The certificate with the designated <code>alias</code>, or
-     *         <code>null</code> if none found.
-     */
-    Certificate getCertificate(String alias);
+	/**
+	 * Returns a certificate that has the given <code>alias</code>, or
+	 * <code>null</code> if this keyring has no such entry.
+	 *
+	 * @param alias
+	 *            The alias of the certificate to find.
+	 * @return The certificate with the designated <code>alias</code>, or
+	 *         <code>null</code> if none found.
+	 */
+	Certificate getCertificate(String alias);
 
-    /**
-     * Adds a certificate in this keyring, with the given <code>alias</code>.
-     * <p>
-     * What happens if there is already a certificate entry with this alias?
-     *
-     * @param alias
-     *            The alias of this certificate entry.
-     * @param cert
-     *            The certificate.
-     */
-    void putCertificate(String alias, Certificate cert);
+	/**
+	 * Adds a certificate in this keyring, with the given <code>alias</code>.
+	 * <p>
+	 * What happens if there is already a certificate entry with this alias?
+	 *
+	 * @param alias
+	 *            The alias of this certificate entry.
+	 * @param cert
+	 *            The certificate.
+	 */
+	void putCertificate(String alias, Certificate cert);
 }

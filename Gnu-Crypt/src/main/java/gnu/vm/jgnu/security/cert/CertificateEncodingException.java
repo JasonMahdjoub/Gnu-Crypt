@@ -44,54 +44,49 @@ package gnu.vm.jgnu.security.cert;
  * @since 1.2
  * @status updated to 1.5
  */
-public class CertificateEncodingException extends CertificateException
-{
-    /**
-     * Compatible with JDK 1.2+.
-     */
-    private static final long serialVersionUID = 6219492851589449162L;
+public class CertificateEncodingException extends CertificateException {
+	/**
+	 * Compatible with JDK 1.2+.
+	 */
+	private static final long serialVersionUID = 6219492851589449162L;
 
-    /**
-     * Constructs an exception without a message string.
-     */
-    public CertificateEncodingException()
-    {
-    }
+	/**
+	 * Constructs an exception without a message string.
+	 */
+	public CertificateEncodingException() {
+	}
 
-    /**
-     * Constructs an exception with a message string.
-     *
-     * @param msg
-     *            A message to display with exception
-     */
-    public CertificateEncodingException(String msg)
-    {
-	super(msg);
-    }
+	/**
+	 * Constructs an exception with a message string.
+	 *
+	 * @param msg
+	 *            A message to display with exception
+	 */
+	public CertificateEncodingException(String msg) {
+		super(msg);
+	}
 
-    /**
-     * Create a new instance with a descriptive error message and a cause.
-     * 
-     * @param s
-     *            the descriptive error message
-     * @param cause
-     *            the cause
-     * @since 1.5
-     */
-    public CertificateEncodingException(String s, Throwable cause)
-    {
-	super(s, cause);
-    }
+	/**
+	 * Create a new instance with a descriptive error message and a cause.
+	 * 
+	 * @param s
+	 *            the descriptive error message
+	 * @param cause
+	 *            the cause
+	 * @since 1.5
+	 */
+	public CertificateEncodingException(String s, Throwable cause) {
+		super(s, cause);
+	}
 
-    /**
-     * Create a new instance with a cause.
-     * 
-     * @param cause
-     *            the cause
-     * @since 1.5
-     */
-    public CertificateEncodingException(Throwable cause)
-    {
-	super(cause);
-    }
+	/**
+	 * Create a new instance with a cause.
+	 * 
+	 * @param cause
+	 *            the cause
+	 * @since 1.5
+	 */
+	public CertificateEncodingException(Throwable cause) {
+		super(cause);
+	}
 }

@@ -49,115 +49,97 @@ import gnu.jgnux.crypto.sasl.ClientMechanism;
 /**
  * The PLAIN SASL client-side mechanism.
  */
-public class PlainClient extends ClientMechanism implements SaslClient
-{
-    public PlainClient()
-    {
-	super(Registry.SASL_PLAIN_MECHANISM);
-    }
-
-    @Override
-    public byte[] evaluateChallenge(final byte[] challenge) throws SaslException
-    {
-	try
-	{
-	    final String username;
-	    final char[] password;
-	    Callback[] callbacks;
-	    if ((!properties.containsKey(Registry.SASL_USERNAME))
-		    && (!properties.containsKey(Registry.SASL_PASSWORD)))
-	    {
-		callbacks = new Callback[2];
-		final NameCallback nameCB;
-		final String defaultName = System.getProperty("user.name");
-		if (defaultName == null)
-		    nameCB = new NameCallback("username: ");
-		else
-		    nameCB = new NameCallback("username: ", defaultName);
-		final PasswordCallback pwdCB = new PasswordCallback(
-			"password: ", false);
-		callbacks[0] = nameCB;
-		callbacks[1] = pwdCB;
-		this.handler.handle(callbacks);
-		username = nameCB.getName();
-		password = pwdCB.getPassword();
-	    }
-	    else
-	    {
-		if (properties.containsKey(Registry.SASL_USERNAME))
-		    username = (String) properties.get(Registry.SASL_USERNAME);
-		else
-		{
-		    callbacks = new Callback[1];
-		    final NameCallback nameCB;
-		    final String defaultName = System.getProperty("user.name");
-		    if (defaultName == null)
-			nameCB = new NameCallback("username: ");
-		    else
-			nameCB = new NameCallback("username: ", defaultName);
-		    callbacks[0] = nameCB;
-		    this.handler.handle(callbacks);
-		    username = nameCB.getName();
-		}
-		if (properties.containsKey(Registry.SASL_PASSWORD))
-		    password = ((String) properties.get(Registry.SASL_PASSWORD))
-			    .toCharArray();
-		else
-		{
-		    callbacks = new Callback[1];
-		    final PasswordCallback pwdCB = new PasswordCallback(
-			    "password: ", false);
-		    callbacks[0] = pwdCB;
-		    this.handler.handle(callbacks);
-		    password = pwdCB.getPassword();
-		}
-	    }
-	    if (password == null)
-		throw new SaslException("null password supplied");
-	    final StringBuilder sb = new StringBuilder();
-	    if (authorizationID != null)
-		sb.append(authorizationID);
-	    sb.append('\0');
-	    sb.append(username);
-	    sb.append('\0');
-	    sb.append(password);
-	    this.complete = true;
-	    final byte[] response = sb.toString().getBytes("UTF-8");
-	    return response;
+public class PlainClient extends ClientMechanism implements SaslClient {
+	public PlainClient() {
+		super(Registry.SASL_PLAIN_MECHANISM);
 	}
-	catch (Exception x)
-	{
-	    if (x instanceof SaslException)
-		throw (SaslException) x;
-	    throw new SaslException("evaluateChallenge()", x);
+
+	@Override
+	public byte[] evaluateChallenge(final byte[] challenge) throws SaslException {
+		try {
+			final String username;
+			final char[] password;
+			Callback[] callbacks;
+			if ((!properties.containsKey(Registry.SASL_USERNAME))
+					&& (!properties.containsKey(Registry.SASL_PASSWORD))) {
+				callbacks = new Callback[2];
+				final NameCallback nameCB;
+				final String defaultName = System.getProperty("user.name");
+				if (defaultName == null)
+					nameCB = new NameCallback("username: ");
+				else
+					nameCB = new NameCallback("username: ", defaultName);
+				final PasswordCallback pwdCB = new PasswordCallback("password: ", false);
+				callbacks[0] = nameCB;
+				callbacks[1] = pwdCB;
+				this.handler.handle(callbacks);
+				username = nameCB.getName();
+				password = pwdCB.getPassword();
+			} else {
+				if (properties.containsKey(Registry.SASL_USERNAME))
+					username = (String) properties.get(Registry.SASL_USERNAME);
+				else {
+					callbacks = new Callback[1];
+					final NameCallback nameCB;
+					final String defaultName = System.getProperty("user.name");
+					if (defaultName == null)
+						nameCB = new NameCallback("username: ");
+					else
+						nameCB = new NameCallback("username: ", defaultName);
+					callbacks[0] = nameCB;
+					this.handler.handle(callbacks);
+					username = nameCB.getName();
+				}
+				if (properties.containsKey(Registry.SASL_PASSWORD))
+					password = ((String) properties.get(Registry.SASL_PASSWORD)).toCharArray();
+				else {
+					callbacks = new Callback[1];
+					final PasswordCallback pwdCB = new PasswordCallback("password: ", false);
+					callbacks[0] = pwdCB;
+					this.handler.handle(callbacks);
+					password = pwdCB.getPassword();
+				}
+			}
+			if (password == null)
+				throw new SaslException("null password supplied");
+			final StringBuilder sb = new StringBuilder();
+			if (authorizationID != null)
+				sb.append(authorizationID);
+			sb.append('\0');
+			sb.append(username);
+			sb.append('\0');
+			sb.append(password);
+			this.complete = true;
+			final byte[] response = sb.toString().getBytes("UTF-8");
+			return response;
+		} catch (Exception x) {
+			if (x instanceof SaslException)
+				throw (SaslException) x;
+			throw new SaslException("evaluateChallenge()", x);
+		}
 	}
-    }
 
-    @Override
-    protected String getNegotiatedQOP()
-    {
-	return Registry.QOP_AUTH;
-    }
+	@Override
+	protected String getNegotiatedQOP() {
+		return Registry.QOP_AUTH;
+	}
 
-    @Override
-    public boolean hasInitialResponse()
-    {
-	return true;
-    }
+	@Override
+	public boolean hasInitialResponse() {
+		return true;
+	}
 
-    /**
-     * @throws SaslException
-     */
-    @Override
-    protected void initMechanism() throws SaslException
-    {
-    }
+	/**
+	 * @throws SaslException
+	 */
+	@Override
+	protected void initMechanism() throws SaslException {
+	}
 
-    /**
-     * @throws SaslException
-     */
-    @Override
-    protected void resetMechanism() throws SaslException
-    {
-    }
+	/**
+	 * @throws SaslException
+	 */
+	@Override
+	protected void resetMechanism() throws SaslException {
+	}
 }

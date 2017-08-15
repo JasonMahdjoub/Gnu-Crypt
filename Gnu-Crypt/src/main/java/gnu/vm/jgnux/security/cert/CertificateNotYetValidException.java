@@ -50,21 +50,18 @@ import javax.security.cert.CertificateException;
  * not be used in new applications.</b>
  * </p>
  */
-public class CertificateNotYetValidException extends CertificateException
-{
+public class CertificateNotYetValidException extends CertificateException {
 
-    /**
-     * 
-     */
-    private static final long serialVersionUID = 8968935427292981312L;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 8968935427292981312L;
 
-    public CertificateNotYetValidException()
-    {
-	super();
-    }
+	public CertificateNotYetValidException() {
+		super();
+	}
 
-    public CertificateNotYetValidException(String msg)
-    {
-	super(msg);
-    }
+	public CertificateNotYetValidException(String msg) {
+		super(msg);
+	}
 }

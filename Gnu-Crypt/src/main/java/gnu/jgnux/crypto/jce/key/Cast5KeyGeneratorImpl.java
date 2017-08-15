@@ -39,10 +39,8 @@ package gnu.jgnux.crypto.jce.key;
 
 import gnu.jgnu.security.Registry;
 
-public class Cast5KeyGeneratorImpl extends SecretKeyGeneratorImpl
-{
-    public Cast5KeyGeneratorImpl()
-    {
-	super(Registry.CAST5_CIPHER);
-    }
+public class Cast5KeyGeneratorImpl extends SecretKeyGeneratorImpl {
+	public Cast5KeyGeneratorImpl() {
+		super(Registry.CAST5_CIPHER);
+	}
 }

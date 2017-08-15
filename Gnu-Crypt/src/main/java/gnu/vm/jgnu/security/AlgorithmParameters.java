@@ -62,265 +62,240 @@ import gnu.vm.jgnu.security.spec.InvalidParameterSpecException;
  * @see java.security.spec.DSAParameterSpec
  * @see KeyPairGenerator
  */
-public class AlgorithmParameters
-{
-    /** Service name for algorithm parameters. */
-    private static final String ALGORITHM_PARAMETERS = "AlgorithmParameters";
+public class AlgorithmParameters {
+	/** Service name for algorithm parameters. */
+	private static final String ALGORITHM_PARAMETERS = "AlgorithmParameters";
 
-    /**
-     * Returns a new instance of <code>AlgorithmParameters</code> representing
-     * the specified algorithm parameters.
-     * <p>
-     * The returned <code>AlgorithmParameters</code> must still be initialized
-     * with an <code>init()</code> method.
-     *
-     * @param algorithm
-     *            the algorithm to use.
-     * @return the new instance repesenting the desired algorithm.
-     * @throws NoSuchAlgorithmException
-     *             if the algorithm is not implemented by any provider.
-     * @throws IllegalArgumentException
-     *             if <code>algorithm</code> is <code>null</code> or is an empty
-     *             string.
-     */
-    public static AlgorithmParameters getInstance(String algorithm) throws NoSuchAlgorithmException
-    {
-	Provider[] p = Security.getProviders();
-	NoSuchAlgorithmException lastException = null;
-	for (int i = 0; i < p.length; i++)
-	    try
-	    {
-		return getInstance(algorithm, p[i]);
-	    }
-	    catch (NoSuchAlgorithmException x)
-	    {
-		lastException = x;
-	    }
-	if (lastException != null)
-	    throw lastException;
-	throw new NoSuchAlgorithmException(algorithm);
-    }
-
-    /**
-     * Returns a new instance of <code>AlgorithmParameters</code> representing
-     * the specified algorithm parameters from the specified {@link Provider}.
-     * <p>
-     * The returned <code>AlgorithmParameters</code> must still be intialized
-     * with an <code>init()</code> method.
-     *
-     * @param algorithm
-     *            the algorithm to use.
-     * @param provider
-     *            the {@link Provider} to use.
-     * @return the new instance repesenting the desired algorithm.
-     * @throws NoSuchAlgorithmException
-     *             if the algorithm is not implemented by the {@link Provider}.
-     * @throws IllegalArgumentException
-     *             if either <code>algorithm</code> or <code>provider</code> is
-     *             <code>null</code>, or if <code>algorithm</code> is an empty
-     *             string.
-     * @since 1.4
-     */
-    public static AlgorithmParameters getInstance(String algorithm, Provider provider) throws NoSuchAlgorithmException
-    {
-	StringBuilder sb = new StringBuilder(
-		"AlgorithmParameters for algorithm [").append(algorithm)
-			.append("] from provider[").append(provider)
-			.append("] could not be created");
-	Throwable cause;
-	try
-	{
-	    Object spi = Engine.getInstance(ALGORITHM_PARAMETERS, algorithm,
-		    provider);
-	    return new AlgorithmParameters((AlgorithmParametersSpi) spi,
-		    provider, algorithm);
+	/**
+	 * Returns a new instance of <code>AlgorithmParameters</code> representing the
+	 * specified algorithm parameters.
+	 * <p>
+	 * The returned <code>AlgorithmParameters</code> must still be initialized with
+	 * an <code>init()</code> method.
+	 *
+	 * @param algorithm
+	 *            the algorithm to use.
+	 * @return the new instance repesenting the desired algorithm.
+	 * @throws NoSuchAlgorithmException
+	 *             if the algorithm is not implemented by any provider.
+	 * @throws IllegalArgumentException
+	 *             if <code>algorithm</code> is <code>null</code> or is an empty
+	 *             string.
+	 */
+	public static AlgorithmParameters getInstance(String algorithm) throws NoSuchAlgorithmException {
+		Provider[] p = Security.getProviders();
+		NoSuchAlgorithmException lastException = null;
+		for (int i = 0; i < p.length; i++)
+			try {
+				return getInstance(algorithm, p[i]);
+			} catch (NoSuchAlgorithmException x) {
+				lastException = x;
+			}
+		if (lastException != null)
+			throw lastException;
+		throw new NoSuchAlgorithmException(algorithm);
 	}
-	catch (InvocationTargetException x)
-	{
-	    cause = x.getCause();
-	    if (cause instanceof NoSuchAlgorithmException)
-		throw (NoSuchAlgorithmException) cause;
-	    if (cause == null)
-		cause = x;
+
+	/**
+	 * Returns a new instance of <code>AlgorithmParameters</code> representing the
+	 * specified algorithm parameters from the specified {@link Provider}.
+	 * <p>
+	 * The returned <code>AlgorithmParameters</code> must still be intialized with
+	 * an <code>init()</code> method.
+	 *
+	 * @param algorithm
+	 *            the algorithm to use.
+	 * @param provider
+	 *            the {@link Provider} to use.
+	 * @return the new instance repesenting the desired algorithm.
+	 * @throws NoSuchAlgorithmException
+	 *             if the algorithm is not implemented by the {@link Provider}.
+	 * @throws IllegalArgumentException
+	 *             if either <code>algorithm</code> or <code>provider</code> is
+	 *             <code>null</code>, or if <code>algorithm</code> is an empty
+	 *             string.
+	 * @since 1.4
+	 */
+	public static AlgorithmParameters getInstance(String algorithm, Provider provider) throws NoSuchAlgorithmException {
+		StringBuilder sb = new StringBuilder("AlgorithmParameters for algorithm [").append(algorithm)
+				.append("] from provider[").append(provider).append("] could not be created");
+		Throwable cause;
+		try {
+			Object spi = Engine.getInstance(ALGORITHM_PARAMETERS, algorithm, provider);
+			return new AlgorithmParameters((AlgorithmParametersSpi) spi, provider, algorithm);
+		} catch (InvocationTargetException x) {
+			cause = x.getCause();
+			if (cause instanceof NoSuchAlgorithmException)
+				throw (NoSuchAlgorithmException) cause;
+			if (cause == null)
+				cause = x;
+		} catch (ClassCastException x) {
+			cause = x;
+		}
+		NoSuchAlgorithmException x = new NoSuchAlgorithmException(sb.toString());
+		x.initCause(cause);
+		throw x;
 	}
-	catch (ClassCastException x)
-	{
-	    cause = x;
+
+	/**
+	 * Returns a new instance of <code>AlgorithmParameters</code> representing the
+	 * specified algorithm parameters from a named provider.
+	 * <p>
+	 * The returned <code>AlgorithmParameters</code> must still be intialized with
+	 * an <code>init()</code> method.
+	 * </p>
+	 *
+	 * @param algorithm
+	 *            the algorithm to use.
+	 * @param provider
+	 *            the name of the {@link Provider} to use.
+	 * @return the new instance repesenting the desired algorithm.
+	 * @throws NoSuchAlgorithmException
+	 *             if the algorithm is not implemented by the named provider.
+	 * @throws NoSuchProviderException
+	 *             if the named provider was not found.
+	 * @throws IllegalArgumentException
+	 *             if either <code>algorithm</code> or <code>provider</code> is
+	 *             <code>null</code> or empty.
+	 */
+	public static AlgorithmParameters getInstance(String algorithm, String provider)
+			throws NoSuchAlgorithmException, NoSuchProviderException {
+		if (provider == null)
+			throw new IllegalArgumentException("provider MUST NOT be null");
+		provider = provider.trim();
+		if (provider.length() == 0)
+			throw new IllegalArgumentException("provider MUST NOT be empty");
+		Provider p = Security.getProvider(provider);
+		if (p == null)
+			throw new NoSuchProviderException(provider);
+		return getInstance(algorithm, p);
 	}
-	NoSuchAlgorithmException x = new NoSuchAlgorithmException(
-		sb.toString());
-	x.initCause(cause);
-	throw x;
-    }
 
-    /**
-     * Returns a new instance of <code>AlgorithmParameters</code> representing
-     * the specified algorithm parameters from a named provider.
-     * <p>
-     * The returned <code>AlgorithmParameters</code> must still be intialized
-     * with an <code>init()</code> method.
-     * </p>
-     *
-     * @param algorithm
-     *            the algorithm to use.
-     * @param provider
-     *            the name of the {@link Provider} to use.
-     * @return the new instance repesenting the desired algorithm.
-     * @throws NoSuchAlgorithmException
-     *             if the algorithm is not implemented by the named provider.
-     * @throws NoSuchProviderException
-     *             if the named provider was not found.
-     * @throws IllegalArgumentException
-     *             if either <code>algorithm</code> or <code>provider</code> is
-     *             <code>null</code> or empty.
-     */
-    public static AlgorithmParameters getInstance(String algorithm, String provider) throws NoSuchAlgorithmException, NoSuchProviderException
-    {
-	if (provider == null)
-	    throw new IllegalArgumentException("provider MUST NOT be null");
-	provider = provider.trim();
-	if (provider.length() == 0)
-	    throw new IllegalArgumentException("provider MUST NOT be empty");
-	Provider p = Security.getProvider(provider);
-	if (p == null)
-	    throw new NoSuchProviderException(provider);
-	return getInstance(algorithm, p);
-    }
+	private AlgorithmParametersSpi paramSpi;
 
-    private AlgorithmParametersSpi paramSpi;
+	private Provider provider;
 
-    private Provider provider;
+	private String algorithm;
 
-    private String algorithm;
+	/**
+	 * Constructs a new instance of <code>AlgorithmParameters</code>.
+	 *
+	 * @param paramSpi
+	 *            the engine to use.
+	 * @param provider
+	 *            the provider to use.
+	 * @param algorithm
+	 *            the algorithm to use.
+	 */
+	protected AlgorithmParameters(AlgorithmParametersSpi paramSpi, Provider provider, String algorithm) {
+		this.paramSpi = paramSpi;
+		this.provider = provider;
+		this.algorithm = algorithm;
+	}
 
-    /**
-     * Constructs a new instance of <code>AlgorithmParameters</code>.
-     *
-     * @param paramSpi
-     *            the engine to use.
-     * @param provider
-     *            the provider to use.
-     * @param algorithm
-     *            the algorithm to use.
-     */
-    protected AlgorithmParameters(AlgorithmParametersSpi paramSpi, Provider provider, String algorithm)
-    {
-	this.paramSpi = paramSpi;
-	this.provider = provider;
-	this.algorithm = algorithm;
-    }
+	/** @return A string with the name of the algorithm used. */
+	public final String getAlgorithm() {
+		return algorithm;
+	}
 
-    /** @return A string with the name of the algorithm used. */
-    public final String getAlgorithm()
-    {
-	return algorithm;
-    }
+	/**
+	 * Returns the parameters in the default encoding format. The primary encoding
+	 * format is ASN.1 if it exists for the specified type.
+	 *
+	 * @return byte array representing the parameters.
+	 */
+	public final byte[] getEncoded() throws IOException {
+		return paramSpi.engineGetEncoded();
+	}
 
-    /**
-     * Returns the parameters in the default encoding format. The primary
-     * encoding format is ASN.1 if it exists for the specified type.
-     *
-     * @return byte array representing the parameters.
-     */
-    public final byte[] getEncoded() throws IOException
-    {
-	return paramSpi.engineGetEncoded();
-    }
+	/**
+	 * Returns the parameters in the specified encoding format. If
+	 * <code>format</code> is <code>null</code> then the ASN.1 encoding format is
+	 * used if it exists for the specified type.
+	 *
+	 * @param format
+	 *            the name of the encoding format to use.
+	 * @return the parameters encoded using the specified encoding scheme.
+	 * @throws IOException
+	 *             if an encoding exception occurs, or if this parameter object has
+	 *             not been initialized.
+	 */
+	public final byte[] getEncoded(String format) throws IOException {
+		return paramSpi.engineGetEncoded(format);
+	}
 
-    /**
-     * Returns the parameters in the specified encoding format. If
-     * <code>format</code> is <code>null</code> then the ASN.1 encoding format
-     * is used if it exists for the specified type.
-     *
-     * @param format
-     *            the name of the encoding format to use.
-     * @return the parameters encoded using the specified encoding scheme.
-     * @throws IOException
-     *             if an encoding exception occurs, or if this parameter object
-     *             has not been initialized.
-     */
-    public final byte[] getEncoded(String format) throws IOException
-    {
-	return paramSpi.engineGetEncoded(format);
-    }
+	/**
+	 * Returns a new instance of <code>AlgorithmParameters</code> as a designated
+	 * parameter specification {@link Class}.
+	 *
+	 * @param paramSpec
+	 *            the {@link Class} to use.
+	 * @return the parameter specification.
+	 * @throws InvalidParameterSpecException
+	 *             if <code>paramSpec</code> is invalid.
+	 */
+	public final AlgorithmParameterSpec getParameterSpec(Class<? extends AlgorithmParameterSpec> paramSpec)
+			throws InvalidParameterSpecException {
+		return paramSpi.engineGetParameterSpec(paramSpec);
+	}
 
-    /**
-     * Returns a new instance of <code>AlgorithmParameters</code> as a
-     * designated parameter specification {@link Class}.
-     *
-     * @param paramSpec
-     *            the {@link Class} to use.
-     * @return the parameter specification.
-     * @throws InvalidParameterSpecException
-     *             if <code>paramSpec</code> is invalid.
-     */
-    public final AlgorithmParameterSpec getParameterSpec(Class<? extends AlgorithmParameterSpec> paramSpec) throws InvalidParameterSpecException
-    {
-	return paramSpi.engineGetParameterSpec(paramSpec);
-    }
+	/** @return the provider of this parameter object. */
+	public final Provider getProvider() {
+		return provider;
+	}
 
-    /** @return the provider of this parameter object. */
-    public final Provider getProvider()
-    {
-	return provider;
-    }
+	/**
+	 * Initializes the engine with the specified {@link AlgorithmParameterSpec}.
+	 *
+	 * @param paramSpec
+	 *            A {@link AlgorithmParameterSpec} to use.
+	 * @throws InvalidParameterSpecException
+	 *             if <code>paramSpec</code> is invalid.
+	 */
+	public final void init(AlgorithmParameterSpec paramSpec) throws InvalidParameterSpecException {
+		paramSpi.engineInit(paramSpec);
+	}
 
-    /**
-     * Initializes the engine with the specified {@link AlgorithmParameterSpec}.
-     *
-     * @param paramSpec
-     *            A {@link AlgorithmParameterSpec} to use.
-     * @throws InvalidParameterSpecException
-     *             if <code>paramSpec</code> is invalid.
-     */
-    public final void init(AlgorithmParameterSpec paramSpec) throws InvalidParameterSpecException
-    {
-	paramSpi.engineInit(paramSpec);
-    }
+	/**
+	 * Initializes the engine with the specified parameters stored in the byte array
+	 * and decodes them according to the ASN.1 specification. If the ASN.1
+	 * specification exists then it succeeds otherwise an {@link IOException} is
+	 * thrown.
+	 *
+	 * @param params
+	 *            the parameters to use.
+	 * @throws IOException
+	 *             if a decoding error occurs.
+	 */
+	public final void init(byte[] params) throws IOException {
+		paramSpi.engineInit(params);
+	}
 
-    /**
-     * Initializes the engine with the specified parameters stored in the byte
-     * array and decodes them according to the ASN.1 specification. If the ASN.1
-     * specification exists then it succeeds otherwise an {@link IOException} is
-     * thrown.
-     *
-     * @param params
-     *            the parameters to use.
-     * @throws IOException
-     *             if a decoding error occurs.
-     */
-    public final void init(byte[] params) throws IOException
-    {
-	paramSpi.engineInit(params);
-    }
+	/**
+	 * Initializes the engine with the specified parameters stored in the byte array
+	 * and decodes them according to the specified decoding specification. If
+	 * <code>format</code> is <code>null</code>, then this method decodes the byte
+	 * array using the ASN.1 specification if it exists, otherwise it throws an
+	 * {@link IOException}.
+	 *
+	 * @param params
+	 *            the parameters to use.
+	 * @param format
+	 *            the name of decoding format to use.
+	 * @throws IOException
+	 *             if a decoding error occurs.
+	 */
+	public final void init(byte[] params, String format) throws IOException {
+		paramSpi.engineInit(params, format);
+	}
 
-    /**
-     * Initializes the engine with the specified parameters stored in the byte
-     * array and decodes them according to the specified decoding specification.
-     * If <code>format</code> is <code>null</code>, then this method decodes the
-     * byte array using the ASN.1 specification if it exists, otherwise it
-     * throws an {@link IOException}.
-     *
-     * @param params
-     *            the parameters to use.
-     * @param format
-     *            the name of decoding format to use.
-     * @throws IOException
-     *             if a decoding error occurs.
-     */
-    public final void init(byte[] params, String format) throws IOException
-    {
-	paramSpi.engineInit(params, format);
-    }
-
-    /**
-     * Returns a string representation of the encoded form.
-     *
-     * @return a string representation of the encoded form.
-     */
-    @Override
-    public final String toString()
-    {
-	return paramSpi.engineToString();
-    }
+	/**
+	 * Returns a string representation of the encoded form.
+	 *
+	 * @return a string representation of the encoded form.
+	 */
+	@Override
+	public final String toString() {
+		return paramSpi.engineToString();
+	}
 }

@@ -63,102 +63,94 @@ import java.util.Date;
  * 
  * @since JDK 1.2
  */
-public abstract class X509CRLEntry implements X509Extension
-{
+public abstract class X509CRLEntry implements X509Extension {
 
-    /**
-     * Creates a new X509CRLEntry
-     */
-    public X509CRLEntry()
-    {
-    }
-
-    /**
-     * Compares this X509CRLEntry to other. It checks if the object if
-     * instanceOf X509CRLEntry and then checks if the encoded form( the inner
-     * SEQUENCE) matches.
-     * 
-     * @param other
-     *            An Object to test for equality
-     * 
-     * @return true if equal, false otherwise
-     */
-    @Override
-    public boolean equals(Object other)
-    {
-	if (other instanceof X509CRLEntry)
-	{
-	    try
-	    {
-		X509CRLEntry xe = (X509CRLEntry) other;
-		if (getEncoded().length != xe.getEncoded().length)
-		    return false;
-
-		byte[] b1 = getEncoded();
-		byte[] b2 = xe.getEncoded();
-
-		for (int i = 0; i < b1.length; i++)
-		    if (b1[i] != b2[i])
-			return false;
-
-	    }
-	    catch (CRLException crle)
-	    {
-		return false;
-	    }
-	    return true;
+	/**
+	 * Creates a new X509CRLEntry
+	 */
+	public X509CRLEntry() {
 	}
-	return false;
-    }
 
-    /**
-     * Gets the DER ASN.1 encoded format for this CRL Entry, the inner SEQUENCE.
-     * 
-     * @return byte array containg encoded form
-     * 
-     * @throws CRLException
-     *             if an error occurs
-     */
-    public abstract byte[] getEncoded() throws CRLException;
+	/**
+	 * Compares this X509CRLEntry to other. It checks if the object if instanceOf
+	 * X509CRLEntry and then checks if the encoded form( the inner SEQUENCE)
+	 * matches.
+	 * 
+	 * @param other
+	 *            An Object to test for equality
+	 * 
+	 * @return true if equal, false otherwise
+	 */
+	@Override
+	public boolean equals(Object other) {
+		if (other instanceof X509CRLEntry) {
+			try {
+				X509CRLEntry xe = (X509CRLEntry) other;
+				if (getEncoded().length != xe.getEncoded().length)
+					return false;
 
-    /**
-     * Gets the revocation date in <I>revocationDate</I> for this X509CRLEntry.
-     * 
-     * @return the revocation date for this X509CRLEntry.
-     */
-    public abstract Date getRevocationDate();
+				byte[] b1 = getEncoded();
+				byte[] b2 = xe.getEncoded();
 
-    /**
-     * Gets the serial number for <I>userCertificate</I> in this X509CRLEntry.
-     * 
-     * @return the serial number for this X509CRLEntry.
-     */
-    public abstract BigInteger getSerialNumber();
+				for (int i = 0; i < b1.length; i++)
+					if (b1[i] != b2[i])
+						return false;
 
-    /**
-     * Checks if this X509CRLEntry has extensions.
-     * 
-     * @return true if it has extensions, false otherwise
-     */
-    public abstract boolean hasExtensions();
+			} catch (CRLException crle) {
+				return false;
+			}
+			return true;
+		}
+		return false;
+	}
 
-    /**
-     * Returns a hash code for this X509CRLEntry in its encoded form.
-     * 
-     * @return A hash code of this class
-     */
-    @Override
-    public int hashCode()
-    {
-	return super.hashCode();
-    }
+	/**
+	 * Gets the DER ASN.1 encoded format for this CRL Entry, the inner SEQUENCE.
+	 * 
+	 * @return byte array containg encoded form
+	 * 
+	 * @throws CRLException
+	 *             if an error occurs
+	 */
+	public abstract byte[] getEncoded() throws CRLException;
 
-    /**
-     * Returns a string that represents this X509CRLEntry.
-     * 
-     * @return a string representing this X509CRLEntry.
-     */
-    @Override
-    public abstract String toString();
+	/**
+	 * Gets the revocation date in <I>revocationDate</I> for this X509CRLEntry.
+	 * 
+	 * @return the revocation date for this X509CRLEntry.
+	 */
+	public abstract Date getRevocationDate();
+
+	/**
+	 * Gets the serial number for <I>userCertificate</I> in this X509CRLEntry.
+	 * 
+	 * @return the serial number for this X509CRLEntry.
+	 */
+	public abstract BigInteger getSerialNumber();
+
+	/**
+	 * Checks if this X509CRLEntry has extensions.
+	 * 
+	 * @return true if it has extensions, false otherwise
+	 */
+	public abstract boolean hasExtensions();
+
+	/**
+	 * Returns a hash code for this X509CRLEntry in its encoded form.
+	 * 
+	 * @return A hash code of this class
+	 */
+	@Override
+	public int hashCode() {
+		return super.hashCode();
+	}
+
+	/**
+	 * Returns a string that represents this X509CRLEntry.
+	 * 
+	 * @return a string representing this X509CRLEntry.
+	 */
+	@Override
+	public abstract String toString();
 
 }

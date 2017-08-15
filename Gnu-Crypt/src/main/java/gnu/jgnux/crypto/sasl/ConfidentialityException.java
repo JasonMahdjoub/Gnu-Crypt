@@ -44,45 +44,41 @@ import javax.security.sasl.SaslException;
  * exception is thrown to indicate that a violation has occured during the
  * processing of a <i>confidentiality</i> protection filter.
  */
-public class ConfidentialityException extends SaslException
-{
-    /**
-     * 
-     */
-    private static final long serialVersionUID = -6362270509328598062L;
+public class ConfidentialityException extends SaslException {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -6362270509328598062L;
 
-    /**
-     * Constructs a new instance of <code>ConfidentialityException</code> with
-     * no detail message.
-     */
-    public ConfidentialityException()
-    {
-	super();
-    }
+	/**
+	 * Constructs a new instance of <code>ConfidentialityException</code> with no
+	 * detail message.
+	 */
+	public ConfidentialityException() {
+		super();
+	}
 
-    /**
-     * Constructs a new instance of <code>ConfidentialityException</code> with
-     * the specified detail message.
-     *
-     * @param s
-     *            the detail message.
-     */
-    public ConfidentialityException(String s)
-    {
-	super(s);
-    }
+	/**
+	 * Constructs a new instance of <code>ConfidentialityException</code> with the
+	 * specified detail message.
+	 *
+	 * @param s
+	 *            the detail message.
+	 */
+	public ConfidentialityException(String s) {
+		super(s);
+	}
 
-    /**
-     * Constructs a new instance of <code>ConfidentialityException</code> with a
-     * detailed message and a root exception.
-     *
-     * @param s
-     *            possibly null additional detail about the exception.
-     * @param x
-     *            a possibly null root exception that caused this one.
-     */
-    public ConfidentialityException(String s, Throwable x)
-    {
-	super(s, x);
-    }
+	/**
+	 * Constructs a new instance of <code>ConfidentialityException</code> with a
+	 * detailed message and a root exception.
+	 *
+	 * @param s
+	 *            possibly null additional detail about the exception.
+	 * @param x
+	 *            a possibly null root exception that caused this one.
+	 */
+	public ConfidentialityException(String s, Throwable x) {
+		super(s, x);
+	}
 }

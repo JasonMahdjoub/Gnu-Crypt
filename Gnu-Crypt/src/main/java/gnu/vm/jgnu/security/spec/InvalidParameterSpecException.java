@@ -51,28 +51,25 @@ import gnu.vm.jgnu.security.spec.DSAParameterSpec;
  * @since 1.2
  * @status updated to 1.4
  */
-public class InvalidParameterSpecException extends GeneralSecurityException
-{
-    /**
-     * Compatible with JDK 1.2+.
-     */
-    private static final long serialVersionUID = -970468769593399342L;
+public class InvalidParameterSpecException extends GeneralSecurityException {
+	/**
+	 * Compatible with JDK 1.2+.
+	 */
+	private static final long serialVersionUID = -970468769593399342L;
 
-    /**
-     * Constructs an InvalidParameterSpecException without a message string.
-     */
-    public InvalidParameterSpecException()
-    {
-    }
+	/**
+	 * Constructs an InvalidParameterSpecException without a message string.
+	 */
+	public InvalidParameterSpecException() {
+	}
 
-    /**
-     * Constructs an InvalidParameterSpecException with a message string.
-     *
-     * @param msg
-     *            a message to display with exception
-     */
-    public InvalidParameterSpecException(String msg)
-    {
-	super(msg);
-    }
+	/**
+	 * Constructs an InvalidParameterSpecException with a message string.
+	 *
+	 * @param msg
+	 *            a message to display with exception
+	 */
+	public InvalidParameterSpecException(String msg) {
+		super(msg);
+	}
 }

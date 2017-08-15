@@ -42,67 +42,63 @@ package gnu.vm.jgnux.security.auth.callback;
  * {@link Callback}.
  *
  */
-public class UnsupportedCallbackException extends Exception
-{
+public class UnsupportedCallbackException extends Exception {
 
-    // Constants and variables
-    // -------------------------------------------------------------------------
+	// Constants and variables
+	// -------------------------------------------------------------------------
 
-    /**
-     * 
-     */
-    private static final long serialVersionUID = -1718678509440579941L;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -1718678509440579941L;
 
-    /** @serial */
-    private Callback callback;
+	/** @serial */
+	private Callback callback;
 
-    // Constructor(s)
-    // -------------------------------------------------------------------------
+	// Constructor(s)
+	// -------------------------------------------------------------------------
 
-    /**
-     * Constructs an <code>UnsupportedCallbackException</code> with no detail
-     * message.
-     *
-     * @param callback
-     *            the unrecognized {@link Callback}.
-     */
-    public UnsupportedCallbackException(Callback callback)
-    {
-	super();
+	/**
+	 * Constructs an <code>UnsupportedCallbackException</code> with no detail
+	 * message.
+	 *
+	 * @param callback
+	 *            the unrecognized {@link Callback}.
+	 */
+	public UnsupportedCallbackException(Callback callback) {
+		super();
 
-	this.callback = callback;
-    }
+		this.callback = callback;
+	}
 
-    /**
-     * Constructs an <code>UnsupportedCallbackException</code> with the
-     * specified detail message. A detail message is a {@link String} that
-     * describes this particular exception.
-     *
-     * @param callback
-     *            the unrecognized {@link Callback}.
-     * @param msg
-     *            the detail message.
-     */
-    public UnsupportedCallbackException(Callback callback, String msg)
-    {
-	super(msg);
+	/**
+	 * Constructs an <code>UnsupportedCallbackException</code> with the specified
+	 * detail message. A detail message is a {@link String} that describes this
+	 * particular exception.
+	 *
+	 * @param callback
+	 *            the unrecognized {@link Callback}.
+	 * @param msg
+	 *            the detail message.
+	 */
+	public UnsupportedCallbackException(Callback callback, String msg) {
+		super(msg);
 
-	this.callback = callback;
-    }
+		this.callback = callback;
+	}
 
-    // Class methods
-    // -------------------------------------------------------------------------
+	// Class methods
+	// -------------------------------------------------------------------------
 
-    // Instance methods
-    // -------------------------------------------------------------------------
+	// Instance methods
+	// -------------------------------------------------------------------------
 
-    /**
-     * Get the unrecognized {@link Callback}.
-     *
-     * @return the unrecognized {@link Callback}.
-     */
-    public Callback getCallback()
-    {
-	return this.callback;
-    }
+	/**
+	 * Get the unrecognized {@link Callback}.
+	 *
+	 * @return the unrecognized {@link Callback}.
+	 */
+	public Callback getCallback() {
+		return this.callback;
+	}
 }

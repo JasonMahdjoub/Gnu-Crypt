@@ -39,90 +39,68 @@ package gnu.jgnux.crypto.jce.mac;
 
 import gnu.jgnu.security.Registry;
 
-public abstract class OMacImpl extends MacAdapter
-{
-    public class Anubis extends OMacImpl
-    {
-	public Anubis()
-	{
-	    super(Registry.ANUBIS_CIPHER);
+public abstract class OMacImpl extends MacAdapter {
+	public class Anubis extends OMacImpl {
+		public Anubis() {
+			super(Registry.ANUBIS_CIPHER);
+		}
 	}
-    }
 
-    public class Blowfish extends OMacImpl
-    {
-	public Blowfish()
-	{
-	    super(Registry.BLOWFISH_CIPHER);
+	public class Blowfish extends OMacImpl {
+		public Blowfish() {
+			super(Registry.BLOWFISH_CIPHER);
+		}
 	}
-    }
 
-    public class Cast5 extends OMacImpl
-    {
-	public Cast5()
-	{
-	    super(Registry.CAST5_CIPHER);
+	public class Cast5 extends OMacImpl {
+		public Cast5() {
+			super(Registry.CAST5_CIPHER);
+		}
 	}
-    }
 
-    public class DES extends OMacImpl
-    {
-	public DES()
-	{
-	    super(Registry.DES_CIPHER);
+	public class DES extends OMacImpl {
+		public DES() {
+			super(Registry.DES_CIPHER);
+		}
 	}
-    }
 
-    public class Khazad extends OMacImpl
-    {
-	public Khazad()
-	{
-	    super(Registry.KHAZAD_CIPHER);
+	public class Khazad extends OMacImpl {
+		public Khazad() {
+			super(Registry.KHAZAD_CIPHER);
+		}
 	}
-    }
 
-    public class Rijndael extends OMacImpl
-    {
-	public Rijndael()
-	{
-	    super(Registry.RIJNDAEL_CIPHER);
+	public class Rijndael extends OMacImpl {
+		public Rijndael() {
+			super(Registry.RIJNDAEL_CIPHER);
+		}
 	}
-    }
 
-    public class Serpent extends OMacImpl
-    {
-	public Serpent()
-	{
-	    super(Registry.SERPENT_CIPHER);
+	public class Serpent extends OMacImpl {
+		public Serpent() {
+			super(Registry.SERPENT_CIPHER);
+		}
 	}
-    }
 
-    public class Square extends OMacImpl
-    {
-	public Square()
-	{
-	    super(Registry.SQUARE_CIPHER);
+	public class Square extends OMacImpl {
+		public Square() {
+			super(Registry.SQUARE_CIPHER);
+		}
 	}
-    }
 
-    public class TripleDES extends OMacImpl
-    {
-	public TripleDES()
-	{
-	    super(Registry.TRIPLEDES_CIPHER);
+	public class TripleDES extends OMacImpl {
+		public TripleDES() {
+			super(Registry.TRIPLEDES_CIPHER);
+		}
 	}
-    }
 
-    public class Twofish extends OMacImpl
-    {
-	public Twofish()
-	{
-	    super(Registry.TWOFISH_CIPHER);
+	public class Twofish extends OMacImpl {
+		public Twofish() {
+			super(Registry.TWOFISH_CIPHER);
+		}
 	}
-    }
 
-    protected OMacImpl(String name)
-    {
-	super(Registry.OMAC_PREFIX + name);
-    }
+	protected OMacImpl(String name) {
+		super(Registry.OMAC_PREFIX + name);
+	}
 }

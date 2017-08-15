@@ -73,112 +73,111 @@ import java.util.Map;
  * Menezes, A., van Oorschot, P. and S. Vanstone.</li>
  * </ol>
  */
-public interface IRandom extends Cloneable
-{
-    /**
-     * Supplement, or possibly replace, the random state of this PRNG with a
-     * random byte.
-     * <p>
-     * Implementations are not required to implement this method in any
-     * meaningful way; this may be a no-operation, and implementations may throw
-     * an {@link UnsupportedOperationException}.
-     *
-     * @param b
-     *            The byte to add.
-     */
-    void addRandomByte(byte b);
+public interface IRandom extends Cloneable {
+	/**
+	 * Supplement, or possibly replace, the random state of this PRNG with a random
+	 * byte.
+	 * <p>
+	 * Implementations are not required to implement this method in any meaningful
+	 * way; this may be a no-operation, and implementations may throw an
+	 * {@link UnsupportedOperationException}.
+	 *
+	 * @param b
+	 *            The byte to add.
+	 */
+	void addRandomByte(byte b);
 
-    /**
-     * Supplement, or possibly replace, the random state of this PRNG with a
-     * sequence of new random bytes.
-     * <p>
-     * Implementations are not required to implement this method in any
-     * meaningful way; this may be a no-operation, and implementations may throw
-     * an {@link UnsupportedOperationException}.
-     *
-     * @param in
-     *            The buffer of new random bytes to add.
-     */
-    void addRandomBytes(byte[] in);
+	/**
+	 * Supplement, or possibly replace, the random state of this PRNG with a
+	 * sequence of new random bytes.
+	 * <p>
+	 * Implementations are not required to implement this method in any meaningful
+	 * way; this may be a no-operation, and implementations may throw an
+	 * {@link UnsupportedOperationException}.
+	 *
+	 * @param in
+	 *            The buffer of new random bytes to add.
+	 */
+	void addRandomBytes(byte[] in);
 
-    /**
-     * Supplement, or possibly replace, the random state of this PRNG with a
-     * sequence of new random bytes.
-     * <p>
-     * Implementations are not required to implement this method in any
-     * meaningful way; this may be a no-operation, and implementations may throw
-     * an {@link UnsupportedOperationException}.
-     *
-     * @param in
-     *            The buffer of new random bytes to add.
-     * @param offset
-     *            The offset from whence to begin reading random bytes.
-     * @param length
-     *            The number of random bytes to add.
-     * @exception IndexOutOfBoundsException
-     *                If <i>offset</i>, <i>length</i>, or
-     *                <i>offset</i>+<i>length</i> is out of bounds.
-     */
-    void addRandomBytes(byte[] in, int offset, int length);
+	/**
+	 * Supplement, or possibly replace, the random state of this PRNG with a
+	 * sequence of new random bytes.
+	 * <p>
+	 * Implementations are not required to implement this method in any meaningful
+	 * way; this may be a no-operation, and implementations may throw an
+	 * {@link UnsupportedOperationException}.
+	 *
+	 * @param in
+	 *            The buffer of new random bytes to add.
+	 * @param offset
+	 *            The offset from whence to begin reading random bytes.
+	 * @param length
+	 *            The number of random bytes to add.
+	 * @exception IndexOutOfBoundsException
+	 *                If <i>offset</i>, <i>length</i>, or
+	 *                <i>offset</i>+<i>length</i> is out of bounds.
+	 */
+	void addRandomBytes(byte[] in, int offset, int length);
 
-    /**
-     * Returns a clone copy of this instance.
-     *
-     * @return a clone copy of this instance.
-     */
-    Object clone() throws CloneNotSupportedException;
+	/**
+	 * Returns a clone copy of this instance.
+	 *
+	 * @return a clone copy of this instance.
+	 */
+	Object clone() throws CloneNotSupportedException;
 
-    /**
-     * Initialises the pseudo-random number generator scheme with the
-     * appropriate attributes.
-     *
-     * @param attributes
-     *            a set of name-value pairs that describe the desired future
-     *            instance behaviour.
-     * @exception IllegalArgumentException
-     *                if at least one of the defined name/ value pairs contains
-     *                invalid data.
-     */
-    void init(Map<Object, ?> attributes);
+	/**
+	 * Initialises the pseudo-random number generator scheme with the appropriate
+	 * attributes.
+	 *
+	 * @param attributes
+	 *            a set of name-value pairs that describe the desired future
+	 *            instance behaviour.
+	 * @exception IllegalArgumentException
+	 *                if at least one of the defined name/ value pairs contains
+	 *                invalid data.
+	 */
+	void init(Map<Object, ?> attributes);
 
-    /**
-     * Returns the canonical name of this instance.
-     *
-     * @return the canonical name of this instance.
-     */
-    String name();
+	/**
+	 * Returns the canonical name of this instance.
+	 *
+	 * @return the canonical name of this instance.
+	 */
+	String name();
 
-    /**
-     * Returns the next 8 bits of random data generated from this instance.
-     *
-     * @return the next 8 bits of random data generated from this instance.
-     * @exception IllegalStateException
-     *                if the instance is not yet initialised.
-     * @exception LimitReachedException
-     *                if this instance has reached its theoretical limit for
-     *                generating non-repetitive pseudo-random data.
-     */
-    byte nextByte() throws IllegalStateException, LimitReachedException;
+	/**
+	 * Returns the next 8 bits of random data generated from this instance.
+	 *
+	 * @return the next 8 bits of random data generated from this instance.
+	 * @exception IllegalStateException
+	 *                if the instance is not yet initialised.
+	 * @exception LimitReachedException
+	 *                if this instance has reached its theoretical limit for
+	 *                generating non-repetitive pseudo-random data.
+	 */
+	byte nextByte() throws IllegalStateException, LimitReachedException;
 
-    /**
-     * Fills the designated byte array, starting from byte at index
-     * <code>offset</code>, for a maximum of <code>length</code> bytes with the
-     * output of this generator instance.
-     *
-     * @param out
-     *            the placeholder to contain the generated random bytes.
-     * @param offset
-     *            the starting index in <i>out</i> to consider. This method does
-     *            nothing if this parameter is not within <code>0</code> and
-     *            <code>out.length</code>.
-     * @param length
-     *            the maximum number of required random bytes. This method does
-     *            nothing if this parameter is less than <code>1</code>.
-     * @exception IllegalStateException
-     *                if the instance is not yet initialised.
-     * @exception LimitReachedException
-     *                if this instance has reached its theoretical limit for
-     *                generating non-repetitive pseudo-random data.
-     */
-    void nextBytes(byte[] out, int offset, int length) throws IllegalStateException, LimitReachedException;
+	/**
+	 * Fills the designated byte array, starting from byte at index
+	 * <code>offset</code>, for a maximum of <code>length</code> bytes with the
+	 * output of this generator instance.
+	 *
+	 * @param out
+	 *            the placeholder to contain the generated random bytes.
+	 * @param offset
+	 *            the starting index in <i>out</i> to consider. This method does
+	 *            nothing if this parameter is not within <code>0</code> and
+	 *            <code>out.length</code>.
+	 * @param length
+	 *            the maximum number of required random bytes. This method does
+	 *            nothing if this parameter is less than <code>1</code>.
+	 * @exception IllegalStateException
+	 *                if the instance is not yet initialised.
+	 * @exception LimitReachedException
+	 *                if this instance has reached its theoretical limit for
+	 *                generating non-repetitive pseudo-random data.
+	 */
+	void nextBytes(byte[] out, int offset, int length) throws IllegalStateException, LimitReachedException;
 }

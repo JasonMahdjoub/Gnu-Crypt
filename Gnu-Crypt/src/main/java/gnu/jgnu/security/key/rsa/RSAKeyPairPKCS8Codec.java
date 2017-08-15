@@ -58,245 +58,225 @@ import gnu.vm.jgnu.security.PublicKey;
  * An implementation of an {@link IKeyPairCodec} that knows how to encode /
  * decode PKCS#8 ASN.1 external representation of RSA private keys.
  */
-public class RSAKeyPairPKCS8Codec implements IKeyPairCodec
-{
+public class RSAKeyPairPKCS8Codec implements IKeyPairCodec {
 
-    private static final OID RSA_ALG_OID = new OID(Registry.RSA_OID_STRING);
+	private static final OID RSA_ALG_OID = new OID(Registry.RSA_OID_STRING);
 
-    // implicit 0-arguments constructor
+	// implicit 0-arguments constructor
 
-    /**
-     * @param input
-     *            the byte array to unmarshall into a valid RSA
-     *            {@link PrivateKey} instance. MUST NOT be null.
-     * @return a new instance of a {@link GnuRSAPrivateKey} decoded from the
-     *         <i>PrivateKeyInfo</i> material fed as <code>input</code>.
-     * @throw InvalidParameterException if an exception occurs during the
-     *        unmarshalling process.
-     */
-    @Override
-    public PrivateKey decodePrivateKey(byte[] input)
-    {
-	if (input == null)
-	    throw new InvalidParameterException("Input bytes MUST NOT be null");
+	/**
+	 * @param input
+	 *            the byte array to unmarshall into a valid RSA {@link PrivateKey}
+	 *            instance. MUST NOT be null.
+	 * @return a new instance of a {@link GnuRSAPrivateKey} decoded from the
+	 *         <i>PrivateKeyInfo</i> material fed as <code>input</code>.
+	 * @throw InvalidParameterException if an exception occurs during the
+	 *        unmarshalling process.
+	 */
+	@Override
+	public PrivateKey decodePrivateKey(byte[] input) {
+		if (input == null)
+			throw new InvalidParameterException("Input bytes MUST NOT be null");
 
-	BigInteger version, n, e, d, p, q, dP, dQ, qInv;
-	DERReader der = new DERReader(input);
-	try
-	{
-	    DERValue derPKI = der.read();
-	    DerUtil.checkIsConstructed(derPKI, "Wrong PrivateKeyInfo field");
+		BigInteger version, n, e, d, p, q, dP, dQ, qInv;
+		DERReader der = new DERReader(input);
+		try {
+			DERValue derPKI = der.read();
+			DerUtil.checkIsConstructed(derPKI, "Wrong PrivateKeyInfo field");
 
-	    DERValue derVersion = der.read();
-	    DerUtil.checkIsBigInteger(derVersion, "Wrong Version field");
-	    version = (BigInteger) derVersion.getValue();
-	    if (version.compareTo(BigInteger.ZERO) != 0)
-		throw new InvalidParameterException(
-			"Unexpected Version: " + version);
+			DERValue derVersion = der.read();
+			DerUtil.checkIsBigInteger(derVersion, "Wrong Version field");
+			version = (BigInteger) derVersion.getValue();
+			if (version.compareTo(BigInteger.ZERO) != 0)
+				throw new InvalidParameterException("Unexpected Version: " + version);
 
-	    DERValue derAlgoritmID = der.read();
-	    DerUtil.checkIsConstructed(derAlgoritmID,
-		    "Wrong AlgorithmIdentifier field");
+			DERValue derAlgoritmID = der.read();
+			DerUtil.checkIsConstructed(derAlgoritmID, "Wrong AlgorithmIdentifier field");
 
-	    DERValue derOID = der.read();
-	    OID algOID = (OID) derOID.getValue();
-	    if (!algOID.equals(RSA_ALG_OID))
-		throw new InvalidParameterException(
-			"Unexpected OID: " + algOID);
+			DERValue derOID = der.read();
+			OID algOID = (OID) derOID.getValue();
+			if (!algOID.equals(RSA_ALG_OID))
+				throw new InvalidParameterException("Unexpected OID: " + algOID);
 
-	    // rfc-2459 states that this field is OPTIONAL but NULL if/when
-	    // present
-	    DERValue val = der.read();
-	    if (val.getTag() == DER.NULL)
-		val = der.read();
+			// rfc-2459 states that this field is OPTIONAL but NULL if/when
+			// present
+			DERValue val = der.read();
+			if (val.getTag() == DER.NULL)
+				val = der.read();
 
-	    byte[] pkBytes = (byte[]) val.getValue();
-	    der = new DERReader(pkBytes);
-	    DERValue derRSAPrivateKey = der.read();
-	    DerUtil.checkIsConstructed(derRSAPrivateKey,
-		    "Wrong RSAPrivateKey field");
+			byte[] pkBytes = (byte[]) val.getValue();
+			der = new DERReader(pkBytes);
+			DERValue derRSAPrivateKey = der.read();
+			DerUtil.checkIsConstructed(derRSAPrivateKey, "Wrong RSAPrivateKey field");
 
-	    val = der.read();
-	    DerUtil.checkIsBigInteger(val, "Wrong RSAPrivateKey Version field");
-	    version = (BigInteger) val.getValue();
-	    if (version.compareTo(BigInteger.ZERO) != 0)
-		throw new InvalidParameterException(
-			"Unexpected RSAPrivateKey Version: " + version);
+			val = der.read();
+			DerUtil.checkIsBigInteger(val, "Wrong RSAPrivateKey Version field");
+			version = (BigInteger) val.getValue();
+			if (version.compareTo(BigInteger.ZERO) != 0)
+				throw new InvalidParameterException("Unexpected RSAPrivateKey Version: " + version);
 
-	    val = der.read();
-	    DerUtil.checkIsBigInteger(val, "Wrong modulus field");
-	    n = (BigInteger) val.getValue();
-	    val = der.read();
-	    DerUtil.checkIsBigInteger(val, "Wrong publicExponent field");
-	    e = (BigInteger) val.getValue();
-	    val = der.read();
-	    DerUtil.checkIsBigInteger(val, "Wrong privateExponent field");
-	    d = (BigInteger) val.getValue();
-	    val = der.read();
-	    DerUtil.checkIsBigInteger(val, "Wrong prime1 field");
-	    p = (BigInteger) val.getValue();
-	    val = der.read();
-	    DerUtil.checkIsBigInteger(val, "Wrong prime2 field");
-	    q = (BigInteger) val.getValue();
-	    val = der.read();
-	    DerUtil.checkIsBigInteger(val, "Wrong exponent1 field");
-	    dP = (BigInteger) val.getValue();
-	    val = der.read();
-	    DerUtil.checkIsBigInteger(val, "Wrong exponent2 field");
-	    dQ = (BigInteger) val.getValue();
-	    val = der.read();
-	    DerUtil.checkIsBigInteger(val, "Wrong coefficient field");
-	    qInv = (BigInteger) val.getValue();
+			val = der.read();
+			DerUtil.checkIsBigInteger(val, "Wrong modulus field");
+			n = (BigInteger) val.getValue();
+			val = der.read();
+			DerUtil.checkIsBigInteger(val, "Wrong publicExponent field");
+			e = (BigInteger) val.getValue();
+			val = der.read();
+			DerUtil.checkIsBigInteger(val, "Wrong privateExponent field");
+			d = (BigInteger) val.getValue();
+			val = der.read();
+			DerUtil.checkIsBigInteger(val, "Wrong prime1 field");
+			p = (BigInteger) val.getValue();
+			val = der.read();
+			DerUtil.checkIsBigInteger(val, "Wrong prime2 field");
+			q = (BigInteger) val.getValue();
+			val = der.read();
+			DerUtil.checkIsBigInteger(val, "Wrong exponent1 field");
+			dP = (BigInteger) val.getValue();
+			val = der.read();
+			DerUtil.checkIsBigInteger(val, "Wrong exponent2 field");
+			dQ = (BigInteger) val.getValue();
+			val = der.read();
+			DerUtil.checkIsBigInteger(val, "Wrong coefficient field");
+			qInv = (BigInteger) val.getValue();
+		} catch (IOException x) {
+			InvalidParameterException y = new InvalidParameterException();
+			y.initCause(x);
+			throw y;
+		}
+		PrivateKey result = new GnuRSAPrivateKey(Registry.PKCS8_ENCODING_ID, n, e, d, p, q, dP, dQ, qInv);
+		return result;
 	}
-	catch (IOException x)
-	{
-	    InvalidParameterException y = new InvalidParameterException();
-	    y.initCause(x);
-	    throw y;
+
+	/**
+	 * @throws InvalidParameterException
+	 *             ALWAYS.
+	 */
+	@Override
+	public PublicKey decodePublicKey(byte[] input) {
+		throw new InvalidParameterException("Wrong format for public keys");
 	}
-	PrivateKey result = new GnuRSAPrivateKey(Registry.PKCS8_ENCODING_ID, n,
-		e, d, p, q, dP, dQ, qInv);
-	return result;
-    }
 
-    /**
-     * @throws InvalidParameterException
-     *             ALWAYS.
-     */
-    @Override
-    public PublicKey decodePublicKey(byte[] input)
-    {
-	throw new InvalidParameterException("Wrong format for public keys");
-    }
+	/**
+	 * Returns the PKCS#8 ASN.1 <i>PrivateKeyInfo</i> representation of an RSA
+	 * private key. The ASN.1 specification is as follows:
+	 * 
+	 * <pre>
+	 *   PrivateKeyInfo ::= SEQUENCE {
+	 *     version              INTEGER, -- MUST be 0
+	 *     privateKeyAlgorithm  AlgorithmIdentifier,
+	 *     privateKey           OCTET STRING
+	 *   }
+	 *
+	 *   AlgorithmIdentifier ::= SEQUENCE {
+	 *     algorithm   OBJECT IDENTIFIER,
+	 *     parameters  ANY DEFINED BY algorithm OPTIONAL
+	 *   }
+	 * </pre>
+	 * <p>
+	 * As indicated in RFC-2459: "The parameters field shall have ASN.1 type NULL
+	 * for this algorithm identifier.".
+	 * <p>
+	 * The <i>privateKey</i> field, which is an OCTET STRING, contains the
+	 * DER-encoded form of the RSA private key defined as:
+	 * 
+	 * <pre>
+	 *   RSAPrivateKey ::= SEQUENCE {
+	 *     version                 INTEGER, -- MUST be 0
+	 *     modulus                 INTEGER, -- n
+	 *     publicExponent          INTEGER, -- e
+	 *     privateExponent         INTEGER, -- d
+	 *     prime1                  INTEGER, -- p
+	 *     prime2                  INTEGER, -- q
+	 *     exponent1               INTEGER, -- d mod (p-1)
+	 *     exponent2               INTEGER, -- d mod (q-1)
+	 *     coefficient             INTEGER, -- (inverse of q) mod p
+	 *   }
+	 * </pre>
+	 *
+	 * @return the DER encoded form of the ASN.1 representation of the
+	 *         <i>PrivateKeyInfo</i> field for an RSA {@link PrivateKey}..
+	 * @throw InvalidParameterException if an error occurs during the marshalling
+	 *        process.
+	 */
+	@Override
+	public byte[] encodePrivateKey(PrivateKey key) {
+		if (!(key instanceof GnuRSAPrivateKey))
+			throw new InvalidParameterException("Wrong key type");
 
-    /**
-     * Returns the PKCS#8 ASN.1 <i>PrivateKeyInfo</i> representation of an RSA
-     * private key. The ASN.1 specification is as follows:
-     * 
-     * <pre>
-     *   PrivateKeyInfo ::= SEQUENCE {
-     *     version              INTEGER, -- MUST be 0
-     *     privateKeyAlgorithm  AlgorithmIdentifier,
-     *     privateKey           OCTET STRING
-     *   }
-     *
-     *   AlgorithmIdentifier ::= SEQUENCE {
-     *     algorithm   OBJECT IDENTIFIER,
-     *     parameters  ANY DEFINED BY algorithm OPTIONAL
-     *   }
-     * </pre>
-     * <p>
-     * As indicated in RFC-2459: "The parameters field shall have ASN.1 type
-     * NULL for this algorithm identifier.".
-     * <p>
-     * The <i>privateKey</i> field, which is an OCTET STRING, contains the
-     * DER-encoded form of the RSA private key defined as:
-     * 
-     * <pre>
-     *   RSAPrivateKey ::= SEQUENCE {
-     *     version                 INTEGER, -- MUST be 0
-     *     modulus                 INTEGER, -- n
-     *     publicExponent          INTEGER, -- e
-     *     privateExponent         INTEGER, -- d
-     *     prime1                  INTEGER, -- p
-     *     prime2                  INTEGER, -- q
-     *     exponent1               INTEGER, -- d mod (p-1)
-     *     exponent2               INTEGER, -- d mod (q-1)
-     *     coefficient             INTEGER, -- (inverse of q) mod p
-     *   }
-     * </pre>
-     *
-     * @return the DER encoded form of the ASN.1 representation of the
-     *         <i>PrivateKeyInfo</i> field for an RSA {@link PrivateKey}..
-     * @throw InvalidParameterException if an error occurs during the
-     *        marshalling process.
-     */
-    @Override
-    public byte[] encodePrivateKey(PrivateKey key)
-    {
-	if (!(key instanceof GnuRSAPrivateKey))
-	    throw new InvalidParameterException("Wrong key type");
+		GnuRSAPrivateKey pk = (GnuRSAPrivateKey) key;
+		BigInteger n = pk.getN();
+		BigInteger e = pk.getE();
+		BigInteger d = pk.getPrivateExponent();
+		BigInteger p = pk.getPrimeP();
+		BigInteger q = pk.getPrimeQ();
+		BigInteger dP = pk.getPrimeExponentP();
+		BigInteger dQ = pk.getPrimeExponentQ();
+		BigInteger qInv = pk.getCrtCoefficient();
 
-	GnuRSAPrivateKey pk = (GnuRSAPrivateKey) key;
-	BigInteger n = pk.getN();
-	BigInteger e = pk.getE();
-	BigInteger d = pk.getPrivateExponent();
-	BigInteger p = pk.getPrimeP();
-	BigInteger q = pk.getPrimeQ();
-	BigInteger dP = pk.getPrimeExponentP();
-	BigInteger dQ = pk.getPrimeExponentQ();
-	BigInteger qInv = pk.getCrtCoefficient();
+		DERValue derVersion = new DERValue(DER.INTEGER, BigInteger.ZERO);
 
-	DERValue derVersion = new DERValue(DER.INTEGER, BigInteger.ZERO);
+		DERValue derOID = new DERValue(DER.OBJECT_IDENTIFIER, RSA_ALG_OID);
 
-	DERValue derOID = new DERValue(DER.OBJECT_IDENTIFIER, RSA_ALG_OID);
+		ArrayList<DERValue> algorithmID = new ArrayList<>(2);
+		algorithmID.add(derOID);
+		algorithmID.add(new DERValue(DER.NULL, null));
+		DERValue derAlgorithmID = new DERValue(DER.CONSTRUCTED | DER.SEQUENCE, algorithmID);
 
-	ArrayList<DERValue> algorithmID = new ArrayList<>(2);
-	algorithmID.add(derOID);
-	algorithmID.add(new DERValue(DER.NULL, null));
-	DERValue derAlgorithmID = new DERValue(DER.CONSTRUCTED | DER.SEQUENCE,
-		algorithmID);
+		DERValue derRSAVersion = new DERValue(DER.INTEGER, BigInteger.ZERO);
+		DERValue derN = new DERValue(DER.INTEGER, n);
+		DERValue derE = new DERValue(DER.INTEGER, e);
+		DERValue derD = new DERValue(DER.INTEGER, d);
+		DERValue derP = new DERValue(DER.INTEGER, p);
+		DERValue derQ = new DERValue(DER.INTEGER, q);
+		DERValue derDP = new DERValue(DER.INTEGER, dP);
+		DERValue derDQ = new DERValue(DER.INTEGER, dQ);
+		DERValue derQInv = new DERValue(DER.INTEGER, qInv);
 
-	DERValue derRSAVersion = new DERValue(DER.INTEGER, BigInteger.ZERO);
-	DERValue derN = new DERValue(DER.INTEGER, n);
-	DERValue derE = new DERValue(DER.INTEGER, e);
-	DERValue derD = new DERValue(DER.INTEGER, d);
-	DERValue derP = new DERValue(DER.INTEGER, p);
-	DERValue derQ = new DERValue(DER.INTEGER, q);
-	DERValue derDP = new DERValue(DER.INTEGER, dP);
-	DERValue derDQ = new DERValue(DER.INTEGER, dQ);
-	DERValue derQInv = new DERValue(DER.INTEGER, qInv);
+		ArrayList<DERValue> rsaPrivateKey = new ArrayList<>();
+		rsaPrivateKey.add(derRSAVersion);
+		rsaPrivateKey.add(derN);
+		rsaPrivateKey.add(derE);
+		rsaPrivateKey.add(derD);
+		rsaPrivateKey.add(derP);
+		rsaPrivateKey.add(derQ);
+		rsaPrivateKey.add(derDP);
+		rsaPrivateKey.add(derDQ);
+		rsaPrivateKey.add(derQInv);
+		DERValue derRSAPrivateKey = new DERValue(DER.CONSTRUCTED | DER.SEQUENCE, rsaPrivateKey);
+		byte[] pkBytes = derRSAPrivateKey.getEncoded();
+		DERValue derPrivateKey = new DERValue(DER.OCTET_STRING, pkBytes);
 
-	ArrayList<DERValue> rsaPrivateKey = new ArrayList<>();
-	rsaPrivateKey.add(derRSAVersion);
-	rsaPrivateKey.add(derN);
-	rsaPrivateKey.add(derE);
-	rsaPrivateKey.add(derD);
-	rsaPrivateKey.add(derP);
-	rsaPrivateKey.add(derQ);
-	rsaPrivateKey.add(derDP);
-	rsaPrivateKey.add(derDQ);
-	rsaPrivateKey.add(derQInv);
-	DERValue derRSAPrivateKey = new DERValue(DER.CONSTRUCTED | DER.SEQUENCE,
-		rsaPrivateKey);
-	byte[] pkBytes = derRSAPrivateKey.getEncoded();
-	DERValue derPrivateKey = new DERValue(DER.OCTET_STRING, pkBytes);
+		ArrayList<DERValue> pki = new ArrayList<>(3);
+		pki.add(derVersion);
+		pki.add(derAlgorithmID);
+		pki.add(derPrivateKey);
+		DERValue derPKI = new DERValue(DER.CONSTRUCTED | DER.SEQUENCE, pki);
 
-	ArrayList<DERValue> pki = new ArrayList<>(3);
-	pki.add(derVersion);
-	pki.add(derAlgorithmID);
-	pki.add(derPrivateKey);
-	DERValue derPKI = new DERValue(DER.CONSTRUCTED | DER.SEQUENCE, pki);
-
-	byte[] result;
-	ByteArrayOutputStream baos = new ByteArrayOutputStream();
-	try
-	{
-	    DERWriter.write(baos, derPKI);
-	    result = baos.toByteArray();
+		byte[] result;
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		try {
+			DERWriter.write(baos, derPKI);
+			result = baos.toByteArray();
+		} catch (IOException x) {
+			InvalidParameterException y = new InvalidParameterException();
+			y.initCause(x);
+			throw y;
+		}
+		return result;
 	}
-	catch (IOException x)
-	{
-	    InvalidParameterException y = new InvalidParameterException();
-	    y.initCause(x);
-	    throw y;
+
+	/**
+	 * @throws InvalidParameterException
+	 *             ALWAYS.
+	 */
+	@Override
+	public byte[] encodePublicKey(PublicKey key) {
+		throw new InvalidParameterException("Wrong format for public keys");
 	}
-	return result;
-    }
 
-    /**
-     * @throws InvalidParameterException
-     *             ALWAYS.
-     */
-    @Override
-    public byte[] encodePublicKey(PublicKey key)
-    {
-	throw new InvalidParameterException("Wrong format for public keys");
-    }
-
-    @Override
-    public int getFormatID()
-    {
-	return PKCS8_FORMAT;
-    }
+	@Override
+	public int getFormatID() {
+		return PKCS8_FORMAT;
+	}
 }

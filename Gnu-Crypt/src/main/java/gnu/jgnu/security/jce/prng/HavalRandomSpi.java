@@ -43,15 +43,13 @@ import gnu.jgnu.security.Registry;
  * The implementation of the HAVAL-based SecureRandom <i>Service Provider
  * Interface</i> (<b>SPI</b>) adapter.
  */
-public class HavalRandomSpi extends SecureRandomAdapter
-{
-    /**
-     * 
-     */
-    private static final long serialVersionUID = -8063732691196112589L;
+public class HavalRandomSpi extends SecureRandomAdapter {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -8063732691196112589L;
 
-    public HavalRandomSpi()
-    {
-	super(Registry.HAVAL_HASH);
-    }
+	public HavalRandomSpi() {
+		super(Registry.HAVAL_HASH);
+	}
 }

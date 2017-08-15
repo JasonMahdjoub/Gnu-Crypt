@@ -52,73 +52,66 @@ import java.util.Collections;
  * @see CertStore
  * @since 1.4
  */
-public class CollectionCertStoreParameters implements CertStoreParameters
-{
+public class CollectionCertStoreParameters implements CertStoreParameters {
 
-    // Constants and fields.
-    // ------------------------------------------------------------------------
+	// Constants and fields.
+	// ------------------------------------------------------------------------
 
-    /** The underlying collection. */
-    private final Collection<?> collection;
+	/** The underlying collection. */
+	private final Collection<?> collection;
 
-    // Constructors.
-    // ------------------------------------------------------------------------
+	// Constructors.
+	// ------------------------------------------------------------------------
 
-    /**
-     * Creates a new CollectionCertStoreParameters with an empty, immutable
-     * collection.
-     */
-    public CollectionCertStoreParameters()
-    {
-	this(Collections.EMPTY_LIST);
-    }
+	/**
+	 * Creates a new CollectionCertStoreParameters with an empty, immutable
+	 * collection.
+	 */
+	public CollectionCertStoreParameters() {
+		this(Collections.EMPTY_LIST);
+	}
 
-    /**
-     * Create a new CollectionCertStoreParameters with the specified collection.
-     * The argument is not copied, and subsequent changes to the collection will
-     * change this class's collection.
-     *
-     * @param collection
-     *            The collection.
-     * @throws NullPointerException
-     *             If <i>collection</i> is null.
-     */
-    public CollectionCertStoreParameters(Collection<?> collection)
-    {
-	if (collection == null)
-	    throw new NullPointerException();
-	this.collection = collection;
-    }
+	/**
+	 * Create a new CollectionCertStoreParameters with the specified collection. The
+	 * argument is not copied, and subsequent changes to the collection will change
+	 * this class's collection.
+	 *
+	 * @param collection
+	 *            The collection.
+	 * @throws NullPointerException
+	 *             If <i>collection</i> is null.
+	 */
+	public CollectionCertStoreParameters(Collection<?> collection) {
+		if (collection == null)
+			throw new NullPointerException();
+		this.collection = collection;
+	}
 
-    // Instance methods.
-    // ------------------------------------------------------------------------
+	// Instance methods.
+	// ------------------------------------------------------------------------
 
-    @Override
-    public Object clone()
-    {
-	return new CollectionCertStoreParameters(new ArrayList<>(collection));
-    }
+	@Override
+	public Object clone() {
+		return new CollectionCertStoreParameters(new ArrayList<>(collection));
+	}
 
-    /**
-     * Return the underlying collection. The collection is not copied before
-     * being returned, so callers may update the collection that is returned.
-     *
-     * @return The collection.
-     */
-    public Collection<?> getCollection()
-    {
-	return collection;
-    }
+	/**
+	 * Return the underlying collection. The collection is not copied before being
+	 * returned, so callers may update the collection that is returned.
+	 *
+	 * @return The collection.
+	 */
+	public Collection<?> getCollection() {
+		return collection;
+	}
 
-    /**
-     * Return a string representation of these parameters.
-     *
-     * @return The string representation of these parameters.
-     */
-    @Override
-    public String toString()
-    {
-	return "CollectionCertStoreParameters: [ collection: " + collection
-		+ " ]";
-    }
+	/**
+	 * Return a string representation of these parameters.
+	 *
+	 * @return The string representation of these parameters.
+	 */
+	@Override
+	public String toString() {
+		return "CollectionCertStoreParameters: [ collection: " + collection + " ]";
+	}
 }

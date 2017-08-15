@@ -43,31 +43,24 @@ import gnu.vm.jgnu.security.MessageDigest;
 /**
  * Utility methods for SASL-related classes.
  */
-public class SaslUtil
-{
-    /** Returns the context of the designated hash as a string. */
-    public static final String dump(MessageDigest md)
-    {
-	String result;
-	try
-	{
-	    result = Util.dumpString(((MessageDigest) md.clone()).digest());
+public class SaslUtil {
+	/** Returns the context of the designated hash as a string. */
+	public static final String dump(MessageDigest md) {
+		String result;
+		try {
+			result = Util.dumpString(((MessageDigest) md.clone()).digest());
+		} catch (Exception ignored) {
+			result = "...";
+		}
+		return result;
 	}
-	catch (Exception ignored)
-	{
-	    result = "...";
+
+	public static final boolean validEmailAddress(String address) {
+		// need to do better than this
+		return (address.indexOf("@") != -1);
 	}
-	return result;
-    }
 
-    public static final boolean validEmailAddress(String address)
-    {
-	// need to do better than this
-	return (address.indexOf("@") != -1);
-    }
-
-    private SaslUtil()
-    {
-	super();
-    }
+	private SaslUtil() {
+		super();
+	}
 }

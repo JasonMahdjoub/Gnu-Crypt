@@ -68,267 +68,239 @@ import gnu.vm.jgnu.security.spec.AlgorithmParameterSpec;
  * @author Mark Benvenuto
  * @author Casey Marshall
  */
-public abstract class KeyPairGenerator extends KeyPairGeneratorSpi
-{
-    /** The service name for key pair generators. */
-    private static final String KEY_PAIR_GENERATOR = "KeyPairGenerator";
+public abstract class KeyPairGenerator extends KeyPairGeneratorSpi {
+	/** The service name for key pair generators. */
+	private static final String KEY_PAIR_GENERATOR = "KeyPairGenerator";
 
-    /**
-     * Returns a new instance of <code>KeyPairGenerator</code> which generates
-     * key-pairs for the specified algorithm.
-     *
-     * @param algorithm
-     *            the name of the algorithm to use.
-     * @return a new instance repesenting the desired algorithm.
-     * @throws NoSuchAlgorithmException
-     *             if the algorithm is not implemented by any provider.
-     * @throws IllegalArgumentException
-     *             if <code>algorithm</code> is <code>null</code> or is an empty
-     *             string.
-     */
-    public static KeyPairGenerator getInstance(String algorithm) throws NoSuchAlgorithmException
-    {
-	Provider[] p = Security.getProviders();
-	NoSuchAlgorithmException lastException = null;
-	for (int i = 0; i < p.length; i++)
-	    try
-	    {
-		return getInstance(algorithm, p[i]);
-	    }
-	    catch (NoSuchAlgorithmException x)
-	    {
-		lastException = x;
-	    }
-	if (lastException != null)
-	    throw lastException;
-	throw new NoSuchAlgorithmException(algorithm);
-    }
-
-    /**
-     * Returns a new instance of <code>KeyPairGenerator</code> which generates
-     * key-pairs for the specified algorithm from a designated {@link Provider}.
-     *
-     * @param algorithm
-     *            the name of the algorithm to use.
-     * @param provider
-     *            the {@link Provider} to use.
-     * @return a new insatnce repesenting the desired algorithm.
-     * @throws NoSuchAlgorithmException
-     *             if the algorithm is not implemented by the {@link Provider}.
-     * @throws IllegalArgumentException
-     *             if either <code>algorithm</code> or <code>provider</code> is
-     *             <code>null</code>, or if <code>algorithm</code> is an empty
-     *             string.
-     * @since 1.4
-     * @see Provider
-     */
-    public static KeyPairGenerator getInstance(String algorithm, Provider provider) throws NoSuchAlgorithmException
-    {
-	StringBuilder sb = new StringBuilder("KeyPairGenerator for algorithm [")
-		.append(algorithm).append("] from provider[").append(provider)
-		.append("] ");
-	Object o;
-	try
-	{
-	    o = Engine.getInstance(KEY_PAIR_GENERATOR, algorithm, provider);
+	/**
+	 * Returns a new instance of <code>KeyPairGenerator</code> which generates
+	 * key-pairs for the specified algorithm.
+	 *
+	 * @param algorithm
+	 *            the name of the algorithm to use.
+	 * @return a new instance repesenting the desired algorithm.
+	 * @throws NoSuchAlgorithmException
+	 *             if the algorithm is not implemented by any provider.
+	 * @throws IllegalArgumentException
+	 *             if <code>algorithm</code> is <code>null</code> or is an empty
+	 *             string.
+	 */
+	public static KeyPairGenerator getInstance(String algorithm) throws NoSuchAlgorithmException {
+		Provider[] p = Security.getProviders();
+		NoSuchAlgorithmException lastException = null;
+		for (int i = 0; i < p.length; i++)
+			try {
+				return getInstance(algorithm, p[i]);
+			} catch (NoSuchAlgorithmException x) {
+				lastException = x;
+			}
+		if (lastException != null)
+			throw lastException;
+		throw new NoSuchAlgorithmException(algorithm);
 	}
-	catch (InvocationTargetException x)
-	{
-	    Throwable cause = x.getCause();
-	    if (cause instanceof NoSuchAlgorithmException)
-		throw (NoSuchAlgorithmException) cause;
-	    if (cause == null)
-		cause = x;
-	    sb.append("could not be created");
-	    NoSuchAlgorithmException y = new NoSuchAlgorithmException(
-		    sb.toString());
-	    y.initCause(cause);
-	    throw y;
+
+	/**
+	 * Returns a new instance of <code>KeyPairGenerator</code> which generates
+	 * key-pairs for the specified algorithm from a designated {@link Provider}.
+	 *
+	 * @param algorithm
+	 *            the name of the algorithm to use.
+	 * @param provider
+	 *            the {@link Provider} to use.
+	 * @return a new insatnce repesenting the desired algorithm.
+	 * @throws NoSuchAlgorithmException
+	 *             if the algorithm is not implemented by the {@link Provider}.
+	 * @throws IllegalArgumentException
+	 *             if either <code>algorithm</code> or <code>provider</code> is
+	 *             <code>null</code>, or if <code>algorithm</code> is an empty
+	 *             string.
+	 * @since 1.4
+	 * @see Provider
+	 */
+	public static KeyPairGenerator getInstance(String algorithm, Provider provider) throws NoSuchAlgorithmException {
+		StringBuilder sb = new StringBuilder("KeyPairGenerator for algorithm [").append(algorithm)
+				.append("] from provider[").append(provider).append("] ");
+		Object o;
+		try {
+			o = Engine.getInstance(KEY_PAIR_GENERATOR, algorithm, provider);
+		} catch (InvocationTargetException x) {
+			Throwable cause = x.getCause();
+			if (cause instanceof NoSuchAlgorithmException)
+				throw (NoSuchAlgorithmException) cause;
+			if (cause == null)
+				cause = x;
+			sb.append("could not be created");
+			NoSuchAlgorithmException y = new NoSuchAlgorithmException(sb.toString());
+			y.initCause(cause);
+			throw y;
+		}
+		KeyPairGenerator result;
+		if (o instanceof KeyPairGenerator) {
+			result = (KeyPairGenerator) o;
+			result.algorithm = algorithm;
+		} else if (o instanceof KeyPairGeneratorSpi)
+			result = new DummyKeyPairGenerator((KeyPairGeneratorSpi) o, algorithm);
+		else {
+			sb.append("is of an unexpected Type: ").append(o.getClass().getName());
+			throw new NoSuchAlgorithmException(sb.toString());
+		}
+		result.provider = provider;
+		return result;
 	}
-	KeyPairGenerator result;
-	if (o instanceof KeyPairGenerator)
-	{
-	    result = (KeyPairGenerator) o;
-	    result.algorithm = algorithm;
+
+	/**
+	 * Returns a new instance of <code>KeyPairGenerator</code> which generates
+	 * key-pairs for the specified algorithm from a named provider.
+	 *
+	 * @param algorithm
+	 *            the name of the algorithm to use.
+	 * @param provider
+	 *            the name of a {@link Provider} to use.
+	 * @return a new instance repesenting the desired algorithm.
+	 * @throws NoSuchAlgorithmException
+	 *             if the algorithm is not implemented by the named provider.
+	 * @throws NoSuchProviderException
+	 *             if the named provider was not found.
+	 * @throws IllegalArgumentException
+	 *             if either <code>algorithm</code> or <code>provider</code> is
+	 *             <code>null</code> or empty.
+	 */
+	public static KeyPairGenerator getInstance(String algorithm, String provider)
+			throws NoSuchAlgorithmException, NoSuchProviderException {
+		if (provider == null)
+			throw new IllegalArgumentException("provider MUST NOT be null");
+		provider = provider.trim();
+		if (provider.length() == 0)
+			throw new IllegalArgumentException("provider MUST NOT be empty");
+		Provider p = Security.getProvider(provider);
+		if (p == null)
+			throw new NoSuchProviderException(provider);
+		return getInstance(algorithm, p);
 	}
-	else if (o instanceof KeyPairGeneratorSpi)
-	    result = new DummyKeyPairGenerator((KeyPairGeneratorSpi) o,
-		    algorithm);
-	else
-	{
-	    sb.append("is of an unexpected Type: ")
-		    .append(o.getClass().getName());
-	    throw new NoSuchAlgorithmException(sb.toString());
+
+	Provider provider;
+
+	private String algorithm;
+
+	/**
+	 * Constructs a new instance of <code>KeyPairGenerator</code>.
+	 *
+	 * @param algorithm
+	 *            the algorithm to use.
+	 */
+	protected KeyPairGenerator(String algorithm) {
+		this.algorithm = algorithm;
+		this.provider = null;
 	}
-	result.provider = provider;
-	return result;
-    }
 
-    /**
-     * Returns a new instance of <code>KeyPairGenerator</code> which generates
-     * key-pairs for the specified algorithm from a named provider.
-     *
-     * @param algorithm
-     *            the name of the algorithm to use.
-     * @param provider
-     *            the name of a {@link Provider} to use.
-     * @return a new instance repesenting the desired algorithm.
-     * @throws NoSuchAlgorithmException
-     *             if the algorithm is not implemented by the named provider.
-     * @throws NoSuchProviderException
-     *             if the named provider was not found.
-     * @throws IllegalArgumentException
-     *             if either <code>algorithm</code> or <code>provider</code> is
-     *             <code>null</code> or empty.
-     */
-    public static KeyPairGenerator getInstance(String algorithm, String provider) throws NoSuchAlgorithmException, NoSuchProviderException
-    {
-	if (provider == null)
-	    throw new IllegalArgumentException("provider MUST NOT be null");
-	provider = provider.trim();
-	if (provider.length() == 0)
-	    throw new IllegalArgumentException("provider MUST NOT be empty");
-	Provider p = Security.getProvider(provider);
-	if (p == null)
-	    throw new NoSuchProviderException(provider);
-	return getInstance(algorithm, p);
-    }
-
-    Provider provider;
-
-    private String algorithm;
-
-    /**
-     * Constructs a new instance of <code>KeyPairGenerator</code>.
-     *
-     * @param algorithm
-     *            the algorithm to use.
-     */
-    protected KeyPairGenerator(String algorithm)
-    {
-	this.algorithm = algorithm;
-	this.provider = null;
-    }
-
-    /**
-     * Generates a new "DSA" {@link KeyPair} from the "GNU" security provider.
-     *
-     * <p>
-     * This method generates a unique key pair each time it is called.
-     * </p>
-     *
-     * @return a new unique {@link KeyPair}.
-     * @see #genKeyPair()
-     */
-    @Override
-    public KeyPair generateKeyPair()
-    {
-	return genKeyPair();
-    }
-
-    /**
-     * Generates a new "DSA" {@link KeyPair} from the "GNU" security provider.
-     *
-     * <p>
-     * This method generates a unique key-pair each time it is called.
-     * </p>
-     *
-     * @return a new unique {@link KeyPair}.
-     * @see #generateKeyPair()
-     * @since 1.2
-     */
-    public final KeyPair genKeyPair()
-    {
-	try
-	{
-	    return getInstance("DSA", "GNU").generateKeyPair();
+	/**
+	 * Generates a new "DSA" {@link KeyPair} from the "GNU" security provider.
+	 *
+	 * <p>
+	 * This method generates a unique key pair each time it is called.
+	 * </p>
+	 *
+	 * @return a new unique {@link KeyPair}.
+	 * @see #genKeyPair()
+	 */
+	@Override
+	public KeyPair generateKeyPair() {
+		return genKeyPair();
 	}
-	catch (Exception e)
-	{
-	    System.err.println("genKeyPair failed: " + e);
-	    e.printStackTrace();
-	    return null;
+
+	/**
+	 * Generates a new "DSA" {@link KeyPair} from the "GNU" security provider.
+	 *
+	 * <p>
+	 * This method generates a unique key-pair each time it is called.
+	 * </p>
+	 *
+	 * @return a new unique {@link KeyPair}.
+	 * @see #generateKeyPair()
+	 * @since 1.2
+	 */
+	public final KeyPair genKeyPair() {
+		try {
+			return getInstance("DSA", "GNU").generateKeyPair();
+		} catch (Exception e) {
+			System.err.println("genKeyPair failed: " + e);
+			e.printStackTrace();
+			return null;
+		}
 	}
-    }
 
-    /**
-     * Returns the name of the algorithm used.
-     *
-     * @return the name of the algorithm used.
-     */
-    public String getAlgorithm()
-    {
-	return algorithm;
-    }
+	/**
+	 * Returns the name of the algorithm used.
+	 *
+	 * @return the name of the algorithm used.
+	 */
+	public String getAlgorithm() {
+		return algorithm;
+	}
 
-    /**
-     * Returns the {@link Provider} of this instance.
-     *
-     * @return the {@link Provider} of this instance.
-     */
-    public final Provider getProvider()
-    {
-	return provider;
-    }
+	/**
+	 * Returns the {@link Provider} of this instance.
+	 *
+	 * @return the {@link Provider} of this instance.
+	 */
+	public final Provider getProvider() {
+		return provider;
+	}
 
-    /**
-     * Initializes this instance with the specified
-     * {@link AlgorithmParameterSpec}. Since no source of randomness is
-     * specified, a default one will be used.
-     *
-     * @param params
-     *            the {@link AlgorithmParameterSpec} to use.
-     * @throws InvalidAlgorithmParameterException
-     *             if the designated specifications are invalid.
-     * @since 1.2
-     */
-    public void initialize(AlgorithmParameterSpec params) throws InvalidAlgorithmParameterException
-    {
-	initialize(params, new SecureRandom());
-    }
+	/**
+	 * Initializes this instance with the specified {@link AlgorithmParameterSpec}.
+	 * Since no source of randomness is specified, a default one will be used.
+	 *
+	 * @param params
+	 *            the {@link AlgorithmParameterSpec} to use.
+	 * @throws InvalidAlgorithmParameterException
+	 *             if the designated specifications are invalid.
+	 * @since 1.2
+	 */
+	public void initialize(AlgorithmParameterSpec params) throws InvalidAlgorithmParameterException {
+		initialize(params, new SecureRandom());
+	}
 
-    /**
-     * Initializes this instance with the specified
-     * {@link AlgorithmParameterSpec} and {@link SecureRandom}.
-     *
-     * @param params
-     *            the {@link AlgorithmParameterSpec} to use.
-     * @param random
-     *            the {@link SecureRandom} to use.
-     * @throws InvalidAlgorithmParameterException
-     *             if the designated specifications are invalid.
-     * @since 1.2
-     */
-    @Override
-    public void initialize(AlgorithmParameterSpec params, SecureRandom random) throws InvalidAlgorithmParameterException
-    {
-	super.initialize(params, random);
-    }
+	/**
+	 * Initializes this instance with the specified {@link AlgorithmParameterSpec}
+	 * and {@link SecureRandom}.
+	 *
+	 * @param params
+	 *            the {@link AlgorithmParameterSpec} to use.
+	 * @param random
+	 *            the {@link SecureRandom} to use.
+	 * @throws InvalidAlgorithmParameterException
+	 *             if the designated specifications are invalid.
+	 * @since 1.2
+	 */
+	@Override
+	public void initialize(AlgorithmParameterSpec params, SecureRandom random)
+			throws InvalidAlgorithmParameterException {
+		super.initialize(params, random);
+	}
 
-    /**
-     * Initializes this instance for the specified key size. Since no source of
-     * randomness is specified, a default one will be used.
-     *
-     * @param keysize
-     *            the size of keys to use.
-     */
-    public void initialize(int keysize)
-    {
-	initialize(keysize, new SecureRandom());
-    }
+	/**
+	 * Initializes this instance for the specified key size. Since no source of
+	 * randomness is specified, a default one will be used.
+	 *
+	 * @param keysize
+	 *            the size of keys to use.
+	 */
+	public void initialize(int keysize) {
+		initialize(keysize, new SecureRandom());
+	}
 
-    /**
-     * Initializes this instance for the specified key size and
-     * {@link SecureRandom}.
-     *
-     * @param keysize
-     *            the size of keys to use.
-     * @param random
-     *            the {@link SecureRandom} to use.
-     * @since 1.2
-     */
-    @Override
-    public void initialize(int keysize, SecureRandom random)
-    {
-    }
+	/**
+	 * Initializes this instance for the specified key size and
+	 * {@link SecureRandom}.
+	 *
+	 * @param keysize
+	 *            the size of keys to use.
+	 * @param random
+	 *            the {@link SecureRandom} to use.
+	 * @since 1.2
+	 */
+	@Override
+	public void initialize(int keysize, SecureRandom random) {
+	}
 }

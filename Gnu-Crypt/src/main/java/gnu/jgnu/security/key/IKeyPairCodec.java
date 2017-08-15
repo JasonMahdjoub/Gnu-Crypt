@@ -47,84 +47,81 @@ import gnu.vm.jgnu.security.PublicKey;
  * public and private keys for storage and on-the-wire transmission, as well as
  * (b) re-creating their internal Java representation from external sources.
  */
-public interface IKeyPairCodec
-{
-    /** Constant identifying the <i>Raw</i> encoding format. */
-    int RAW_FORMAT = Registry.RAW_ENCODING_ID;
+public interface IKeyPairCodec {
+	/** Constant identifying the <i>Raw</i> encoding format. */
+	int RAW_FORMAT = Registry.RAW_ENCODING_ID;
 
-    /** Constant identifying the <i>X.509</i> encoding format. */
-    int X509_FORMAT = Registry.X509_ENCODING_ID;
+	/** Constant identifying the <i>X.509</i> encoding format. */
+	int X509_FORMAT = Registry.X509_ENCODING_ID;
 
-    /** Constant identifying the <i>PKCS#8</i> encoding format. */
-    int PKCS8_FORMAT = Registry.PKCS8_ENCODING_ID;
+	/** Constant identifying the <i>PKCS#8</i> encoding format. */
+	int PKCS8_FORMAT = Registry.PKCS8_ENCODING_ID;
 
-    /**
-     * Constant identifying the <i>ASN.1</i> encoding format: a combined
-     * encoding of <i>X.509</i> for public keys, and <i>PKCS#8</i> for private
-     * ones.
-     */
-    int ASN1_FORMAT = Registry.ASN1_ENCODING_ID;
+	/**
+	 * Constant identifying the <i>ASN.1</i> encoding format: a combined encoding of
+	 * <i>X.509</i> for public keys, and <i>PKCS#8</i> for private ones.
+	 */
+	int ASN1_FORMAT = Registry.ASN1_ENCODING_ID;
 
-    /**
-     * Decodes an instance of an external private key into its native Java
-     * representation.
-     *
-     * @param input
-     *            the source of the externalised key to decode.
-     * @return a concrete instance of a private key, reconstructed from the
-     *         designated input.
-     * @exception IllegalArgumentException
-     *                if the designated input does not contain a known
-     *                representation of a private key for the format supported
-     *                by the concrete codec.
-     */
-    PrivateKey decodePrivateKey(byte[] input);
+	/**
+	 * Decodes an instance of an external private key into its native Java
+	 * representation.
+	 *
+	 * @param input
+	 *            the source of the externalised key to decode.
+	 * @return a concrete instance of a private key, reconstructed from the
+	 *         designated input.
+	 * @exception IllegalArgumentException
+	 *                if the designated input does not contain a known
+	 *                representation of a private key for the format supported by
+	 *                the concrete codec.
+	 */
+	PrivateKey decodePrivateKey(byte[] input);
 
-    /**
-     * Decodes an instance of an external public key into its native Java
-     * representation.
-     *
-     * @param input
-     *            the source of the externalised key to decode.
-     * @return a concrete instance of a public key, reconstructed from the
-     *         designated input.
-     * @exception IllegalArgumentException
-     *                if the designated input does not contain a known
-     *                representation of a public key for the format supported by
-     *                the concrete codec.
-     */
-    PublicKey decodePublicKey(byte[] input);
+	/**
+	 * Decodes an instance of an external public key into its native Java
+	 * representation.
+	 *
+	 * @param input
+	 *            the source of the externalised key to decode.
+	 * @return a concrete instance of a public key, reconstructed from the
+	 *         designated input.
+	 * @exception IllegalArgumentException
+	 *                if the designated input does not contain a known
+	 *                representation of a public key for the format supported by the
+	 *                concrete codec.
+	 */
+	PublicKey decodePublicKey(byte[] input);
 
-    /**
-     * Encodes an instance of a private key for storage or transmission
-     * purposes.
-     *
-     * @param key
-     *            the non-null key to encode.
-     * @return a byte sequence representing the encoding of the designated key
-     *         according to the format supported by this codec.
-     * @exception IllegalArgumentException
-     *                if the designated key is not supported by this codec.
-     */
-    byte[] encodePrivateKey(PrivateKey key);
+	/**
+	 * Encodes an instance of a private key for storage or transmission purposes.
+	 *
+	 * @param key
+	 *            the non-null key to encode.
+	 * @return a byte sequence representing the encoding of the designated key
+	 *         according to the format supported by this codec.
+	 * @exception IllegalArgumentException
+	 *                if the designated key is not supported by this codec.
+	 */
+	byte[] encodePrivateKey(PrivateKey key);
 
-    /**
-     * Encodes an instance of a public key for storage or transmission purposes.
-     *
-     * @param key
-     *            the non-null key to encode.
-     * @return a byte sequence representing the encoding of the designated key
-     *         according to the format supported by this codec.
-     * @exception IllegalArgumentException
-     *                if the designated key is not supported by this codec.
-     */
-    byte[] encodePublicKey(PublicKey key);
+	/**
+	 * Encodes an instance of a public key for storage or transmission purposes.
+	 *
+	 * @param key
+	 *            the non-null key to encode.
+	 * @return a byte sequence representing the encoding of the designated key
+	 *         according to the format supported by this codec.
+	 * @exception IllegalArgumentException
+	 *                if the designated key is not supported by this codec.
+	 */
+	byte[] encodePublicKey(PublicKey key);
 
-    /**
-     * Returns the unique identifier (within this library) of the format used to
-     * externalise public and private keys.
-     *
-     * @return the identifier of the format, the object supports.
-     */
-    int getFormatID();
+	/**
+	 * Returns the unique identifier (within this library) of the format used to
+	 * externalise public and private keys.
+	 *
+	 * @return the identifier of the format, the object supports.
+	 */
+	int getFormatID();
 }

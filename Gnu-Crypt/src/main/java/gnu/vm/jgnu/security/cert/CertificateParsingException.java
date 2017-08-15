@@ -44,54 +44,49 @@ package gnu.vm.jgnu.security.cert;
  * @since 1.2
  * @status updated to 1.5
  */
-public class CertificateParsingException extends CertificateException
-{
-    /**
-     * Compatible with JDK 1.2+.
-     */
-    private static final long serialVersionUID = -7989222416793322029L;
+public class CertificateParsingException extends CertificateException {
+	/**
+	 * Compatible with JDK 1.2+.
+	 */
+	private static final long serialVersionUID = -7989222416793322029L;
 
-    /**
-     * Constructs an exception without a message string.
-     */
-    public CertificateParsingException()
-    {
-    }
+	/**
+	 * Constructs an exception without a message string.
+	 */
+	public CertificateParsingException() {
+	}
 
-    /**
-     * Constructs an exception with a message string.
-     *
-     * @param msg
-     *            a message to display with exception
-     */
-    public CertificateParsingException(String msg)
-    {
-	super(msg);
-    }
+	/**
+	 * Constructs an exception with a message string.
+	 *
+	 * @param msg
+	 *            a message to display with exception
+	 */
+	public CertificateParsingException(String msg) {
+		super(msg);
+	}
 
-    /**
-     * Create a new instance with a descriptive error message and a cause.
-     * 
-     * @param s
-     *            the descriptive error message
-     * @param cause
-     *            the cause
-     * @since 1.5
-     */
-    public CertificateParsingException(String s, Throwable cause)
-    {
-	super(s, cause);
-    }
+	/**
+	 * Create a new instance with a descriptive error message and a cause.
+	 * 
+	 * @param s
+	 *            the descriptive error message
+	 * @param cause
+	 *            the cause
+	 * @since 1.5
+	 */
+	public CertificateParsingException(String s, Throwable cause) {
+		super(s, cause);
+	}
 
-    /**
-     * Create a new instance with a cause.
-     * 
-     * @param cause
-     *            the cause
-     * @since 1.5
-     */
-    public CertificateParsingException(Throwable cause)
-    {
-	super(cause);
-    }
+	/**
+	 * Create a new instance with a cause.
+	 * 
+	 * @param cause
+	 *            the cause
+	 * @since 1.5
+	 */
+	public CertificateParsingException(Throwable cause) {
+		super(cause);
+	}
 }

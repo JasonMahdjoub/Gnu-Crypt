@@ -74,293 +74,268 @@ import gnu.jgnu.security.prng.LimitReachedException;
  * Truncated Multi-Modular Hash Function (TMMH)</a>, David A. McGrew.</li>
  * </ol>
  */
-public class TMMH16 extends BaseMac implements Cloneable
-{
-    public static final String TAG_LENGTH = "gnu.crypto.mac.tmmh.tag.length";
+public class TMMH16 extends BaseMac implements Cloneable {
+	public static final String TAG_LENGTH = "gnu.crypto.mac.tmmh.tag.length";
 
-    public static final String KEYSTREAM = "gnu.crypto.mac.tmmh.keystream";
+	public static final String KEYSTREAM = "gnu.crypto.mac.tmmh.keystream";
 
-    public static final String PREFIX = "gnu.crypto.mac.tmmh.prefix";
+	public static final String PREFIX = "gnu.crypto.mac.tmmh.prefix";
 
-    private static final int P = (1 << 16) + 1; // the TMMH/16 prime
+	private static final int P = (1 << 16) + 1; // the TMMH/16 prime
 
-    /** caches the result of the correctness test, once executed. */
-    private static Boolean valid;
+	/** caches the result of the correctness test, once executed. */
+	private static Boolean valid;
 
-    private int tagWords = 0; // the tagLength expressed in words
+	private int tagWords = 0; // the tagLength expressed in words
 
-    private IRandom keystream = null; // the keystream generator
+	private IRandom keystream = null; // the keystream generator
 
-    private byte[] prefix; // mask to use when operating as an authentication f.
-    // private long keyWords; // key words counter
+	private byte[] prefix; // mask to use when operating as an authentication f.
+	// private long keyWords; // key words counter
 
-    private long msgLength; // in bytes
-    // private long msgWords; // should be = msgLength * WORD_LENGTH
+	private long msgLength; // in bytes
+	// private long msgWords; // should be = msgLength * WORD_LENGTH
 
-    private int[] context; // the tmmh running context; length == TAG_WORDS
+	private int[] context; // the tmmh running context; length == TAG_WORDS
 
-    private int[] K0; // the first TAG_WORDS words of the keystream
+	private int[] K0; // the first TAG_WORDS words of the keystream
 
-    private int[] Ki; // the sliding TAG_WORDS words of the keystream
+	private int[] Ki; // the sliding TAG_WORDS words of the keystream
 
-    private int Mi; // current message word being constructed
+	private int Mi; // current message word being constructed
 
-    /** Trivial 0-arguments constructor. */
-    public TMMH16()
-    {
-	super(Registry.TMMH16);
-    }
-
-    @Override
-    public Object clone() throws CloneNotSupportedException
-    {
-	TMMH16 result = (TMMH16) super.clone();
-	if (this.keystream != null)
-	    result.keystream = (IRandom) this.keystream.clone();
-	if (this.prefix != null)
-	    result.prefix = this.prefix.clone();
-	if (this.context != null)
-	    result.context = this.context.clone();
-	if (this.K0 != null)
-	    result.K0 = this.K0.clone();
-	if (this.Ki != null)
-	    result.Ki = this.Ki.clone();
-	return result;
-    }
-
-    // For TMMH/16, KEY_LENGTH and TAG_LENGTH MUST be a multiple of two. The
-    // key,
-    // message, and hash value are treated as a sequence of unsigned sixteen bit
-    // integers in network byte order. (In this section, we call such an integer
-    // a word.) If MESSAGE_LENGTH is odd, then a zero byte is appended to the
-    // message to align it on a word boundary, though this process does not
-    // change the value of MESSAGE_LENGTH.
-    //
-    // ... Otherwise, the hash value is defined to be the length TAG_WORDS
-    // sequence of words in which the j-th word in the sequence is defined as
-    //
-    // [ [ K[j] * MESSAGE_LENGTH +32 K[j+1] * M[1] +32 K[j+2] * M[2]
-    // +32 ... K[j+MSG_WORDS] * M[MSG_WORDS] ] modulo p ] modulo 2^16
-    //
-    // where j ranges from 1 to TAG_WORDS.
-    //
-    // Here, TAG_WORDS is equal to TAG_LENGTH / 2, and p is equal to 2^16 + 1.
-    // The symbol * denotes multiplication and the symbol +32 denotes addition
-    // modulo 2^32.
-    @Override
-    public byte[] digest()
-    {
-	return this.digest(keystream);
-    }
-
-    /**
-     * Similar to the same method with no arguments, but uses the designated
-     * random number generator to compute needed keying material.
-     *
-     * @param prng
-     *            the source of randomness to use.
-     * @return the final result of the algorithm.
-     */
-    public byte[] digest(IRandom prng)
-    {
-	doFinalRound(prng);
-	byte[] result = new byte[tagWords * 2];
-	for (int i = 0, j = 0; i < tagWords; i++)
-	{
-	    result[j] = (byte) ((context[i] >>> 8) ^ prefix[j]);
-	    j++;
-	    result[j] = (byte) (context[i] ^ prefix[j]);
-	    j++;
-	}
-	reset();
-	return result;
-    }
-
-    private void doFinalRound(IRandom prng)
-    {
-	long limit = msgLength; // formula works on real message length
-	while (msgLength % 2 != 0)
-	    update((byte) 0x00, prng);
-	long t;
-	for (int i = 0; i < tagWords; i++)
-	{
-	    t = context[i] & 0xFFFFFFFFL;
-	    t += K0[i] * limit;
-	    t %= P;
-	    context[i] = (int) t;
-	}
-    }
-
-    private int getNextKeyWord(IRandom prng)
-    {
-	int result = 0;
-	try
-	{
-	    result = (prng.nextByte() & 0xFF) << 8 | (prng.nextByte() & 0xFF);
-	}
-	catch (LimitReachedException x)
-	{
-	    throw new RuntimeException(String.valueOf(x));
-	}
-	// keyWords++; // update key words counter
-	return result;
-    }
-
-    @Override
-    public void init(Map<Object, Object> attributes) throws IllegalStateException
-    {
-	int wantTagLength = 0;
-	Integer tagLength = (Integer) attributes.get(TAG_LENGTH); // get tag
-								  // length
-	if (tagLength == null)
-	{
-	    if (tagWords == 0) // was never set
-		throw new IllegalArgumentException(TAG_LENGTH);
-	    // else re-use
-	}
-	else // check if positive and is divisible by WORD_LENGTH
-	{
-	    wantTagLength = tagLength.intValue();
-	    if (wantTagLength < 2 || (wantTagLength % 2 != 0))
-		throw new IllegalArgumentException(TAG_LENGTH);
-	    else if (wantTagLength > (512 / 8)) // 512-bits is our maximum
-		throw new IllegalArgumentException(TAG_LENGTH);
-
-	    tagWords = wantTagLength / 2; // init local vars
-	    K0 = new int[tagWords];
-	    Ki = new int[tagWords];
-	    context = new int[tagWords];
+	/** Trivial 0-arguments constructor. */
+	public TMMH16() {
+		super(Registry.TMMH16);
 	}
 
-	prefix = (byte[]) attributes.get(PREFIX);
-	if (prefix == null) // default to all-zeroes
-	    prefix = new byte[tagWords * 2];
-	else // ensure it's as long as it should
-	{
-	    if (prefix.length != tagWords * 2)
-		throw new IllegalArgumentException(PREFIX);
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+		TMMH16 result = (TMMH16) super.clone();
+		if (this.keystream != null)
+			result.keystream = (IRandom) this.keystream.clone();
+		if (this.prefix != null)
+			result.prefix = this.prefix.clone();
+		if (this.context != null)
+			result.context = this.context.clone();
+		if (this.K0 != null)
+			result.K0 = this.K0.clone();
+		if (this.Ki != null)
+			result.Ki = this.Ki.clone();
+		return result;
 	}
 
-	IRandom prng = (IRandom) attributes.get(KEYSTREAM); // get keystream
-	if (prng == null)
-	{
-	    if (keystream == null)
-		throw new IllegalArgumentException(KEYSTREAM);
-	    // else reuse
+	// For TMMH/16, KEY_LENGTH and TAG_LENGTH MUST be a multiple of two. The
+	// key,
+	// message, and hash value are treated as a sequence of unsigned sixteen bit
+	// integers in network byte order. (In this section, we call such an integer
+	// a word.) If MESSAGE_LENGTH is odd, then a zero byte is appended to the
+	// message to align it on a word boundary, though this process does not
+	// change the value of MESSAGE_LENGTH.
+	//
+	// ... Otherwise, the hash value is defined to be the length TAG_WORDS
+	// sequence of words in which the j-th word in the sequence is defined as
+	//
+	// [ [ K[j] * MESSAGE_LENGTH +32 K[j+1] * M[1] +32 K[j+2] * M[2]
+	// +32 ... K[j+MSG_WORDS] * M[MSG_WORDS] ] modulo p ] modulo 2^16
+	//
+	// where j ranges from 1 to TAG_WORDS.
+	//
+	// Here, TAG_WORDS is equal to TAG_LENGTH / 2, and p is equal to 2^16 + 1.
+	// The symbol * denotes multiplication and the symbol +32 denotes addition
+	// modulo 2^32.
+	@Override
+	public byte[] digest() {
+		return this.digest(keystream);
 	}
-	else
-	    keystream = prng;
 
-	reset(); // reset context variables
-	for (int i = 0; i < tagWords; i++) // init starting key words
-	    Ki[i] = K0[i] = getNextKeyWord(keystream);
-    }
-
-    @Override
-    public int macSize()
-    {
-	return tagWords * 2;
-    }
-
-    @Override
-    public void reset()
-    {
-	msgLength = /* msgWords = keyWords = */ 0L;
-	Mi = 0;
-	for (int i = 0; i < tagWords; i++)
-	    context[i] = 0;
-    }
-
-    @Override
-    public boolean selfTest()
-    {
-	if (valid == null)
-	{
-	    // TODO: compute and test equality with one known vector
-	    valid = Boolean.TRUE;
+	/**
+	 * Similar to the same method with no arguments, but uses the designated random
+	 * number generator to compute needed keying material.
+	 *
+	 * @param prng
+	 *            the source of randomness to use.
+	 * @return the final result of the algorithm.
+	 */
+	public byte[] digest(IRandom prng) {
+		doFinalRound(prng);
+		byte[] result = new byte[tagWords * 2];
+		for (int i = 0, j = 0; i < tagWords; i++) {
+			result[j] = (byte) ((context[i] >>> 8) ^ prefix[j]);
+			j++;
+			result[j] = (byte) (context[i] ^ prefix[j]);
+			j++;
+		}
+		reset();
+		return result;
 	}
-	return valid.booleanValue();
-    }
 
-    // The words of the key are denoted as K[1], K[2], ..., K[KEY_WORDS], and
-    // the
-    // words of the message (after zero padding, if needed) are denoted as M[1],
-    // M[2], ..., M[MSG_WORDS], where MSG_WORDS is the smallest number such that
-    // 2 * MSG_WORDS is at least MESSAGE_LENGTH, and KEY_WORDS is KEY_LENGTH /
-    // 2.
-    //
-    // If MESSAGE_LENGTH is greater than MAX_HASH_LENGTH, then the value of
-    // TMMH/16 is undefined. Implementations MUST indicate an error if asked to
-    // hash a message with such a length. Otherwise, the hash value is defined
-    // to be the length TAG_WORDS sequence of words in which the j-th word in
-    // the
-    // sequence is defined as
-    //
-    // [ [ K[j] * MESSAGE_LENGTH +32 K[j+1] * M[1] +32 K[j+2] * M[2]
-    // +32 ... K[j+MSG_WORDS] * M[MSG_WORDS] ] modulo p ] modulo 2^16
-    //
-    // where j ranges from 1 to TAG_WORDS.
-    @Override
-    public void update(byte b)
-    {
-	this.update(b, keystream);
-    }
-
-    /**
-     * Similar to the same method with one argument, but uses the designated
-     * random number generator to compute needed keying material.
-     *
-     * @param b
-     *            the byte to process.
-     * @param prng
-     *            the source of randomness to use.
-     */
-    public void update(byte b, IRandom prng)
-    {
-	Mi <<= 8; // update message buffer
-	Mi |= b & 0xFF;
-	msgLength++; // update message length (bytes)
-	if (msgLength % 2 == 0) // got a full word
-	{
-	    // msgWords++; // update message words counter
-	    System.arraycopy(Ki, 1, Ki, 0, tagWords - 1); // 1. shift Ki up by 1
-	    Ki[tagWords - 1] = getNextKeyWord(prng); // 2. fill last box of Ki
-	    long t; // temp var to allow working in modulo 2^32
-	    for (int i = 0; i < tagWords; i++) // 3. update context
-	    {
-		t = context[i] & 0xFFFFFFFFL;
-		t += Ki[i] * Mi;
-		context[i] = (int) t;
-	    }
-	    Mi = 0; // reset message buffer
+	private void doFinalRound(IRandom prng) {
+		long limit = msgLength; // formula works on real message length
+		while (msgLength % 2 != 0)
+			update((byte) 0x00, prng);
+		long t;
+		for (int i = 0; i < tagWords; i++) {
+			t = context[i] & 0xFFFFFFFFL;
+			t += K0[i] * limit;
+			t %= P;
+			context[i] = (int) t;
+		}
 	}
-    }
 
-    @Override
-    public void update(byte[] b, int offset, int len)
-    {
-	for (int i = 0; i < len; i++)
-	    this.update(b[offset + i], keystream);
-    }
+	private int getNextKeyWord(IRandom prng) {
+		int result = 0;
+		try {
+			result = (prng.nextByte() & 0xFF) << 8 | (prng.nextByte() & 0xFF);
+		} catch (LimitReachedException x) {
+			throw new RuntimeException(String.valueOf(x));
+		}
+		// keyWords++; // update key words counter
+		return result;
+	}
 
-    /**
-     * Similar to the same method with three arguments, but uses the designated
-     * random number generator to compute needed keying material.
-     *
-     * @param b
-     *            the byte array to process.
-     * @param offset
-     *            the starting offset in <code>b</code> to start considering the
-     *            bytes to process.
-     * @param len
-     *            the number of bytes in <code>b</code> starting from
-     *            <code>offset</code> to process.
-     * @param prng
-     *            the source of randomness to use.
-     */
-    public void update(byte[] b, int offset, int len, IRandom prng)
-    {
-	for (int i = 0; i < len; i++)
-	    this.update(b[offset + i], prng);
-    }
+	@Override
+	public void init(Map<Object, Object> attributes) throws IllegalStateException {
+		int wantTagLength = 0;
+		Integer tagLength = (Integer) attributes.get(TAG_LENGTH); // get tag
+		// length
+		if (tagLength == null) {
+			if (tagWords == 0) // was never set
+				throw new IllegalArgumentException(TAG_LENGTH);
+			// else re-use
+		} else // check if positive and is divisible by WORD_LENGTH
+		{
+			wantTagLength = tagLength.intValue();
+			if (wantTagLength < 2 || (wantTagLength % 2 != 0))
+				throw new IllegalArgumentException(TAG_LENGTH);
+			else if (wantTagLength > (512 / 8)) // 512-bits is our maximum
+				throw new IllegalArgumentException(TAG_LENGTH);
+
+			tagWords = wantTagLength / 2; // init local vars
+			K0 = new int[tagWords];
+			Ki = new int[tagWords];
+			context = new int[tagWords];
+		}
+
+		prefix = (byte[]) attributes.get(PREFIX);
+		if (prefix == null) // default to all-zeroes
+			prefix = new byte[tagWords * 2];
+		else // ensure it's as long as it should
+		{
+			if (prefix.length != tagWords * 2)
+				throw new IllegalArgumentException(PREFIX);
+		}
+
+		IRandom prng = (IRandom) attributes.get(KEYSTREAM); // get keystream
+		if (prng == null) {
+			if (keystream == null)
+				throw new IllegalArgumentException(KEYSTREAM);
+			// else reuse
+		} else
+			keystream = prng;
+
+		reset(); // reset context variables
+		for (int i = 0; i < tagWords; i++) // init starting key words
+			Ki[i] = K0[i] = getNextKeyWord(keystream);
+	}
+
+	@Override
+	public int macSize() {
+		return tagWords * 2;
+	}
+
+	@Override
+	public void reset() {
+		msgLength = /* msgWords = keyWords = */ 0L;
+		Mi = 0;
+		for (int i = 0; i < tagWords; i++)
+			context[i] = 0;
+	}
+
+	@Override
+	public boolean selfTest() {
+		if (valid == null) {
+			// TODO: compute and test equality with one known vector
+			valid = Boolean.TRUE;
+		}
+		return valid.booleanValue();
+	}
+
+	// The words of the key are denoted as K[1], K[2], ..., K[KEY_WORDS], and
+	// the
+	// words of the message (after zero padding, if needed) are denoted as M[1],
+	// M[2], ..., M[MSG_WORDS], where MSG_WORDS is the smallest number such that
+	// 2 * MSG_WORDS is at least MESSAGE_LENGTH, and KEY_WORDS is KEY_LENGTH /
+	// 2.
+	//
+	// If MESSAGE_LENGTH is greater than MAX_HASH_LENGTH, then the value of
+	// TMMH/16 is undefined. Implementations MUST indicate an error if asked to
+	// hash a message with such a length. Otherwise, the hash value is defined
+	// to be the length TAG_WORDS sequence of words in which the j-th word in
+	// the
+	// sequence is defined as
+	//
+	// [ [ K[j] * MESSAGE_LENGTH +32 K[j+1] * M[1] +32 K[j+2] * M[2]
+	// +32 ... K[j+MSG_WORDS] * M[MSG_WORDS] ] modulo p ] modulo 2^16
+	//
+	// where j ranges from 1 to TAG_WORDS.
+	@Override
+	public void update(byte b) {
+		this.update(b, keystream);
+	}
+
+	/**
+	 * Similar to the same method with one argument, but uses the designated random
+	 * number generator to compute needed keying material.
+	 *
+	 * @param b
+	 *            the byte to process.
+	 * @param prng
+	 *            the source of randomness to use.
+	 */
+	public void update(byte b, IRandom prng) {
+		Mi <<= 8; // update message buffer
+		Mi |= b & 0xFF;
+		msgLength++; // update message length (bytes)
+		if (msgLength % 2 == 0) // got a full word
+		{
+			// msgWords++; // update message words counter
+			System.arraycopy(Ki, 1, Ki, 0, tagWords - 1); // 1. shift Ki up by 1
+			Ki[tagWords - 1] = getNextKeyWord(prng); // 2. fill last box of Ki
+			long t; // temp var to allow working in modulo 2^32
+			for (int i = 0; i < tagWords; i++) // 3. update context
+			{
+				t = context[i] & 0xFFFFFFFFL;
+				t += Ki[i] * Mi;
+				context[i] = (int) t;
+			}
+			Mi = 0; // reset message buffer
+		}
+	}
+
+	@Override
+	public void update(byte[] b, int offset, int len) {
+		for (int i = 0; i < len; i++)
+			this.update(b[offset + i], keystream);
+	}
+
+	/**
+	 * Similar to the same method with three arguments, but uses the designated
+	 * random number generator to compute needed keying material.
+	 *
+	 * @param b
+	 *            the byte array to process.
+	 * @param offset
+	 *            the starting offset in <code>b</code> to start considering the
+	 *            bytes to process.
+	 * @param len
+	 *            the number of bytes in <code>b</code> starting from
+	 *            <code>offset</code> to process.
+	 * @param prng
+	 *            the source of randomness to use.
+	 */
+	public void update(byte[] b, int offset, int len, IRandom prng) {
+		for (int i = 0; i < len; i++)
+			this.update(b[offset + i], prng);
+	}
 }

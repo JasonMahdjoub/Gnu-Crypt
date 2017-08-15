@@ -43,10 +43,8 @@ import gnu.jgnu.security.Registry;
  * The implementation of the SHA-2-1 (256-bit) <i>Service Provider Interface</i>
  * (<b>SPI</b>) adapter.
  */
-public class Sha256Spi extends MessageDigestAdapter
-{
-    public Sha256Spi()
-    {
-	super(Registry.SHA256_HASH);
-    }
+public class Sha256Spi extends MessageDigestAdapter {
+	public Sha256Spi() {
+		super(Registry.SHA256_HASH);
+	}
 }

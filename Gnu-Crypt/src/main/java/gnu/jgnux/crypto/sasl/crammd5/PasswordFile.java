@@ -56,185 +56,154 @@ import gnu.jgnux.crypto.sasl.UserAlreadyExistsException;
 /**
  * The CRAM-MD5 password file representation.
  */
-public class PasswordFile
-{
-    private static String DEFAULT_FILE;
-    static
-    {
-	DEFAULT_FILE = System.getProperty(CramMD5Registry.PASSWORD_FILE,
-		CramMD5Registry.DEFAULT_PASSWORD_FILE);
-    }
-
-    private HashMap<String, String[]> entries;
-
-    private File passwdFile;
-
-    private long lastmod;
-
-    public PasswordFile() throws IOException
-    {
-	this(DEFAULT_FILE);
-    }
-
-    public PasswordFile(final File pwFile) throws IOException
-    {
-	this(pwFile.getAbsolutePath());
-    }
-
-    public PasswordFile(final String fileName) throws IOException
-    {
-	passwdFile = new File(fileName);
-	update();
-    }
-
-    public synchronized void add(final String user, final String passwd, final String[] attributes) throws IOException
-    {
-	checkCurrent(); // check if the entry exists
-	if (entries.containsKey(user))
-	    throw new UserAlreadyExistsException(user);
-	if (attributes.length != 5)
-	    throw new IllegalArgumentException("Wrong number of attributes");
-	final String[] fields = new String[7]; // create the new entry
-	fields[0] = user;
-	fields[1] = passwd;
-	System.arraycopy(attributes, 0, fields, 2, 5);
-	entries.put(user, fields);
-	savePasswd();
-    }
-
-    public synchronized void changePasswd(final String user, final String passwd) throws IOException
-    {
-	checkCurrent();
-	if (!entries.containsKey(user))
-	    throw new NoSuchUserException(user);
-	final String[] fields = entries.get(user); // get existing entry
-	fields[1] = passwd; // modify the password field
-	entries.remove(user); // delete the existing entry
-	entries.put(user, fields); // add the new entry
-	savePasswd();
-    }
-
-    private void checkCurrent() throws IOException
-    {
-	if (passwdFile.lastModified() > lastmod)
-	    update();
-    }
-
-    public synchronized boolean contains(final String s) throws IOException
-    {
-	checkCurrent();
-	return entries.containsKey(s);
-    }
-
-    public synchronized String[] lookup(final String user) throws IOException
-    {
-	checkCurrent();
-	if (!entries.containsKey(user))
-	    throw new NoSuchUserException(user);
-	return entries.get(user);
-    }
-
-    private synchronized void readPasswd(final InputStream in) throws IOException
-    {
-	final BufferedReader din = new BufferedReader(
-		new InputStreamReader(in));
-	String line;
-	entries = new HashMap<>();
-	while ((line = din.readLine()) != null)
-	{
-	    final String[] fields = new String[7];
-	    final StringTokenizer st = new StringTokenizer(line, ":", true);
-	    try
-	    {
-		fields[0] = st.nextToken(); // username
-		st.nextToken();
-		fields[1] = st.nextToken(); // passwd
-		if (fields[1].equals(":"))
-		    fields[1] = "";
-		else
-		    st.nextToken();
-		fields[2] = st.nextToken(); // uid
-		if (fields[2].equals(":"))
-		    fields[2] = "";
-		else
-		    st.nextToken();
-		fields[3] = st.nextToken(); // gid
-		if (fields[3].equals(":"))
-		    fields[3] = "";
-		else
-		    st.nextToken();
-		fields[4] = st.nextToken(); // gecos
-		if (fields[4].equals(":"))
-		    fields[4] = "";
-		else
-		    st.nextToken();
-		fields[5] = st.nextToken(); // dir
-		if (fields[5].equals(":"))
-		    fields[5] = "";
-		else
-		    st.nextToken();
-		fields[6] = st.nextToken(); // shell
-		if (fields[6].equals(":"))
-		    fields[6] = "";
-	    }
-	    catch (NoSuchElementException x)
-	    {
-		continue;
-	    }
-	    entries.put(fields[0], fields);
+public class PasswordFile {
+	private static String DEFAULT_FILE;
+	static {
+		DEFAULT_FILE = System.getProperty(CramMD5Registry.PASSWORD_FILE, CramMD5Registry.DEFAULT_PASSWORD_FILE);
 	}
-    }
 
-    private synchronized void savePasswd() throws IOException
-    {
-	if (passwdFile != null)
-	{
-	    final FileOutputStream fos = new FileOutputStream(passwdFile);
-	    PrintWriter pw = null;
-	    try
-	    {
-		pw = new PrintWriter(fos);
-		String key;
-		String[] fields;
-		StringBuilder sb;
-		int i;
-		for (Iterator<String> it = entries.keySet().iterator(); it
-			.hasNext();)
-		{
-		    key = it.next();
-		    fields = entries.get(key);
-		    sb = new StringBuilder(fields[0]);
-		    for (i = 1; i < fields.length; i++)
-			sb.append(":").append(fields[i]);
-		    pw.println(sb.toString());
+	private HashMap<String, String[]> entries;
+
+	private File passwdFile;
+
+	private long lastmod;
+
+	public PasswordFile() throws IOException {
+		this(DEFAULT_FILE);
+	}
+
+	public PasswordFile(final File pwFile) throws IOException {
+		this(pwFile.getAbsolutePath());
+	}
+
+	public PasswordFile(final String fileName) throws IOException {
+		passwdFile = new File(fileName);
+		update();
+	}
+
+	public synchronized void add(final String user, final String passwd, final String[] attributes) throws IOException {
+		checkCurrent(); // check if the entry exists
+		if (entries.containsKey(user))
+			throw new UserAlreadyExistsException(user);
+		if (attributes.length != 5)
+			throw new IllegalArgumentException("Wrong number of attributes");
+		final String[] fields = new String[7]; // create the new entry
+		fields[0] = user;
+		fields[1] = passwd;
+		System.arraycopy(attributes, 0, fields, 2, 5);
+		entries.put(user, fields);
+		savePasswd();
+	}
+
+	public synchronized void changePasswd(final String user, final String passwd) throws IOException {
+		checkCurrent();
+		if (!entries.containsKey(user))
+			throw new NoSuchUserException(user);
+		final String[] fields = entries.get(user); // get existing entry
+		fields[1] = passwd; // modify the password field
+		entries.remove(user); // delete the existing entry
+		entries.put(user, fields); // add the new entry
+		savePasswd();
+	}
+
+	private void checkCurrent() throws IOException {
+		if (passwdFile.lastModified() > lastmod)
+			update();
+	}
+
+	public synchronized boolean contains(final String s) throws IOException {
+		checkCurrent();
+		return entries.containsKey(s);
+	}
+
+	public synchronized String[] lookup(final String user) throws IOException {
+		checkCurrent();
+		if (!entries.containsKey(user))
+			throw new NoSuchUserException(user);
+		return entries.get(user);
+	}
+
+	private synchronized void readPasswd(final InputStream in) throws IOException {
+		final BufferedReader din = new BufferedReader(new InputStreamReader(in));
+		String line;
+		entries = new HashMap<>();
+		while ((line = din.readLine()) != null) {
+			final String[] fields = new String[7];
+			final StringTokenizer st = new StringTokenizer(line, ":", true);
+			try {
+				fields[0] = st.nextToken(); // username
+				st.nextToken();
+				fields[1] = st.nextToken(); // passwd
+				if (fields[1].equals(":"))
+					fields[1] = "";
+				else
+					st.nextToken();
+				fields[2] = st.nextToken(); // uid
+				if (fields[2].equals(":"))
+					fields[2] = "";
+				else
+					st.nextToken();
+				fields[3] = st.nextToken(); // gid
+				if (fields[3].equals(":"))
+					fields[3] = "";
+				else
+					st.nextToken();
+				fields[4] = st.nextToken(); // gecos
+				if (fields[4].equals(":"))
+					fields[4] = "";
+				else
+					st.nextToken();
+				fields[5] = st.nextToken(); // dir
+				if (fields[5].equals(":"))
+					fields[5] = "";
+				else
+					st.nextToken();
+				fields[6] = st.nextToken(); // shell
+				if (fields[6].equals(":"))
+					fields[6] = "";
+			} catch (NoSuchElementException x) {
+				continue;
+			}
+			entries.put(fields[0], fields);
 		}
-	    }
-	    finally
-	    {
-		if (pw != null)
-		    try
-		    {
-			pw.flush();
-		    }
-		    finally
-		    {
-			pw.close();
-		    }
-		try
-		{
-		    fos.close();
+	}
+
+	private synchronized void savePasswd() throws IOException {
+		if (passwdFile != null) {
+			final FileOutputStream fos = new FileOutputStream(passwdFile);
+			PrintWriter pw = null;
+			try {
+				pw = new PrintWriter(fos);
+				String key;
+				String[] fields;
+				StringBuilder sb;
+				int i;
+				for (Iterator<String> it = entries.keySet().iterator(); it.hasNext();) {
+					key = it.next();
+					fields = entries.get(key);
+					sb = new StringBuilder(fields[0]);
+					for (i = 1; i < fields.length; i++)
+						sb.append(":").append(fields[i]);
+					pw.println(sb.toString());
+				}
+			} finally {
+				if (pw != null)
+					try {
+						pw.flush();
+					} finally {
+						pw.close();
+					}
+				try {
+					fos.close();
+				} catch (IOException ignored) {
+				}
+				lastmod = passwdFile.lastModified();
+			}
 		}
-		catch (IOException ignored)
-		{
-		}
+	}
+
+	private synchronized void update() throws IOException {
 		lastmod = passwdFile.lastModified();
-	    }
+		readPasswd(new FileInputStream(passwdFile));
 	}
-    }
-
-    private synchronized void update() throws IOException
-    {
-	lastmod = passwdFile.lastModified();
-	readPasswd(new FileInputStream(passwdFile));
-    }
 }

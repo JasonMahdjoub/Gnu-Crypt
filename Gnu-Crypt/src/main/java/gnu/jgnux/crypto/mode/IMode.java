@@ -76,53 +76,52 @@ import gnu.jgnux.crypto.cipher.IBlockCipher;
  * by this type of mode.</li>
  * </ul>
  */
-public interface IMode extends IBlockCipher
-{
-    /**
-     * Property name of the state in which to operate this mode. The value
-     * associated to this property name is taken to be an {@link Integer} which
-     * value is either <code>ENCRYPTION</code> or <code>DECRYPTION</code>.
-     */
-    String STATE = "gnu.crypto.mode.state";
+public interface IMode extends IBlockCipher {
+	/**
+	 * Property name of the state in which to operate this mode. The value
+	 * associated to this property name is taken to be an {@link Integer} which
+	 * value is either <code>ENCRYPTION</code> or <code>DECRYPTION</code>.
+	 */
+	String STATE = "gnu.crypto.mode.state";
 
-    /**
-     * Property name of the block size in which to operate this mode. The value
-     * associated with this property name is taken to be an {@link Integer}. If
-     * it is not specified, the value of the block size of the underlying block
-     * cipher, used to construct the mode instance, shall be used.
-     */
-    String MODE_BLOCK_SIZE = "gnu.crypto.mode.block.size";
+	/**
+	 * Property name of the block size in which to operate this mode. The value
+	 * associated with this property name is taken to be an {@link Integer}. If it
+	 * is not specified, the value of the block size of the underlying block cipher,
+	 * used to construct the mode instance, shall be used.
+	 */
+	String MODE_BLOCK_SIZE = "gnu.crypto.mode.block.size";
 
-    /**
-     * Property name of the initialisation vector to use, if required, with this
-     * instance. The value associated with this property name is taken to be a
-     * byte array. If the concrete instance needs such a parameter, and it has
-     * not been specified as part of the initialissation parameters, an all-zero
-     * byte array of the appropriate size shall be used.
-     */
-    String IV = "gnu.crypto.mode.iv";
+	/**
+	 * Property name of the initialisation vector to use, if required, with this
+	 * instance. The value associated with this property name is taken to be a byte
+	 * array. If the concrete instance needs such a parameter, and it has not been
+	 * specified as part of the initialissation parameters, an all-zero byte array
+	 * of the appropriate size shall be used.
+	 */
+	String IV = "gnu.crypto.mode.iv";
 
-    /** Constant indicating the instance is being used for <i>encryption</i>. */
-    int ENCRYPTION = 1;
+	/** Constant indicating the instance is being used for <i>encryption</i>. */
+	int ENCRYPTION = 1;
 
-    /** Constant indicating the instance is being used for <i>decryption</i>. */
-    int DECRYPTION = 2;
+	/** Constant indicating the instance is being used for <i>decryption</i>. */
+	int DECRYPTION = 2;
 
-    /**
-     * A convenience method. Effectively invokes the <code>encryptBlock()</code>
-     * or <code>decryptBlock()</code> method depending on the operational state
-     * of the instance.
-     *
-     * @param in
-     *            the plaintext.
-     * @param inOffset
-     *            index of <code>in</code> from which to start considering data.
-     * @param out
-     *            the ciphertext.
-     * @param outOffset
-     *            index of <code>out</code> from which to store result.
-     * @exception IllegalStateException
-     *                if the instance is not initialised.
-     */
-    void update(byte[] in, int inOffset, byte[] out, int outOffset) throws IllegalStateException;
+	/**
+	 * A convenience method. Effectively invokes the <code>encryptBlock()</code> or
+	 * <code>decryptBlock()</code> method depending on the operational state of the
+	 * instance.
+	 *
+	 * @param in
+	 *            the plaintext.
+	 * @param inOffset
+	 *            index of <code>in</code> from which to start considering data.
+	 * @param out
+	 *            the ciphertext.
+	 * @param outOffset
+	 *            index of <code>out</code> from which to store result.
+	 * @exception IllegalStateException
+	 *                if the instance is not initialised.
+	 */
+	void update(byte[] in, int inOffset, byte[] out, int outOffset) throws IllegalStateException;
 }

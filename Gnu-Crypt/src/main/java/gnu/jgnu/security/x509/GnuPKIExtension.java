@@ -43,17 +43,16 @@ import java.util.Collection;
 import gnu.jgnu.security.OID;
 import gnu.jgnu.security.x509.ext.Extension;
 
-public interface GnuPKIExtension extends X509Extension
-{
+public interface GnuPKIExtension extends X509Extension {
 
-    /**
-     * Returns the extension object for the given object identifier.
-     *
-     * @param oid
-     *            The OID of the extension to get.
-     * @return The extension, or null if there is no such extension.
-     */
-    Extension getExtension(OID oid);
+	/**
+	 * Returns the extension object for the given object identifier.
+	 *
+	 * @param oid
+	 *            The OID of the extension to get.
+	 * @return The extension, or null if there is no such extension.
+	 */
+	Extension getExtension(OID oid);
 
-    Collection<Extension> getExtensions();
+	Collection<Extension> getExtensions();
 }

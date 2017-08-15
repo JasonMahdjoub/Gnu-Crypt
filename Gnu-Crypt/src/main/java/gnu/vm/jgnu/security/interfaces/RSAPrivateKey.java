@@ -48,14 +48,13 @@ import gnu.vm.jgnu.security.PrivateKey;
  *
  * @author Aaron M. Renn (arenn@urbanophile.com)
  */
-public interface RSAPrivateKey extends PrivateKey, RSAKey
-{
-    long serialVersionUID = 5187144804936595022L;
+public interface RSAPrivateKey extends PrivateKey, RSAKey {
+	long serialVersionUID = 5187144804936595022L;
 
-    /**
-     * Returns the private exponent value for this key
-     *
-     * @return The private exponent value for this key
-     */
-    BigInteger getPrivateExponent();
+	/**
+	 * Returns the private exponent value for this key
+	 *
+	 * @return The private exponent value for this key
+	 */
+	BigInteger getPrivateExponent();
 }

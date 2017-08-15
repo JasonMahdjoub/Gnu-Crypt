@@ -45,10 +45,8 @@ import gnu.jgnu.security.sig.dss.DSSSignatureRawCodec;
  * for the DSS (Digital Signature Standard) signature scheme, encoded and/or
  * decoded in RAW format.
  */
-public class DSSRawSignatureSpi extends SignatureAdapter
-{
-    public DSSRawSignatureSpi()
-    {
-	super(Registry.DSS_SIG, new DSSSignatureRawCodec());
-    }
+public class DSSRawSignatureSpi extends SignatureAdapter {
+	public DSSRawSignatureSpi() {
+		super(Registry.DSS_SIG, new DSSSignatureRawCodec());
+	}
 }

@@ -54,102 +54,100 @@ import java.util.Enumeration;
  *
  * @author Aaron M. Renn (arenn@urbanophile.com)
  */
-public interface AclEntry extends Cloneable
-{
-    /**
-     * This method adds the specified permission to this ACL entry.
-     *
-     * @param permission
-     *            The <code>Permission</code> to add
-     *
-     * @return <code>true</code> if the permission was added or
-     *         <code>false</code> if it was already set for this entry
-     */
-    boolean addPermission(Permission permission);
+public interface AclEntry extends Cloneable {
+	/**
+	 * This method adds the specified permission to this ACL entry.
+	 *
+	 * @param permission
+	 *            The <code>Permission</code> to add
+	 *
+	 * @return <code>true</code> if the permission was added or <code>false</code>
+	 *         if it was already set for this entry
+	 */
+	boolean addPermission(Permission permission);
 
-    /**
-     * This method tests whether or not the specified permission is associated
-     * with this ACL entry.
-     *
-     * @param permission
-     *            The <code>Permission</code> to test
-     *
-     * @return <code>true</code> if this permission is associated with this
-     *         entry or <code>false</code> otherwise
-     */
-    boolean checkPermission(Permission permission);
+	/**
+	 * This method tests whether or not the specified permission is associated with
+	 * this ACL entry.
+	 *
+	 * @param permission
+	 *            The <code>Permission</code> to test
+	 *
+	 * @return <code>true</code> if this permission is associated with this entry or
+	 *         <code>false</code> otherwise
+	 */
+	boolean checkPermission(Permission permission);
 
-    /**
-     * This method returns a clone of this ACL entry
-     *
-     * @return A clone of this ACL entry
-     */
-    Object clone();
+	/**
+	 * This method returns a clone of this ACL entry
+	 *
+	 * @return A clone of this ACL entry
+	 */
+	Object clone();
 
-    /**
-     * This method returns the <code>Principal</code> associated with this ACL
-     * entry.
-     *
-     * @return The <code>Principal</code> for this ACL entry
-     */
-    Principal getPrincipal();
+	/**
+	 * This method returns the <code>Principal</code> associated with this ACL
+	 * entry.
+	 *
+	 * @return The <code>Principal</code> for this ACL entry
+	 */
+	Principal getPrincipal();
 
-    /**
-     * This method tests whether or not this ACL entry is a negative entry or
-     * not.
-     *
-     * @return <code>true</code> if this ACL entry is negative,
-     *         <code>false</code> otherwise
-     */
-    boolean isNegative();
+	/**
+	 * This method tests whether or not this ACL entry is a negative entry or not.
+	 *
+	 * @return <code>true</code> if this ACL entry is negative, <code>false</code>
+	 *         otherwise
+	 */
+	boolean isNegative();
 
-    /**
-     * This method returns a list of all <code>Permission</code> objects
-     * associated with this ACL entry as an <code>Enumeration</code>.
-     *
-     * @return A list of permissions for this ACL entry
-     */
-    Enumeration<Permission> permissions();
+	/**
+	 * This method returns a list of all <code>Permission</code> objects associated
+	 * with this ACL entry as an <code>Enumeration</code>.
+	 *
+	 * @return A list of permissions for this ACL entry
+	 */
+	Enumeration<Permission> permissions();
 
-    /**
-     * This method deletes the specified permission to this ACL entry.
-     *
-     * @param perm
-     *            The <code>Permission</code> to delete from this ACL entry.
-     *
-     * @return <code>true</code> if the permission was successfully deleted or
-     *         <code>false</code> if the permission was not part of this ACL to
-     *         begin with
-     */
-    boolean removePermission(Permission perm);
+	/**
+	 * This method deletes the specified permission to this ACL entry.
+	 *
+	 * @param perm
+	 *            The <code>Permission</code> to delete from this ACL entry.
+	 *
+	 * @return <code>true</code> if the permission was successfully deleted or
+	 *         <code>false</code> if the permission was not part of this ACL to
+	 *         begin with
+	 */
+	boolean removePermission(Permission perm);
 
-    /**
-     * This method sets this ACL entry to be a <em>negative</em> entry,
-     * indicating that it contains a list of permissions that are <em>not</em>
-     * granted to the entry's <code>Principal</code>. Note that there is no way
-     * to undo this operation.
-     */
-    void setNegativePermissions();
+	/**
+	 * This method sets this ACL entry to be a <em>negative</em> entry, indicating
+	 * that it contains a list of permissions that are <em>not</em> granted to the
+	 * entry's <code>Principal</code>. Note that there is no way to undo this
+	 * operation.
+	 */
+	void setNegativePermissions();
 
-    /**
-     * This method sets ths <code>Principal</code> associated with this ACL
-     * entry. This operation will only succeed if there is not already a
-     * <code>Principal</code> assigned.
-     *
-     * @param user
-     *            The <code>Principal</code> for this ACL entry
-     *
-     * @return <code>true</code> if the <code>Principal</code> was successfully
-     *         set or <code>false</code> if this entry already has a
-     *         <code>Principal</code>.
-     */
-    boolean setPrincipal(Principal user);
+	/**
+	 * This method sets ths <code>Principal</code> associated with this ACL entry.
+	 * This operation will only succeed if there is not already a
+	 * <code>Principal</code> assigned.
+	 *
+	 * @param user
+	 *            The <code>Principal</code> for this ACL entry
+	 *
+	 * @return <code>true</code> if the <code>Principal</code> was successfully set
+	 *         or <code>false</code> if this entry already has a
+	 *         <code>Principal</code>.
+	 */
+	boolean setPrincipal(Principal user);
 
-    /**
-     * This method returns this object as a <code>String</code>.
-     *
-     * @return A <code>String</code> representation of this object
-     */
-    @Override
-    String toString();
+	/**
+	 * This method returns this object as a <code>String</code>.
+	 *
+	 * @return A <code>String</code> representation of this object
+	 */
+	@Override
+	String toString();
 }

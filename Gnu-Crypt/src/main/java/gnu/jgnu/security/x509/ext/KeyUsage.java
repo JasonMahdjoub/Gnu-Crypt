@@ -45,57 +45,53 @@ import gnu.jgnu.security.der.DER;
 import gnu.jgnu.security.der.DERReader;
 import gnu.jgnu.security.der.DERValue;
 
-public class KeyUsage extends Extension.Value
-{
+public class KeyUsage extends Extension.Value {
 
-    // Constants and fields.
-    // -------------------------------------------------------------------------
+	// Constants and fields.
+	// -------------------------------------------------------------------------
 
-    public static final OID ID = new OID("2.5.29.15");
+	public static final OID ID = new OID("2.5.29.15");
 
-    public static final int DIGITAL_SIGNATURE = 0;
+	public static final int DIGITAL_SIGNATURE = 0;
 
-    public static final int NON_REPUDIATION = 1;
+	public static final int NON_REPUDIATION = 1;
 
-    public static final int KEY_ENCIPHERMENT = 2;
+	public static final int KEY_ENCIPHERMENT = 2;
 
-    public static final int DATA_ENCIPHERMENT = 3;
+	public static final int DATA_ENCIPHERMENT = 3;
 
-    public static final int KEY_AGREEMENT = 4;
+	public static final int KEY_AGREEMENT = 4;
 
-    public static final int KEY_CERT_SIGN = 5;
+	public static final int KEY_CERT_SIGN = 5;
 
-    public static final int CRL_SIGN = 6;
+	public static final int CRL_SIGN = 6;
 
-    public static final int ENCIPHER_ONLY = 7;
+	public static final int ENCIPHER_ONLY = 7;
 
-    public static final int DECIPHER_ONLY = 8;
+	public static final int DECIPHER_ONLY = 8;
 
-    private final BitString keyUsage;
+	private final BitString keyUsage;
 
-    // Constructor.
-    // -------------------------------------------------------------------------
+	// Constructor.
+	// -------------------------------------------------------------------------
 
-    public KeyUsage(final byte[] encoded) throws IOException
-    {
-	super(encoded);
-	DERValue val = DERReader.read(encoded);
-	if (val.getTag() != DER.BIT_STRING)
-	    throw new IOException("malformed KeyUsage");
-	keyUsage = (BitString) val.getValue();
-    }
+	public KeyUsage(final byte[] encoded) throws IOException {
+		super(encoded);
+		DERValue val = DERReader.read(encoded);
+		if (val.getTag() != DER.BIT_STRING)
+			throw new IOException("malformed KeyUsage");
+		keyUsage = (BitString) val.getValue();
+	}
 
-    // Instance methods.
-    // -------------------------------------------------------------------------
+	// Instance methods.
+	// -------------------------------------------------------------------------
 
-    public BitString getKeyUsage()
-    {
-	return keyUsage;
-    }
+	public BitString getKeyUsage() {
+		return keyUsage;
+	}
 
-    @Override
-    public String toString()
-    {
-	return KeyUsage.class.getName() + " [ " + keyUsage + " ]";
-    }
+	@Override
+	public String toString() {
+		return KeyUsage.class.getName() + " [ " + keyUsage + " ]";
+	}
 }

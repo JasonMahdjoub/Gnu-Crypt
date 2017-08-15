@@ -48,34 +48,30 @@ import javax.security.auth.Subject;
  *             class.
  */
 @Deprecated
-public abstract class Policy
-{
+public abstract class Policy {
 
-    private static Policy policy;
+	private static Policy policy;
 
-    public static synchronized Policy getPolicy()
-    {
-	/*
-	 * SecurityManager sm = System.getSecurityManager(); if (sm != null) {
-	 * sm.checkPermission (new AuthPermission ("getPolicy")); }
-	 */
-	return policy;
-    }
+	public static synchronized Policy getPolicy() {
+		/*
+		 * SecurityManager sm = System.getSecurityManager(); if (sm != null) {
+		 * sm.checkPermission (new AuthPermission ("getPolicy")); }
+		 */
+		return policy;
+	}
 
-    public static synchronized void setPolicy(Policy p)
-    {
-	/*
-	 * SecurityManager sm = System.getSecurityManager(); if (sm != null) {
-	 * sm.checkPermission (new AuthPermission ("setPolicy")); }
-	 */
-	policy = p;
-    }
+	public static synchronized void setPolicy(Policy p) {
+		/*
+		 * SecurityManager sm = System.getSecurityManager(); if (sm != null) {
+		 * sm.checkPermission (new AuthPermission ("setPolicy")); }
+		 */
+		policy = p;
+	}
 
-    protected Policy()
-    {
-    }
+	protected Policy() {
+	}
 
-    public abstract PermissionCollection getPermissions(Subject subject, CodeSource source);
+	public abstract PermissionCollection getPermissions(Subject subject, CodeSource source);
 
-    public abstract void refresh();
+	public abstract void refresh();
 }

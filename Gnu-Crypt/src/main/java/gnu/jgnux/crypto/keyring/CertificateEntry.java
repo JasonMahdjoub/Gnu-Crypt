@@ -49,83 +49,71 @@ import gnu.vm.jgnu.security.cert.CertificateFactory;
 /**
  * An immutable class representing a trusted certificate entry.
  */
-public final class CertificateEntry extends PrimitiveEntry
-{
-    public static final int TYPE = 5;
+public final class CertificateEntry extends PrimitiveEntry {
+	public static final int TYPE = 5;
 
-    public static CertificateEntry decode(DataInputStream in) throws IOException
-    {
-	CertificateEntry entry = new CertificateEntry();
-	entry.properties.decode(in);
-	entry.makeCreationDate();
-	String type = entry.properties.get("type");
-	if (type == null)
-	    throw new MalformedKeyringException("no certificate type");
-	int len = in.readInt();
-	MeteredInputStream in2 = new MeteredInputStream(in, len);
-	try
-	{
-	    CertificateFactory fact = CertificateFactory.getInstance(type);
-	    entry.certificate = fact.generateCertificate(in2);
+	public static CertificateEntry decode(DataInputStream in) throws IOException {
+		CertificateEntry entry = new CertificateEntry();
+		entry.properties.decode(in);
+		entry.makeCreationDate();
+		String type = entry.properties.get("type");
+		if (type == null)
+			throw new MalformedKeyringException("no certificate type");
+		int len = in.readInt();
+		MeteredInputStream in2 = new MeteredInputStream(in, len);
+		try {
+			CertificateFactory fact = CertificateFactory.getInstance(type);
+			entry.certificate = fact.generateCertificate(in2);
+		} catch (CertificateException ce) {
+			throw new MalformedKeyringException(ce.toString());
+		}
+		if (!in2.limitReached())
+			throw new MalformedKeyringException("extra data at end of payload");
+		return entry;
 	}
-	catch (CertificateException ce)
-	{
-	    throw new MalformedKeyringException(ce.toString());
+
+	/** The certificate. */
+	private Certificate certificate;
+
+	private CertificateEntry() {
+		super(TYPE);
 	}
-	if (!in2.limitReached())
-	    throw new MalformedKeyringException("extra data at end of payload");
-	return entry;
-    }
 
-    /** The certificate. */
-    private Certificate certificate;
-
-    private CertificateEntry()
-    {
-	super(TYPE);
-    }
-
-    /**
-     * Creates a new certificate entry.
-     *
-     * @param certificate
-     *            The certificate.
-     * @param creationDate
-     *            The creation date.
-     * @param properties
-     *            The alias.
-     * @throws IllegalArgumentException
-     *             If any argument is null, or if the alias is empty.
-     */
-    public CertificateEntry(Certificate certificate, Date creationDate, Properties properties)
-    {
-	super(TYPE, creationDate, properties);
-	if (certificate == null)
-	    throw new IllegalArgumentException("no certificate");
-	this.certificate = certificate;
-	this.properties.put("type", certificate.getType());
-    }
-
-    @Override
-    protected void encodePayload() throws IOException
-    {
-	try
-	{
-	    payload = certificate.getEncoded();
+	/**
+	 * Creates a new certificate entry.
+	 *
+	 * @param certificate
+	 *            The certificate.
+	 * @param creationDate
+	 *            The creation date.
+	 * @param properties
+	 *            The alias.
+	 * @throws IllegalArgumentException
+	 *             If any argument is null, or if the alias is empty.
+	 */
+	public CertificateEntry(Certificate certificate, Date creationDate, Properties properties) {
+		super(TYPE, creationDate, properties);
+		if (certificate == null)
+			throw new IllegalArgumentException("no certificate");
+		this.certificate = certificate;
+		this.properties.put("type", certificate.getType());
 	}
-	catch (CertificateEncodingException cee)
-	{
-	    throw new IOException(cee.toString());
-	}
-    }
 
-    /**
-     * Returns this entry's certificate.
-     *
-     * @return The certificate.
-     */
-    public Certificate getCertificate()
-    {
-	return certificate;
-    }
+	@Override
+	protected void encodePayload() throws IOException {
+		try {
+			payload = certificate.getEncoded();
+		} catch (CertificateEncodingException cee) {
+			throw new IOException(cee.toString());
+		}
+	}
+
+	/**
+	 * Returns this entry's certificate.
+	 *
+	 * @return The certificate.
+	 */
+	public Certificate getCertificate() {
+		return certificate;
+	}
 }

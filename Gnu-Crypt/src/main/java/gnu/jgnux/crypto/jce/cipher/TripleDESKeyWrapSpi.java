@@ -43,10 +43,8 @@ import gnu.jgnu.security.Registry;
  * The JCE Cipher Adapter implementation over the GNU TripleDES Key Wrapping
  * Algorithm.
  */
-public final class TripleDESKeyWrapSpi extends KeyWrappingAlgorithmAdapter
-{
-    public TripleDESKeyWrapSpi()
-    {
-	super(Registry.TRIPLEDES_KWA, 8, 192 / 8, Registry.CBC_MODE);
-    }
+public final class TripleDESKeyWrapSpi extends KeyWrappingAlgorithmAdapter {
+	public TripleDESKeyWrapSpi() {
+		super(Registry.TRIPLEDES_KWA, 8, 192 / 8, Registry.CBC_MODE);
+	}
 }

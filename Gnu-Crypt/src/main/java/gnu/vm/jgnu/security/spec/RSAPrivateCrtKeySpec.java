@@ -50,109 +50,103 @@ import gnu.vm.jgnu.security.spec.RSAPrivateKeySpec;
  * 
  * @author Mark Benvenuto
  */
-public class RSAPrivateCrtKeySpec extends RSAPrivateKeySpec
-{
-    private BigInteger publicExponent;
+public class RSAPrivateCrtKeySpec extends RSAPrivateKeySpec {
+	private BigInteger publicExponent;
 
-    private BigInteger primeP;
+	private BigInteger primeP;
 
-    private BigInteger primeQ;
+	private BigInteger primeQ;
 
-    private BigInteger primeExponentP;
+	private BigInteger primeExponentP;
 
-    private BigInteger primeExponentQ;
+	private BigInteger primeExponentQ;
 
-    private BigInteger crtCoefficient;
+	private BigInteger crtCoefficient;
 
-    /**
-     * Constructs a new RSAPrivateKeySpec with the specified variables.
-     * 
-     * @param modulus
-     *            the RSA modulus
-     * @param publicExponent
-     *            the public key exponent
-     * @param privateExponent
-     *            the private key exponent
-     * @param primeP
-     *            the prime P
-     * @param primeQ
-     *            the prime Q
-     * @param primeExponentP
-     *            the prime exponent P
-     * @param primeExponentQ
-     *            the prime exponent P
-     * @param crtCoefficient
-     *            the CRT coefficient
-     */
-    public RSAPrivateCrtKeySpec(BigInteger modulus, BigInteger publicExponent, BigInteger privateExponent, BigInteger primeP, BigInteger primeQ, BigInteger primeExponentP, BigInteger primeExponentQ, BigInteger crtCoefficient)
-    {
-	super(modulus, privateExponent);
-	this.publicExponent = publicExponent;
-	this.primeP = primeP;
-	this.primeQ = primeQ;
-	this.primeExponentP = primeExponentP;
-	this.primeExponentQ = primeExponentQ;
-	this.crtCoefficient = crtCoefficient;
-    }
+	/**
+	 * Constructs a new RSAPrivateKeySpec with the specified variables.
+	 * 
+	 * @param modulus
+	 *            the RSA modulus
+	 * @param publicExponent
+	 *            the public key exponent
+	 * @param privateExponent
+	 *            the private key exponent
+	 * @param primeP
+	 *            the prime P
+	 * @param primeQ
+	 *            the prime Q
+	 * @param primeExponentP
+	 *            the prime exponent P
+	 * @param primeExponentQ
+	 *            the prime exponent P
+	 * @param crtCoefficient
+	 *            the CRT coefficient
+	 */
+	public RSAPrivateCrtKeySpec(BigInteger modulus, BigInteger publicExponent, BigInteger privateExponent,
+			BigInteger primeP, BigInteger primeQ, BigInteger primeExponentP, BigInteger primeExponentQ,
+			BigInteger crtCoefficient) {
+		super(modulus, privateExponent);
+		this.publicExponent = publicExponent;
+		this.primeP = primeP;
+		this.primeQ = primeQ;
+		this.primeExponentP = primeExponentP;
+		this.primeExponentQ = primeExponentQ;
+		this.crtCoefficient = crtCoefficient;
+	}
 
-    /**
-     * Gets the RSA CRT coefficient.
-     * 
-     * @return the RSA CRT coefficient
-     */
-    public BigInteger getCrtCoefficient()
-    {
-	return this.crtCoefficient;
-    }
+	/**
+	 * Gets the RSA CRT coefficient.
+	 * 
+	 * @return the RSA CRT coefficient
+	 */
+	public BigInteger getCrtCoefficient() {
+		return this.crtCoefficient;
+	}
 
-    /**
-     * Gets the RSA prime exponent P.
-     * 
-     * @return the RSA prime exponent P
-     */
-    public BigInteger getPrimeExponentP()
-    {
-	return this.primeExponentP;
-    }
+	/**
+	 * Gets the RSA prime exponent P.
+	 * 
+	 * @return the RSA prime exponent P
+	 */
+	public BigInteger getPrimeExponentP() {
+		return this.primeExponentP;
+	}
 
-    /**
-     * Gets the RSA prime exponent P.
-     * 
-     * @return the RSA prime exponent Q
-     */
-    public BigInteger getPrimeExponentQ()
-    {
-	return this.primeExponentQ;
-    }
+	/**
+	 * Gets the RSA prime exponent P.
+	 * 
+	 * @return the RSA prime exponent Q
+	 */
+	public BigInteger getPrimeExponentQ() {
+		return this.primeExponentQ;
+	}
 
-    /**
-     * Gets the RSA prime P.
-     * 
-     * @return the RSA prime P
-     */
-    public BigInteger getPrimeP()
-    {
-	return this.primeP;
-    }
+	/**
+	 * Gets the RSA prime P.
+	 * 
+	 * @return the RSA prime P
+	 */
+	public BigInteger getPrimeP() {
+		return this.primeP;
+	}
 
-    /**
-     * Gets the RSA prime Q.
-     * 
-     * @return the RSA prime Q
-     */
-    public BigInteger getPrimeQ()
-    {
-	return this.primeQ;
-    }
+	/**
+	 * Gets the RSA prime Q.
+	 * 
+	 * @return the RSA prime Q
+	 */
+	public BigInteger getPrimeQ() {
+		return this.primeQ;
+	}
 
-    /**
-     * Gets the RSA public exponent.
-     * 
-     * @return the RSA public exponent
-     */
-    public BigInteger getPublicExponent()
-    {
-	return this.publicExponent;
-    }
+	/**
+	 * Gets the RSA public exponent.
+	 * 
+	 * @return the RSA public exponent
+	 */
+	public BigInteger getPublicExponent() {
+		return this.publicExponent;
+	}
 
 }

@@ -60,192 +60,172 @@ import gnu.vm.jgnu.security.PublicKey;
  *
  * @author Casey Marshall (rsdio@metastatic.org)
  */
-public class DSSKeyPairPKCS8Codec implements IKeyPairCodec
-{
+public class DSSKeyPairPKCS8Codec implements IKeyPairCodec {
 
-    private static final OID DSA_ALG_OID = new OID(Registry.DSA_OID_STRING);
+	private static final OID DSA_ALG_OID = new OID(Registry.DSA_OID_STRING);
 
-    // implicit 0-arguments constructor
+	// implicit 0-arguments constructor
 
-    /**
-     * @param input
-     *            the byte array to unmarshall into a valid DSS
-     *            {@link PrivateKey} instance. MUST NOT be null.
-     * @return a new instance of a {@link DSSPrivateKey} decoded from the
-     *         <i>PrivateKeyInfo</i> material fed as <code>input</code>.
-     * @throw InvalidParameterException if an exception occurs during the
-     *        unmarshalling process.
-     */
-    @Override
-    public PrivateKey decodePrivateKey(byte[] input)
-    {
-	if (input == null)
-	    throw new InvalidParameterException("Input bytes MUST NOT be null");
+	/**
+	 * @param input
+	 *            the byte array to unmarshall into a valid DSS {@link PrivateKey}
+	 *            instance. MUST NOT be null.
+	 * @return a new instance of a {@link DSSPrivateKey} decoded from the
+	 *         <i>PrivateKeyInfo</i> material fed as <code>input</code>.
+	 * @throw InvalidParameterException if an exception occurs during the
+	 *        unmarshalling process.
+	 */
+	@Override
+	public PrivateKey decodePrivateKey(byte[] input) {
+		if (input == null)
+			throw new InvalidParameterException("Input bytes MUST NOT be null");
 
-	BigInteger version, p, q, g, x;
-	DERReader der = new DERReader(input);
-	try
-	{
-	    DERValue derPKI = der.read();
-	    DerUtil.checkIsConstructed(derPKI, "Wrong PrivateKeyInfo field");
+		BigInteger version, p, q, g, x;
+		DERReader der = new DERReader(input);
+		try {
+			DERValue derPKI = der.read();
+			DerUtil.checkIsConstructed(derPKI, "Wrong PrivateKeyInfo field");
 
-	    DERValue derVersion = der.read();
-	    if (!(derVersion.getValue() instanceof BigInteger))
-		throw new InvalidParameterException("Wrong Version field");
+			DERValue derVersion = der.read();
+			if (!(derVersion.getValue() instanceof BigInteger))
+				throw new InvalidParameterException("Wrong Version field");
 
-	    version = (BigInteger) derVersion.getValue();
-	    if (version.compareTo(BigInteger.ZERO) != 0)
-		throw new InvalidParameterException(
-			"Unexpected Version: " + version);
+			version = (BigInteger) derVersion.getValue();
+			if (version.compareTo(BigInteger.ZERO) != 0)
+				throw new InvalidParameterException("Unexpected Version: " + version);
 
-	    DERValue derAlgoritmID = der.read();
-	    DerUtil.checkIsConstructed(derAlgoritmID,
-		    "Wrong AlgorithmIdentifier field");
+			DERValue derAlgoritmID = der.read();
+			DerUtil.checkIsConstructed(derAlgoritmID, "Wrong AlgorithmIdentifier field");
 
-	    DERValue derOID = der.read();
-	    OID algOID = (OID) derOID.getValue();
-	    if (!algOID.equals(DSA_ALG_OID))
-		throw new InvalidParameterException(
-			"Unexpected OID: " + algOID);
+			DERValue derOID = der.read();
+			OID algOID = (OID) derOID.getValue();
+			if (!algOID.equals(DSA_ALG_OID))
+				throw new InvalidParameterException("Unexpected OID: " + algOID);
 
-	    DERValue derParams = der.read();
-	    DerUtil.checkIsConstructed(derParams, "Wrong DSS Parameters field");
+			DERValue derParams = der.read();
+			DerUtil.checkIsConstructed(derParams, "Wrong DSS Parameters field");
 
-	    DERValue val = der.read();
-	    DerUtil.checkIsBigInteger(val, "Wrong P field");
-	    p = (BigInteger) val.getValue();
-	    val = der.read();
-	    DerUtil.checkIsBigInteger(val, "Wrong Q field");
-	    q = (BigInteger) val.getValue();
-	    val = der.read();
-	    DerUtil.checkIsBigInteger(val, "Wrong G field");
-	    g = (BigInteger) val.getValue();
+			DERValue val = der.read();
+			DerUtil.checkIsBigInteger(val, "Wrong P field");
+			p = (BigInteger) val.getValue();
+			val = der.read();
+			DerUtil.checkIsBigInteger(val, "Wrong Q field");
+			q = (BigInteger) val.getValue();
+			val = der.read();
+			DerUtil.checkIsBigInteger(val, "Wrong G field");
+			g = (BigInteger) val.getValue();
 
-	    val = der.read();
-	    byte[] xBytes = (byte[]) val.getValue();
-	    DERReader der2 = new DERReader(xBytes);
-	    val = der2.read();
-	    DerUtil.checkIsBigInteger(val, "Wrong X field");
-	    x = (BigInteger) val.getValue();
+			val = der.read();
+			byte[] xBytes = (byte[]) val.getValue();
+			DERReader der2 = new DERReader(xBytes);
+			val = der2.read();
+			DerUtil.checkIsBigInteger(val, "Wrong X field");
+			x = (BigInteger) val.getValue();
+		} catch (IOException e) {
+			InvalidParameterException y = new InvalidParameterException(e.getMessage());
+			y.initCause(e);
+			throw y;
+		}
+		return new DSSPrivateKey(Registry.PKCS8_ENCODING_ID, p, q, g, x);
 	}
-	catch (IOException e)
-	{
-	    InvalidParameterException y = new InvalidParameterException(
-		    e.getMessage());
-	    y.initCause(e);
-	    throw y;
+
+	/**
+	 * @throws InvalidParameterException
+	 *             ALWAYS.
+	 */
+	@Override
+	public PublicKey decodePublicKey(byte[] input) {
+		throw new InvalidParameterException("Wrong format for public keys");
 	}
-	return new DSSPrivateKey(Registry.PKCS8_ENCODING_ID, p, q, g, x);
-    }
 
-    /**
-     * @throws InvalidParameterException
-     *             ALWAYS.
-     */
-    @Override
-    public PublicKey decodePublicKey(byte[] input)
-    {
-	throw new InvalidParameterException("Wrong format for public keys");
-    }
+	/**
+	 * Returns the PKCS#8 ASN.1 <i>PrivateKeyInfo</i> representation of a DSA
+	 * private key. The ASN.1 specification is as follows:
+	 *
+	 * <pre>
+	 *   PrivateKeyInfo ::= SEQUENCE {
+	 *     version              INTEGER, -- MUST be 0
+	 *     privateKeyAlgorithm  AlgorithmIdentifier,
+	 *     privateKey           OCTET STRING
+	 *   }
+	 *
+	 *   AlgorithmIdentifier ::= SEQUENCE {
+	 *     algorithm   OBJECT IDENTIFIER,
+	 *     parameters  ANY DEFINED BY algorithm OPTIONAL
+	 *   }
+	 *
+	 *   DssParams ::= SEQUENCE {
+	 *     p   INTEGER,
+	 *     q   INTEGER,
+	 *     g   INTEGER
+	 *   }
+	 * </pre>
+	 *
+	 * @return the DER encoded form of the ASN.1 representation of the
+	 *         <i>PrivateKeyInfo</i> field in an X.509 certificate.
+	 * @throw InvalidParameterException if an error occurs during the marshalling
+	 *        process.
+	 */
+	@Override
+	public byte[] encodePrivateKey(PrivateKey key) {
+		if (!(key instanceof DSSPrivateKey))
+			throw new InvalidParameterException("Wrong key type");
 
-    /**
-     * Returns the PKCS#8 ASN.1 <i>PrivateKeyInfo</i> representation of a DSA
-     * private key. The ASN.1 specification is as follows:
-     *
-     * <pre>
-     *   PrivateKeyInfo ::= SEQUENCE {
-     *     version              INTEGER, -- MUST be 0
-     *     privateKeyAlgorithm  AlgorithmIdentifier,
-     *     privateKey           OCTET STRING
-     *   }
-     *
-     *   AlgorithmIdentifier ::= SEQUENCE {
-     *     algorithm   OBJECT IDENTIFIER,
-     *     parameters  ANY DEFINED BY algorithm OPTIONAL
-     *   }
-     *
-     *   DssParams ::= SEQUENCE {
-     *     p   INTEGER,
-     *     q   INTEGER,
-     *     g   INTEGER
-     *   }
-     * </pre>
-     *
-     * @return the DER encoded form of the ASN.1 representation of the
-     *         <i>PrivateKeyInfo</i> field in an X.509 certificate.
-     * @throw InvalidParameterException if an error occurs during the
-     *        marshalling process.
-     */
-    @Override
-    public byte[] encodePrivateKey(PrivateKey key)
-    {
-	if (!(key instanceof DSSPrivateKey))
-	    throw new InvalidParameterException("Wrong key type");
+		DERValue derVersion = new DERValue(DER.INTEGER, BigInteger.ZERO);
 
-	DERValue derVersion = new DERValue(DER.INTEGER, BigInteger.ZERO);
+		DERValue derOID = new DERValue(DER.OBJECT_IDENTIFIER, DSA_ALG_OID);
 
-	DERValue derOID = new DERValue(DER.OBJECT_IDENTIFIER, DSA_ALG_OID);
+		DSSPrivateKey pk = (DSSPrivateKey) key;
+		BigInteger p = pk.getParams().getP();
+		BigInteger q = pk.getParams().getQ();
+		BigInteger g = pk.getParams().getG();
+		BigInteger x = pk.getX();
 
-	DSSPrivateKey pk = (DSSPrivateKey) key;
-	BigInteger p = pk.getParams().getP();
-	BigInteger q = pk.getParams().getQ();
-	BigInteger g = pk.getParams().getG();
-	BigInteger x = pk.getX();
+		ArrayList<DERValue> params = new ArrayList<>(3);
+		params.add(new DERValue(DER.INTEGER, p));
+		params.add(new DERValue(DER.INTEGER, q));
+		params.add(new DERValue(DER.INTEGER, g));
+		DERValue derParams = new DERValue(DER.CONSTRUCTED | DER.SEQUENCE, params);
 
-	ArrayList<DERValue> params = new ArrayList<>(3);
-	params.add(new DERValue(DER.INTEGER, p));
-	params.add(new DERValue(DER.INTEGER, q));
-	params.add(new DERValue(DER.INTEGER, g));
-	DERValue derParams = new DERValue(DER.CONSTRUCTED | DER.SEQUENCE,
-		params);
+		ArrayList<DERValue> algorithmID = new ArrayList<>(2);
+		algorithmID.add(derOID);
+		algorithmID.add(derParams);
+		DERValue derAlgorithmID = new DERValue(DER.CONSTRUCTED | DER.SEQUENCE, algorithmID);
 
-	ArrayList<DERValue> algorithmID = new ArrayList<>(2);
-	algorithmID.add(derOID);
-	algorithmID.add(derParams);
-	DERValue derAlgorithmID = new DERValue(DER.CONSTRUCTED | DER.SEQUENCE,
-		algorithmID);
+		// The OCTET STRING is the DER encoding of an INTEGER.
+		DERValue derX = new DERValue(DER.INTEGER, x);
+		DERValue derPrivateKey = new DERValue(DER.OCTET_STRING, derX.getEncoded());
 
-	// The OCTET STRING is the DER encoding of an INTEGER.
-	DERValue derX = new DERValue(DER.INTEGER, x);
-	DERValue derPrivateKey = new DERValue(DER.OCTET_STRING,
-		derX.getEncoded());
+		ArrayList<DERValue> pki = new ArrayList<>(3);
+		pki.add(derVersion);
+		pki.add(derAlgorithmID);
+		pki.add(derPrivateKey);
+		DERValue derPKI = new DERValue(DER.CONSTRUCTED | DER.SEQUENCE, pki);
 
-	ArrayList<DERValue> pki = new ArrayList<>(3);
-	pki.add(derVersion);
-	pki.add(derAlgorithmID);
-	pki.add(derPrivateKey);
-	DERValue derPKI = new DERValue(DER.CONSTRUCTED | DER.SEQUENCE, pki);
-
-	byte[] result;
-	ByteArrayOutputStream baos = new ByteArrayOutputStream();
-	try
-	{
-	    DERWriter.write(baos, derPKI);
-	    result = baos.toByteArray();
+		byte[] result;
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		try {
+			DERWriter.write(baos, derPKI);
+			result = baos.toByteArray();
+		} catch (IOException e) {
+			InvalidParameterException y = new InvalidParameterException(e.getMessage());
+			y.initCause(e);
+			throw y;
+		}
+		return result;
 	}
-	catch (IOException e)
-	{
-	    InvalidParameterException y = new InvalidParameterException(
-		    e.getMessage());
-	    y.initCause(e);
-	    throw y;
+
+	/**
+	 * @throws InvalidParameterException
+	 *             ALWAYS.
+	 */
+	@Override
+	public byte[] encodePublicKey(PublicKey key) {
+		throw new InvalidParameterException("Wrong format for public keys");
 	}
-	return result;
-    }
 
-    /**
-     * @throws InvalidParameterException
-     *             ALWAYS.
-     */
-    @Override
-    public byte[] encodePublicKey(PublicKey key)
-    {
-	throw new InvalidParameterException("Wrong format for public keys");
-    }
-
-    @Override
-    public int getFormatID()
-    {
-	return PKCS8_FORMAT;
-    }
+	@Override
+	public int getFormatID() {
+		return PKCS8_FORMAT;
+	}
 }

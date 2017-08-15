@@ -46,100 +46,91 @@ import gnu.vm.jgnu.security.PublicKey;
  *
  * @see CertPathValidator
  */
-public class PKIXCertPathValidatorResult implements CertPathValidatorResult
-{
+public class PKIXCertPathValidatorResult implements CertPathValidatorResult {
 
-    // Fields.
-    // ------------------------------------------------------------------------
+	// Fields.
+	// ------------------------------------------------------------------------
 
-    /** The trust anchor. */
-    private final TrustAnchor trustAnchor;
+	/** The trust anchor. */
+	private final TrustAnchor trustAnchor;
 
-    /** The root node of the policy tree. */
-    private final PolicyNode policyTree;
+	/** The root node of the policy tree. */
+	private final PolicyNode policyTree;
 
-    /** The subject's public key. */
-    private final PublicKey subjectPublicKey;
+	/** The subject's public key. */
+	private final PublicKey subjectPublicKey;
 
-    // Constructor.
-    // ------------------------------------------------------------------------
+	// Constructor.
+	// ------------------------------------------------------------------------
 
-    /**
-     * Creates a new PKIXCertPathValidatorResult.
-     *
-     * @param trustAnchor
-     *            The trust anchor.
-     * @param policyTree
-     *            The root node of the policy tree.
-     * @param subjectPublicKey
-     *            The public key.
-     * @throws NullPointerException
-     *             If either <i>trustAnchor</i> or <i>subjectPublicKey</i> is
-     *             null.
-     */
-    public PKIXCertPathValidatorResult(TrustAnchor trustAnchor, PolicyNode policyTree, PublicKey subjectPublicKey)
-    {
-	if (trustAnchor == null || subjectPublicKey == null)
-	    throw new NullPointerException();
-	this.trustAnchor = trustAnchor;
-	this.policyTree = policyTree;
-	this.subjectPublicKey = subjectPublicKey;
-    }
+	/**
+	 * Creates a new PKIXCertPathValidatorResult.
+	 *
+	 * @param trustAnchor
+	 *            The trust anchor.
+	 * @param policyTree
+	 *            The root node of the policy tree.
+	 * @param subjectPublicKey
+	 *            The public key.
+	 * @throws NullPointerException
+	 *             If either <i>trustAnchor</i> or <i>subjectPublicKey</i> is null.
+	 */
+	public PKIXCertPathValidatorResult(TrustAnchor trustAnchor, PolicyNode policyTree, PublicKey subjectPublicKey) {
+		if (trustAnchor == null || subjectPublicKey == null)
+			throw new NullPointerException();
+		this.trustAnchor = trustAnchor;
+		this.policyTree = policyTree;
+		this.subjectPublicKey = subjectPublicKey;
+	}
 
-    // Instance methods.
-    // ------------------------------------------------------------------------
+	// Instance methods.
+	// ------------------------------------------------------------------------
 
-    /**
-     * Returns a copy of this object.
-     *
-     * @return The copy.
-     */
-    @Override
-    public Object clone()
-    {
-	return new PKIXCertPathValidatorResult(trustAnchor, policyTree,
-		subjectPublicKey);
-    }
+	/**
+	 * Returns a copy of this object.
+	 *
+	 * @return The copy.
+	 */
+	@Override
+	public Object clone() {
+		return new PKIXCertPathValidatorResult(trustAnchor, policyTree, subjectPublicKey);
+	}
 
-    /**
-     * Returns the root node of the policy tree.
-     *
-     * @return The root node of the policy tree.
-     */
-    public PolicyNode getPolicyTree()
-    {
-	return policyTree;
-    }
+	/**
+	 * Returns the root node of the policy tree.
+	 *
+	 * @return The root node of the policy tree.
+	 */
+	public PolicyNode getPolicyTree() {
+		return policyTree;
+	}
 
-    /**
-     * Returns the subject public key.
-     *
-     * @return The subject public key.
-     */
-    public PublicKey getPublicKey()
-    {
-	return subjectPublicKey;
-    }
+	/**
+	 * Returns the subject public key.
+	 *
+	 * @return The subject public key.
+	 */
+	public PublicKey getPublicKey() {
+		return subjectPublicKey;
+	}
 
-    /**
-     * Returns the trust anchor.
-     *
-     * @return The trust anchor.
-     */
-    public TrustAnchor getTrustAnchor()
-    {
-	return trustAnchor;
-    }
+	/**
+	 * Returns the trust anchor.
+	 *
+	 * @return The trust anchor.
+	 */
+	public TrustAnchor getTrustAnchor() {
+		return trustAnchor;
+	}
 
-    /**
-     * Returns a printable string representation of this result.
-     *
-     * @return A printable string representation of this result.
-     */
-    @Override
-    public String toString()
-    {
-	return "[ Trust Anchor=" + trustAnchor + "; Policy Tree=" + policyTree
-		+ "; Subject Public Key=" + subjectPublicKey + " ]";
-    }
+	/**
+	 * Returns a printable string representation of this result.
+	 *
+	 * @return A printable string representation of this result.
+	 */
+	@Override
+	public String toString() {
+		return "[ Trust Anchor=" + trustAnchor + "; Policy Tree=" + policyTree + "; Subject Public Key="
+				+ subjectPublicKey + " ]";
+	}
 }

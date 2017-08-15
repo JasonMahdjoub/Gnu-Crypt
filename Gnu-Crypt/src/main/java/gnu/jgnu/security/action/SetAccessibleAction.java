@@ -49,29 +49,24 @@ import java.security.PrivilegedAction;
  * AccessController.doPrivileged(new SetAccessibleAction(dataField));
  * </code>
  */
-public class SetAccessibleAction implements PrivilegedAction<Object>
-{
-    AccessibleObject member;
+public class SetAccessibleAction implements PrivilegedAction<Object> {
+	AccessibleObject member;
 
-    public SetAccessibleAction()
-    {
-    }
+	public SetAccessibleAction() {
+	}
 
-    public SetAccessibleAction(AccessibleObject member)
-    {
-	this.member = member;
-    }
+	public SetAccessibleAction(AccessibleObject member) {
+		this.member = member;
+	}
 
-    @Override
-    public Object run()
-    {
-	member.setAccessible(true);
-	return null;
-    }
+	@Override
+	public Object run() {
+		member.setAccessible(true);
+		return null;
+	}
 
-    public SetAccessibleAction setMember(AccessibleObject member)
-    {
-	this.member = member;
-	return this;
-    }
+	public SetAccessibleAction setMember(AccessibleObject member) {
+		this.member = member;
+		return this;
+	}
 }

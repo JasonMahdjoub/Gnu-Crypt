@@ -43,23 +43,20 @@ import javax.security.auth.login.AccountException;
  * An exception that signals that an attempt was made to login to an account
  * that has expired.
  */
-public class AccountExpiredException extends AccountException
-{
+public class AccountExpiredException extends AccountException {
 
-    // Constant.
-    // -------------------------------------------------------------------------
+	// Constant.
+	// -------------------------------------------------------------------------
 
-    private static final long serialVersionUID = -6064064890162661560L;
+	private static final long serialVersionUID = -6064064890162661560L;
 
-    // Constructors.
-    // -------------------------------------------------------------------------
+	// Constructors.
+	// -------------------------------------------------------------------------
 
-    public AccountExpiredException()
-    {
-    }
+	public AccountExpiredException() {
+	}
 
-    public AccountExpiredException(String message)
-    {
-	super(message);
-    }
+	public AccountExpiredException(String message) {
+		super(message);
+	}
 }

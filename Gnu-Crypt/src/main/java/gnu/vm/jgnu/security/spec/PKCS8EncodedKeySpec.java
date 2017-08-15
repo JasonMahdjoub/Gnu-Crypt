@@ -47,39 +47,35 @@ import gnu.vm.jgnu.security.spec.EncodedKeySpec;
  * 
  * @author Mark Benvenuto
  */
-public class PKCS8EncodedKeySpec extends EncodedKeySpec
-{
-    /**
-     * Constructs a new PKCS8EncodedKeySpec with the specified encoded key.
-     * 
-     * @param encodedKey
-     *            A key to store, assumed to be "PKCS#8"
-     */
-    public PKCS8EncodedKeySpec(byte[] encodedKey)
-    {
-	super(encodedKey);
-    }
+public class PKCS8EncodedKeySpec extends EncodedKeySpec {
+	/**
+	 * Constructs a new PKCS8EncodedKeySpec with the specified encoded key.
+	 * 
+	 * @param encodedKey
+	 *            A key to store, assumed to be "PKCS#8"
+	 */
+	public PKCS8EncodedKeySpec(byte[] encodedKey) {
+		super(encodedKey);
+	}
 
-    /**
-     * Gets the encoded key in byte format.
-     * 
-     * @returns the encoded key
-     */
-    @Override
-    public byte[] getEncoded()
-    {
-	return super.getEncoded();
-    }
+	/**
+	 * Gets the encoded key in byte format.
+	 * 
+	 * @returns the encoded key
+	 */
+	@Override
+	public byte[] getEncoded() {
+		return super.getEncoded();
+	}
 
-    /**
-     * Returns the name of the key format used which is "PKCS#8"
-     * 
-     * @return a string representing the name
-     */
-    @Override
-    public final String getFormat()
-    {
-	return "PKCS#8";
-    }
+	/**
+	 * Returns the name of the key format used which is "PKCS#8"
+	 * 
+	 * @return a string representing the name
+	 */
+	@Override
+	public final String getFormat() {
+		return "PKCS#8";
+	}
 
 }

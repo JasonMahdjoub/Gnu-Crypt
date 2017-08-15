@@ -178,36 +178,33 @@ import gnu.vm.jgnu.security.BasicPermission;
  * </dd>
  * </dl>
  */
-public final class AuthPermission extends BasicPermission
-{
+public final class AuthPermission extends BasicPermission {
 
-    /**
-     * 
-     */
-    private static final long serialVersionUID = -715773617560407115L;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -715773617560407115L;
 
-    /**
-     * Creates a new authentication permission for the given target name.
-     *
-     * @param name
-     *            The target name.
-     */
-    public AuthPermission(String name)
-    {
-	super(name);
-    }
+	/**
+	 * Creates a new authentication permission for the given target name.
+	 *
+	 * @param name
+	 *            The target name.
+	 */
+	public AuthPermission(String name) {
+		super(name);
+	}
 
-    /**
-     * Creates a new authentication permission for the given target name. The
-     * actions list is not used by this class.
-     *
-     * @param name
-     *            The target name.
-     * @param actions
-     *            The action list.
-     */
-    public AuthPermission(String name, String actions)
-    {
-	super(name, actions);
-    }
+	/**
+	 * Creates a new authentication permission for the given target name. The
+	 * actions list is not used by this class.
+	 *
+	 * @param name
+	 *            The target name.
+	 * @param actions
+	 *            The action list.
+	 */
+	public AuthPermission(String name, String actions) {
+		super(name, actions);
+	}
 }

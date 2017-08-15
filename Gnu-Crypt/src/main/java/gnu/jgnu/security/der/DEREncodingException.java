@@ -39,20 +39,17 @@ package gnu.jgnu.security.der;
 
 import java.io.IOException;
 
-public class DEREncodingException extends IOException
-{
-    /**
-     * 
-     */
-    private static final long serialVersionUID = 5763366374058841017L;
+public class DEREncodingException extends IOException {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 5763366374058841017L;
 
-    public DEREncodingException()
-    {
-	super();
-    }
+	public DEREncodingException() {
+		super();
+	}
 
-    public DEREncodingException(String msg)
-    {
-	super(msg);
-    }
+	public DEREncodingException(String msg) {
+		super(msg);
+	}
 }

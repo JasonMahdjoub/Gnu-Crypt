@@ -64,249 +64,195 @@ import gnu.vm.jgnu.security.cert.CertificateException;
  *
  * @author Casey Marshall (rsdio@metastatic.org)
  */
-public class X509CertPath extends CertPath
-{
+public class X509CertPath extends CertPath {
 
-    // Fields.
-    // -------------------------------------------------------------------------
+	// Fields.
+	// -------------------------------------------------------------------------
 
-    public static final List<String> ENCODINGS = Collections.unmodifiableList(
-	    Arrays.asList(new String[] { "PkiPath", "PKCS7" }));
+	public static final List<String> ENCODINGS = Collections
+			.unmodifiableList(Arrays.asList(new String[] { "PkiPath", "PKCS7" }));
 
-    private static final OID PKCS7_SIGNED_DATA = new OID(
-	    "1.2.840.113549.1.7.2");
+	private static final OID PKCS7_SIGNED_DATA = new OID("1.2.840.113549.1.7.2");
 
-    private static final OID PKCS7_DATA = new OID("1.2.840.113549.1.7.1");
+	private static final OID PKCS7_DATA = new OID("1.2.840.113549.1.7.1");
 
-    /** The certificate path. */
-    private List<? extends Certificate> path;
+	/** The certificate path. */
+	private List<? extends Certificate> path;
 
-    /** The cached PKCS #7 encoded bytes. */
-    private byte[] pkcs_encoded;
+	/** The cached PKCS #7 encoded bytes. */
+	private byte[] pkcs_encoded;
 
-    /** The cached PkiPath encoded bytes. */
-    private byte[] pki_encoded;
+	/** The cached PkiPath encoded bytes. */
+	private byte[] pki_encoded;
 
-    // Constructor.
-    // -------------------------------------------------------------------------
+	// Constructor.
+	// -------------------------------------------------------------------------
 
-    public X509CertPath(InputStream in) throws CertificateEncodingException
-    {
-	this(in, ENCODINGS.get(0));
-    }
-
-    public X509CertPath(InputStream in, String encoding) throws CertificateEncodingException
-    {
-	super("X.509");
-	try
-	{
-	    parse(in, encoding);
+	public X509CertPath(InputStream in) throws CertificateEncodingException {
+		this(in, ENCODINGS.get(0));
 	}
-	catch (IOException ioe)
-	{
-	    throw new CertificateEncodingException();
-	}
-    }
 
-    public X509CertPath(List<? extends Certificate> path)
-    {
-	super("X.509");
-	this.path = Collections.unmodifiableList(path);
-    }
-
-    // Instance methods.
-    // -------------------------------------------------------------------------
-
-    private byte[] encodePKCS() throws CertificateEncodingException, IOException
-    {
-	synchronized (path)
-	{
-	    ArrayList<DERValue> signedData = new ArrayList<>(5);
-	    signedData.add(new DERValue(DER.INTEGER, BigInteger.ONE));
-	    signedData.add(new DERValue(DER.CONSTRUCTED | DER.SET,
-		    Collections.EMPTY_SET));
-	    signedData.add(new DERValue(DER.CONSTRUCTED | DER.SEQUENCE,
-		    Collections.singletonList(
-			    new DERValue(DER.OBJECT_IDENTIFIER, PKCS7_DATA))));
-	    ByteArrayOutputStream out = new ByteArrayOutputStream();
-	    for (Iterator<? extends Certificate> i = path.iterator(); i
-		    .hasNext();)
-	    {
-		out.write(i.next().getEncoded());
-	    }
-	    byte[] b = out.toByteArray();
-	    signedData.add(new DERValue(DER.CONSTRUCTED | DER.CONTEXT, b.length,
-		    b, null));
-	    DERValue sdValue = new DERValue(DER.CONSTRUCTED | DER.SEQUENCE,
-		    signedData);
-
-	    ArrayList<DERValue> contentInfo = new ArrayList<>(2);
-	    contentInfo.add(
-		    new DERValue(DER.OBJECT_IDENTIFIER, PKCS7_SIGNED_DATA));
-	    contentInfo
-		    .add(new DERValue(DER.CONSTRUCTED | DER.CONTEXT, sdValue));
-	    return new DERValue(DER.CONSTRUCTED | DER.SEQUENCE, contentInfo)
-		    .getEncoded();
-	}
-    }
-
-    private byte[] encodePki() throws CertificateEncodingException, IOException
-    {
-	synchronized (path)
-	{
-	    ByteArrayOutputStream out = new ByteArrayOutputStream();
-	    for (Iterator<? extends Certificate> i = path.iterator(); i
-		    .hasNext();)
-	    {
-		out.write(i.next().getEncoded());
-	    }
-	    byte[] b = out.toByteArray();
-	    DERValue val = new DERValue(DER.CONSTRUCTED | DER.SEQUENCE,
-		    b.length, b, null);
-	    return val.getEncoded();
-	}
-    }
-
-    @Override
-    public List<? extends Certificate> getCertificates()
-    {
-	return path; // already unmodifiable
-    }
-
-    @Override
-    public byte[] getEncoded() throws CertificateEncodingException
-    {
-	return getEncoded(ENCODINGS.get(0));
-    }
-
-    // Own methods.
-    // -------------------------------------------------------------------------
-
-    @Override
-    public byte[] getEncoded(String encoding) throws CertificateEncodingException
-    {
-	if (encoding.equalsIgnoreCase("PkiPath"))
-	{
-	    if (pki_encoded == null)
-	    {
-		try
-		{
-		    pki_encoded = encodePki();
+	public X509CertPath(InputStream in, String encoding) throws CertificateEncodingException {
+		super("X.509");
+		try {
+			parse(in, encoding);
+		} catch (IOException ioe) {
+			throw new CertificateEncodingException();
 		}
-		catch (IOException ioe)
-		{
-		    throw new CertificateEncodingException();
+	}
+
+	public X509CertPath(List<? extends Certificate> path) {
+		super("X.509");
+		this.path = Collections.unmodifiableList(path);
+	}
+
+	// Instance methods.
+	// -------------------------------------------------------------------------
+
+	private byte[] encodePKCS() throws CertificateEncodingException, IOException {
+		synchronized (path) {
+			ArrayList<DERValue> signedData = new ArrayList<>(5);
+			signedData.add(new DERValue(DER.INTEGER, BigInteger.ONE));
+			signedData.add(new DERValue(DER.CONSTRUCTED | DER.SET, Collections.EMPTY_SET));
+			signedData.add(new DERValue(DER.CONSTRUCTED | DER.SEQUENCE,
+					Collections.singletonList(new DERValue(DER.OBJECT_IDENTIFIER, PKCS7_DATA))));
+			ByteArrayOutputStream out = new ByteArrayOutputStream();
+			for (Iterator<? extends Certificate> i = path.iterator(); i.hasNext();) {
+				out.write(i.next().getEncoded());
+			}
+			byte[] b = out.toByteArray();
+			signedData.add(new DERValue(DER.CONSTRUCTED | DER.CONTEXT, b.length, b, null));
+			DERValue sdValue = new DERValue(DER.CONSTRUCTED | DER.SEQUENCE, signedData);
+
+			ArrayList<DERValue> contentInfo = new ArrayList<>(2);
+			contentInfo.add(new DERValue(DER.OBJECT_IDENTIFIER, PKCS7_SIGNED_DATA));
+			contentInfo.add(new DERValue(DER.CONSTRUCTED | DER.CONTEXT, sdValue));
+			return new DERValue(DER.CONSTRUCTED | DER.SEQUENCE, contentInfo).getEncoded();
 		}
-	    }
-	    return pki_encoded.clone();
 	}
-	else if (encoding.equalsIgnoreCase("PKCS7"))
-	{
-	    if (pkcs_encoded == null)
-	    {
-		try
-		{
-		    pkcs_encoded = encodePKCS();
+
+	private byte[] encodePki() throws CertificateEncodingException, IOException {
+		synchronized (path) {
+			ByteArrayOutputStream out = new ByteArrayOutputStream();
+			for (Iterator<? extends Certificate> i = path.iterator(); i.hasNext();) {
+				out.write(i.next().getEncoded());
+			}
+			byte[] b = out.toByteArray();
+			DERValue val = new DERValue(DER.CONSTRUCTED | DER.SEQUENCE, b.length, b, null);
+			return val.getEncoded();
 		}
-		catch (IOException ioe)
-		{
-		    throw new CertificateEncodingException();
+	}
+
+	@Override
+	public List<? extends Certificate> getCertificates() {
+		return path; // already unmodifiable
+	}
+
+	@Override
+	public byte[] getEncoded() throws CertificateEncodingException {
+		return getEncoded(ENCODINGS.get(0));
+	}
+
+	// Own methods.
+	// -------------------------------------------------------------------------
+
+	@Override
+	public byte[] getEncoded(String encoding) throws CertificateEncodingException {
+		if (encoding.equalsIgnoreCase("PkiPath")) {
+			if (pki_encoded == null) {
+				try {
+					pki_encoded = encodePki();
+				} catch (IOException ioe) {
+					throw new CertificateEncodingException();
+				}
+			}
+			return pki_encoded.clone();
+		} else if (encoding.equalsIgnoreCase("PKCS7")) {
+			if (pkcs_encoded == null) {
+				try {
+					pkcs_encoded = encodePKCS();
+				} catch (IOException ioe) {
+					throw new CertificateEncodingException();
+				}
+			}
+			return pkcs_encoded.clone();
+		} else
+			throw new CertificateEncodingException("unknown encoding: " + encoding);
+	}
+
+	@Override
+	public Iterator<String> getEncodings() {
+		return ENCODINGS.iterator(); // already unmodifiable
+	}
+
+	private void parse(InputStream in, String encoding) throws CertificateEncodingException, IOException {
+		DERReader der = new DERReader(in);
+		DERValue path = null;
+		if (encoding.equalsIgnoreCase("PkiPath")) {
+			// PKI encoding is just a SEQUENCE of X.509 certificates.
+			path = der.read();
+			if (!path.isConstructed())
+				throw new DEREncodingException("malformed PkiPath");
+		} else if (encoding.equalsIgnoreCase("PKCS7")) {
+			// PKCS #7 encoding means that the certificates are contained in a
+			// SignedData PKCS #7 type.
+			//
+			// ContentInfo ::= SEQUENCE {
+			// contentType ::= ContentType,
+			// content [0] EXPLICIT ANY DEFINED BY contentType OPTIONAL }
+			//
+			// ContentType ::= OBJECT IDENTIFIER
+			//
+			// SignedData ::= SEQUENCE {
+			// version Version,
+			// digestAlgorithms DigestAlgorithmIdentifiers,
+			// contentInfo ContentInfo,
+			// certificates [0] IMPLICIT ExtendedCertificatesAndCertificates
+			// OPTIONAL,
+			// crls [1] IMPLICIT CertificateRevocationLists OPTIONAL,
+			// signerInfos SignerInfos }
+			//
+			// Version ::= INTEGER
+			//
+			DERValue value = der.read();
+			if (!value.isConstructed())
+				throw new DEREncodingException("malformed ContentInfo");
+			value = der.read();
+			if (!(value.getValue() instanceof OID) || ((OID) value.getValue()).equals(PKCS7_SIGNED_DATA))
+				throw new DEREncodingException("not a SignedData");
+			value = der.read();
+			if (!value.isConstructed() || value.getTag() != 0)
+				throw new DEREncodingException("malformed content");
+			value = der.read();
+			if (value.getTag() != DER.INTEGER)
+				throw new DEREncodingException("malformed Version");
+			value = der.read();
+			if (!value.isConstructed() || value.getTag() != DER.SET)
+				throw new DEREncodingException("malformed DigestAlgorithmIdentifiers");
+			der.skip(value.getLength());
+			value = der.read();
+			if (!value.isConstructed())
+				throw new DEREncodingException("malformed ContentInfo");
+			der.skip(value.getLength());
+			path = der.read();
+			if (!path.isConstructed() || path.getTag() != 0)
+				throw new DEREncodingException("no certificates");
+		} else
+			throw new CertificateEncodingException("unknown encoding: " + encoding);
+
+		LinkedList<X509Certificate> certs = new LinkedList<>();
+		int len = 0;
+		while (len < path.getLength()) {
+			DERValue cert = der.read();
+			try {
+				certs.add(new X509Certificate(new ByteArrayInputStream(cert.getEncoded())));
+			} catch (CertificateException ce) {
+				throw new CertificateEncodingException(ce.getMessage());
+			}
+			len += cert.getEncodedLength();
+			der.skip(cert.getLength());
 		}
-	    }
-	    return pkcs_encoded.clone();
-	}
-	else
-	    throw new CertificateEncodingException(
-		    "unknown encoding: " + encoding);
-    }
 
-    @Override
-    public Iterator<String> getEncodings()
-    {
-	return ENCODINGS.iterator(); // already unmodifiable
-    }
-
-    private void parse(InputStream in, String encoding) throws CertificateEncodingException, IOException
-    {
-	DERReader der = new DERReader(in);
-	DERValue path = null;
-	if (encoding.equalsIgnoreCase("PkiPath"))
-	{
-	    // PKI encoding is just a SEQUENCE of X.509 certificates.
-	    path = der.read();
-	    if (!path.isConstructed())
-		throw new DEREncodingException("malformed PkiPath");
+		this.path = Collections.unmodifiableList(certs);
 	}
-	else if (encoding.equalsIgnoreCase("PKCS7"))
-	{
-	    // PKCS #7 encoding means that the certificates are contained in a
-	    // SignedData PKCS #7 type.
-	    //
-	    // ContentInfo ::= SEQUENCE {
-	    // contentType ::= ContentType,
-	    // content [0] EXPLICIT ANY DEFINED BY contentType OPTIONAL }
-	    //
-	    // ContentType ::= OBJECT IDENTIFIER
-	    //
-	    // SignedData ::= SEQUENCE {
-	    // version Version,
-	    // digestAlgorithms DigestAlgorithmIdentifiers,
-	    // contentInfo ContentInfo,
-	    // certificates [0] IMPLICIT ExtendedCertificatesAndCertificates
-	    // OPTIONAL,
-	    // crls [1] IMPLICIT CertificateRevocationLists OPTIONAL,
-	    // signerInfos SignerInfos }
-	    //
-	    // Version ::= INTEGER
-	    //
-	    DERValue value = der.read();
-	    if (!value.isConstructed())
-		throw new DEREncodingException("malformed ContentInfo");
-	    value = der.read();
-	    if (!(value.getValue() instanceof OID)
-		    || ((OID) value.getValue()).equals(PKCS7_SIGNED_DATA))
-		throw new DEREncodingException("not a SignedData");
-	    value = der.read();
-	    if (!value.isConstructed() || value.getTag() != 0)
-		throw new DEREncodingException("malformed content");
-	    value = der.read();
-	    if (value.getTag() != DER.INTEGER)
-		throw new DEREncodingException("malformed Version");
-	    value = der.read();
-	    if (!value.isConstructed() || value.getTag() != DER.SET)
-		throw new DEREncodingException(
-			"malformed DigestAlgorithmIdentifiers");
-	    der.skip(value.getLength());
-	    value = der.read();
-	    if (!value.isConstructed())
-		throw new DEREncodingException("malformed ContentInfo");
-	    der.skip(value.getLength());
-	    path = der.read();
-	    if (!path.isConstructed() || path.getTag() != 0)
-		throw new DEREncodingException("no certificates");
-	}
-	else
-	    throw new CertificateEncodingException(
-		    "unknown encoding: " + encoding);
-
-	LinkedList<X509Certificate> certs = new LinkedList<>();
-	int len = 0;
-	while (len < path.getLength())
-	{
-	    DERValue cert = der.read();
-	    try
-	    {
-		certs.add(new X509Certificate(
-			new ByteArrayInputStream(cert.getEncoded())));
-	    }
-	    catch (CertificateException ce)
-	    {
-		throw new CertificateEncodingException(ce.getMessage());
-	    }
-	    len += cert.getEncodedLength();
-	    der.skip(cert.getLength());
-	}
-
-	this.path = Collections.unmodifiableList(certs);
-    }
 }

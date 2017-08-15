@@ -48,93 +48,90 @@ import java.util.Map;
  * {@link gnu.jgnux.crypto.mode.IMode} and/or
  * {@link gnu.jgnux.crypto.cipher.IBlockCipher}.
  */
-public interface IPad
-{
-    /**
-     * Property name of the block size in which to operate the padding
-     * algorithm. The value associated with this property name is taken to be a
-     * positive {@link Integer} greater than zero.
-     */
-    String PADDING_BLOCK_SIZE = "gnu.crypto.pad.block.size";
+public interface IPad {
+	/**
+	 * Property name of the block size in which to operate the padding algorithm.
+	 * The value associated with this property name is taken to be a positive
+	 * {@link Integer} greater than zero.
+	 */
+	String PADDING_BLOCK_SIZE = "gnu.crypto.pad.block.size";
 
-    /**
-     * Initialises the padding scheme with a designated block size.
-     *
-     * @param bs
-     *            the designated block size.
-     * @exception IllegalStateException
-     *                if the instance is already initialised.
-     * @exception IllegalArgumentException
-     *                if the block size value is invalid.
-     */
-    void init(int bs) throws IllegalStateException;
+	/**
+	 * Initialises the padding scheme with a designated block size.
+	 *
+	 * @param bs
+	 *            the designated block size.
+	 * @exception IllegalStateException
+	 *                if the instance is already initialised.
+	 * @exception IllegalArgumentException
+	 *                if the block size value is invalid.
+	 */
+	void init(int bs) throws IllegalStateException;
 
-    /**
-     * Initialises the algorithm with designated attributes. Names, valid and/or
-     * recognisable by all concrete implementations are described in the class
-     * documentation above. Other algorithm-specific attributes MUST be
-     * documented in the implementation class of that padding algorithm.
-     *
-     * @param attributes
-     *            a set of name-value pairs that describes the desired future
-     *            behaviour of this instance.
-     * @exception IllegalStateException
-     *                if the instance is already initialised.
-     * @exception IllegalArgumentException
-     *                if the block size value is invalid.
-     */
-    void init(Map<Object, Object> attributes) throws IllegalStateException;
+	/**
+	 * Initialises the algorithm with designated attributes. Names, valid and/or
+	 * recognisable by all concrete implementations are described in the class
+	 * documentation above. Other algorithm-specific attributes MUST be documented
+	 * in the implementation class of that padding algorithm.
+	 *
+	 * @param attributes
+	 *            a set of name-value pairs that describes the desired future
+	 *            behaviour of this instance.
+	 * @exception IllegalStateException
+	 *                if the instance is already initialised.
+	 * @exception IllegalArgumentException
+	 *                if the block size value is invalid.
+	 */
+	void init(Map<Object, Object> attributes) throws IllegalStateException;
 
-    /** @return the canonical name of this instance. */
-    String name();
+	/** @return the canonical name of this instance. */
+	String name();
 
-    /**
-     * Returns the byte sequence that should be appended to the designated
-     * input.
-     *
-     * @param in
-     *            the input buffer containing the bytes to pad.
-     * @param offset
-     *            the starting index of meaningful data in <i>in</i>.
-     * @param length
-     *            the number of meaningful bytes in <i>in</i>.
-     * @return the possibly 0-byte long sequence to be appended to the
-     *         designated input.
-     */
-    byte[] pad(byte[] in, int offset, int length);
+	/**
+	 * Returns the byte sequence that should be appended to the designated input.
+	 *
+	 * @param in
+	 *            the input buffer containing the bytes to pad.
+	 * @param offset
+	 *            the starting index of meaningful data in <i>in</i>.
+	 * @param length
+	 *            the number of meaningful bytes in <i>in</i>.
+	 * @return the possibly 0-byte long sequence to be appended to the designated
+	 *         input.
+	 */
+	byte[] pad(byte[] in, int offset, int length);
 
-    /**
-     * Resets the scheme instance for re-initialisation and use with other
-     * characteristics. This method always succeeds.
-     */
-    void reset();
+	/**
+	 * Resets the scheme instance for re-initialisation and use with other
+	 * characteristics. This method always succeeds.
+	 */
+	void reset();
 
-    /**
-     * A basic symmetric pad/unpad test.
-     *
-     * @return <code>true</code> if the implementation passes a basic symmetric
-     *         self-test. Returns <code>false</code> otherwise.
-     */
-    boolean selfTest();
+	/**
+	 * A basic symmetric pad/unpad test.
+	 *
+	 * @return <code>true</code> if the implementation passes a basic symmetric
+	 *         self-test. Returns <code>false</code> otherwise.
+	 */
+	boolean selfTest();
 
-    /**
-     * Returns the number of bytes to discard from a designated input buffer.
-     *
-     * @param in
-     *            the input buffer containing the bytes to unpad.
-     * @param offset
-     *            the starting index of meaningful data in <i>in</i>.
-     * @param length
-     *            the number of meaningful bytes in <i>in</i>.
-     * @return the number of bytes to discard, to the left of index position
-     *         <code>offset + length</code> in <i>in</i>. In other words, if the
-     *         return value of a successful invocation of this method is
-     *         <code>result</code>, then the unpadded byte sequence will be
-     *         <code>offset + length - result</code> bytes in <i>in</i>,
-     *         starting from index position <code>offset</code>.
-     * @exception WrongPaddingException
-     *                if the data is not terminated with the expected padding
-     *                bytes.
-     */
-    int unpad(byte[] in, int offset, int length) throws WrongPaddingException;
+	/**
+	 * Returns the number of bytes to discard from a designated input buffer.
+	 *
+	 * @param in
+	 *            the input buffer containing the bytes to unpad.
+	 * @param offset
+	 *            the starting index of meaningful data in <i>in</i>.
+	 * @param length
+	 *            the number of meaningful bytes in <i>in</i>.
+	 * @return the number of bytes to discard, to the left of index position
+	 *         <code>offset + length</code> in <i>in</i>. In other words, if the
+	 *         return value of a successful invocation of this method is
+	 *         <code>result</code>, then the unpadded byte sequence will be
+	 *         <code>offset + length - result</code> bytes in <i>in</i>, starting
+	 *         from index position <code>offset</code>.
+	 * @exception WrongPaddingException
+	 *                if the data is not terminated with the expected padding bytes.
+	 */
+	int unpad(byte[] in, int offset, int length) throws WrongPaddingException;
 }

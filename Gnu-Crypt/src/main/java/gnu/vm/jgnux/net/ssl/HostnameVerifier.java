@@ -47,19 +47,18 @@ package gnu.vm.jgnux.net.ssl;
  *
  * @author Casey Marshall (rsdio@metastatic.org)
  */
-public interface HostnameVerifier
-{
+public interface HostnameVerifier {
 
-    /**
-     * Verifies a hostname given a particular SSL session. This method should
-     * return <code>true</code> if the hostname is an accepted alias for the
-     * hostname negotiated in the SSL handshake.
-     *
-     * @param hostname
-     *            The hostname in question.
-     * @param session
-     *            The current SSL session.
-     * @return <code>true</code> if the hostname is acceptable.
-     */
-    boolean verify(String hostname, SSLSession session);
+	/**
+	 * Verifies a hostname given a particular SSL session. This method should return
+	 * <code>true</code> if the hostname is an accepted alias for the hostname
+	 * negotiated in the SSL handshake.
+	 *
+	 * @param hostname
+	 *            The hostname in question.
+	 * @param session
+	 *            The current SSL session.
+	 * @return <code>true</code> if the hostname is acceptable.
+	 */
+	boolean verify(String hostname, SSLSession session);
 }

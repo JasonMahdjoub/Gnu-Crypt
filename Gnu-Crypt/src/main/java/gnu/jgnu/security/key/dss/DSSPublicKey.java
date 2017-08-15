@@ -51,169 +51,150 @@ import gnu.vm.jgnu.security.interfaces.DSAPublicKey;
  *
  * @see #getEncoded
  */
-public class DSSPublicKey extends DSSKey implements PublicKey, DSAPublicKey
-{
-    /**
-     * 
-     */
-    private static final long serialVersionUID = -1420104979948778971L;
+public class DSSPublicKey extends DSSKey implements PublicKey, DSAPublicKey {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -1420104979948778971L;
 
-    /**
-     * A class method that takes the output of the
-     * <code>encodePublicKey()</code> method of a DSS keypair codec object (an
-     * instance implementing {@link gnu.jgnu.security.key.IKeyPairCodec} for DSS
-     * keys, and re-constructs an instance of this object.
-     *
-     * @param k
-     *            the contents of a previously encoded instance of this object.
-     * @exception ArrayIndexOutOfBoundsException
-     *                if there is not enough bytes, in <code>k</code>, to
-     *                represent a valid encoding of an instance of this object.
-     * @exception IllegalArgumentException
-     *                if the byte sequence does not represent a valid encoding
-     *                of an instance of this object.
-     */
-    public static DSSPublicKey valueOf(byte[] k)
-    {
-	// try RAW codec
-	if (k[0] == Registry.MAGIC_RAW_DSS_PUBLIC_KEY[0])
-	    try
-	    {
-		return (DSSPublicKey) new DSSKeyPairRawCodec()
-			.decodePublicKey(k);
-	    }
-	    catch (IllegalArgumentException ignored)
-	    {
-	    }
-	// try X.509 codec
-	return (DSSPublicKey) new DSSKeyPairX509Codec().decodePublicKey(k);
-    }
-
-    /**
-     * <code>y = g<sup>x</sup> mod p</code> where <code>x</code> is the private
-     * part of the DSA key.
-     */
-    private final BigInteger y;
-
-    /** String representation of this key. Cached for speed. */
-    private transient String str;
-
-    /**
-     * Conveience constructor. Calls the constructor with 5 arguments passing
-     * {@link Registry#RAW_ENCODING_ID} as the identifier of the preferred
-     * encoding format.
-     *
-     * @param p
-     *            the public modulus.
-     * @param q
-     *            the public prime divisor of <code>p-1</code>.
-     * @param g
-     *            a generator of the unique cyclic group <code>Z<sup>*</sup>
-     *          <sub>p</sub></code>.
-     * @param y
-     *            the public key part.
-     */
-    public DSSPublicKey(BigInteger p, BigInteger q, BigInteger g, BigInteger y)
-    {
-	this(Registry.RAW_ENCODING_ID, p, q, g, y);
-    }
-
-    /**
-     * Constructs a new instance of <code>DSSPublicKey</code> given the
-     * designated arguments.
-     *
-     * @param preferredFormat
-     *            the identifier of the preferred encoding format to use when
-     *            externalizing this key.
-     * @param p
-     *            the public modulus.
-     * @param q
-     *            the public prime divisor of <code>p-1</code>.
-     * @param g
-     *            a generator of the unique cyclic group <code>Z<sup>*</sup>
-     *          <sub>p</sub></code>.
-     * @param y
-     *            the public key part.
-     */
-    public DSSPublicKey(int preferredFormat, BigInteger p, BigInteger q, BigInteger g, BigInteger y)
-    {
-	super(preferredFormat == Registry.ASN1_ENCODING_ID
-		? Registry.X509_ENCODING_ID : preferredFormat, p, q, g);
-	this.y = y;
-    }
-
-    /**
-     * Returns <code>true</code> if the designated object is an instance of
-     * {@link DSAPublicKey} and has the same DSS (Digital Signature Standard)
-     * parameter values as this one.
-     *
-     * @param obj
-     *            the other non-null DSS key to compare to.
-     * @return <code>true</code> if the designated object is of the same type
-     *         and value as this one.
-     */
-    @Override
-    public boolean equals(Object obj)
-    {
-	if (obj == null)
-	    return false;
-
-	if (!(obj instanceof DSAPublicKey))
-	    return false;
-
-	DSAPublicKey that = (DSAPublicKey) obj;
-	return super.equals(that) && y.equals(that.getY());
-    }
-
-    /**
-     * Returns the encoded form of this public key according to the designated
-     * format.
-     *
-     * @param format
-     *            the desired format identifier of the resulting encoding.
-     * @return the byte sequence encoding this key according to the designated
-     *         format.
-     * @exception IllegalArgumentException
-     *                if the format is not supported.
-     * @see DSSKeyPairRawCodec
-     */
-    @Override
-    public byte[] getEncoded(int format)
-    {
-	byte[] result;
-	switch (format)
-	{
-	    case IKeyPairCodec.RAW_FORMAT:
-		result = new DSSKeyPairRawCodec().encodePublicKey(this);
-		break;
-	    case IKeyPairCodec.X509_FORMAT:
-		result = new DSSKeyPairX509Codec().encodePublicKey(this);
-		break;
-	    default:
-		throw new IllegalArgumentException(
-			"Unsupported encoding format: " + format);
+	/**
+	 * A class method that takes the output of the <code>encodePublicKey()</code>
+	 * method of a DSS keypair codec object (an instance implementing
+	 * {@link gnu.jgnu.security.key.IKeyPairCodec} for DSS keys, and re-constructs
+	 * an instance of this object.
+	 *
+	 * @param k
+	 *            the contents of a previously encoded instance of this object.
+	 * @exception ArrayIndexOutOfBoundsException
+	 *                if there is not enough bytes, in <code>k</code>, to represent
+	 *                a valid encoding of an instance of this object.
+	 * @exception IllegalArgumentException
+	 *                if the byte sequence does not represent a valid encoding of an
+	 *                instance of this object.
+	 */
+	public static DSSPublicKey valueOf(byte[] k) {
+		// try RAW codec
+		if (k[0] == Registry.MAGIC_RAW_DSS_PUBLIC_KEY[0])
+			try {
+				return (DSSPublicKey) new DSSKeyPairRawCodec().decodePublicKey(k);
+			} catch (IllegalArgumentException ignored) {
+			}
+		// try X.509 codec
+		return (DSSPublicKey) new DSSKeyPairX509Codec().decodePublicKey(k);
 	}
-	return result;
-    }
 
-    @Override
-    public BigInteger getY()
-    {
-	return y;
-    }
+	/**
+	 * <code>y = g<sup>x</sup> mod p</code> where <code>x</code> is the private part
+	 * of the DSA key.
+	 */
+	private final BigInteger y;
 
-    @Override
-    public String toString()
-    {
-	if (str == null)
-	{
-	    String ls = AccessController
-		    .doPrivileged(new GetPropertyAction("line.separator"));
-	    str = new StringBuilder(this.getClass().getName()).append("(")
-		    .append(super.toString()).append(",").append(ls)
-		    .append("y=0x").append(y.toString(16)).append(ls)
-		    .append(")").toString();
+	/** String representation of this key. Cached for speed. */
+	private transient String str;
+
+	/**
+	 * Conveience constructor. Calls the constructor with 5 arguments passing
+	 * {@link Registry#RAW_ENCODING_ID} as the identifier of the preferred encoding
+	 * format.
+	 *
+	 * @param p
+	 *            the public modulus.
+	 * @param q
+	 *            the public prime divisor of <code>p-1</code>.
+	 * @param g
+	 *            a generator of the unique cyclic group <code>Z<sup>*</sup>
+	 *          <sub>p</sub></code>.
+	 * @param y
+	 *            the public key part.
+	 */
+	public DSSPublicKey(BigInteger p, BigInteger q, BigInteger g, BigInteger y) {
+		this(Registry.RAW_ENCODING_ID, p, q, g, y);
 	}
-	return str;
-    }
+
+	/**
+	 * Constructs a new instance of <code>DSSPublicKey</code> given the designated
+	 * arguments.
+	 *
+	 * @param preferredFormat
+	 *            the identifier of the preferred encoding format to use when
+	 *            externalizing this key.
+	 * @param p
+	 *            the public modulus.
+	 * @param q
+	 *            the public prime divisor of <code>p-1</code>.
+	 * @param g
+	 *            a generator of the unique cyclic group <code>Z<sup>*</sup>
+	 *          <sub>p</sub></code>.
+	 * @param y
+	 *            the public key part.
+	 */
+	public DSSPublicKey(int preferredFormat, BigInteger p, BigInteger q, BigInteger g, BigInteger y) {
+		super(preferredFormat == Registry.ASN1_ENCODING_ID ? Registry.X509_ENCODING_ID : preferredFormat, p, q, g);
+		this.y = y;
+	}
+
+	/**
+	 * Returns <code>true</code> if the designated object is an instance of
+	 * {@link DSAPublicKey} and has the same DSS (Digital Signature Standard)
+	 * parameter values as this one.
+	 *
+	 * @param obj
+	 *            the other non-null DSS key to compare to.
+	 * @return <code>true</code> if the designated object is of the same type and
+	 *         value as this one.
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null)
+			return false;
+
+		if (!(obj instanceof DSAPublicKey))
+			return false;
+
+		DSAPublicKey that = (DSAPublicKey) obj;
+		return super.equals(that) && y.equals(that.getY());
+	}
+
+	/**
+	 * Returns the encoded form of this public key according to the designated
+	 * format.
+	 *
+	 * @param format
+	 *            the desired format identifier of the resulting encoding.
+	 * @return the byte sequence encoding this key according to the designated
+	 *         format.
+	 * @exception IllegalArgumentException
+	 *                if the format is not supported.
+	 * @see DSSKeyPairRawCodec
+	 */
+	@Override
+	public byte[] getEncoded(int format) {
+		byte[] result;
+		switch (format) {
+		case IKeyPairCodec.RAW_FORMAT:
+			result = new DSSKeyPairRawCodec().encodePublicKey(this);
+			break;
+		case IKeyPairCodec.X509_FORMAT:
+			result = new DSSKeyPairX509Codec().encodePublicKey(this);
+			break;
+		default:
+			throw new IllegalArgumentException("Unsupported encoding format: " + format);
+		}
+		return result;
+	}
+
+	@Override
+	public BigInteger getY() {
+		return y;
+	}
+
+	@Override
+	public String toString() {
+		if (str == null) {
+			String ls = AccessController.doPrivileged(new GetPropertyAction("line.separator"));
+			str = new StringBuilder(this.getClass().getName()).append("(").append(super.toString()).append(",")
+					.append(ls).append("y=0x").append(y.toString(16)).append(ls).append(")").toString();
+		}
+		return str;
+	}
 }

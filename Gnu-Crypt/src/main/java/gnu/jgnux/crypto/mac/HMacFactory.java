@@ -50,69 +50,64 @@ import gnu.jgnu.security.hash.IMessageDigest;
  * A <i>Factory</i> to instantiate Keyed-Hash Message Authentication Code (HMAC)
  * algorithm instances.
  */
-public class HMacFactory implements Registry
-{
-    /**
-     * Return an instance of a <i>HMAC</i> algorithm given the name of its
-     * underlying hash function, prefixed with the literal defined in
-     * {@link Registry#HMAC_NAME_PREFIX}.
-     *
-     * @param name
-     *            the fully qualified name of the underlying algorithm: composed
-     *            as the concatenation of a literal prefix (see
-     *            {@link Registry#HMAC_NAME_PREFIX}) and the name of the
-     *            underlying hash algorithm.
-     * @return an instance of the <i>HMAC</i> algorithm, or <code>null</code> if
-     *         none can be constructed.
-     * @exception InternalError
-     *                if the implementation does not pass its self-test.
-     */
-    public static IMac getInstance(String name)
-    {
-	if (name == null)
-	    return null;
+public class HMacFactory implements Registry {
+	/**
+	 * Return an instance of a <i>HMAC</i> algorithm given the name of its
+	 * underlying hash function, prefixed with the literal defined in
+	 * {@link Registry#HMAC_NAME_PREFIX}.
+	 *
+	 * @param name
+	 *            the fully qualified name of the underlying algorithm: composed as
+	 *            the concatenation of a literal prefix (see
+	 *            {@link Registry#HMAC_NAME_PREFIX}) and the name of the underlying
+	 *            hash algorithm.
+	 * @return an instance of the <i>HMAC</i> algorithm, or <code>null</code> if
+	 *         none can be constructed.
+	 * @exception InternalError
+	 *                if the implementation does not pass its self-test.
+	 */
+	public static IMac getInstance(String name) {
+		if (name == null)
+			return null;
 
-	name = name.trim();
-	name = name.toLowerCase();
-	if (!name.startsWith(HMAC_NAME_PREFIX))
-	    return null;
+		name = name.trim();
+		name = name.toLowerCase();
+		if (!name.startsWith(HMAC_NAME_PREFIX))
+			return null;
 
-	// strip the prefix
-	name = name.substring(HMAC_NAME_PREFIX.length()).trim();
+		// strip the prefix
+		name = name.substring(HMAC_NAME_PREFIX.length()).trim();
 
-	IMessageDigest imd = HashFactory.getInstance(name);
-	if (imd == null)
-	{
-	    throw new NullPointerException("name");
+		IMessageDigest imd = HashFactory.getInstance(name);
+		if (imd == null) {
+			throw new NullPointerException("name");
+		}
+		IMac result = new HMac(imd);
+		if (result != null && !result.selfTest())
+			throw new InternalError(result.name());
+
+		return result;
 	}
-	IMac result = new HMac(imd);
-	if (result != null && !result.selfTest())
-	    throw new InternalError(result.name());
 
-	return result;
-    }
+	/**
+	 * <p>
+	 * Returns a {@link java.util.Set} of names of <i>HMAC</i> algorithms supported
+	 * by this <i>Factory</i>.
+	 * </p>
+	 *
+	 * @return a {@link java.util.Set} of HMAC algorithm names (Strings).
+	 */
+	public static final Set<String> getNames() {
+		Set<String> hashNames = HashFactory.getNames();
+		HashSet<String> hs = new HashSet<>();
+		for (Iterator<String> it = hashNames.iterator(); it.hasNext();)
+			hs.add(HMAC_NAME_PREFIX + (it.next()));
 
-    /**
-     * <p>
-     * Returns a {@link java.util.Set} of names of <i>HMAC</i> algorithms
-     * supported by this <i>Factory</i>.
-     * </p>
-     *
-     * @return a {@link java.util.Set} of HMAC algorithm names (Strings).
-     */
-    public static final Set<String> getNames()
-    {
-	Set<String> hashNames = HashFactory.getNames();
-	HashSet<String> hs = new HashSet<>();
-	for (Iterator<String> it = hashNames.iterator(); it.hasNext();)
-	    hs.add(HMAC_NAME_PREFIX + (it.next()));
+		return Collections.unmodifiableSet(hs);
+	}
 
-	return Collections.unmodifiableSet(hs);
-    }
-
-    /** Trivial constructor to enforce <i>Singleton</i> pattern. */
-    private HMacFactory()
-    {
-	super();
-    }
+	/** Trivial constructor to enforce <i>Singleton</i> pattern. */
+	private HMacFactory() {
+		super();
+	}
 }

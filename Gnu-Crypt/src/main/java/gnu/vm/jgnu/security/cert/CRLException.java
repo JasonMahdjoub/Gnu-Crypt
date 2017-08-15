@@ -46,54 +46,49 @@ import gnu.vm.jgnu.security.GeneralSecurityException;
  * @since 1.2
  * @status updated to 1.5
  */
-public class CRLException extends GeneralSecurityException
-{
-    /**
-     * Compatible with JDK 1.2+.
-     */
-    private static final long serialVersionUID = -6694728944094197147L;
+public class CRLException extends GeneralSecurityException {
+	/**
+	 * Compatible with JDK 1.2+.
+	 */
+	private static final long serialVersionUID = -6694728944094197147L;
 
-    /**
-     * Constructs an CRLExceptionwithout a message string.
-     */
-    public CRLException()
-    {
-    }
+	/**
+	 * Constructs an CRLExceptionwithout a message string.
+	 */
+	public CRLException() {
+	}
 
-    /**
-     * Constructs an CRLException with a message string.
-     *
-     * @param msg
-     *            a message to display with exception
-     */
-    public CRLException(String msg)
-    {
-	super(msg);
-    }
+	/**
+	 * Constructs an CRLException with a message string.
+	 *
+	 * @param msg
+	 *            a message to display with exception
+	 */
+	public CRLException(String msg) {
+		super(msg);
+	}
 
-    /**
-     * Create a new instance with a descriptive error message and a cause.
-     * 
-     * @param s
-     *            the descriptive error message
-     * @param cause
-     *            the cause
-     * @since 1.5
-     */
-    public CRLException(String s, Throwable cause)
-    {
-	super(s, cause);
-    }
+	/**
+	 * Create a new instance with a descriptive error message and a cause.
+	 * 
+	 * @param s
+	 *            the descriptive error message
+	 * @param cause
+	 *            the cause
+	 * @since 1.5
+	 */
+	public CRLException(String s, Throwable cause) {
+		super(s, cause);
+	}
 
-    /**
-     * Create a new instance with a cause.
-     * 
-     * @param cause
-     *            the cause
-     * @since 1.5
-     */
-    public CRLException(Throwable cause)
-    {
-	super(cause);
-    }
+	/**
+	 * Create a new instance with a cause.
+	 * 
+	 * @param cause
+	 *            the cause
+	 * @since 1.5
+	 */
+	public CRLException(Throwable cause) {
+		super(cause);
+	}
 }

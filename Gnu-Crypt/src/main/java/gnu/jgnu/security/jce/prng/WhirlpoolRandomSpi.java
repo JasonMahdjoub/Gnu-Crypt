@@ -43,15 +43,13 @@ import gnu.jgnu.security.Registry;
  * The implementation of the Whirlpool-based SecureRandom <i>Service Provider
  * Interface</i> (<b>SPI</b>) adapter.
  */
-public class WhirlpoolRandomSpi extends SecureRandomAdapter
-{
-    /**
-     * 
-     */
-    private static final long serialVersionUID = -3118094409789615934L;
+public class WhirlpoolRandomSpi extends SecureRandomAdapter {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -3118094409789615934L;
 
-    public WhirlpoolRandomSpi()
-    {
-	super(Registry.WHIRLPOOL_HASH);
-    }
+	public WhirlpoolRandomSpi() {
+		super(Registry.WHIRLPOOL_HASH);
+	}
 }

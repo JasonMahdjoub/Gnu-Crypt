@@ -47,41 +47,38 @@ import javax.security.sasl.SaslServer;
  *
  * @since 1.5
  */
-public class RealmCallback extends TextInputCallback
-{
+public class RealmCallback extends TextInputCallback {
 
-    /**
-     * 
-     */
-    private static final long serialVersionUID = 1437874319880898159L;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1437874319880898159L;
 
-    /**
-     * Constructs a <code>RealmCallback</code> with a prompt.
-     *
-     * @param prompt
-     *            the non-null prompt to use to request the realm information.
-     * @throws IllegalArgumentException
-     *             if <code>prompt</code> is <code>null</code> or empty.
-     */
-    public RealmCallback(String prompt)
-    {
-	super(prompt);
-    }
+	/**
+	 * Constructs a <code>RealmCallback</code> with a prompt.
+	 *
+	 * @param prompt
+	 *            the non-null prompt to use to request the realm information.
+	 * @throws IllegalArgumentException
+	 *             if <code>prompt</code> is <code>null</code> or empty.
+	 */
+	public RealmCallback(String prompt) {
+		super(prompt);
+	}
 
-    /**
-     * Constructs a <code>RealmCallback</code> with a prompt and default realm
-     * information.
-     *
-     * @param prompt
-     *            the non-null prompt to use to request the realm information.
-     * @param defaultRealmInfo
-     *            the non-null default realm information to use.
-     * @throws IllegalArgumentException
-     *             if <code>prompt</code> is <code>null</code> or empty, or if
-     *             <code>defaultRealm</code> is empty or <code>null</code>.
-     */
-    public RealmCallback(String prompt, String defaultRealmInfo)
-    {
-	super(prompt, defaultRealmInfo);
-    }
+	/**
+	 * Constructs a <code>RealmCallback</code> with a prompt and default realm
+	 * information.
+	 *
+	 * @param prompt
+	 *            the non-null prompt to use to request the realm information.
+	 * @param defaultRealmInfo
+	 *            the non-null default realm information to use.
+	 * @throws IllegalArgumentException
+	 *             if <code>prompt</code> is <code>null</code> or empty, or if
+	 *             <code>defaultRealm</code> is empty or <code>null</code>.
+	 */
+	public RealmCallback(String prompt, String defaultRealmInfo) {
+		super(prompt, defaultRealmInfo);
+	}
 }

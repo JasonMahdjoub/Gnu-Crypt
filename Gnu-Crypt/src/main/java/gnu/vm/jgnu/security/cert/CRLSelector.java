@@ -46,23 +46,22 @@ package gnu.vm.jgnu.security.cert;
  * @see CertSelector
  * @see X509CRLSelector
  */
-public interface CRLSelector extends Cloneable
-{
+public interface CRLSelector extends Cloneable {
 
-    /**
-     * Returns a clone of this instance.
-     *
-     * @return The clone.
-     */
-    Object clone();
+	/**
+	 * Returns a clone of this instance.
+	 *
+	 * @return The clone.
+	 */
+	Object clone();
 
-    /**
-     * Match a given certificate revocation list to this selector's criteria,
-     * returning true if it matches, false otherwise.
-     *
-     * @param crl
-     *            The certificate revocation list to test.
-     * @return The boolean result of this test.
-     */
-    boolean match(CRL crl);
+	/**
+	 * Match a given certificate revocation list to this selector's criteria,
+	 * returning true if it matches, false otherwise.
+	 *
+	 * @param crl
+	 *            The certificate revocation list to test.
+	 * @return The boolean result of this test.
+	 */
+	boolean match(CRL crl);
 }

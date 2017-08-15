@@ -50,36 +50,32 @@ package gnu.jgnux.crypto.assembly;
  * {@link Transformer}.</li>
  * </ol>
  */
-public final class Operation
-{
-    public static final Operation PRE_PROCESSING = new Operation(1);
+public final class Operation {
+	public static final Operation PRE_PROCESSING = new Operation(1);
 
-    public static final Operation POST_PROCESSING = new Operation(2);
+	public static final Operation POST_PROCESSING = new Operation(2);
 
-    private int value;
+	private int value;
 
-    private Operation(int value)
-    {
-	super();
+	private Operation(int value) {
+		super();
 
-	this.value = value;
-    }
+		this.value = value;
+	}
 
-    @Override
-    public boolean equals(Object o)
-    {
-	if (o == this)
-	    return true;
-	if (o == null)
-	    return false;
-	if (o instanceof Operation)
-	    return this.value == ((Operation) o).value;
-	return false;
-    }
+	@Override
+	public boolean equals(Object o) {
+		if (o == this)
+			return true;
+		if (o == null)
+			return false;
+		if (o instanceof Operation)
+			return this.value == ((Operation) o).value;
+		return false;
+	}
 
-    @Override
-    public String toString()
-    {
-	return (this == PRE_PROCESSING ? "pre-processing" : "post-processing");
-    }
+	@Override
+	public String toString() {
+		return (this == PRE_PROCESSING ? "pre-processing" : "post-processing");
+	}
 }

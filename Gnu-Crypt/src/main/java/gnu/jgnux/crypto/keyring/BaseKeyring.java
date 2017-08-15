@@ -47,118 +47,104 @@ import java.util.StringTokenizer;
 
 import gnu.jgnu.security.Registry;
 
-public abstract class BaseKeyring implements IKeyring
-{
-    /** The top-level keyring data. */
-    protected PasswordAuthenticatedEntry keyring;
+public abstract class BaseKeyring implements IKeyring {
+	/** The top-level keyring data. */
+	protected PasswordAuthenticatedEntry keyring;
 
-    protected CompressedEntry keyring2;
+	protected CompressedEntry keyring2;
 
-    public BaseKeyring()
-    {
-    }
+	public BaseKeyring() {
+	}
 
-    @Override
-    public void add(Entry entry)
-    {
-	if (keyring == null)
-	    throw new IllegalStateException("keyring not loaded");
-	if (keyring2 != null)
-	    keyring2.add(entry);
-	else
-	    keyring.add(entry);
-    }
+	@Override
+	public void add(Entry entry) {
+		if (keyring == null)
+			throw new IllegalStateException("keyring not loaded");
+		if (keyring2 != null)
+			keyring2.add(entry);
+		else
+			keyring.add(entry);
+	}
 
-    @Override
-    public Enumeration<Object> aliases()
-    {
-	if (keyring == null)
-	    throw new IllegalStateException("keyring not loaded");
-	return new StringTokenizer(keyring.getAliasList(), ";");
-    }
+	@Override
+	public Enumeration<Object> aliases() {
+		if (keyring == null)
+			throw new IllegalStateException("keyring not loaded");
+		return new StringTokenizer(keyring.getAliasList(), ";");
+	}
 
-    @Override
-    public boolean containsAlias(String alias)
-    {
-	if (keyring == null)
-	    throw new IllegalStateException("keyring not loaded");
-	return keyring.containsAlias(alias);
-    }
+	@Override
+	public boolean containsAlias(String alias) {
+		if (keyring == null)
+			throw new IllegalStateException("keyring not loaded");
+		return keyring.containsAlias(alias);
+	}
 
-    protected String fixAlias(String alias)
-    {
-	return alias.replace(';', '_');
-    }
+	protected String fixAlias(String alias) {
+		return alias.replace(';', '_');
+	}
 
-    @Override
-    public List<Entry> get(String alias)
-    {
-	if (keyring == null)
-	    throw new IllegalStateException("keyring not loaded");
-	return keyring.get(alias);
-    }
+	@Override
+	public List<Entry> get(String alias) {
+		if (keyring == null)
+			throw new IllegalStateException("keyring not loaded");
+		return keyring.get(alias);
+	}
 
-    protected abstract void load(InputStream in, char[] password) throws IOException;
+	protected abstract void load(InputStream in, char[] password) throws IOException;
 
-    @Override
-    public void load(Map<String, Object> attributes) throws IOException
-    {
-	InputStream in = (InputStream) attributes.get(KEYRING_DATA_IN);
-	if (in == null)
-	    throw new IllegalArgumentException("no input stream");
-	char[] password = (char[]) attributes.get(KEYRING_PASSWORD);
-	if (password == null)
-	    password = new char[0];
+	@Override
+	public void load(Map<String, Object> attributes) throws IOException {
+		InputStream in = (InputStream) attributes.get(KEYRING_DATA_IN);
+		if (in == null)
+			throw new IllegalArgumentException("no input stream");
+		char[] password = (char[]) attributes.get(KEYRING_PASSWORD);
+		if (password == null)
+			password = new char[0];
 
-	if (in.read() != Registry.GKR_MAGIC[0]
-		|| in.read() != Registry.GKR_MAGIC[1]
-		|| in.read() != Registry.GKR_MAGIC[2]
-		|| in.read() != Registry.GKR_MAGIC[3])
-	    throw new MalformedKeyringException("magic");
+		if (in.read() != Registry.GKR_MAGIC[0] || in.read() != Registry.GKR_MAGIC[1]
+				|| in.read() != Registry.GKR_MAGIC[2] || in.read() != Registry.GKR_MAGIC[3])
+			throw new MalformedKeyringException("magic");
 
-	load(in, password);
-	List<Entry> l = keyring.getEntries();
-	if (l.size() == 1 && (l.get(0) instanceof CompressedEntry))
-	    keyring2 = (CompressedEntry) l.get(0);
-    }
+		load(in, password);
+		List<Entry> l = keyring.getEntries();
+		if (l.size() == 1 && (l.get(0) instanceof CompressedEntry))
+			keyring2 = (CompressedEntry) l.get(0);
+	}
 
-    @Override
-    public void remove(String alias)
-    {
-	if (keyring == null)
-	    throw new IllegalStateException("keyring not loaded");
-	keyring.remove(alias);
-    }
+	@Override
+	public void remove(String alias) {
+		if (keyring == null)
+			throw new IllegalStateException("keyring not loaded");
+		keyring.remove(alias);
+	}
 
-    @Override
-    public void reset()
-    {
-	keyring = null;
-    }
+	@Override
+	public void reset() {
+		keyring = null;
+	}
 
-    @Override
-    public int size()
-    {
-	if (keyring == null)
-	    throw new IllegalStateException("keyring not loaded");
-	return ((StringTokenizer) aliases()).countTokens();
-    }
+	@Override
+	public int size() {
+		if (keyring == null)
+			throw new IllegalStateException("keyring not loaded");
+		return ((StringTokenizer) aliases()).countTokens();
+	}
 
-    @Override
-    public void store(Map<String, Object> attributes) throws IOException
-    {
-	OutputStream out = (OutputStream) attributes.get(KEYRING_DATA_OUT);
-	if (out == null)
-	    throw new IllegalArgumentException("no output stream");
-	char[] password = (char[]) attributes.get(KEYRING_PASSWORD);
-	if (password == null)
-	    password = new char[0];
-	if (keyring == null)
-	    throw new IllegalStateException("empty keyring");
+	@Override
+	public void store(Map<String, Object> attributes) throws IOException {
+		OutputStream out = (OutputStream) attributes.get(KEYRING_DATA_OUT);
+		if (out == null)
+			throw new IllegalArgumentException("no output stream");
+		char[] password = (char[]) attributes.get(KEYRING_PASSWORD);
+		if (password == null)
+			password = new char[0];
+		if (keyring == null)
+			throw new IllegalStateException("empty keyring");
 
-	out.write(Registry.GKR_MAGIC);
-	store(out, password);
-    }
+		out.write(Registry.GKR_MAGIC);
+		store(out, password);
+	}
 
-    protected abstract void store(OutputStream out, char[] password) throws IOException;
+	protected abstract void store(OutputStream out, char[] password) throws IOException;
 }

@@ -42,71 +42,58 @@ import java.util.Date;
 /**
  * A primitive entry is an entry that contains a single cryptographic entity.
  */
-public abstract class PrimitiveEntry extends Entry
-{
-    /** The creation date. */
-    protected Date creationDate;
+public abstract class PrimitiveEntry extends Entry {
+	/** The creation date. */
+	protected Date creationDate;
 
-    protected PrimitiveEntry(int type)
-    {
-	super(type);
-    }
-
-    protected PrimitiveEntry(int type, Date creationDate, Properties properties)
-    {
-	super(type, properties);
-	if (creationDate == null)
-	    this.creationDate = new Date();
-	else
-	    this.creationDate = (Date) creationDate.clone();
-	if (!this.properties.containsKey("alias")
-		|| this.properties.get("alias").length() == 0)
-	    throw new IllegalArgumentException(
-		    "primitive entries MUST have an alias");
-	this.properties.put("creation-date",
-		String.valueOf(this.creationDate.getTime()));
-    }
-
-    @Override
-    public boolean equals(Object object)
-    {
-	if (!getClass().equals(object.getClass()))
-	    return false;
-	return getAlias().equals(((PrimitiveEntry) object).getAlias());
-    }
-
-    /**
-     * Returns the alias of this primitive entry.
-     *
-     * @return The alias.
-     */
-    public String getAlias()
-    {
-	return properties.get("alias");
-    }
-
-    /**
-     * Returns the creation date of this primitive entry.
-     *
-     * @return The creation date.
-     */
-    public Date getCreationDate()
-    {
-	return (Date) creationDate.clone();
-    }
-
-    protected final void makeCreationDate() throws MalformedKeyringException
-    {
-	String s = properties.get("creation-date");
-	if (s == null)
-	    throw new MalformedKeyringException("no creation date");
-	try
-	{
-	    creationDate = new Date(Long.parseLong(s));
+	protected PrimitiveEntry(int type) {
+		super(type);
 	}
-	catch (NumberFormatException nfe)
-	{
-	    throw new MalformedKeyringException("invalid creation date");
+
+	protected PrimitiveEntry(int type, Date creationDate, Properties properties) {
+		super(type, properties);
+		if (creationDate == null)
+			this.creationDate = new Date();
+		else
+			this.creationDate = (Date) creationDate.clone();
+		if (!this.properties.containsKey("alias") || this.properties.get("alias").length() == 0)
+			throw new IllegalArgumentException("primitive entries MUST have an alias");
+		this.properties.put("creation-date", String.valueOf(this.creationDate.getTime()));
 	}
-    }
+
+	@Override
+	public boolean equals(Object object) {
+		if (!getClass().equals(object.getClass()))
+			return false;
+		return getAlias().equals(((PrimitiveEntry) object).getAlias());
+	}
+
+	/**
+	 * Returns the alias of this primitive entry.
+	 *
+	 * @return The alias.
+	 */
+	public String getAlias() {
+		return properties.get("alias");
+	}
+
+	/**
+	 * Returns the creation date of this primitive entry.
+	 *
+	 * @return The creation date.
+	 */
+	public Date getCreationDate() {
+		return (Date) creationDate.clone();
+	}
+
+	protected final void makeCreationDate() throws MalformedKeyringException {
+		String s = properties.get("creation-date");
+		if (s == null)
+			throw new MalformedKeyringException("no creation date");
+		try {
+			creationDate = new Date(Long.parseLong(s));
+		} catch (NumberFormatException nfe) {
+			throw new MalformedKeyringException("invalid creation date");
+		}
+	}
 }

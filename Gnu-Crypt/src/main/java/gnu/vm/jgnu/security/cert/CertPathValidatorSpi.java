@@ -44,35 +44,34 @@ import gnu.vm.jgnu.security.InvalidAlgorithmParameterException;
  * {@link CertPathValidator} class. Providers implementing certificate path
  * validators must subclass this class and implement its abstract methods.
  */
-public abstract class CertPathValidatorSpi
-{
+public abstract class CertPathValidatorSpi {
 
-    // Constructor.
-    // ------------------------------------------------------------------------
+	// Constructor.
+	// ------------------------------------------------------------------------
 
-    /**
-     * Default constructor.
-     */
-    public CertPathValidatorSpi()
-    {
-	super();
-    }
+	/**
+	 * Default constructor.
+	 */
+	public CertPathValidatorSpi() {
+		super();
+	}
 
-    // Abstract methods.
-    // ------------------------------------------------------------------------
+	// Abstract methods.
+	// ------------------------------------------------------------------------
 
-    /**
-     * Attempt to validate a certificate path.
-     *
-     * @param certPath
-     *            The path to validate.
-     * @param params
-     *            The algorithm-specific parameters.
-     * @return The result of this validation attempt.
-     * @throws CertPathValidatorException
-     *             If the certificate path cannot be validated.
-     * @throws InvalidAlgorithmParameterException
-     *             If this implementation rejects the specified parameters.
-     */
-    public abstract CertPathValidatorResult engineValidate(CertPath certPath, CertPathParameters params) throws CertPathValidatorException, InvalidAlgorithmParameterException;
+	/**
+	 * Attempt to validate a certificate path.
+	 *
+	 * @param certPath
+	 *            The path to validate.
+	 * @param params
+	 *            The algorithm-specific parameters.
+	 * @return The result of this validation attempt.
+	 * @throws CertPathValidatorException
+	 *             If the certificate path cannot be validated.
+	 * @throws InvalidAlgorithmParameterException
+	 *             If this implementation rejects the specified parameters.
+	 */
+	public abstract CertPathValidatorResult engineValidate(CertPath certPath, CertPathParameters params)
+			throws CertPathValidatorException, InvalidAlgorithmParameterException;
 }

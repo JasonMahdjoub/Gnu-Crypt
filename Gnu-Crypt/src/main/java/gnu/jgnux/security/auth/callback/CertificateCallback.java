@@ -50,15 +50,13 @@ import javax.security.auth.callback.ConfirmationCallback;
  *
  * @author Casey Marshall (csm@gnu.org)
  */
-public class CertificateCallback extends ConfirmationCallback
-{
-    static final long serialVersionUID = 8343869651419225634L;
+public class CertificateCallback extends ConfirmationCallback {
+	static final long serialVersionUID = 8343869651419225634L;
 
-    public final Certificate certificate;
+	public final Certificate certificate;
 
-    public CertificateCallback(Certificate cert, String prompt)
-    {
-	super(prompt, ERROR, YES_NO_OPTION, NO);
-	this.certificate = cert;
-    }
+	public CertificateCallback(Certificate cert, String prompt) {
+		super(prompt, ERROR, YES_NO_OPTION, NO);
+		this.certificate = cert;
+	}
 }

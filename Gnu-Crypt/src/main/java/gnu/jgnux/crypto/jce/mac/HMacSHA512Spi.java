@@ -43,10 +43,8 @@ import gnu.jgnu.security.Registry;
  * The implementation of the HMAC-SHA-512 <i>Service Provider Interface</i>
  * (<b>SPI</b>) adapter.
  */
-public class HMacSHA512Spi extends MacAdapter
-{
-    public HMacSHA512Spi()
-    {
-	super(Registry.HMAC_NAME_PREFIX + Registry.SHA512_HASH);
-    }
+public class HMacSHA512Spi extends MacAdapter {
+	public HMacSHA512Spi() {
+		super(Registry.HMAC_NAME_PREFIX + Registry.SHA512_HASH);
+	}
 }

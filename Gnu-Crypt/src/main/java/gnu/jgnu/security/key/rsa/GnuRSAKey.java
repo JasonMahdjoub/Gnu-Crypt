@@ -49,141 +49,126 @@ import gnu.vm.jgnu.security.interfaces.RSAKey;
 /**
  * A base asbtract class for both public and private RSA keys.
  */
-public abstract class GnuRSAKey implements Key, RSAKey
-{
-    /**
-     * 
-     */
-    private static final long serialVersionUID = -8136453701838691775L;
+public abstract class GnuRSAKey implements Key, RSAKey {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -8136453701838691775L;
 
-    /** The public modulus of an RSA key pair. */
-    private final BigInteger n;
+	/** The public modulus of an RSA key pair. */
+	private final BigInteger n;
 
-    /** The public exponent of an RSA key pair. */
-    private final BigInteger e;
+	/** The public exponent of an RSA key pair. */
+	private final BigInteger e;
 
-    /**
-     * Identifier of the default encoding format to use when externalizing the
-     * key material.
-     */
-    protected final int defaultFormat;
+	/**
+	 * Identifier of the default encoding format to use when externalizing the key
+	 * material.
+	 */
+	protected final int defaultFormat;
 
-    /** String representation of this key. Cached for speed. */
-    private transient String str;
+	/** String representation of this key. Cached for speed. */
+	private transient String str;
 
-    /**
-     * Trivial protected constructor.
-     *
-     * @param defaultFormat
-     *            the identifier of the encoding format to use by default when
-     *            externalizing the key.
-     * @param n
-     *            the public modulus <code>n</code>.
-     * @param e
-     *            the public exponent <code>e</code>.
-     */
-    protected GnuRSAKey(int defaultFormat, BigInteger n, BigInteger e)
-    {
-	super();
+	/**
+	 * Trivial protected constructor.
+	 *
+	 * @param defaultFormat
+	 *            the identifier of the encoding format to use by default when
+	 *            externalizing the key.
+	 * @param n
+	 *            the public modulus <code>n</code>.
+	 * @param e
+	 *            the public exponent <code>e</code>.
+	 */
+	protected GnuRSAKey(int defaultFormat, BigInteger n, BigInteger e) {
+		super();
 
-	this.defaultFormat = defaultFormat <= 0 ? Registry.RAW_ENCODING_ID
-		: defaultFormat;
-	this.n = n;
-	this.e = e;
-    }
-
-    /**
-     * Returns <code>true</code> if the designated object is an instance of
-     * {@link RSAKey} and has the same RSA parameter values as this one.
-     *
-     * @param obj
-     *            the other non-null RSA key to compare to.
-     * @return <code>true</code> if the designated object is of the same type
-     *         and value as this one.
-     */
-    @Override
-    public boolean equals(final Object obj)
-    {
-	if (obj == null)
-	    return false;
-
-	if (!(obj instanceof RSAKey))
-	    return false;
-
-	final RSAKey that = (RSAKey) obj;
-	return n.equals(that.getModulus());
-    }
-
-    @Override
-    public String getAlgorithm()
-    {
-	return Registry.RSA_KPG;
-    }
-
-    /**
-     * Same as {@link #getPublicExponent()}.
-     *
-     * @return the public exponent <code>e</code>.
-     */
-    public BigInteger getE()
-    {
-	return e;
-    }
-
-    /** @deprecated see getEncoded(int). */
-    @Deprecated
-    @Override
-    public byte[] getEncoded()
-    {
-	return getEncoded(defaultFormat);
-    }
-
-    public abstract byte[] getEncoded(int format);
-
-    @Override
-    public String getFormat()
-    {
-	return FormatUtil.getEncodingShortName(defaultFormat);
-    }
-
-    @Override
-    public BigInteger getModulus()
-    {
-	return getN();
-    }
-
-    /**
-     * Returns the modulus <code>n</code>.
-     *
-     * @return the modulus <code>n</code>.
-     */
-    public BigInteger getN()
-    {
-	return n;
-    }
-
-    /**
-     * Returns the public exponent <code>e</code>.
-     *
-     * @return the public exponent <code>e</code>.
-     */
-    public BigInteger getPublicExponent()
-    {
-	return getE();
-    }
-
-    @Override
-    public String toString()
-    {
-	if (str == null)
-	{
-	    String ls = AccessController
-		    .doPrivileged(new GetPropertyAction("line.separator"));
-	    str = new StringBuilder(ls).append("defaultFormat=")
-		    .append(defaultFormat).append(",").append(ls).append("n=0x")
-		    .append(n.toString(16)).append(",").append(ls)
-		    .append("e=0x").append(e.toString(16)).toString();
+		this.defaultFormat = defaultFormat <= 0 ? Registry.RAW_ENCODING_ID : defaultFormat;
+		this.n = n;
+		this.e = e;
 	}
-	return str;
-    }
+
+	/**
+	 * Returns <code>true</code> if the designated object is an instance of
+	 * {@link RSAKey} and has the same RSA parameter values as this one.
+	 *
+	 * @param obj
+	 *            the other non-null RSA key to compare to.
+	 * @return <code>true</code> if the designated object is of the same type and
+	 *         value as this one.
+	 */
+	@Override
+	public boolean equals(final Object obj) {
+		if (obj == null)
+			return false;
+
+		if (!(obj instanceof RSAKey))
+			return false;
+
+		final RSAKey that = (RSAKey) obj;
+		return n.equals(that.getModulus());
+	}
+
+	@Override
+	public String getAlgorithm() {
+		return Registry.RSA_KPG;
+	}
+
+	/**
+	 * Same as {@link #getPublicExponent()}.
+	 *
+	 * @return the public exponent <code>e</code>.
+	 */
+	public BigInteger getE() {
+		return e;
+	}
+
+	/** @deprecated see getEncoded(int). */
+	@Deprecated
+	@Override
+	public byte[] getEncoded() {
+		return getEncoded(defaultFormat);
+	}
+
+	public abstract byte[] getEncoded(int format);
+
+	@Override
+	public String getFormat() {
+		return FormatUtil.getEncodingShortName(defaultFormat);
+	}
+
+	@Override
+	public BigInteger getModulus() {
+		return getN();
+	}
+
+	/**
+	 * Returns the modulus <code>n</code>.
+	 *
+	 * @return the modulus <code>n</code>.
+	 */
+	public BigInteger getN() {
+		return n;
+	}
+
+	/**
+	 * Returns the public exponent <code>e</code>.
+	 *
+	 * @return the public exponent <code>e</code>.
+	 */
+	public BigInteger getPublicExponent() {
+		return getE();
+	}
+
+	@Override
+	public String toString() {
+		if (str == null) {
+			String ls = AccessController.doPrivileged(new GetPropertyAction("line.separator"));
+			str = new StringBuilder(ls).append("defaultFormat=").append(defaultFormat).append(",").append(ls)
+					.append("n=0x").append(n.toString(16)).append(",").append(ls).append("e=0x").append(e.toString(16))
+					.toString();
+		}
+		return str;
+	}
 }

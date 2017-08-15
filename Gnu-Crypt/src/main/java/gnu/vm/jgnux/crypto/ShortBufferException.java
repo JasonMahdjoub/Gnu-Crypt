@@ -45,25 +45,22 @@ import java.security.GeneralSecurityException;
  *
  * @author Casey Marshall (csm@gnu.org)
  */
-public class ShortBufferException extends GeneralSecurityException
-{
+public class ShortBufferException extends GeneralSecurityException {
 
-    // Constant.
-    // ------------------------------------------------------------------------
+	// Constant.
+	// ------------------------------------------------------------------------
 
-    /** Serialization constant. */
-    private static final long serialVersionUID = 8427718640832943747L;
+	/** Serialization constant. */
+	private static final long serialVersionUID = 8427718640832943747L;
 
-    // Constructors.
-    // ------------------------------------------------------------------------
+	// Constructors.
+	// ------------------------------------------------------------------------
 
-    public ShortBufferException()
-    {
-	super();
-    }
+	public ShortBufferException() {
+		super();
+	}
 
-    public ShortBufferException(String message)
-    {
-	super(message);
-    }
+	public ShortBufferException(String message) {
+		super(message);
+	}
 }

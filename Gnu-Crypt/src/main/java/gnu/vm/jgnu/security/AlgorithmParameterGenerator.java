@@ -68,217 +68,195 @@ import gnu.vm.jgnu.security.spec.AlgorithmParameterSpec;
  * @see AlgorithmParameters
  * @see AlgorithmParameterSpec
  */
-public class AlgorithmParameterGenerator
-{
-    /** Service name for algorithm parameter generators. */
-    private static final String ALGORITHM_PARAMETER_GENERATOR = "AlgorithmParameterGenerator";
+public class AlgorithmParameterGenerator {
+	/** Service name for algorithm parameter generators. */
+	private static final String ALGORITHM_PARAMETER_GENERATOR = "AlgorithmParameterGenerator";
 
-    /**
-     * Returns a new <code>AlgorithmParameterGenerator</code> instance which
-     * generates algorithm parameters for the specified algorithm.
-     *
-     * @param algorithm
-     *            the name of algorithm to use.
-     * @return the new instance.
-     * @throws NoSuchAlgorithmException
-     *             if <code>algorithm</code> is not implemented by any provider.
-     * @throws IllegalArgumentException
-     *             if <code>algorithm</code> is <code>null</code> or is an empty
-     *             string.
-     */
-    public static AlgorithmParameterGenerator getInstance(String algorithm) throws NoSuchAlgorithmException
-    {
-	Provider[] p = Security.getProviders();
-	NoSuchAlgorithmException lastException = null;
-	for (int i = 0; i < p.length; i++)
-	    try
-	    {
-		return getInstance(algorithm, p[i]);
-	    }
-	    catch (NoSuchAlgorithmException x)
-	    {
-		lastException = x;
-	    }
-	if (lastException != null)
-	    throw lastException;
-	throw new NoSuchAlgorithmException(algorithm);
-    }
-
-    /**
-     * Returns a new <code>AlgorithmParameterGenerator</code> instance which
-     * generates algorithm parameters for the specified algorithm.
-     *
-     * @param algorithm
-     *            the name of algorithm to use.
-     * @param provider
-     *            the {@link Provider} to use.
-     * @return the new instance.
-     * @throws NoSuchAlgorithmException
-     *             if the algorithm is not implemented by {@link Provider}.
-     * @throws IllegalArgumentException
-     *             if either <code>algorithm</code> or <code>provider</code> is
-     *             <code>null</code>, or if <code>algorithm</code> is an empty
-     *             string.
-     * @since 1.4
-     * @see Provider
-     */
-    public static AlgorithmParameterGenerator getInstance(String algorithm, Provider provider) throws NoSuchAlgorithmException
-    {
-	StringBuilder sb = new StringBuilder()
-		.append("AlgorithmParameterGenerator for algorithm [")
-		.append(algorithm).append("] from provider[").append(provider)
-		.append("] could not be created");
-	Throwable cause;
-	try
-	{
-	    Object spi = Engine.getInstance(ALGORITHM_PARAMETER_GENERATOR,
-		    algorithm, provider);
-	    return new AlgorithmParameterGenerator(
-		    (AlgorithmParameterGeneratorSpi) spi, provider, algorithm);
+	/**
+	 * Returns a new <code>AlgorithmParameterGenerator</code> instance which
+	 * generates algorithm parameters for the specified algorithm.
+	 *
+	 * @param algorithm
+	 *            the name of algorithm to use.
+	 * @return the new instance.
+	 * @throws NoSuchAlgorithmException
+	 *             if <code>algorithm</code> is not implemented by any provider.
+	 * @throws IllegalArgumentException
+	 *             if <code>algorithm</code> is <code>null</code> or is an empty
+	 *             string.
+	 */
+	public static AlgorithmParameterGenerator getInstance(String algorithm) throws NoSuchAlgorithmException {
+		Provider[] p = Security.getProviders();
+		NoSuchAlgorithmException lastException = null;
+		for (int i = 0; i < p.length; i++)
+			try {
+				return getInstance(algorithm, p[i]);
+			} catch (NoSuchAlgorithmException x) {
+				lastException = x;
+			}
+		if (lastException != null)
+			throw lastException;
+		throw new NoSuchAlgorithmException(algorithm);
 	}
-	catch (InvocationTargetException x)
-	{
-	    cause = x.getCause();
-	    if (cause instanceof NoSuchAlgorithmException)
-		throw (NoSuchAlgorithmException) cause;
-	    if (cause == null)
-		cause = x;
+
+	/**
+	 * Returns a new <code>AlgorithmParameterGenerator</code> instance which
+	 * generates algorithm parameters for the specified algorithm.
+	 *
+	 * @param algorithm
+	 *            the name of algorithm to use.
+	 * @param provider
+	 *            the {@link Provider} to use.
+	 * @return the new instance.
+	 * @throws NoSuchAlgorithmException
+	 *             if the algorithm is not implemented by {@link Provider}.
+	 * @throws IllegalArgumentException
+	 *             if either <code>algorithm</code> or <code>provider</code> is
+	 *             <code>null</code>, or if <code>algorithm</code> is an empty
+	 *             string.
+	 * @since 1.4
+	 * @see Provider
+	 */
+	public static AlgorithmParameterGenerator getInstance(String algorithm, Provider provider)
+			throws NoSuchAlgorithmException {
+		StringBuilder sb = new StringBuilder().append("AlgorithmParameterGenerator for algorithm [").append(algorithm)
+				.append("] from provider[").append(provider).append("] could not be created");
+		Throwable cause;
+		try {
+			Object spi = Engine.getInstance(ALGORITHM_PARAMETER_GENERATOR, algorithm, provider);
+			return new AlgorithmParameterGenerator((AlgorithmParameterGeneratorSpi) spi, provider, algorithm);
+		} catch (InvocationTargetException x) {
+			cause = x.getCause();
+			if (cause instanceof NoSuchAlgorithmException)
+				throw (NoSuchAlgorithmException) cause;
+			if (cause == null)
+				cause = x;
+		} catch (ClassCastException x) {
+			cause = x;
+		}
+		NoSuchAlgorithmException x = new NoSuchAlgorithmException(sb.toString());
+		x.initCause(cause);
+		throw x;
 	}
-	catch (ClassCastException x)
-	{
-	    cause = x;
+
+	/**
+	 * Returns a new <code>AlgorithmParameterGenerator</code> instance which
+	 * generates algorithm parameters for the specified algorithm.
+	 *
+	 * @param algorithm
+	 *            the name of algorithm to use.
+	 * @param provider
+	 *            the name of the {@link Provider} to use.
+	 * @return the new instance.
+	 * @throws NoSuchAlgorithmException
+	 *             if the algorithm is not implemented by the named provider.
+	 * @throws NoSuchProviderException
+	 *             if the named provider was not found.
+	 * @throws IllegalArgumentException
+	 *             if either <code>algorithm</code> or <code>provider</code> is
+	 *             <code>null</code> or empty.
+	 */
+	public static AlgorithmParameterGenerator getInstance(String algorithm, String provider)
+			throws NoSuchAlgorithmException, NoSuchProviderException {
+		if (provider == null)
+			throw new IllegalArgumentException("provider MUST NOT be null");
+		provider = provider.trim();
+		if (provider.length() == 0)
+			throw new IllegalArgumentException("provider MUST NOT be empty");
+		Provider p = Security.getProvider(provider);
+		if (p == null)
+			throw new NoSuchProviderException(provider);
+		return getInstance(algorithm, p);
 	}
-	NoSuchAlgorithmException x = new NoSuchAlgorithmException(
-		sb.toString());
-	x.initCause(cause);
-	throw x;
-    }
 
-    /**
-     * Returns a new <code>AlgorithmParameterGenerator</code> instance which
-     * generates algorithm parameters for the specified algorithm.
-     *
-     * @param algorithm
-     *            the name of algorithm to use.
-     * @param provider
-     *            the name of the {@link Provider} to use.
-     * @return the new instance.
-     * @throws NoSuchAlgorithmException
-     *             if the algorithm is not implemented by the named provider.
-     * @throws NoSuchProviderException
-     *             if the named provider was not found.
-     * @throws IllegalArgumentException
-     *             if either <code>algorithm</code> or <code>provider</code> is
-     *             <code>null</code> or empty.
-     */
-    public static AlgorithmParameterGenerator getInstance(String algorithm, String provider) throws NoSuchAlgorithmException, NoSuchProviderException
-    {
-	if (provider == null)
-	    throw new IllegalArgumentException("provider MUST NOT be null");
-	provider = provider.trim();
-	if (provider.length() == 0)
-	    throw new IllegalArgumentException("provider MUST NOT be empty");
-	Provider p = Security.getProvider(provider);
-	if (p == null)
-	    throw new NoSuchProviderException(provider);
-	return getInstance(algorithm, p);
-    }
+	private AlgorithmParameterGeneratorSpi paramGenSpi;
 
-    private AlgorithmParameterGeneratorSpi paramGenSpi;
+	private Provider provider;
 
-    private Provider provider;
+	private String algorithm;
 
-    private String algorithm;
+	/**
+	 * Constructs a new instance of <code>AlgorithmParameterGenerator</code>.
+	 *
+	 * @param paramGenSpi
+	 *            the generator to use.
+	 * @param provider
+	 *            the provider to use.
+	 * @param algorithm
+	 *            the algorithm to use.
+	 */
+	protected AlgorithmParameterGenerator(AlgorithmParameterGeneratorSpi paramGenSpi, Provider provider,
+			String algorithm) {
+		this.paramGenSpi = paramGenSpi;
+		this.provider = provider;
+		this.algorithm = algorithm;
+	}
 
-    /**
-     * Constructs a new instance of <code>AlgorithmParameterGenerator</code>.
-     *
-     * @param paramGenSpi
-     *            the generator to use.
-     * @param provider
-     *            the provider to use.
-     * @param algorithm
-     *            the algorithm to use.
-     */
-    protected AlgorithmParameterGenerator(AlgorithmParameterGeneratorSpi paramGenSpi, Provider provider, String algorithm)
-    {
-	this.paramGenSpi = paramGenSpi;
-	this.provider = provider;
-	this.algorithm = algorithm;
-    }
+	/** @return a new instance of {@link AlgorithmParameters}. */
+	public final AlgorithmParameters generateParameters() {
+		return paramGenSpi.engineGenerateParameters();
+	}
 
-    /** @return a new instance of {@link AlgorithmParameters}. */
-    public final AlgorithmParameters generateParameters()
-    {
-	return paramGenSpi.engineGenerateParameters();
-    }
+	/** @return the name of the algorithm. */
+	public final String getAlgorithm() {
+		return algorithm;
+	}
 
-    /** @return the name of the algorithm. */
-    public final String getAlgorithm()
-    {
-	return algorithm;
-    }
+	/** @return the {@link Provider} of this generator. */
+	public final Provider getProvider() {
+		return provider;
+	}
 
-    /** @return the {@link Provider} of this generator. */
-    public final Provider getProvider()
-    {
-	return provider;
-    }
+	/**
+	 * Initializes this instance with the specified {@link AlgorithmParameterSpec}.
+	 * Since no source of randomness is supplied, a default one will be used.
+	 *
+	 * @param genParamSpec
+	 *            the {@link AlgorithmParameterSpec} to use.
+	 * @throws InvalidAlgorithmParameterException
+	 *             if <code>genParamSpec</code> is invalid.
+	 */
+	public final void init(AlgorithmParameterSpec genParamSpec) throws InvalidAlgorithmParameterException {
+		init(genParamSpec, new SecureRandom());
+	}
 
-    /**
-     * Initializes this instance with the specified
-     * {@link AlgorithmParameterSpec}. Since no source of randomness is
-     * supplied, a default one will be used.
-     *
-     * @param genParamSpec
-     *            the {@link AlgorithmParameterSpec} to use.
-     * @throws InvalidAlgorithmParameterException
-     *             if <code>genParamSpec</code> is invalid.
-     */
-    public final void init(AlgorithmParameterSpec genParamSpec) throws InvalidAlgorithmParameterException
-    {
-	init(genParamSpec, new SecureRandom());
-    }
+	/**
+	 * Initializes this instance with the specified {@link AlgorithmParameterSpec}
+	 * and source of randomness.
+	 *
+	 * @param genParamSpec
+	 *            the {@link AlgorithmParameterSpec} to use.
+	 * @param random
+	 *            the {@link SecureRandom} to use.
+	 * @throws InvalidAlgorithmParameterException
+	 *             if <code>genParamSpec</code> is invalid.
+	 */
+	public final void init(AlgorithmParameterSpec genParamSpec, SecureRandom random)
+			throws InvalidAlgorithmParameterException {
+		paramGenSpi.engineInit(genParamSpec, random);
+	}
 
-    /**
-     * Initializes this instance with the specified
-     * {@link AlgorithmParameterSpec} and source of randomness.
-     *
-     * @param genParamSpec
-     *            the {@link AlgorithmParameterSpec} to use.
-     * @param random
-     *            the {@link SecureRandom} to use.
-     * @throws InvalidAlgorithmParameterException
-     *             if <code>genParamSpec</code> is invalid.
-     */
-    public final void init(AlgorithmParameterSpec genParamSpec, SecureRandom random) throws InvalidAlgorithmParameterException
-    {
-	paramGenSpi.engineInit(genParamSpec, random);
-    }
+	/**
+	 * Initializes this instance with the specified size. Since no source of
+	 * randomness is supplied, a default one will be used.
+	 *
+	 * @param size
+	 *            size (in bits) to use.
+	 */
+	public final void init(int size) {
+		init(size, new SecureRandom());
+	}
 
-    /**
-     * Initializes this instance with the specified size. Since no source of
-     * randomness is supplied, a default one will be used.
-     *
-     * @param size
-     *            size (in bits) to use.
-     */
-    public final void init(int size)
-    {
-	init(size, new SecureRandom());
-    }
-
-    /**
-     * Initializes this instance with the specified key-size and source of
-     * randomness.
-     *
-     * @param size
-     *            the size (in bits) to use.
-     * @param random
-     *            the {@link SecureRandom} to use.
-     */
-    public final void init(int size, SecureRandom random)
-    {
-	paramGenSpi.engineInit(size, random);
-    }
+	/**
+	 * Initializes this instance with the specified key-size and source of
+	 * randomness.
+	 *
+	 * @param size
+	 *            the size (in bits) to use.
+	 * @param random
+	 *            the {@link SecureRandom} to use.
+	 */
+	public final void init(int size, SecureRandom random) {
+		paramGenSpi.engineInit(size, random);
+	}
 }

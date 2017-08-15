@@ -71,158 +71,148 @@ import gnu.vm.jgnu.security.Signer;
  *             java.security.Principal.
  */
 @Deprecated
-public abstract class IdentityScope extends Identity
-{
-    private static final long serialVersionUID = -2337346281189773310L;
+public abstract class IdentityScope extends Identity {
+	private static final long serialVersionUID = -2337346281189773310L;
 
-    private static IdentityScope systemScope;
+	private static IdentityScope systemScope;
 
-    /**
-     * Returns the system's Scope.
-     *
-     * @return the system's Scope.
-     */
-    public static IdentityScope getSystemScope()
-    {
-	if (systemScope == null)
-	{
-	    // Load it
-	    // systemScope;
+	/**
+	 * Returns the system's Scope.
+	 *
+	 * @return the system's Scope.
+	 */
+	public static IdentityScope getSystemScope() {
+		if (systemScope == null) {
+			// Load it
+			// systemScope;
+		}
+		return systemScope;
 	}
-	return systemScope;
-    }
 
-    /**
-     * Sets the scope of the system.
-     *
-     * @param scope
-     *            the new system scope.
-     * @throws SecurityException
-     *             if a {@link SecurityManager} is installed which disallows
-     *             this operation.
-     */
-    protected static void setSystemScope(IdentityScope scope)
-    {
-	SecurityManager sm = System.getSecurityManager();
-	if (sm != null)
-	    sm.checkSecurityAccess("setSystemScope");
+	/**
+	 * Sets the scope of the system.
+	 *
+	 * @param scope
+	 *            the new system scope.
+	 * @throws SecurityException
+	 *             if a {@link SecurityManager} is installed which disallows this
+	 *             operation.
+	 */
+	protected static void setSystemScope(IdentityScope scope) {
+		SecurityManager sm = System.getSecurityManager();
+		if (sm != null)
+			sm.checkSecurityAccess("setSystemScope");
 
-	systemScope = scope;
-    }
+		systemScope = scope;
+	}
 
-    /** Constructor for serialization purposes. */
-    protected IdentityScope()
-    {
-	super();
-    }
+	/** Constructor for serialization purposes. */
+	protected IdentityScope() {
+		super();
+	}
 
-    /**
-     * Constructs a new instance of <code>IdentityScope</code> with the
-     * specified name and no scope.
-     *
-     * @param name
-     *            the name to use.
-     */
-    public IdentityScope(String name)
-    {
-	super(name);
-    }
+	/**
+	 * Constructs a new instance of <code>IdentityScope</code> with the specified
+	 * name and no scope.
+	 *
+	 * @param name
+	 *            the name to use.
+	 */
+	public IdentityScope(String name) {
+		super(name);
+	}
 
-    /**
-     * Constructs a new instance of <code>IdentityScope</code> with the
-     * specified name and {@link IdentityScope}.
-     *
-     * @param name
-     *            the name to use.
-     * @param scope
-     *            the scope to use.
-     * @throws KeyManagementException
-     *             if the identity scope is already present.
-     */
-    public IdentityScope(String name, IdentityScope scope) throws KeyManagementException
-    {
-	super(name, scope);
-    }
+	/**
+	 * Constructs a new instance of <code>IdentityScope</code> with the specified
+	 * name and {@link IdentityScope}.
+	 *
+	 * @param name
+	 *            the name to use.
+	 * @param scope
+	 *            the scope to use.
+	 * @throws KeyManagementException
+	 *             if the identity scope is already present.
+	 */
+	public IdentityScope(String name, IdentityScope scope) throws KeyManagementException {
+		super(name, scope);
+	}
 
-    /**
-     * Adds an identity to his scope.
-     *
-     * @param identity
-     *            the {@link Identity} to add.
-     * @throws KeyManagementException
-     *             if it is an invalid identity, an identity with the same key
-     *             exists, or if another error occurs.
-     */
-    public abstract void addIdentity(Identity identity) throws KeyManagementException;
+	/**
+	 * Adds an identity to his scope.
+	 *
+	 * @param identity
+	 *            the {@link Identity} to add.
+	 * @throws KeyManagementException
+	 *             if it is an invalid identity, an identity with the same key
+	 *             exists, or if another error occurs.
+	 */
+	public abstract void addIdentity(Identity identity) throws KeyManagementException;
 
-    /**
-     * Returns the specified {@link Identity}, by {@link Principal}, within this
-     * scope.
-     *
-     * @param principal
-     *            the {@link Principal} to use.
-     * @return an identity representing the {@link Principal} or
-     *         <code>null</code> if it cannot be found.
-     */
-    public Identity getIdentity(Principal principal)
-    {
-	return getIdentity(principal.getName());
-    }
+	/**
+	 * Returns the specified {@link Identity}, by {@link Principal}, within this
+	 * scope.
+	 *
+	 * @param principal
+	 *            the {@link Principal} to use.
+	 * @return an identity representing the {@link Principal} or <code>null</code>
+	 *         if it cannot be found.
+	 */
+	public Identity getIdentity(Principal principal) {
+		return getIdentity(principal.getName());
+	}
 
-    /**
-     * Returns the specified {@link Identity}, by public key, within this scope.
-     *
-     * @param key
-     *            the {@link PublicKey} to use.
-     * @return an identity representing the public key or <code>null</code> if
-     *         it cannot be found.
-     */
-    public abstract Identity getIdentity(PublicKey key);
+	/**
+	 * Returns the specified {@link Identity}, by public key, within this scope.
+	 *
+	 * @param key
+	 *            the {@link PublicKey} to use.
+	 * @return an identity representing the public key or <code>null</code> if it
+	 *         cannot be found.
+	 */
+	public abstract Identity getIdentity(PublicKey key);
 
-    /**
-     * Returns the specified {@link Identity}, by name, within this scope.
-     *
-     * @param name
-     *            name of {@link Identity} to get.
-     * @return an {@link Identity} representing the name or <code>null</code> if
-     *         it cannot be found.
-     */
-    public abstract Identity getIdentity(String name);
+	/**
+	 * Returns the specified {@link Identity}, by name, within this scope.
+	 *
+	 * @param name
+	 *            name of {@link Identity} to get.
+	 * @return an {@link Identity} representing the name or <code>null</code> if it
+	 *         cannot be found.
+	 */
+	public abstract Identity getIdentity(String name);
 
-    /**
-     * Returns an {@link Enumeration} of identities in this scope.
-     *
-     * @return an {@link Enumeration} of the identities in this scope.
-     */
-    public abstract Enumeration<Identity> identities();
+	/**
+	 * Returns an {@link Enumeration} of identities in this scope.
+	 *
+	 * @return an {@link Enumeration} of the identities in this scope.
+	 */
+	public abstract Enumeration<Identity> identities();
 
-    /**
-     * Removes an identity in this scope.
-     *
-     * @param identity
-     *            the {@link Identity} to remove.
-     * @throws KeyManagementException
-     *             if it is a missing identity, or if another error occurs.
-     */
-    public abstract void removeIdentity(Identity identity) throws KeyManagementException;
+	/**
+	 * Removes an identity in this scope.
+	 *
+	 * @param identity
+	 *            the {@link Identity} to remove.
+	 * @throws KeyManagementException
+	 *             if it is a missing identity, or if another error occurs.
+	 */
+	public abstract void removeIdentity(Identity identity) throws KeyManagementException;
 
-    /**
-     * Returns the number of entries within this <code>IdentityScope</code>.
-     *
-     * @return the number of entries within this <code>IdentityScope</code>.
-     */
-    public abstract int size();
+	/**
+	 * Returns the number of entries within this <code>IdentityScope</code>.
+	 *
+	 * @return the number of entries within this <code>IdentityScope</code>.
+	 */
+	public abstract int size();
 
-    /**
-     * Returns a string representing this instance. It includes the name, the
-     * scope name, and number of identities.
-     *
-     * @return a string representation of this instance.
-     */
-    @Override
-    public String toString()
-    {
-	return (super.getName() + " " + super.getScope().getName() + " "
-		+ size());
-    }
+	/**
+	 * Returns a string representing this instance. It includes the name, the scope
+	 * name, and number of identities.
+	 *
+	 * @return a string representation of this instance.
+	 */
+	@Override
+	public String toString() {
+		return (super.getName() + " " + super.getScope().getName() + " " + size());
+	}
 }

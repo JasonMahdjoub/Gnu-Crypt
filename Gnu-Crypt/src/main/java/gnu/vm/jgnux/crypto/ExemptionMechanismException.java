@@ -47,34 +47,31 @@ import javax.crypto.ExemptionMechanism;
  * @author Casey Marshall (csm@gnu.org)
  * @since 1.4
  */
-public class ExemptionMechanismException extends GeneralSecurityException
-{
+public class ExemptionMechanismException extends GeneralSecurityException {
 
-    // Constant.
-    // ------------------------------------------------------------------------
+	// Constant.
+	// ------------------------------------------------------------------------
 
-    /** Compatible with JDK1.4. */
-    private static final long serialVersionUID = 1572699429277957109L;
+	/** Compatible with JDK1.4. */
+	private static final long serialVersionUID = 1572699429277957109L;
 
-    // Constructors.
-    // ------------------------------------------------------------------------
+	// Constructors.
+	// ------------------------------------------------------------------------
 
-    /**
-     * Create a new exception with no detail message.
-     */
-    public ExemptionMechanismException()
-    {
-	super();
-    }
+	/**
+	 * Create a new exception with no detail message.
+	 */
+	public ExemptionMechanismException() {
+		super();
+	}
 
-    /**
-     * Create a new exception with a detail message.
-     *
-     * @param message
-     *            The detail message.
-     */
-    public ExemptionMechanismException(String message)
-    {
-	super(message);
-    }
+	/**
+	 * Create a new exception with a detail message.
+	 *
+	 * @param message
+	 *            The detail message.
+	 */
+	public ExemptionMechanismException(String message) {
+		super(message);
+	}
 }

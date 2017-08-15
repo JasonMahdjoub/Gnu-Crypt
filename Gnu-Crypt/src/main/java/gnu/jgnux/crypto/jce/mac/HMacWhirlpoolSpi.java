@@ -43,10 +43,8 @@ import gnu.jgnu.security.Registry;
  * The implementation of the HMAC-Whirlpool <i>Service Provider Interface</i>
  * (<b>SPI</b>) adapter.
  */
-public final class HMacWhirlpoolSpi extends MacAdapter
-{
-    public HMacWhirlpoolSpi()
-    {
-	super(Registry.HMAC_NAME_PREFIX + Registry.WHIRLPOOL_HASH);
-    }
+public final class HMacWhirlpoolSpi extends MacAdapter {
+	public HMacWhirlpoolSpi() {
+		super(Registry.HMAC_NAME_PREFIX + Registry.WHIRLPOOL_HASH);
+	}
 }

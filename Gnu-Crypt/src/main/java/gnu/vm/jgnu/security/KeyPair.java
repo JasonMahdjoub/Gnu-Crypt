@@ -49,45 +49,41 @@ import gnu.vm.jgnu.security.PublicKey;
  * 
  * @author Mark Benvenuto
  */
-public final class KeyPair implements Serializable
-{
-    private static final long serialVersionUID = -7565189502268009837L;
+public final class KeyPair implements Serializable {
+	private static final long serialVersionUID = -7565189502268009837L;
 
-    private PublicKey publicKey;
+	private PublicKey publicKey;
 
-    private PrivateKey privateKey;
+	private PrivateKey privateKey;
 
-    /**
-     * Initializes the KeyPair with a pubilc and private key.
-     * 
-     * @param publicKey
-     *            Public Key to store
-     * @param privateKey
-     *            Private Key to store
-     */
-    public KeyPair(PublicKey publicKey, PrivateKey privateKey)
-    {
-	this.publicKey = publicKey;
-	this.privateKey = privateKey;
-    }
+	/**
+	 * Initializes the KeyPair with a pubilc and private key.
+	 * 
+	 * @param publicKey
+	 *            Public Key to store
+	 * @param privateKey
+	 *            Private Key to store
+	 */
+	public KeyPair(PublicKey publicKey, PrivateKey privateKey) {
+		this.publicKey = publicKey;
+		this.privateKey = privateKey;
+	}
 
-    /**
-     * Returns the private key stored in the KeyPair
-     * 
-     * @return The private key
-     */
-    public PrivateKey getPrivate()
-    {
-	return privateKey;
-    }
+	/**
+	 * Returns the private key stored in the KeyPair
+	 * 
+	 * @return The private key
+	 */
+	public PrivateKey getPrivate() {
+		return privateKey;
+	}
 
-    /**
-     * Returns the public key stored in the KeyPair
-     * 
-     * @return The public key
-     */
-    public PublicKey getPublic()
-    {
-	return publicKey;
-    }
+	/**
+	 * Returns the public key stored in the KeyPair
+	 * 
+	 * @return The public key
+	 */
+	public PublicKey getPublic() {
+		return publicKey;
+	}
 }

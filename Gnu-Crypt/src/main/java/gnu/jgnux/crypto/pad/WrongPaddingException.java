@@ -41,11 +41,10 @@ package gnu.jgnux.crypto.pad;
  * A checked exception that indicates that a padding algorithm did not find the
  * expected padding bytes when unpadding some data.
  */
-public class WrongPaddingException extends Exception
-{
+public class WrongPaddingException extends Exception {
 
-    /**
-     * 
-     */
-    private static final long serialVersionUID = -247987973880615422L;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -247987973880615422L;
 }

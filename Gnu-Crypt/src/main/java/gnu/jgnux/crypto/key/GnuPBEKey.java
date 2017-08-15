@@ -45,60 +45,51 @@ import gnu.vm.jgnux.crypto.spec.PBEKeySpec;
  *
  * @author Casey Marshall (csm@gnu.org)
  */
-public class GnuPBEKey implements PBEKey
-{
-    /**
-     * 
-     */
-    private static final long serialVersionUID = 1509410357845828872L;
+public class GnuPBEKey implements PBEKey {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1509410357845828872L;
 
-    private final PBEKeySpec spec;
+	private final PBEKeySpec spec;
 
-    public GnuPBEKey(char[] password, byte[] salt, int iterationCount)
-    {
-	this(new PBEKeySpec(password, salt, iterationCount));
-    }
+	public GnuPBEKey(char[] password, byte[] salt, int iterationCount) {
+		this(new PBEKeySpec(password, salt, iterationCount));
+	}
 
-    public GnuPBEKey(final PBEKeySpec spec)
-    {
-	if (spec == null)
-	    throw new NullPointerException();
-	this.spec = spec;
-    }
+	public GnuPBEKey(final PBEKeySpec spec) {
+		if (spec == null)
+			throw new NullPointerException();
+		this.spec = spec;
+	}
 
-    @Override
-    public String getAlgorithm()
-    {
-	return "PBE";
-    }
+	@Override
+	public String getAlgorithm() {
+		return "PBE";
+	}
 
-    @Override
-    public byte[] getEncoded()
-    {
-	return null; // FIXME?
-    }
+	@Override
+	public byte[] getEncoded() {
+		return null; // FIXME?
+	}
 
-    @Override
-    public String getFormat()
-    {
-	return "NONE"; // FIXME?
-    }
+	@Override
+	public String getFormat() {
+		return "NONE"; // FIXME?
+	}
 
-    @Override
-    public int getIterationCount()
-    {
-	return spec.getIterationCount();
-    }
+	@Override
+	public int getIterationCount() {
+		return spec.getIterationCount();
+	}
 
-    @Override
-    public char[] getPassword()
-    {
-	return spec.getPassword();
-    }
+	@Override
+	public char[] getPassword() {
+		return spec.getPassword();
+	}
 
-    @Override
-    public byte[] getSalt()
-    {
-	return spec.getSalt();
-    }
+	@Override
+	public byte[] getSalt() {
+		return spec.getSalt();
+	}
 }

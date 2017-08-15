@@ -55,105 +55,95 @@ import gnu.vm.jgnu.security.PrivateKey;
  *             <code>java.security.Principal</code>.
  */
 @Deprecated
-public abstract class Signer extends Identity
-{
-    private static final long serialVersionUID = -1763464102261361480L;
+public abstract class Signer extends Identity {
+	private static final long serialVersionUID = -1763464102261361480L;
 
-    private PrivateKey privateKey = null;
+	private PrivateKey privateKey = null;
 
-    /** Trivial constructor for serialization purposes. */
-    protected Signer()
-    {
-    }
-
-    /**
-     * Constructs a new instance of <code>Signer</code> with the specified
-     * identity name.
-     *
-     * @param name
-     *            the name of the identity to use.
-     */
-    public Signer(String name)
-    {
-	super(name);
-    }
-
-    /**
-     * Constructs a new instance of <code>Signer</code> with the specified
-     * identity name and {@link IdentityScope}.
-     *
-     * @param name
-     *            the name of the the identity to use.
-     * @param scope
-     *            the {@link IdentityScope} to use.
-     * @throws KeyManagementException
-     *             if a duplicate identity <code>name</code> exists within
-     *             <code>scope</code>.
-     */
-    public Signer(String name, IdentityScope scope) throws KeyManagementException
-    {
-	super(name, scope);
-    }
-
-    /**
-     * Returns the private key of this <code>Signer</code>.
-     *
-     * @returns the private key of this <code>Signer</code>.
-     * @throws SecurityException
-     *             if a {@link SecurityManager} is installed which disallows
-     *             this operation.
-     */
-    public PrivateKey getPrivateKey()
-    {
-	SecurityManager sm = System.getSecurityManager();
-	if (sm != null)
-	    sm.checkSecurityAccess("getSignerPrivateKey");
-
-	return privateKey;
-    }
-
-    /**
-     * Specifies the {@link KeyPair} associated with this <code>Signer</code>.
-     *
-     * @param pair
-     *            the {@link KeyPair} to use.
-     * @throws InvalidParameterException
-     *             if the key-pair is invalid.
-     * @throws KeyException
-     *             if any another key-related error occurs.
-     * @throws SecurityException
-     *             if a {@link SecurityManager} is installed which disallows
-     *             this operation.
-     */
-    public final void setKeyPair(KeyPair pair) throws InvalidParameterException, KeyException
-    {
-	SecurityManager sm = System.getSecurityManager();
-	if (sm != null)
-	    sm.checkSecurityAccess("setSignerKeyPair");
-
-	try
-	{
-	    if (pair.getPublic() != null)
-		setPublicKey(pair.getPublic());
-	    else
-		throw new InvalidParameterException();
-
-	}
-	catch (KeyManagementException kme)
-	{
-	    throw new KeyException();
+	/** Trivial constructor for serialization purposes. */
+	protected Signer() {
 	}
 
-	if (pair.getPrivate() != null)
-	    privateKey = pair.getPrivate();
-	else
-	    throw new InvalidParameterException();
-    }
+	/**
+	 * Constructs a new instance of <code>Signer</code> with the specified identity
+	 * name.
+	 *
+	 * @param name
+	 *            the name of the identity to use.
+	 */
+	public Signer(String name) {
+		super(name);
+	}
 
-    /** @returns a string representing this <code>Signer</code>. */
-    @Override
-    public String toString()
-    {
-	return (getName() + ": " + privateKey);
-    }
+	/**
+	 * Constructs a new instance of <code>Signer</code> with the specified identity
+	 * name and {@link IdentityScope}.
+	 *
+	 * @param name
+	 *            the name of the the identity to use.
+	 * @param scope
+	 *            the {@link IdentityScope} to use.
+	 * @throws KeyManagementException
+	 *             if a duplicate identity <code>name</code> exists within
+	 *             <code>scope</code>.
+	 */
+	public Signer(String name, IdentityScope scope) throws KeyManagementException {
+		super(name, scope);
+	}
+
+	/**
+	 * Returns the private key of this <code>Signer</code>.
+	 *
+	 * @returns the private key of this <code>Signer</code>.
+	 * @throws SecurityException
+	 *             if a {@link SecurityManager} is installed which disallows this
+	 *             operation.
+	 */
+	public PrivateKey getPrivateKey() {
+		SecurityManager sm = System.getSecurityManager();
+		if (sm != null)
+			sm.checkSecurityAccess("getSignerPrivateKey");
+
+		return privateKey;
+	}
+
+	/**
+	 * Specifies the {@link KeyPair} associated with this <code>Signer</code>.
+	 *
+	 * @param pair
+	 *            the {@link KeyPair} to use.
+	 * @throws InvalidParameterException
+	 *             if the key-pair is invalid.
+	 * @throws KeyException
+	 *             if any another key-related error occurs.
+	 * @throws SecurityException
+	 *             if a {@link SecurityManager} is installed which disallows this
+	 *             operation.
+	 */
+	public final void setKeyPair(KeyPair pair) throws InvalidParameterException, KeyException {
+		SecurityManager sm = System.getSecurityManager();
+		if (sm != null)
+			sm.checkSecurityAccess("setSignerKeyPair");
+
+		try {
+			if (pair.getPublic() != null)
+				setPublicKey(pair.getPublic());
+			else
+				throw new InvalidParameterException();
+
+		} catch (KeyManagementException kme) {
+			throw new KeyException();
+		}
+
+		if (pair.getPrivate() != null)
+			privateKey = pair.getPrivate();
+		else
+			throw new InvalidParameterException();
+	}
+
+	/** @returns a string representing this <code>Signer</code>. */
+	@Override
+	public String toString() {
+		return (getName() + ": " + privateKey);
+	}
 }

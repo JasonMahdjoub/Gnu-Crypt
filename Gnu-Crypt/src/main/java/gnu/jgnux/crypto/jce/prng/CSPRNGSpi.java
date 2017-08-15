@@ -48,56 +48,46 @@ import gnu.jgnux.crypto.prng.CSPRNG;
  * The implementation of the continuously-seeded SecureRandom <i>Service
  * Provider Interface</i> (<b>SPI</b>) adapter.
  */
-public class CSPRNGSpi extends SecureRandomSpi
-{
-    /**
-     * 
-     */
-    private static final long serialVersionUID = 6828781197697043083L;
+public class CSPRNGSpi extends SecureRandomSpi {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 6828781197697043083L;
 
-    private final IRandom adaptee;
+	private final IRandom adaptee;
 
-    private boolean virgin = true;
+	private boolean virgin = true;
 
-    public CSPRNGSpi() throws NumberFormatException
-    {
-	super();
+	public CSPRNGSpi() throws NumberFormatException {
+		super();
 
-	adaptee = CSPRNG.getSystemInstance();
-    }
-
-    @Override
-    protected byte[] engineGenerateSeed(final int numBytes)
-    {
-	return SecureRandomAdapter.getSeed(numBytes);
-    }
-
-    @Override
-    protected void engineNextBytes(final byte[] buffer)
-    {
-	if (buffer == null)
-	    throw new NullPointerException();
-	if (virgin)
-	{
-	    engineSetSeed(engineGenerateSeed(32));
+		adaptee = CSPRNG.getSystemInstance();
 	}
-	try
-	{
-	    adaptee.nextBytes(buffer, 0, buffer.length);
-	}
-	catch (LimitReachedException lre)
-	{
-	    throw new RuntimeException(
-		    "random-number generator has been exhausted");
-	}
-    }
 
-    @Override
-    protected void engineSetSeed(final byte[] seed)
-    {
-	if (seed == null)
-	    throw new NullPointerException();
-	adaptee.addRandomBytes(seed, 0, seed.length);
-	virgin = false;
-    }
+	@Override
+	protected byte[] engineGenerateSeed(final int numBytes) {
+		return SecureRandomAdapter.getSeed(numBytes);
+	}
+
+	@Override
+	protected void engineNextBytes(final byte[] buffer) {
+		if (buffer == null)
+			throw new NullPointerException();
+		if (virgin) {
+			engineSetSeed(engineGenerateSeed(32));
+		}
+		try {
+			adaptee.nextBytes(buffer, 0, buffer.length);
+		} catch (LimitReachedException lre) {
+			throw new RuntimeException("random-number generator has been exhausted");
+		}
+	}
+
+	@Override
+	protected void engineSetSeed(final byte[] seed) {
+		if (seed == null)
+			throw new NullPointerException();
+		adaptee.addRandomBytes(seed, 0, seed.length);
+		virgin = false;
+	}
 }

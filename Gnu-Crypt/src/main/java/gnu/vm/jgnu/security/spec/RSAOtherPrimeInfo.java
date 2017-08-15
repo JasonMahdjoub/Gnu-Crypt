@@ -49,81 +49,76 @@ import gnu.vm.jgnu.security.spec.RSAPrivateCrtKeySpec;
  * @see RSAPrivateCrtKeySpec
  * @see java.security.interfaces.RSAMultiPrimePrivateCrtKey
  */
-public class RSAOtherPrimeInfo
-{
-    // Constants and fields
-    // --------------------------------------------------------------------------
+public class RSAOtherPrimeInfo {
+	// Constants and fields
+	// --------------------------------------------------------------------------
 
-    private BigInteger prime;
+	private BigInteger prime;
 
-    private BigInteger primeExponent;
+	private BigInteger primeExponent;
 
-    private BigInteger crtCoefficient;
+	private BigInteger crtCoefficient;
 
-    // Constructor(s)
-    // --------------------------------------------------------------------------
+	// Constructor(s)
+	// --------------------------------------------------------------------------
 
-    /**
-     * Constructs a new <code>RSAOtherPrimeInfo</code> given the PKCS#1 MPIs.
-     *
-     * @param prime
-     *            the prime factor of n.
-     * @param primeExponent
-     *            the exponent.
-     * @param crtCoefficient
-     *            the Chinese Remainder Theorem coefficient.
-     * @throws NullPointerException
-     *             if any of the parameters is <code>null</code>.
-     */
-    public RSAOtherPrimeInfo(BigInteger prime, BigInteger primeExponent, BigInteger crtCoefficient)
-    {
-	super();
+	/**
+	 * Constructs a new <code>RSAOtherPrimeInfo</code> given the PKCS#1 MPIs.
+	 *
+	 * @param prime
+	 *            the prime factor of n.
+	 * @param primeExponent
+	 *            the exponent.
+	 * @param crtCoefficient
+	 *            the Chinese Remainder Theorem coefficient.
+	 * @throws NullPointerException
+	 *             if any of the parameters is <code>null</code>.
+	 */
+	public RSAOtherPrimeInfo(BigInteger prime, BigInteger primeExponent, BigInteger crtCoefficient) {
+		super();
 
-	if (prime == null)
-	    throw new NullPointerException("prime");
-	if (primeExponent == null)
-	    throw new NullPointerException("primeExponent");
-	if (crtCoefficient == null)
-	    throw new NullPointerException("crtCoefficient");
+		if (prime == null)
+			throw new NullPointerException("prime");
+		if (primeExponent == null)
+			throw new NullPointerException("primeExponent");
+		if (crtCoefficient == null)
+			throw new NullPointerException("crtCoefficient");
 
-	this.prime = prime;
-	this.primeExponent = primeExponent;
-	this.crtCoefficient = crtCoefficient;
-    }
+		this.prime = prime;
+		this.primeExponent = primeExponent;
+		this.crtCoefficient = crtCoefficient;
+	}
 
-    // Class methods
-    // --------------------------------------------------------------------------
+	// Class methods
+	// --------------------------------------------------------------------------
 
-    // Instance methods
-    // --------------------------------------------------------------------------
+	// Instance methods
+	// --------------------------------------------------------------------------
 
-    /**
-     * Returns the CRT Coefficient.
-     *
-     * @return the CRT Coefficient.
-     */
-    public final BigInteger getCrtCoefficient()
-    {
-	return this.crtCoefficient;
-    }
+	/**
+	 * Returns the CRT Coefficient.
+	 *
+	 * @return the CRT Coefficient.
+	 */
+	public final BigInteger getCrtCoefficient() {
+		return this.crtCoefficient;
+	}
 
-    /**
-     * Returns the prime's exponent.
-     *
-     * @return the primeExponent.
-     */
-    public final BigInteger getExponent()
-    {
-	return this.primeExponent;
-    }
+	/**
+	 * Returns the prime's exponent.
+	 *
+	 * @return the primeExponent.
+	 */
+	public final BigInteger getExponent() {
+		return this.primeExponent;
+	}
 
-    /**
-     * Returns the prime.
-     *
-     * @return the prime.
-     */
-    public final BigInteger getPrime()
-    {
-	return this.prime;
-    }
+	/**
+	 * Returns the prime.
+	 *
+	 * @return the prime.
+	 */
+	public final BigInteger getPrime() {
+		return this.prime;
+	}
 }

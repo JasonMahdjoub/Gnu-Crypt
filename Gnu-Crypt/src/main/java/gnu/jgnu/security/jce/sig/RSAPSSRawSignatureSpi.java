@@ -44,10 +44,8 @@ import gnu.jgnu.security.sig.rsa.RSAPSSSignatureRawCodec;
  * The implementation of <i>Service Provider Interface</i> (<b>SPI</b>) adapter
  * for the RSA-PSS signature scheme, encoded and/or decoded in RAW format.
  */
-public class RSAPSSRawSignatureSpi extends SignatureAdapter
-{
-    public RSAPSSRawSignatureSpi()
-    {
-	super(Registry.RSA_PSS_SIG, new RSAPSSSignatureRawCodec());
-    }
+public class RSAPSSRawSignatureSpi extends SignatureAdapter {
+	public RSAPSSRawSignatureSpi() {
+		super(Registry.RSA_PSS_SIG, new RSAPSSSignatureRawCodec());
+	}
 }

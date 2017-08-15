@@ -45,12 +45,11 @@ package gnu.vm.jgnu.security.interfaces;
  *
  * @author Aaron M. Renn (arenn@urbanophile.com)
  */
-public interface DSAKey
-{
-    /**
-     * This method returns non-secret parameters of the DSA key
-     *
-     * @return The DSA parameters
-     */
-    DSAParams getParams();
+public interface DSAKey {
+	/**
+	 * This method returns non-secret parameters of the DSA key
+	 *
+	 * @return The DSA parameters
+	 */
+	DSAParams getParams();
 }

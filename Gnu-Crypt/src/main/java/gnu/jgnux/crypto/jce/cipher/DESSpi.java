@@ -43,10 +43,8 @@ import gnu.jgnu.security.Registry;
  * The implementation of the DES <i>Service Provider Interface</i> (<b>SPI</b>)
  * adapter.
  */
-public final class DESSpi extends CipherAdapter
-{
-    public DESSpi()
-    {
-	super(Registry.DES_CIPHER);
-    }
+public final class DESSpi extends CipherAdapter {
+	public DESSpi() {
+		super(Registry.DES_CIPHER);
+	}
 }

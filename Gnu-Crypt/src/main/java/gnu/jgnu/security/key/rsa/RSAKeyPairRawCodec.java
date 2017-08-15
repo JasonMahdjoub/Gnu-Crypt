@@ -49,245 +49,223 @@ import gnu.vm.jgnu.security.PublicKey;
  * An object that implements the {@link IKeyPairCodec} interface for the
  * <i>Raw</i> format to use with RSA keypairs.
  */
-public class RSAKeyPairRawCodec implements IKeyPairCodec
-{
-    // implicit 0-arguments constructor
+public class RSAKeyPairRawCodec implements IKeyPairCodec {
+	// implicit 0-arguments constructor
 
-    @Override
-    public PrivateKey decodePrivateKey(byte[] k)
-    {
-	// magic
-	if (k[0] != Registry.MAGIC_RAW_RSA_PRIVATE_KEY[0]
-		|| k[1] != Registry.MAGIC_RAW_RSA_PRIVATE_KEY[1]
-		|| k[2] != Registry.MAGIC_RAW_RSA_PRIVATE_KEY[2]
-		|| k[3] != Registry.MAGIC_RAW_RSA_PRIVATE_KEY[3])
-	    throw new IllegalArgumentException("magic");
+	@Override
+	public PrivateKey decodePrivateKey(byte[] k) {
+		// magic
+		if (k[0] != Registry.MAGIC_RAW_RSA_PRIVATE_KEY[0] || k[1] != Registry.MAGIC_RAW_RSA_PRIVATE_KEY[1]
+				|| k[2] != Registry.MAGIC_RAW_RSA_PRIVATE_KEY[2] || k[3] != Registry.MAGIC_RAW_RSA_PRIVATE_KEY[3])
+			throw new IllegalArgumentException("magic");
 
-	// version
-	if (k[4] != 0x01)
-	    throw new IllegalArgumentException("version");
+		// version
+		if (k[4] != 0x01)
+			throw new IllegalArgumentException("version");
 
-	int i = 5;
-	int l;
-	byte[] buffer;
-	// p
-	l = k[i++] << 24 | (k[i++] & 0xFF) << 16 | (k[i++] & 0xFF) << 8
-		| (k[i++] & 0xFF);
-	buffer = new byte[l];
-	System.arraycopy(k, i, buffer, 0, l);
-	i += l;
-	BigInteger p = new BigInteger(1, buffer);
-	// q
-	l = k[i++] << 24 | (k[i++] & 0xFF) << 16 | (k[i++] & 0xFF) << 8
-		| (k[i++] & 0xFF);
-	buffer = new byte[l];
-	System.arraycopy(k, i, buffer, 0, l);
-	i += l;
-	BigInteger q = new BigInteger(1, buffer);
-	// e
-	l = k[i++] << 24 | (k[i++] & 0xFF) << 16 | (k[i++] & 0xFF) << 8
-		| (k[i++] & 0xFF);
-	buffer = new byte[l];
-	System.arraycopy(k, i, buffer, 0, l);
-	i += l;
-	BigInteger e = new BigInteger(1, buffer);
-	// d
-	l = k[i++] << 24 | (k[i++] & 0xFF) << 16 | (k[i++] & 0xFF) << 8
-		| (k[i++] & 0xFF);
-	buffer = new byte[l];
-	System.arraycopy(k, i, buffer, 0, l);
-	i += l;
-	BigInteger d = new BigInteger(1, buffer);
-	return new GnuRSAPrivateKey(p, q, e, d);
-    }
+		int i = 5;
+		int l;
+		byte[] buffer;
+		// p
+		l = k[i++] << 24 | (k[i++] & 0xFF) << 16 | (k[i++] & 0xFF) << 8 | (k[i++] & 0xFF);
+		buffer = new byte[l];
+		System.arraycopy(k, i, buffer, 0, l);
+		i += l;
+		BigInteger p = new BigInteger(1, buffer);
+		// q
+		l = k[i++] << 24 | (k[i++] & 0xFF) << 16 | (k[i++] & 0xFF) << 8 | (k[i++] & 0xFF);
+		buffer = new byte[l];
+		System.arraycopy(k, i, buffer, 0, l);
+		i += l;
+		BigInteger q = new BigInteger(1, buffer);
+		// e
+		l = k[i++] << 24 | (k[i++] & 0xFF) << 16 | (k[i++] & 0xFF) << 8 | (k[i++] & 0xFF);
+		buffer = new byte[l];
+		System.arraycopy(k, i, buffer, 0, l);
+		i += l;
+		BigInteger e = new BigInteger(1, buffer);
+		// d
+		l = k[i++] << 24 | (k[i++] & 0xFF) << 16 | (k[i++] & 0xFF) << 8 | (k[i++] & 0xFF);
+		buffer = new byte[l];
+		System.arraycopy(k, i, buffer, 0, l);
+		i += l;
+		BigInteger d = new BigInteger(1, buffer);
+		return new GnuRSAPrivateKey(p, q, e, d);
+	}
 
-    @Override
-    public PublicKey decodePublicKey(byte[] k)
-    {
-	// magic
-	if (k[0] != Registry.MAGIC_RAW_RSA_PUBLIC_KEY[0]
-		|| k[1] != Registry.MAGIC_RAW_RSA_PUBLIC_KEY[1]
-		|| k[2] != Registry.MAGIC_RAW_RSA_PUBLIC_KEY[2]
-		|| k[3] != Registry.MAGIC_RAW_RSA_PUBLIC_KEY[3])
-	    throw new IllegalArgumentException("magic");
+	@Override
+	public PublicKey decodePublicKey(byte[] k) {
+		// magic
+		if (k[0] != Registry.MAGIC_RAW_RSA_PUBLIC_KEY[0] || k[1] != Registry.MAGIC_RAW_RSA_PUBLIC_KEY[1]
+				|| k[2] != Registry.MAGIC_RAW_RSA_PUBLIC_KEY[2] || k[3] != Registry.MAGIC_RAW_RSA_PUBLIC_KEY[3])
+			throw new IllegalArgumentException("magic");
 
-	// version
-	if (k[4] != 0x01)
-	    throw new IllegalArgumentException("version");
+		// version
+		if (k[4] != 0x01)
+			throw new IllegalArgumentException("version");
 
-	int i = 5;
-	int l;
-	byte[] buffer;
-	// n
-	l = k[i++] << 24 | (k[i++] & 0xFF) << 16 | (k[i++] & 0xFF) << 8
-		| (k[i++] & 0xFF);
-	buffer = new byte[l];
-	System.arraycopy(k, i, buffer, 0, l);
-	i += l;
-	BigInteger n = new BigInteger(1, buffer);
-	// e
-	l = k[i++] << 24 | (k[i++] & 0xFF) << 16 | (k[i++] & 0xFF) << 8
-		| (k[i++] & 0xFF);
-	buffer = new byte[l];
-	System.arraycopy(k, i, buffer, 0, l);
-	i += l;
-	BigInteger e = new BigInteger(1, buffer);
-	return new GnuRSAPublicKey(n, e);
-    }
+		int i = 5;
+		int l;
+		byte[] buffer;
+		// n
+		l = k[i++] << 24 | (k[i++] & 0xFF) << 16 | (k[i++] & 0xFF) << 8 | (k[i++] & 0xFF);
+		buffer = new byte[l];
+		System.arraycopy(k, i, buffer, 0, l);
+		i += l;
+		BigInteger n = new BigInteger(1, buffer);
+		// e
+		l = k[i++] << 24 | (k[i++] & 0xFF) << 16 | (k[i++] & 0xFF) << 8 | (k[i++] & 0xFF);
+		buffer = new byte[l];
+		System.arraycopy(k, i, buffer, 0, l);
+		i += l;
+		BigInteger e = new BigInteger(1, buffer);
+		return new GnuRSAPublicKey(n, e);
+	}
 
-    /**
-     * Returns the encoded form of the designated RSA private key according to
-     * the <i>Raw</i> format supported by this library.
-     * <p>
-     * The <i>Raw</i> format for an RSA private key, in this implementation, is
-     * a byte sequence consisting of the following:
-     * <ol>
-     * <li>4-byte magic consisting of the value of the literal
-     * {@link Registry#MAGIC_RAW_RSA_PRIVATE_KEY},</li>
-     * <li>1-byte version consisting of the constant: 0x01,</li>
-     * <li>4-byte count of following bytes representing the RSA parameter
-     * <code>p</code> (the first prime factor of the modulus) in internet order,
-     * </li>
-     * <li>n-bytes representation of a {@link BigInteger} obtained by invoking
-     * the <code>toByteArray()</code> method on the RSA parameter
-     * <code>p</code>,</li>
-     * <li>4-byte count of following bytes representing the RSA parameter
-     * <code>q</code> (the second prime factor of the modulus) in internet
-     * order,</li>
-     * <li>n-bytes representation of a {@link BigInteger} obtained by invoking
-     * the <code>toByteArray()</code> method on the RSA parameter
-     * <code>q</code>,</li>
-     * <li>4-byte count of following bytes representing the RSA parameter
-     * <code>e</code> (the public exponent) in internet order,</li>
-     * <li>n-bytes representation of a {@link BigInteger} obtained by invoking
-     * the <code>toByteArray()</code> method on the RSA parameter
-     * <code>e</code>,</li>
-     * <li>4-byte count of following bytes representing the RSA parameter
-     * <code>d</code> (the private exponent) in internet order,</li>
-     * <li>n-bytes representation of a {@link BigInteger} obtained by invoking
-     * the <code>toByteArray()</code> method on the RSA parameter
-     * <code>d</code>,</li>
-     * </ol>
-     *
-     * @param key
-     *            the key to encode.
-     * @return the <i>Raw</i> format encoding of the designated key.
-     */
-    @Override
-    public byte[] encodePrivateKey(PrivateKey key)
-    {
-	if (!(key instanceof GnuRSAPrivateKey))
-	    throw new IllegalArgumentException("key");
+	/**
+	 * Returns the encoded form of the designated RSA private key according to the
+	 * <i>Raw</i> format supported by this library.
+	 * <p>
+	 * The <i>Raw</i> format for an RSA private key, in this implementation, is a
+	 * byte sequence consisting of the following:
+	 * <ol>
+	 * <li>4-byte magic consisting of the value of the literal
+	 * {@link Registry#MAGIC_RAW_RSA_PRIVATE_KEY},</li>
+	 * <li>1-byte version consisting of the constant: 0x01,</li>
+	 * <li>4-byte count of following bytes representing the RSA parameter
+	 * <code>p</code> (the first prime factor of the modulus) in internet order,
+	 * </li>
+	 * <li>n-bytes representation of a {@link BigInteger} obtained by invoking the
+	 * <code>toByteArray()</code> method on the RSA parameter <code>p</code>,</li>
+	 * <li>4-byte count of following bytes representing the RSA parameter
+	 * <code>q</code> (the second prime factor of the modulus) in internet
+	 * order,</li>
+	 * <li>n-bytes representation of a {@link BigInteger} obtained by invoking the
+	 * <code>toByteArray()</code> method on the RSA parameter <code>q</code>,</li>
+	 * <li>4-byte count of following bytes representing the RSA parameter
+	 * <code>e</code> (the public exponent) in internet order,</li>
+	 * <li>n-bytes representation of a {@link BigInteger} obtained by invoking the
+	 * <code>toByteArray()</code> method on the RSA parameter <code>e</code>,</li>
+	 * <li>4-byte count of following bytes representing the RSA parameter
+	 * <code>d</code> (the private exponent) in internet order,</li>
+	 * <li>n-bytes representation of a {@link BigInteger} obtained by invoking the
+	 * <code>toByteArray()</code> method on the RSA parameter <code>d</code>,</li>
+	 * </ol>
+	 *
+	 * @param key
+	 *            the key to encode.
+	 * @return the <i>Raw</i> format encoding of the designated key.
+	 */
+	@Override
+	public byte[] encodePrivateKey(PrivateKey key) {
+		if (!(key instanceof GnuRSAPrivateKey))
+			throw new IllegalArgumentException("key");
 
-	GnuRSAPrivateKey rsaKey = (GnuRSAPrivateKey) key;
-	ByteArrayOutputStream baos = new ByteArrayOutputStream();
-	// magic
-	baos.write(Registry.MAGIC_RAW_RSA_PRIVATE_KEY[0]);
-	baos.write(Registry.MAGIC_RAW_RSA_PRIVATE_KEY[1]);
-	baos.write(Registry.MAGIC_RAW_RSA_PRIVATE_KEY[2]);
-	baos.write(Registry.MAGIC_RAW_RSA_PRIVATE_KEY[3]);
-	// version
-	baos.write(0x01);
-	// p
-	byte[] buffer = rsaKey.getPrimeP().toByteArray();
-	int length = buffer.length;
-	baos.write(length >>> 24);
-	baos.write((length >>> 16) & 0xFF);
-	baos.write((length >>> 8) & 0xFF);
-	baos.write(length & 0xFF);
-	baos.write(buffer, 0, length);
-	// q
-	buffer = rsaKey.getPrimeQ().toByteArray();
-	length = buffer.length;
-	baos.write(length >>> 24);
-	baos.write((length >>> 16) & 0xFF);
-	baos.write((length >>> 8) & 0xFF);
-	baos.write(length & 0xFF);
-	baos.write(buffer, 0, length);
-	// e
-	buffer = rsaKey.getPublicExponent().toByteArray();
-	length = buffer.length;
-	baos.write(length >>> 24);
-	baos.write((length >>> 16) & 0xFF);
-	baos.write((length >>> 8) & 0xFF);
-	baos.write(length & 0xFF);
-	baos.write(buffer, 0, length);
-	// d
-	buffer = rsaKey.getPrivateExponent().toByteArray();
-	length = buffer.length;
-	baos.write(length >>> 24);
-	baos.write((length >>> 16) & 0xFF);
-	baos.write((length >>> 8) & 0xFF);
-	baos.write(length & 0xFF);
-	baos.write(buffer, 0, length);
-	return baos.toByteArray();
-    }
+		GnuRSAPrivateKey rsaKey = (GnuRSAPrivateKey) key;
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		// magic
+		baos.write(Registry.MAGIC_RAW_RSA_PRIVATE_KEY[0]);
+		baos.write(Registry.MAGIC_RAW_RSA_PRIVATE_KEY[1]);
+		baos.write(Registry.MAGIC_RAW_RSA_PRIVATE_KEY[2]);
+		baos.write(Registry.MAGIC_RAW_RSA_PRIVATE_KEY[3]);
+		// version
+		baos.write(0x01);
+		// p
+		byte[] buffer = rsaKey.getPrimeP().toByteArray();
+		int length = buffer.length;
+		baos.write(length >>> 24);
+		baos.write((length >>> 16) & 0xFF);
+		baos.write((length >>> 8) & 0xFF);
+		baos.write(length & 0xFF);
+		baos.write(buffer, 0, length);
+		// q
+		buffer = rsaKey.getPrimeQ().toByteArray();
+		length = buffer.length;
+		baos.write(length >>> 24);
+		baos.write((length >>> 16) & 0xFF);
+		baos.write((length >>> 8) & 0xFF);
+		baos.write(length & 0xFF);
+		baos.write(buffer, 0, length);
+		// e
+		buffer = rsaKey.getPublicExponent().toByteArray();
+		length = buffer.length;
+		baos.write(length >>> 24);
+		baos.write((length >>> 16) & 0xFF);
+		baos.write((length >>> 8) & 0xFF);
+		baos.write(length & 0xFF);
+		baos.write(buffer, 0, length);
+		// d
+		buffer = rsaKey.getPrivateExponent().toByteArray();
+		length = buffer.length;
+		baos.write(length >>> 24);
+		baos.write((length >>> 16) & 0xFF);
+		baos.write((length >>> 8) & 0xFF);
+		baos.write(length & 0xFF);
+		baos.write(buffer, 0, length);
+		return baos.toByteArray();
+	}
 
-    /**
-     * Returns the encoded form of the designated RSA public key according to
-     * the <i>Raw</i> format supported by this library.
-     * <p>
-     * The <i>Raw</i> format for an RSA public key, in this implementation, is a
-     * byte sequence consisting of the following:
-     * <ol>
-     * <li>4-byte magic consisting of the value of the literal
-     * {@link Registry#MAGIC_RAW_RSA_PUBLIC_KEY},</li>
-     * <li>1-byte version consisting of the constant: 0x01,</li>
-     * <li>4-byte count of following bytes representing the RSA parameter
-     * <code>n</code> (the modulus) in internet order,</li>
-     * <li>n-bytes representation of a {@link BigInteger} obtained by invoking
-     * the <code>toByteArray()</code> method on the RSA parameter
-     * <code>n</code>,</li>
-     * <li>4-byte count of following bytes representing the RSA parameter
-     * <code>e</code> (the public exponent) in internet order,</li>
-     * <li>n-bytes representation of a {@link BigInteger} obtained by invoking
-     * the <code>toByteArray()</code> method on the RSA parameter
-     * <code>e</code>.</li>
-     * </ol>
-     *
-     * @param key
-     *            the key to encode.
-     * @return the <i>Raw</i> format encoding of the designated key.
-     * @exception IllegalArgumentException
-     *                if the designated key is not an RSA one.
-     */
-    @Override
-    public byte[] encodePublicKey(PublicKey key)
-    {
-	if (!(key instanceof GnuRSAPublicKey))
-	    throw new IllegalArgumentException("key");
+	/**
+	 * Returns the encoded form of the designated RSA public key according to the
+	 * <i>Raw</i> format supported by this library.
+	 * <p>
+	 * The <i>Raw</i> format for an RSA public key, in this implementation, is a
+	 * byte sequence consisting of the following:
+	 * <ol>
+	 * <li>4-byte magic consisting of the value of the literal
+	 * {@link Registry#MAGIC_RAW_RSA_PUBLIC_KEY},</li>
+	 * <li>1-byte version consisting of the constant: 0x01,</li>
+	 * <li>4-byte count of following bytes representing the RSA parameter
+	 * <code>n</code> (the modulus) in internet order,</li>
+	 * <li>n-bytes representation of a {@link BigInteger} obtained by invoking the
+	 * <code>toByteArray()</code> method on the RSA parameter <code>n</code>,</li>
+	 * <li>4-byte count of following bytes representing the RSA parameter
+	 * <code>e</code> (the public exponent) in internet order,</li>
+	 * <li>n-bytes representation of a {@link BigInteger} obtained by invoking the
+	 * <code>toByteArray()</code> method on the RSA parameter <code>e</code>.</li>
+	 * </ol>
+	 *
+	 * @param key
+	 *            the key to encode.
+	 * @return the <i>Raw</i> format encoding of the designated key.
+	 * @exception IllegalArgumentException
+	 *                if the designated key is not an RSA one.
+	 */
+	@Override
+	public byte[] encodePublicKey(PublicKey key) {
+		if (!(key instanceof GnuRSAPublicKey))
+			throw new IllegalArgumentException("key");
 
-	GnuRSAPublicKey rsaKey = (GnuRSAPublicKey) key;
-	ByteArrayOutputStream baos = new ByteArrayOutputStream();
-	// magic
-	baos.write(Registry.MAGIC_RAW_RSA_PUBLIC_KEY[0]);
-	baos.write(Registry.MAGIC_RAW_RSA_PUBLIC_KEY[1]);
-	baos.write(Registry.MAGIC_RAW_RSA_PUBLIC_KEY[2]);
-	baos.write(Registry.MAGIC_RAW_RSA_PUBLIC_KEY[3]);
-	// version
-	baos.write(0x01);
-	// n
-	byte[] buffer = rsaKey.getModulus().toByteArray();
-	int length = buffer.length;
-	baos.write(length >>> 24);
-	baos.write((length >>> 16) & 0xFF);
-	baos.write((length >>> 8) & 0xFF);
-	baos.write(length & 0xFF);
-	baos.write(buffer, 0, length);
-	// e
-	buffer = rsaKey.getPublicExponent().toByteArray();
-	length = buffer.length;
-	baos.write(length >>> 24);
-	baos.write((length >>> 16) & 0xFF);
-	baos.write((length >>> 8) & 0xFF);
-	baos.write(length & 0xFF);
-	baos.write(buffer, 0, length);
-	return baos.toByteArray();
-    }
+		GnuRSAPublicKey rsaKey = (GnuRSAPublicKey) key;
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		// magic
+		baos.write(Registry.MAGIC_RAW_RSA_PUBLIC_KEY[0]);
+		baos.write(Registry.MAGIC_RAW_RSA_PUBLIC_KEY[1]);
+		baos.write(Registry.MAGIC_RAW_RSA_PUBLIC_KEY[2]);
+		baos.write(Registry.MAGIC_RAW_RSA_PUBLIC_KEY[3]);
+		// version
+		baos.write(0x01);
+		// n
+		byte[] buffer = rsaKey.getModulus().toByteArray();
+		int length = buffer.length;
+		baos.write(length >>> 24);
+		baos.write((length >>> 16) & 0xFF);
+		baos.write((length >>> 8) & 0xFF);
+		baos.write(length & 0xFF);
+		baos.write(buffer, 0, length);
+		// e
+		buffer = rsaKey.getPublicExponent().toByteArray();
+		length = buffer.length;
+		baos.write(length >>> 24);
+		baos.write((length >>> 16) & 0xFF);
+		baos.write((length >>> 8) & 0xFF);
+		baos.write(length & 0xFF);
+		baos.write(buffer, 0, length);
+		return baos.toByteArray();
+	}
 
-    @Override
-    public int getFormatID()
-    {
-	return RAW_FORMAT;
-    }
+	@Override
+	public int getFormatID() {
+		return RAW_FORMAT;
+	}
 }

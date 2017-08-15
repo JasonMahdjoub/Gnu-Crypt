@@ -51,117 +51,99 @@ import gnu.jgnux.crypto.prng.UMacGenerator;
  * An <em>Adapter</em> class around {@link UMacGenerator} to allow using this
  * algorithm as a JCE {@link java.security.SecureRandom}.
  */
-public class UMacRandomSpi extends SecureRandomSpi
-{
+public class UMacRandomSpi extends SecureRandomSpi {
 
-    /**
-     * 
-     */
-    private static final long serialVersionUID = 2889863953520124360L;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 2889863953520124360L;
 
-    /** Class-wide prng to generate random material for the underlying prng. */
-    private static final UMacGenerator prng; // blank final
-    static
-    {
-	prng = new UMacGenerator();
-	resetLocalPRNG();
-    }
-
-    // error messages
-    private static final String MSG = "Exception while setting up a "
-	    + Registry.UMAC_PRNG + " SPI: ";
-
-    private static void resetLocalPRNG()
-    {
-	HashMap<Object, Object> attributes = new HashMap<>();
-	attributes.put(UMacGenerator.CIPHER, Registry.AES_CIPHER);
-	byte[] key = new byte[128 / 8]; // AES default key size
-	Random rand = new Random(System.currentTimeMillis());
-	rand.nextBytes(key);
-	attributes.put(IBlockCipher.KEY_MATERIAL, key);
-	int index = rand.nextInt() & 0xFF;
-	attributes.put(UMacGenerator.INDEX, Integer.valueOf(index));
-	prng.setup(attributes);
-    }
-
-    // default 0-arguments constructor
-
-    // private static final String RETRY = "Retry...";
-    /** Our underlying prng instance. */
-    private UMacGenerator adaptee = new UMacGenerator();
-
-    @Override
-    public byte[] engineGenerateSeed(int numBytes)
-    {
-	return SecureRandomAdapter.getSeed(numBytes);
-    }
-
-    @Override
-    public void engineNextBytes(byte[] bytes)
-    {
-	if (!adaptee.isInitialised())
-	    engineSetSeed(engineGenerateSeed(32));
-	while (true)
-	{
-	    try
-	    {
-		adaptee.nextBytes(bytes, 0, bytes.length);
-		break;
-	    }
-	    catch (LimitReachedException x)
-	    { // reseed the generator
+	/** Class-wide prng to generate random material for the underlying prng. */
+	private static final UMacGenerator prng; // blank final
+	static {
+		prng = new UMacGenerator();
 		resetLocalPRNG();
-	    }
 	}
-    }
 
-    @Override
-    public void engineSetSeed(byte[] seed)
-    {
-	// compute the total number of random bytes required to setup adaptee
-	int materialLength = 0;
-	materialLength += 16; // key material size
-	materialLength++; // index size
-	byte[] material = new byte[materialLength];
-	// use as much as possible bytes from the seed
-	int materialOffset = 0;
-	int materialLeft = material.length;
-	if (seed.length > 0)
-	{ // copy some bytes into key and update indices
-	    int lenToCopy = Math.min(materialLength, seed.length);
-	    System.arraycopy(seed, 0, material, 0, lenToCopy);
-	    materialOffset += lenToCopy;
-	    materialLeft -= lenToCopy;
+	// error messages
+	private static final String MSG = "Exception while setting up a " + Registry.UMAC_PRNG + " SPI: ";
+
+	private static void resetLocalPRNG() {
+		HashMap<Object, Object> attributes = new HashMap<>();
+		attributes.put(UMacGenerator.CIPHER, Registry.AES_CIPHER);
+		byte[] key = new byte[128 / 8]; // AES default key size
+		Random rand = new Random(System.currentTimeMillis());
+		rand.nextBytes(key);
+		attributes.put(IBlockCipher.KEY_MATERIAL, key);
+		int index = rand.nextInt() & 0xFF;
+		attributes.put(UMacGenerator.INDEX, Integer.valueOf(index));
+		prng.setup(attributes);
 	}
-	if (materialOffset > 0) // generate the rest
-	{
-	    while (true)
-	    {
-		try
-		{
-		    prng.nextBytes(material, materialOffset, materialLeft);
-		    break;
-		}
-		catch (IllegalStateException x) // should not happen
-		{
-		    throw new InternalError(MSG + String.valueOf(x));
-		}
-		catch (LimitReachedException x)
-		{
-		}
-	    }
+
+	// default 0-arguments constructor
+
+	// private static final String RETRY = "Retry...";
+	/** Our underlying prng instance. */
+	private UMacGenerator adaptee = new UMacGenerator();
+
+	@Override
+	public byte[] engineGenerateSeed(int numBytes) {
+		return SecureRandomAdapter.getSeed(numBytes);
 	}
-	// setup the underlying adaptee instance
-	HashMap<Object, Object> attributes = new HashMap<>();
-	// use AES cipher with 128-bit block size
-	attributes.put(UMacGenerator.CIPHER, Registry.AES_CIPHER);
-	// specify the key
-	byte[] key = new byte[16];
-	System.arraycopy(material, 0, key, 0, 16);
-	attributes.put(IBlockCipher.KEY_MATERIAL, key);
-	// use a 1-byte index
-	attributes.put(UMacGenerator.INDEX,
-		Integer.valueOf(material[16] & 0xFF));
-	adaptee.init(attributes);
-    }
+
+	@Override
+	public void engineNextBytes(byte[] bytes) {
+		if (!adaptee.isInitialised())
+			engineSetSeed(engineGenerateSeed(32));
+		while (true) {
+			try {
+				adaptee.nextBytes(bytes, 0, bytes.length);
+				break;
+			} catch (LimitReachedException x) { // reseed the generator
+				resetLocalPRNG();
+			}
+		}
+	}
+
+	@Override
+	public void engineSetSeed(byte[] seed) {
+		// compute the total number of random bytes required to setup adaptee
+		int materialLength = 0;
+		materialLength += 16; // key material size
+		materialLength++; // index size
+		byte[] material = new byte[materialLength];
+		// use as much as possible bytes from the seed
+		int materialOffset = 0;
+		int materialLeft = material.length;
+		if (seed.length > 0) { // copy some bytes into key and update indices
+			int lenToCopy = Math.min(materialLength, seed.length);
+			System.arraycopy(seed, 0, material, 0, lenToCopy);
+			materialOffset += lenToCopy;
+			materialLeft -= lenToCopy;
+		}
+		if (materialOffset > 0) // generate the rest
+		{
+			while (true) {
+				try {
+					prng.nextBytes(material, materialOffset, materialLeft);
+					break;
+				} catch (IllegalStateException x) // should not happen
+				{
+					throw new InternalError(MSG + String.valueOf(x));
+				} catch (LimitReachedException x) {
+				}
+			}
+		}
+		// setup the underlying adaptee instance
+		HashMap<Object, Object> attributes = new HashMap<>();
+		// use AES cipher with 128-bit block size
+		attributes.put(UMacGenerator.CIPHER, Registry.AES_CIPHER);
+		// specify the key
+		byte[] key = new byte[16];
+		System.arraycopy(material, 0, key, 0, 16);
+		attributes.put(IBlockCipher.KEY_MATERIAL, key);
+		// use a 1-byte index
+		attributes.put(UMacGenerator.INDEX, Integer.valueOf(material[16] & 0xFF));
+		adaptee.init(attributes);
+	}
 }

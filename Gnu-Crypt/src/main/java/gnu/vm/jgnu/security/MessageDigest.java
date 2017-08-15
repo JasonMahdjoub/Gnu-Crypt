@@ -57,349 +57,314 @@ import gnu.vm.jgnu.security.Security;
  * @see MessageDigestSpi
  * @since JDK 1.1
  */
-public abstract class MessageDigest extends MessageDigestSpi
-{
-    /** The service name for message digests. */
-    private static final String MESSAGE_DIGEST = "MessageDigest";
+public abstract class MessageDigest extends MessageDigestSpi {
+	/** The service name for message digests. */
+	private static final String MESSAGE_DIGEST = "MessageDigest";
 
-    /**
-     * Returns a new instance of <code>MessageDigest</code> representing the
-     * specified algorithm.
-     *
-     * @param algorithm
-     *            the name of the digest algorithm to use.
-     * @return a new instance representing the desired algorithm.
-     * @throws NoSuchAlgorithmException
-     *             if the algorithm is not implemented by any provider.
-     * @throws IllegalArgumentException
-     *             if <code>algorithm</code> is <code>null</code> or is an empty
-     *             string.
-     */
-    public static MessageDigest getInstance(String algorithm) throws NoSuchAlgorithmException
-    {
-	Provider[] p = Security.getProviders();
-	NoSuchAlgorithmException lastException = null;
-	for (int i = 0; i < p.length; i++)
-	    try
-	    {
-		return getInstance(algorithm, p[i]);
-	    }
-	    catch (NoSuchAlgorithmException x)
-	    {
-		lastException = x;
-	    }
-	if (lastException != null)
-	    throw lastException;
-	throw new NoSuchAlgorithmException(algorithm);
-    }
-
-    /**
-     * Returns a new instance of <code>MessageDigest</code> representing the
-     * specified algorithm from a designated {@link Provider}.
-     *
-     * @param algorithm
-     *            the name of the digest algorithm to use.
-     * @param provider
-     *            the {@link Provider} to use.
-     * @return a new instance representing the desired algorithm.
-     * @throws NoSuchAlgorithmException
-     *             if the algorithm is not implemented by {@link Provider}.
-     * @throws IllegalArgumentException
-     *             if either <code>algorithm</code> or <code>provider</code> is
-     *             <code>null</code>, or if <code>algorithm</code> is an empty
-     *             string.
-     * @since 1.4
-     * @see Provider
-     */
-    public static MessageDigest getInstance(String algorithm, Provider provider) throws NoSuchAlgorithmException
-    {
-	StringBuilder sb = new StringBuilder("MessageDigest for algorithm [")
-		.append(algorithm).append("] from provider[").append(provider)
-		.append("] ");
-	Object o;
-	try
-	{
-	    o = Engine.getInstance(MESSAGE_DIGEST, algorithm, provider);
-	}
-	catch (InvocationTargetException x)
-	{
-	    Throwable cause = x.getCause();
-	    if (cause instanceof NoSuchAlgorithmException)
-		throw (NoSuchAlgorithmException) cause;
-	    if (cause == null)
-		cause = x;
-	    sb.append("could not be created");
-	    NoSuchAlgorithmException y = new NoSuchAlgorithmException(
-		    sb.toString());
-	    y.initCause(cause);
-	    throw y;
-	}
-	MessageDigest result;
-	if (o instanceof MessageDigestSpi)
-	    result = new DummyMessageDigest((MessageDigestSpi) o, algorithm);
-	else if (o instanceof MessageDigest)
-	{
-	    result = (MessageDigest) o;
-	    result.algorithm = algorithm;
-	}
-	else
-	{
-	    sb.append("is of an unexpected Type: ")
-		    .append(o.getClass().getName());
-	    throw new NoSuchAlgorithmException(sb.toString());
-	}
-	result.provider = provider;
-	return result;
-    }
-
-    /**
-     * Returns a new instance of <code>MessageDigest</code> representing the
-     * specified algorithm from a named provider.
-     *
-     * @param algorithm
-     *            the name of the digest algorithm to use.
-     * @param provider
-     *            the name of the provider to use.
-     * @return a new instance representing the desired algorithm.
-     * @throws NoSuchAlgorithmException
-     *             if the algorithm is not implemented by the named provider.
-     * @throws NoSuchProviderException
-     *             if the named provider was not found.
-     * @throws IllegalArgumentException
-     *             if either <code>algorithm</code> or <code>provider</code> is
-     *             <code>null</code> or empty.
-     */
-    public static MessageDigest getInstance(String algorithm, String provider) throws NoSuchAlgorithmException, NoSuchProviderException
-    {
-	if (provider == null)
-	    throw new IllegalArgumentException("provider MUST NOT be null");
-	provider = provider.trim();
-	if (provider.length() == 0)
-	    throw new IllegalArgumentException("provider MUST NOT be empty");
-	Provider p = Security.getProvider(provider);
-	if (p == null)
-	    throw new NoSuchProviderException(provider);
-	return getInstance(algorithm, p);
-    }
-
-    /**
-     * Does a simple byte comparison of the two digests.
-     *
-     * @param digesta
-     *            first digest to compare.
-     * @param digestb
-     *            second digest to compare.
-     * @return <code>true</code> if both are equal, <code>false</code>
-     *         otherwise.
-     */
-    public static boolean isEqual(byte[] digesta, byte[] digestb)
-    {
-	if (digesta.length != digestb.length)
-	    return false;
-
-	for (int i = digesta.length - 1; i >= 0; --i)
-	    if (digesta[i] != digestb[i])
-		return false;
-
-	return true;
-    }
-
-    private String algorithm;
-
-    Provider provider;
-
-    private byte[] lastDigest;
-
-    /**
-     * Constructs a new instance of <code>MessageDigest</code> representing the
-     * specified algorithm.
-     *
-     * @param algorithm
-     *            the name of the digest algorithm to use.
-     */
-    protected MessageDigest(String algorithm)
-    {
-	this.algorithm = algorithm;
-	provider = null;
-    }
-
-    /**
-     * Returns a clone of this instance if cloning is supported. If it does not
-     * then a {@link CloneNotSupportedException} is thrown. Cloning depends on
-     * whether the subclass {@link MessageDigestSpi} implements
-     * {@link Cloneable} which contains the actual implementation of the
-     * appropriate algorithm.
-     *
-     * @return a clone of this instance.
-     * @throws CloneNotSupportedException
-     *             the implementation does not support cloning.
-     */
-    @Override
-    public Object clone() throws CloneNotSupportedException
-    {
-	return super.clone();
-    }
-
-    /**
-     * Computes the final digest of the stored data.
-     *
-     * @return a byte array representing the message digest.
-     */
-    public byte[] digest()
-    {
-	return lastDigest = engineDigest();
-    }
-
-    /**
-     * Computes a final update using the input array of bytes, then computes a
-     * final digest and returns it. It calls {@link #update(byte[])} and then
-     * {@link #digest(byte[])}.
-     *
-     * @param input
-     *            an array of bytes to perform final update with.
-     * @return a byte array representing the message digest.
-     */
-    public byte[] digest(byte[] input)
-    {
-	update(input);
-	return digest();
-    }
-
-    /**
-     * Computes the final digest of the stored bytes and returns the result.
-     *
-     * @param buf
-     *            an array of bytes to store the result in.
-     * @param offset
-     *            an offset to start storing the result at.
-     * @param len
-     *            the length of the buffer.
-     * @return Returns the length of the buffer.
-     */
-    public int digest(byte[] buf, int offset, int len) throws DigestException
-    {
-	return engineDigest(buf, offset, len);
-    }
-
-    private String digestToString()
-    {
-	byte[] digest = lastDigest;
-
-	if (digest == null)
-	    return "incomplete";
-
-	StringBuilder buf = new StringBuilder();
-	int len = digest.length;
-	for (int i = 0; i < len; ++i)
-	{
-	    byte b = digest[i];
-	    byte high = (byte) ((b & 0xff) >>> 4);
-	    byte low = (byte) (b & 0xf);
-
-	    buf.append(high > 9 ? ('a' - 10) + high : '0' + high);
-	    buf.append(low > 9 ? ('a' - 10) + low : '0' + low);
+	/**
+	 * Returns a new instance of <code>MessageDigest</code> representing the
+	 * specified algorithm.
+	 *
+	 * @param algorithm
+	 *            the name of the digest algorithm to use.
+	 * @return a new instance representing the desired algorithm.
+	 * @throws NoSuchAlgorithmException
+	 *             if the algorithm is not implemented by any provider.
+	 * @throws IllegalArgumentException
+	 *             if <code>algorithm</code> is <code>null</code> or is an empty
+	 *             string.
+	 */
+	public static MessageDigest getInstance(String algorithm) throws NoSuchAlgorithmException {
+		Provider[] p = Security.getProviders();
+		NoSuchAlgorithmException lastException = null;
+		for (int i = 0; i < p.length; i++)
+			try {
+				return getInstance(algorithm, p[i]);
+			} catch (NoSuchAlgorithmException x) {
+				lastException = x;
+			}
+		if (lastException != null)
+			throw lastException;
+		throw new NoSuchAlgorithmException(algorithm);
 	}
 
-	return buf.toString();
-    }
+	/**
+	 * Returns a new instance of <code>MessageDigest</code> representing the
+	 * specified algorithm from a designated {@link Provider}.
+	 *
+	 * @param algorithm
+	 *            the name of the digest algorithm to use.
+	 * @param provider
+	 *            the {@link Provider} to use.
+	 * @return a new instance representing the desired algorithm.
+	 * @throws NoSuchAlgorithmException
+	 *             if the algorithm is not implemented by {@link Provider}.
+	 * @throws IllegalArgumentException
+	 *             if either <code>algorithm</code> or <code>provider</code> is
+	 *             <code>null</code>, or if <code>algorithm</code> is an empty
+	 *             string.
+	 * @since 1.4
+	 * @see Provider
+	 */
+	public static MessageDigest getInstance(String algorithm, Provider provider) throws NoSuchAlgorithmException {
+		StringBuilder sb = new StringBuilder("MessageDigest for algorithm [").append(algorithm)
+				.append("] from provider[").append(provider).append("] ");
+		Object o;
+		try {
+			o = Engine.getInstance(MESSAGE_DIGEST, algorithm, provider);
+		} catch (InvocationTargetException x) {
+			Throwable cause = x.getCause();
+			if (cause instanceof NoSuchAlgorithmException)
+				throw (NoSuchAlgorithmException) cause;
+			if (cause == null)
+				cause = x;
+			sb.append("could not be created");
+			NoSuchAlgorithmException y = new NoSuchAlgorithmException(sb.toString());
+			y.initCause(cause);
+			throw y;
+		}
+		MessageDigest result;
+		if (o instanceof MessageDigestSpi)
+			result = new DummyMessageDigest((MessageDigestSpi) o, algorithm);
+		else if (o instanceof MessageDigest) {
+			result = (MessageDigest) o;
+			result.algorithm = algorithm;
+		} else {
+			sb.append("is of an unexpected Type: ").append(o.getClass().getName());
+			throw new NoSuchAlgorithmException(sb.toString());
+		}
+		result.provider = provider;
+		return result;
+	}
 
-    /**
-     * Returns the name of message digest algorithm.
-     *
-     * @return the name of message digest algorithm.
-     */
-    public final String getAlgorithm()
-    {
-	return algorithm;
-    }
+	/**
+	 * Returns a new instance of <code>MessageDigest</code> representing the
+	 * specified algorithm from a named provider.
+	 *
+	 * @param algorithm
+	 *            the name of the digest algorithm to use.
+	 * @param provider
+	 *            the name of the provider to use.
+	 * @return a new instance representing the desired algorithm.
+	 * @throws NoSuchAlgorithmException
+	 *             if the algorithm is not implemented by the named provider.
+	 * @throws NoSuchProviderException
+	 *             if the named provider was not found.
+	 * @throws IllegalArgumentException
+	 *             if either <code>algorithm</code> or <code>provider</code> is
+	 *             <code>null</code> or empty.
+	 */
+	public static MessageDigest getInstance(String algorithm, String provider)
+			throws NoSuchAlgorithmException, NoSuchProviderException {
+		if (provider == null)
+			throw new IllegalArgumentException("provider MUST NOT be null");
+		provider = provider.trim();
+		if (provider.length() == 0)
+			throw new IllegalArgumentException("provider MUST NOT be empty");
+		Provider p = Security.getProvider(provider);
+		if (p == null)
+			throw new NoSuchProviderException(provider);
+		return getInstance(algorithm, p);
+	}
 
-    /**
-     * Returns the length of the message digest. The default is zero which means
-     * that the concrete implementation does not implement this method.
-     *
-     * @return length of the message digest.
-     * @since 1.2
-     */
-    public final int getDigestLength()
-    {
-	return engineGetDigestLength();
-    }
+	/**
+	 * Does a simple byte comparison of the two digests.
+	 *
+	 * @param digesta
+	 *            first digest to compare.
+	 * @param digestb
+	 *            second digest to compare.
+	 * @return <code>true</code> if both are equal, <code>false</code> otherwise.
+	 */
+	public static boolean isEqual(byte[] digesta, byte[] digestb) {
+		if (digesta.length != digestb.length)
+			return false;
 
-    /**
-     * Returns the {@link Provider} of this instance.
-     *
-     * @return the {@link Provider} of this instance.
-     */
-    public final Provider getProvider()
-    {
-	return provider;
-    }
+		for (int i = digesta.length - 1; i >= 0; --i)
+			if (digesta[i] != digestb[i])
+				return false;
 
-    /** Resets this instance. */
-    public void reset()
-    {
-	engineReset();
-    }
+		return true;
+	}
 
-    /**
-     * Returns a string representation of this instance.
-     *
-     * @return a string representation of this instance.
-     */
-    @Override
-    public String toString()
-    {
-	return (getClass()).getName() + " Message Digest <" + digestToString()
-		+ ">";
-    }
+	private String algorithm;
 
-    /**
-     * Updates the digest with the byte.
-     *
-     * @param input
-     *            byte to update the digest with.
-     */
-    public void update(byte input)
-    {
-	engineUpdate(input);
-    }
+	Provider provider;
 
-    /**
-     * Updates the digest with the bytes of an array.
-     *
-     * @param input
-     *            bytes to update the digest with.
-     */
-    public void update(byte[] input)
-    {
-	engineUpdate(input, 0, input.length);
-    }
+	private byte[] lastDigest;
 
-    /**
-     * Updates the digest with the bytes from the array starting from the
-     * specified offset and using the specified length of bytes.
-     *
-     * @param input
-     *            bytes to update the digest with.
-     * @param offset
-     *            the offset to start at.
-     * @param len
-     *            length of the data to update with.
-     */
-    public void update(byte[] input, int offset, int len)
-    {
-	engineUpdate(input, offset, len);
-    }
+	/**
+	 * Constructs a new instance of <code>MessageDigest</code> representing the
+	 * specified algorithm.
+	 *
+	 * @param algorithm
+	 *            the name of the digest algorithm to use.
+	 */
+	protected MessageDigest(String algorithm) {
+		this.algorithm = algorithm;
+		provider = null;
+	}
 
-    /**
-     * Updates the digest with the remaining bytes of a buffer.
-     *
-     * @param input
-     *            The input byte buffer.
-     * @since 1.5
-     */
-    public final void update(ByteBuffer input)
-    {
-	engineUpdate(input);
-    }
+	/**
+	 * Returns a clone of this instance if cloning is supported. If it does not then
+	 * a {@link CloneNotSupportedException} is thrown. Cloning depends on whether
+	 * the subclass {@link MessageDigestSpi} implements {@link Cloneable} which
+	 * contains the actual implementation of the appropriate algorithm.
+	 *
+	 * @return a clone of this instance.
+	 * @throws CloneNotSupportedException
+	 *             the implementation does not support cloning.
+	 */
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+		return super.clone();
+	}
+
+	/**
+	 * Computes the final digest of the stored data.
+	 *
+	 * @return a byte array representing the message digest.
+	 */
+	public byte[] digest() {
+		return lastDigest = engineDigest();
+	}
+
+	/**
+	 * Computes a final update using the input array of bytes, then computes a final
+	 * digest and returns it. It calls {@link #update(byte[])} and then
+	 * {@link #digest(byte[])}.
+	 *
+	 * @param input
+	 *            an array of bytes to perform final update with.
+	 * @return a byte array representing the message digest.
+	 */
+	public byte[] digest(byte[] input) {
+		update(input);
+		return digest();
+	}
+
+	/**
+	 * Computes the final digest of the stored bytes and returns the result.
+	 *
+	 * @param buf
+	 *            an array of bytes to store the result in.
+	 * @param offset
+	 *            an offset to start storing the result at.
+	 * @param len
+	 *            the length of the buffer.
+	 * @return Returns the length of the buffer.
+	 */
+	public int digest(byte[] buf, int offset, int len) throws DigestException {
+		return engineDigest(buf, offset, len);
+	}
+
+	private String digestToString() {
+		byte[] digest = lastDigest;
+
+		if (digest == null)
+			return "incomplete";
+
+		StringBuilder buf = new StringBuilder();
+		int len = digest.length;
+		for (int i = 0; i < len; ++i) {
+			byte b = digest[i];
+			byte high = (byte) ((b & 0xff) >>> 4);
+			byte low = (byte) (b & 0xf);
+
+			buf.append(high > 9 ? ('a' - 10) + high : '0' + high);
+			buf.append(low > 9 ? ('a' - 10) + low : '0' + low);
+		}
+
+		return buf.toString();
+	}
+
+	/**
+	 * Returns the name of message digest algorithm.
+	 *
+	 * @return the name of message digest algorithm.
+	 */
+	public final String getAlgorithm() {
+		return algorithm;
+	}
+
+	/**
+	 * Returns the length of the message digest. The default is zero which means
+	 * that the concrete implementation does not implement this method.
+	 *
+	 * @return length of the message digest.
+	 * @since 1.2
+	 */
+	public final int getDigestLength() {
+		return engineGetDigestLength();
+	}
+
+	/**
+	 * Returns the {@link Provider} of this instance.
+	 *
+	 * @return the {@link Provider} of this instance.
+	 */
+	public final Provider getProvider() {
+		return provider;
+	}
+
+	/** Resets this instance. */
+	public void reset() {
+		engineReset();
+	}
+
+	/**
+	 * Returns a string representation of this instance.
+	 *
+	 * @return a string representation of this instance.
+	 */
+	@Override
+	public String toString() {
+		return (getClass()).getName() + " Message Digest <" + digestToString() + ">";
+	}
+
+	/**
+	 * Updates the digest with the byte.
+	 *
+	 * @param input
+	 *            byte to update the digest with.
+	 */
+	public void update(byte input) {
+		engineUpdate(input);
+	}
+
+	/**
+	 * Updates the digest with the bytes of an array.
+	 *
+	 * @param input
+	 *            bytes to update the digest with.
+	 */
+	public void update(byte[] input) {
+		engineUpdate(input, 0, input.length);
+	}
+
+	/**
+	 * Updates the digest with the bytes from the array starting from the specified
+	 * offset and using the specified length of bytes.
+	 *
+	 * @param input
+	 *            bytes to update the digest with.
+	 * @param offset
+	 *            the offset to start at.
+	 * @param len
+	 *            length of the data to update with.
+	 */
+	public void update(byte[] input, int offset, int len) {
+		engineUpdate(input, offset, len);
+	}
+
+	/**
+	 * Updates the digest with the remaining bytes of a buffer.
+	 *
+	 * @param input
+	 *            The input byte buffer.
+	 * @since 1.5
+	 */
+	public final void update(ByteBuffer input) {
+		engineUpdate(input);
+	}
 }

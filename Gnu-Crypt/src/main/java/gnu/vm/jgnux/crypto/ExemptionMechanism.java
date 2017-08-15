@@ -67,213 +67,189 @@ import gnu.vm.jgnu.security.spec.AlgorithmParameterSpec;
  * @author Casey Marshall (csm@gnu.org)
  * @since 1.4
  */
-public class ExemptionMechanism
-{
+public class ExemptionMechanism {
 
-    // Constants and fields.
-    // ------------------------------------------------------------------------
+	// Constants and fields.
+	// ------------------------------------------------------------------------
 
-    private static final String SERVICE = "ExemptionMechanism";
+	private static final String SERVICE = "ExemptionMechanism";
 
-    /**
-     * Create an instance of <code>ExemptionMechanism</code> for a designated
-     * <code>mechanism</code> from the first Security Provider offering it.
-     *
-     * @param mechanism
-     *            the name of the exemption mechanism to create.
-     * @return a newly created instance of <code>ExemptionMechanism</code>.
-     * @throws IllegalArgumentException
-     *             if the provider is null.
-     * @throws NoSuchAlgorithmException
-     *             if no such exemption mechanism is available from any known
-     *             Security Provider.
-     * @throws IllegalArgumentException
-     *             if <code>mechanism</code> is <code>null</code> or is an empty
-     *             string.
-     */
-    public static final ExemptionMechanism getInstance(String mechanism) throws NoSuchAlgorithmException
-    {
-	Provider[] p = Security.getProviders();
-	NoSuchAlgorithmException lastException = null;
-	for (int i = 0; i < p.length; i++)
-	    try
-	    {
-		return getInstance(mechanism, p[i]);
-	    }
-	    catch (NoSuchAlgorithmException x)
-	    {
-		lastException = x;
-	    }
-	if (lastException != null)
-	    throw lastException;
-	throw new NoSuchAlgorithmException(mechanism);
-    }
-
-    /**
-     * Create an instance of <code>ExemptionMechanism</code> for a designated
-     * <code>mechanism</code> from a designated <code>provider</code>.
-     *
-     * @param mechanism
-     *            the name of the exemption mechanism to create.
-     * @param provider
-     *            the security provider to provide the exemption
-     *            <code>mechanism</code>.
-     * @return a newly created instance of <code>ExemptionMechanism</code>.
-     * @throws NoSuchAlgorithmException
-     *             if an exemption mechanism could not be created.
-     * @throws IllegalArgumentException
-     *             if either <code>mechanism</code> or <code>provider</code> is
-     *             <code>null</code>, or if <code>mechanism</code> is an empty
-     *             string.
-     */
-    public static final ExemptionMechanism getInstance(String mechanism, Provider provider) throws NoSuchAlgorithmException
-    {
-	StringBuilder sb = new StringBuilder("ExemptionMechanism [")
-		.append(mechanism).append("] from provider[").append(provider)
-		.append("] could not be created");
-	Throwable cause;
-	try
-	{
-	    Object spi = Engine.getInstance(SERVICE, mechanism, provider);
-	    return new ExemptionMechanism((ExemptionMechanismSpi) spi, provider,
-		    mechanism);
+	/**
+	 * Create an instance of <code>ExemptionMechanism</code> for a designated
+	 * <code>mechanism</code> from the first Security Provider offering it.
+	 *
+	 * @param mechanism
+	 *            the name of the exemption mechanism to create.
+	 * @return a newly created instance of <code>ExemptionMechanism</code>.
+	 * @throws IllegalArgumentException
+	 *             if the provider is null.
+	 * @throws NoSuchAlgorithmException
+	 *             if no such exemption mechanism is available from any known
+	 *             Security Provider.
+	 * @throws IllegalArgumentException
+	 *             if <code>mechanism</code> is <code>null</code> or is an empty
+	 *             string.
+	 */
+	public static final ExemptionMechanism getInstance(String mechanism) throws NoSuchAlgorithmException {
+		Provider[] p = Security.getProviders();
+		NoSuchAlgorithmException lastException = null;
+		for (int i = 0; i < p.length; i++)
+			try {
+				return getInstance(mechanism, p[i]);
+			} catch (NoSuchAlgorithmException x) {
+				lastException = x;
+			}
+		if (lastException != null)
+			throw lastException;
+		throw new NoSuchAlgorithmException(mechanism);
 	}
-	catch (InvocationTargetException x)
-	{
-	    cause = x.getCause();
-	    if (cause instanceof NoSuchAlgorithmException)
-		throw (NoSuchAlgorithmException) cause;
-	    if (cause == null)
-		cause = x;
+
+	/**
+	 * Create an instance of <code>ExemptionMechanism</code> for a designated
+	 * <code>mechanism</code> from a designated <code>provider</code>.
+	 *
+	 * @param mechanism
+	 *            the name of the exemption mechanism to create.
+	 * @param provider
+	 *            the security provider to provide the exemption
+	 *            <code>mechanism</code>.
+	 * @return a newly created instance of <code>ExemptionMechanism</code>.
+	 * @throws NoSuchAlgorithmException
+	 *             if an exemption mechanism could not be created.
+	 * @throws IllegalArgumentException
+	 *             if either <code>mechanism</code> or <code>provider</code> is
+	 *             <code>null</code>, or if <code>mechanism</code> is an empty
+	 *             string.
+	 */
+	public static final ExemptionMechanism getInstance(String mechanism, Provider provider)
+			throws NoSuchAlgorithmException {
+		StringBuilder sb = new StringBuilder("ExemptionMechanism [").append(mechanism).append("] from provider[")
+				.append(provider).append("] could not be created");
+		Throwable cause;
+		try {
+			Object spi = Engine.getInstance(SERVICE, mechanism, provider);
+			return new ExemptionMechanism((ExemptionMechanismSpi) spi, provider, mechanism);
+		} catch (InvocationTargetException x) {
+			cause = x.getCause();
+			if (cause instanceof NoSuchAlgorithmException)
+				throw (NoSuchAlgorithmException) cause;
+			if (cause == null)
+				cause = x;
+		} catch (ClassCastException x) {
+			cause = x;
+		}
+		NoSuchAlgorithmException x = new NoSuchAlgorithmException(sb.toString());
+		x.initCause(cause);
+		throw x;
 	}
-	catch (ClassCastException x)
-	{
-	    cause = x;
+
+	/**
+	 * Create an instance of <code>ExemptionMechanism</code> for a designated
+	 * <code>mechanism</code> from a named <code>provider</code>.
+	 *
+	 * @param mechanism
+	 *            the name of the exemption mechanism to create.
+	 * @param provider
+	 *            the security provider to provide the exemption
+	 *            <code>mechanism</code>.
+	 * @return a newly created instance of <code>ExemptionMechanism</code>.
+	 * @throws NoSuchAlgorithmException
+	 *             if no such exemption mechanism is available from the named
+	 *             <code>provider</code>.
+	 * @throws NoSuchProviderException
+	 *             if no Security Provider with the designated name is known to the
+	 *             underlying JVM.
+	 * @throws IllegalArgumentException
+	 *             if either <code>mechanism</code> or <code>provider</code> is
+	 *             <code>null</code>, or if <code>mechanism</code> is an empty
+	 *             string.
+	 */
+	public static final ExemptionMechanism getInstance(String mechanism, String provider)
+			throws NoSuchAlgorithmException, NoSuchProviderException {
+		if (provider == null)
+			throw new IllegalArgumentException("provider MUST NOT be null");
+		Provider p = Security.getProvider(provider);
+		if (p == null)
+			throw new NoSuchProviderException(provider);
+		return getInstance(mechanism, p);
 	}
-	NoSuchAlgorithmException x = new NoSuchAlgorithmException(
-		sb.toString());
-	x.initCause(cause);
-	throw x;
-    }
 
-    /**
-     * Create an instance of <code>ExemptionMechanism</code> for a designated
-     * <code>mechanism</code> from a named <code>provider</code>.
-     *
-     * @param mechanism
-     *            the name of the exemption mechanism to create.
-     * @param provider
-     *            the security provider to provide the exemption
-     *            <code>mechanism</code>.
-     * @return a newly created instance of <code>ExemptionMechanism</code>.
-     * @throws NoSuchAlgorithmException
-     *             if no such exemption mechanism is available from the named
-     *             <code>provider</code>.
-     * @throws NoSuchProviderException
-     *             if no Security Provider with the designated name is known to
-     *             the underlying JVM.
-     * @throws IllegalArgumentException
-     *             if either <code>mechanism</code> or <code>provider</code> is
-     *             <code>null</code>, or if <code>mechanism</code> is an empty
-     *             string.
-     */
-    public static final ExemptionMechanism getInstance(String mechanism, String provider) throws NoSuchAlgorithmException, NoSuchProviderException
-    {
-	if (provider == null)
-	    throw new IllegalArgumentException("provider MUST NOT be null");
-	Provider p = Security.getProvider(provider);
-	if (p == null)
-	    throw new NoSuchProviderException(provider);
-	return getInstance(mechanism, p);
-    }
+	private ExemptionMechanismSpi emSpi;
 
-    private ExemptionMechanismSpi emSpi;
+	// Constructor.
+	// ------------------------------------------------------------------------
 
-    // Constructor.
-    // ------------------------------------------------------------------------
+	private Provider provider;
 
-    private Provider provider;
+	private String mechanism;
 
-    private String mechanism;
+	private boolean virgin;
 
-    private boolean virgin;
-
-    protected ExemptionMechanism(ExemptionMechanismSpi emSpi, Provider provider, String mechanism)
-    {
-	this.emSpi = emSpi;
-	this.provider = provider;
-	this.mechanism = mechanism;
-	virgin = true;
-    }
-
-    @Override
-    protected void finalize()
-    {
-    }
-
-    public final byte[] genExemptionBlob() throws IllegalStateException, ExemptionMechanismException
-    {
-	if (virgin)
-	{
-	    throw new IllegalStateException("not initialized");
+	protected ExemptionMechanism(ExemptionMechanismSpi emSpi, Provider provider, String mechanism) {
+		this.emSpi = emSpi;
+		this.provider = provider;
+		this.mechanism = mechanism;
+		virgin = true;
 	}
-	return emSpi.engineGenExemptionBlob();
-    }
 
-    public final int genExemptionBlob(byte[] output) throws IllegalStateException, ExemptionMechanismException, ShortBufferException
-    {
-	return genExemptionBlob(output, 0);
-    }
-
-    public final int genExemptionBlob(byte[] output, int outputOffset) throws IllegalStateException, ExemptionMechanismException, ShortBufferException
-    {
-	if (virgin)
-	{
-	    throw new IllegalStateException("not initialized");
+	@Override
+	protected void finalize() {
 	}
-	return emSpi.engineGenExemptionBlob(output, outputOffset);
-    }
 
-    public final String getName()
-    {
-	return mechanism;
-    }
-
-    public final int getOutputSize(int inputLength) throws IllegalStateException
-    {
-	if (virgin)
-	{
-	    throw new IllegalStateException("not initialized");
+	public final byte[] genExemptionBlob() throws IllegalStateException, ExemptionMechanismException {
+		if (virgin) {
+			throw new IllegalStateException("not initialized");
+		}
+		return emSpi.engineGenExemptionBlob();
 	}
-	return emSpi.engineGetOutputSize(inputLength);
-    }
 
-    public final Provider getProvider()
-    {
-	return provider;
-    }
+	public final int genExemptionBlob(byte[] output)
+			throws IllegalStateException, ExemptionMechanismException, ShortBufferException {
+		return genExemptionBlob(output, 0);
+	}
 
-    public final void init(Key key) throws ExemptionMechanismException, InvalidKeyException
-    {
-	emSpi.engineInit(key);
-	virgin = false;
-    }
+	public final int genExemptionBlob(byte[] output, int outputOffset)
+			throws IllegalStateException, ExemptionMechanismException, ShortBufferException {
+		if (virgin) {
+			throw new IllegalStateException("not initialized");
+		}
+		return emSpi.engineGenExemptionBlob(output, outputOffset);
+	}
 
-    public final void init(Key key, AlgorithmParameters params) throws ExemptionMechanismException, InvalidAlgorithmParameterException, InvalidKeyException
-    {
-	emSpi.engineInit(key, params);
-	virgin = false;
-    }
+	public final String getName() {
+		return mechanism;
+	}
 
-    public final void init(Key key, AlgorithmParameterSpec params) throws ExemptionMechanismException, InvalidAlgorithmParameterException, InvalidKeyException
-    {
-	emSpi.engineInit(key, params);
-	virgin = false;
-    }
+	public final int getOutputSize(int inputLength) throws IllegalStateException {
+		if (virgin) {
+			throw new IllegalStateException("not initialized");
+		}
+		return emSpi.engineGetOutputSize(inputLength);
+	}
 
-    @SuppressWarnings("unused")
-    public final boolean isCryptoAllowed(Key key) throws ExemptionMechanismException
-    {
-	return true;
-    }
+	public final Provider getProvider() {
+		return provider;
+	}
+
+	public final void init(Key key) throws ExemptionMechanismException, InvalidKeyException {
+		emSpi.engineInit(key);
+		virgin = false;
+	}
+
+	public final void init(Key key, AlgorithmParameters params)
+			throws ExemptionMechanismException, InvalidAlgorithmParameterException, InvalidKeyException {
+		emSpi.engineInit(key, params);
+		virgin = false;
+	}
+
+	public final void init(Key key, AlgorithmParameterSpec params)
+			throws ExemptionMechanismException, InvalidAlgorithmParameterException, InvalidKeyException {
+		emSpi.engineInit(key, params);
+		virgin = false;
+	}
+
+	@SuppressWarnings("unused")
+	public final boolean isCryptoAllowed(Key key) throws ExemptionMechanismException {
+		return true;
+	}
 }

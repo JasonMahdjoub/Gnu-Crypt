@@ -47,108 +47,97 @@ import gnu.vm.jgnu.security.spec.KeySpec;
  * @author Casey Marshall (csm@gnu.org)
  * @since 1.4
  */
-public class DESedeKeySpec implements KeySpec
-{
+public class DESedeKeySpec implements KeySpec {
 
-    // Constants.
-    // ------------------------------------------------------------------------
+	// Constants.
+	// ------------------------------------------------------------------------
 
-    /**
-     * The length of a triple-DES key, in bytes.
-     */
-    public static final int DES_EDE_KEY_LEN = 24;
+	/**
+	 * The length of a triple-DES key, in bytes.
+	 */
+	public static final int DES_EDE_KEY_LEN = 24;
 
-    /**
-     * Returns whether or not the given key is <i>parity adjusted</i>; i.e.
-     * every byte in the key has an odd number of "1" bits.
-     *
-     * @param key
-     *            The key bytes, considered between <code>[offset,
-     *               offset+23]</code>
-     * @param offset
-     *            The offset into the byte array at which to begin.
-     * @return True if all bytes have an odd number of "1" bits.
-     * @throws java.security.InvalidKeyException
-     *             If there are not enough bytes in the array.
-     */
-    public static boolean isParityAdjusted(byte[] key, int offset) throws InvalidKeyException
-    {
-	if (key.length - offset < DES_EDE_KEY_LEN)
-	{
-	    throw new InvalidKeyException("DES-EDE keys must be 24 bytes long");
+	/**
+	 * Returns whether or not the given key is <i>parity adjusted</i>; i.e. every
+	 * byte in the key has an odd number of "1" bits.
+	 *
+	 * @param key
+	 *            The key bytes, considered between <code>[offset,
+	 *               offset+23]</code>
+	 * @param offset
+	 *            The offset into the byte array at which to begin.
+	 * @return True if all bytes have an odd number of "1" bits.
+	 * @throws java.security.InvalidKeyException
+	 *             If there are not enough bytes in the array.
+	 */
+	public static boolean isParityAdjusted(byte[] key, int offset) throws InvalidKeyException {
+		if (key.length - offset < DES_EDE_KEY_LEN) {
+			throw new InvalidKeyException("DES-EDE keys must be 24 bytes long");
+		}
+		boolean parity = false;
+		boolean oddbits = false;
+		for (int i = 0; i < DES_EDE_KEY_LEN; i++) {
+			oddbits = false;
+			for (int j = 0; j < 8; j++) {
+				oddbits ^= (key[i + offset] & 1 << j) != 0;
+			}
+			parity &= oddbits;
+		}
+		return parity;
 	}
-	boolean parity = false;
-	boolean oddbits = false;
-	for (int i = 0; i < DES_EDE_KEY_LEN; i++)
-	{
-	    oddbits = false;
-	    for (int j = 0; j < 8; j++)
-	    {
-		oddbits ^= (key[i + offset] & 1 << j) != 0;
-	    }
-	    parity &= oddbits;
+
+	// Constructors.
+	// ------------------------------------------------------------------------
+
+	/**
+	 * The key bytes.
+	 */
+	private byte[] key;
+
+	/**
+	 * Create a new DES-EDE key spec, copying the first 24 bytes from the byte
+	 * array.
+	 *
+	 * @param key
+	 *            The key bytes.
+	 * @throws java.security.InvalidKeyException
+	 *             If there are less than 24 bytes in the array.
+	 */
+	public DESedeKeySpec(byte[] key) throws InvalidKeyException {
+		this(key, 0);
 	}
-	return parity;
-    }
 
-    // Constructors.
-    // ------------------------------------------------------------------------
+	// Class methods.
+	// ------------------------------------------------------------------------
 
-    /**
-     * The key bytes.
-     */
-    private byte[] key;
-
-    /**
-     * Create a new DES-EDE key spec, copying the first 24 bytes from the byte
-     * array.
-     *
-     * @param key
-     *            The key bytes.
-     * @throws java.security.InvalidKeyException
-     *             If there are less than 24 bytes in the array.
-     */
-    public DESedeKeySpec(byte[] key) throws InvalidKeyException
-    {
-	this(key, 0);
-    }
-
-    // Class methods.
-    // ------------------------------------------------------------------------
-
-    /**
-     * Create a new DES-EDE key spec, starting at <code>offset</code> in the
-     * byte array. The first 24 bytes starting at <code>offset</code> are
-     * copied.
-     *
-     * @param key
-     *            The key bytes.
-     * @param offset
-     *            The offset into the byte array at which to begin.
-     * @throws java.security.InvalidKeyException
-     *             If there are less than 24 bytes starting at
-     *             <code>offset</code>.
-     */
-    public DESedeKeySpec(byte[] key, int offset) throws InvalidKeyException
-    {
-	if (key.length - offset < DES_EDE_KEY_LEN)
-	{
-	    throw new InvalidKeyException("DES-EDE keys must be 24 bytes long");
+	/**
+	 * Create a new DES-EDE key spec, starting at <code>offset</code> in the byte
+	 * array. The first 24 bytes starting at <code>offset</code> are copied.
+	 *
+	 * @param key
+	 *            The key bytes.
+	 * @param offset
+	 *            The offset into the byte array at which to begin.
+	 * @throws java.security.InvalidKeyException
+	 *             If there are less than 24 bytes starting at <code>offset</code>.
+	 */
+	public DESedeKeySpec(byte[] key, int offset) throws InvalidKeyException {
+		if (key.length - offset < DES_EDE_KEY_LEN) {
+			throw new InvalidKeyException("DES-EDE keys must be 24 bytes long");
+		}
+		this.key = new byte[DES_EDE_KEY_LEN];
+		System.arraycopy(key, offset, this.key, 0, DES_EDE_KEY_LEN);
 	}
-	this.key = new byte[DES_EDE_KEY_LEN];
-	System.arraycopy(key, offset, this.key, 0, DES_EDE_KEY_LEN);
-    }
 
-    // Instance methods.
-    // ------------------------------------------------------------------------
+	// Instance methods.
+	// ------------------------------------------------------------------------
 
-    /**
-     * Return the key as a byte array. This method does not copy the byte array.
-     *
-     * @return The key bytes.
-     */
-    public byte[] getKey()
-    {
-	return key;
-    }
+	/**
+	 * Return the key as a byte array. This method does not copy the byte array.
+	 *
+	 * @return The key bytes.
+	 */
+	public byte[] getKey() {
+		return key;
+	}
 }

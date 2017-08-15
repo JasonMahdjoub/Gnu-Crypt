@@ -43,10 +43,8 @@ import gnu.jgnu.security.Registry;
  * The implementation of the Triple-DES <i>Service Provider Interface</i>
  * (<b>SPI</b>) adapter.
  */
-public final class TripleDESSpi extends CipherAdapter
-{
-    public TripleDESSpi()
-    {
-	super(Registry.TRIPLEDES_CIPHER);
-    }
+public final class TripleDESSpi extends CipherAdapter {
+	public TripleDESSpi() {
+		super(Registry.TRIPLEDES_CIPHER);
+	}
 }

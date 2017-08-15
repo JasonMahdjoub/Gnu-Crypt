@@ -45,18 +45,16 @@ package gnu.vm.jgnu.security.acl;
  * @see Owner#deleteOwner(java.security.Principal, java.security.Principal)
  * @status updated to 1.4
  */
-public class LastOwnerException extends Exception
-{
-    /**
-     * Compatible with JDK 1.1+.
-     */
-    private static final long serialVersionUID = -5141997548211140359L;
+public class LastOwnerException extends Exception {
+	/**
+	 * Compatible with JDK 1.1+.
+	 */
+	private static final long serialVersionUID = -5141997548211140359L;
 
-    /**
-     * Initialize a new instance of <code>LastOwnerException</code> that does
-     * not have a log message.
-     */
-    public LastOwnerException()
-    {
-    }
+	/**
+	 * Initialize a new instance of <code>LastOwnerException</code> that does not
+	 * have a log message.
+	 */
+	public LastOwnerException() {
+	}
 }

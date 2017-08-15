@@ -45,6 +45,5 @@ package gnu.vm.jgnu.security.spec;
  * 
  * @author Mark Benvenuto
  */
-public interface AlgorithmParameterSpec
-{
+public interface AlgorithmParameterSpec {
 }

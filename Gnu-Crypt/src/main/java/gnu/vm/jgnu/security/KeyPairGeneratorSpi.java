@@ -48,63 +48,59 @@ import gnu.vm.jgnu.security.spec.AlgorithmParameterSpec;
  * 
  * @author Mark Benvenuto
  */
-public abstract class KeyPairGeneratorSpi
-{
-    /**
-     * Constructs a new KeyPairGeneratorSpi
-     */
-    public KeyPairGeneratorSpi()
-    {
-    }
+public abstract class KeyPairGeneratorSpi {
+	/**
+	 * Constructs a new KeyPairGeneratorSpi
+	 */
+	public KeyPairGeneratorSpi() {
+	}
 
-    /**
-     * We override clone here to make it accessible for use by
-     * DummyKeyPairGenerator.
-     */
-    @Override
-    protected Object clone() throws CloneNotSupportedException
-    {
-	return super.clone();
-    }
+	/**
+	 * We override clone here to make it accessible for use by
+	 * DummyKeyPairGenerator.
+	 */
+	@Override
+	protected Object clone() throws CloneNotSupportedException {
+		return super.clone();
+	}
 
-    /**
-     * Generates a KeyPair according the rules for the algorithm. Unless
-     * intialized, algorithm defaults will be used. It creates a unique key pair
-     * each time.
-     * 
-     * @return a key pair
-     */
-    public abstract KeyPair generateKeyPair();
+	/**
+	 * Generates a KeyPair according the rules for the algorithm. Unless intialized,
+	 * algorithm defaults will be used. It creates a unique key pair each time.
+	 * 
+	 * @return a key pair
+	 */
+	public abstract KeyPair generateKeyPair();
 
-    /**
-     * Initialize the KeyPairGeneratorSpi with the specified
-     * AlgorithmParameterSpec and source of randomness
-     * 
-     * This is a concrete method. It may be overridden by the provider and if
-     * the AlgorithmParameterSpec class is invalid throw
-     * InvalidAlgorithmParameterException. By default this method just throws
-     * UnsupportedOperationException.
-     * 
-     * @param params
-     *            A AlgorithmParameterSpec to intialize with
-     * @param random
-     *            A SecureRandom source of randomness
-     * 
-     * @throws InvalidAlgorithmParameterException
-     */
-    public void initialize(AlgorithmParameterSpec params, SecureRandom random) throws InvalidAlgorithmParameterException
-    {
-	throw new java.lang.UnsupportedOperationException();
-    }
+	/**
+	 * Initialize the KeyPairGeneratorSpi with the specified AlgorithmParameterSpec
+	 * and source of randomness
+	 * 
+	 * This is a concrete method. It may be overridden by the provider and if the
+	 * AlgorithmParameterSpec class is invalid throw
+	 * InvalidAlgorithmParameterException. By default this method just throws
+	 * UnsupportedOperationException.
+	 * 
+	 * @param params
+	 *            A AlgorithmParameterSpec to intialize with
+	 * @param random
+	 *            A SecureRandom source of randomness
+	 * 
+	 * @throws InvalidAlgorithmParameterException
+	 */
+	public void initialize(AlgorithmParameterSpec params, SecureRandom random)
+			throws InvalidAlgorithmParameterException {
+		throw new java.lang.UnsupportedOperationException();
+	}
 
-    /**
-     * Initialize the KeyPairGeneratorSpi with the specified key size and source
-     * of randomness
-     * 
-     * @param keysize
-     *            size of the key to generate
-     * @param random
-     *            A SecureRandom source of randomness
-     */
-    public abstract void initialize(int keysize, SecureRandom random);
+	/**
+	 * Initialize the KeyPairGeneratorSpi with the specified key size and source of
+	 * randomness
+	 * 
+	 * @param keysize
+	 *            size of the key to generate
+	 * @param random
+	 *            A SecureRandom source of randomness
+	 */
+	public abstract void initialize(int keysize, SecureRandom random);
 }

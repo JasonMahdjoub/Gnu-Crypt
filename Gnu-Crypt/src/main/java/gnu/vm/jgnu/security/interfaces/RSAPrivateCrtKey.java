@@ -47,49 +47,48 @@ import java.math.BigInteger;
  *
  * @author Aaron M. Renn (arenn@urbanophile.com)
  */
-public interface RSAPrivateCrtKey extends RSAPrivateKey
-{
-    long serialVersionUID = -5682214253527700368L;
+public interface RSAPrivateCrtKey extends RSAPrivateKey {
+	long serialVersionUID = -5682214253527700368L;
 
-    /**
-     * Returns the CRT coefficient
-     *
-     * @return The CRT coefficient
-     */
-    BigInteger getCrtCoefficient();
+	/**
+	 * Returns the CRT coefficient
+	 *
+	 * @return The CRT coefficient
+	 */
+	BigInteger getCrtCoefficient();
 
-    /**
-     * Returns the primeExponentP
-     *
-     * @return The primeExponentP
-     */
-    BigInteger getPrimeExponentP();
+	/**
+	 * Returns the primeExponentP
+	 *
+	 * @return The primeExponentP
+	 */
+	BigInteger getPrimeExponentP();
 
-    /**
-     * Returns the primeExponentQ
-     *
-     * @return The primeExponentQ
-     */
-    BigInteger getPrimeExponentQ();
+	/**
+	 * Returns the primeExponentQ
+	 *
+	 * @return The primeExponentQ
+	 */
+	BigInteger getPrimeExponentQ();
 
-    /**
-     * Returns the primeP value
-     *
-     * @return The primeP value
-     */
-    BigInteger getPrimeP();
+	/**
+	 * Returns the primeP value
+	 *
+	 * @return The primeP value
+	 */
+	BigInteger getPrimeP();
 
-    /**
-     * Returns the primeQ value
-     *
-     * @return The primeQ value
-     */
-    BigInteger getPrimeQ();
+	/**
+	 * Returns the primeQ value
+	 *
+	 * @return The primeQ value
+	 */
+	BigInteger getPrimeQ();
 
-    /**
-     * Returns the public exponent for this key
-     *
-     * @return The public exponent for this key
-     */
-    BigInteger getPublicExponent();
+	/**
+	 * Returns the public exponent for this key
+	 *
+	 * @return The public exponent for this key
+	 */
+	BigInteger getPublicExponent();
 }

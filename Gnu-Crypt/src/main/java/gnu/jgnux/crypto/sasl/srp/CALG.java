@@ -99,131 +99,117 @@ import gnu.jgnux.crypto.sasl.ConfidentialityException;
  * if and only if <code>k &lt; 256</code> octets, which is the case with
  * symmetric key block ciphers today, and in the forseeable future.
  */
-public final class CALG
-{
-    /**
-     * Returns an instance of a SASL-SRP CALG implementation.
-     *
-     * @param algorithm
-     *            the name of the symmetric cipher algorithm.
-     * @return an instance of this object.
-     */
-    static synchronized CALG getInstance(final String algorithm)
-    {
-	final IBlockCipher cipher = CipherFactory.getInstance(algorithm);
-	final int blockSize = cipher.defaultBlockSize();
-	final int keySize = cipher.defaultKeySize();
-	final Cascade ofbCipher = new Cascade();
-	IMode ofbMode = ModeFactory.getInstance(Registry.OFB_MODE, cipher,
-		blockSize);
-	Stage modeStage = Stage.getInstance(ofbMode, Direction.FORWARD);
-	final Object modeNdx = ofbCipher.append(modeStage);
-	final IPad pkcs7 = PadFactory.getInstance(Registry.PKCS7_PAD);
-	final Assembly asm = new Assembly();
-	asm.addPreTransformer(Transformer.getCascadeTransformer(ofbCipher));
-	asm.addPreTransformer(Transformer.getPaddingTransformer(pkcs7));
-	return new CALG(blockSize, keySize, modeNdx, asm);
-    }
-
-    private Assembly assembly;
-
-    private Object modeNdx; // initialisation key of the cascade's attributes
-
-    private int blockSize; // the underlying cipher's blocksize == IV length
-
-    private int keySize; // the underlying cipher's key size (in bytes).
-
-    /** Private constructor to enforce instantiation through Factory method. */
-    private CALG(final int blockSize, final int keySize, final Object modeNdx, final Assembly assembly)
-    {
-	super();
-
-	this.blockSize = blockSize;
-	this.keySize = keySize;
-	this.modeNdx = modeNdx;
-	this.assembly = assembly;
-    }
-
-    /**
-     * Encrypts or decrypts, depending on the mode already set, a designated
-     * array of bytes and returns the result.
-     *
-     * @param data
-     *            the data to encrypt/decrypt.
-     * @return the decrypted/encrypted result.
-     * @throws ConfidentialityException
-     *             if an exception occurs duirng the process.
-     */
-    public byte[] doFinal(final byte[] data) throws ConfidentialityException
-    {
-	return doFinal(data, 0, data.length);
-    }
-
-    /**
-     * Encrypts or decrypts, depending on the mode already set, a designated
-     * array of bytes and returns the result.
-     *
-     * @param data
-     *            the data to encrypt/decrypt.
-     * @param offset
-     *            where to start in <code>data</code>.
-     * @param length
-     *            how many bytes to consider in <code>data</code>.
-     * @return the decrypted/encrypted result.
-     * @throws ConfidentialityException
-     *             if an exception occurs duirng the process.
-     */
-    public byte[] doFinal(final byte[] data, final int offset, final int length) throws ConfidentialityException
-    {
-	final byte[] result;
-	try
-	{
-	    result = assembly.lastUpdate(data, offset, length);
+public final class CALG {
+	/**
+	 * Returns an instance of a SASL-SRP CALG implementation.
+	 *
+	 * @param algorithm
+	 *            the name of the symmetric cipher algorithm.
+	 * @return an instance of this object.
+	 */
+	static synchronized CALG getInstance(final String algorithm) {
+		final IBlockCipher cipher = CipherFactory.getInstance(algorithm);
+		final int blockSize = cipher.defaultBlockSize();
+		final int keySize = cipher.defaultKeySize();
+		final Cascade ofbCipher = new Cascade();
+		IMode ofbMode = ModeFactory.getInstance(Registry.OFB_MODE, cipher, blockSize);
+		Stage modeStage = Stage.getInstance(ofbMode, Direction.FORWARD);
+		final Object modeNdx = ofbCipher.append(modeStage);
+		final IPad pkcs7 = PadFactory.getInstance(Registry.PKCS7_PAD);
+		final Assembly asm = new Assembly();
+		asm.addPreTransformer(Transformer.getCascadeTransformer(ofbCipher));
+		asm.addPreTransformer(Transformer.getPaddingTransformer(pkcs7));
+		return new CALG(blockSize, keySize, modeNdx, asm);
 	}
-	catch (TransformerException x)
-	{
-	    throw new ConfidentialityException("doFinal()", x);
-	}
-	return result;
-    }
 
-    /**
-     * Initialises a SASL-SRP CALG implementation.
-     *
-     * @param kdf
-     *            the key derivation function.
-     * @param iv
-     *            the initial vector value to use.
-     * @param dir
-     *            whether this CALG is used for encryption or decryption.
-     */
-    public void init(final KDF kdf, final byte[] iv, final Direction dir) throws SaslException
-    {
-	final byte[] realIV;
-	if (iv.length == blockSize)
-	    realIV = iv;
-	else
-	{
-	    realIV = new byte[blockSize];
-	    if (iv.length > blockSize)
-		System.arraycopy(iv, 0, realIV, 0, blockSize);
-	    else // shouldnt happen
-		System.arraycopy(iv, 0, realIV, 0, iv.length);
+	private Assembly assembly;
+
+	private Object modeNdx; // initialisation key of the cascade's attributes
+
+	private int blockSize; // the underlying cipher's blocksize == IV length
+
+	private int keySize; // the underlying cipher's key size (in bytes).
+
+	/** Private constructor to enforce instantiation through Factory method. */
+	private CALG(final int blockSize, final int keySize, final Object modeNdx, final Assembly assembly) {
+		super();
+
+		this.blockSize = blockSize;
+		this.keySize = keySize;
+		this.modeNdx = modeNdx;
+		this.assembly = assembly;
 	}
-	final HashMap<Object, Object> modeAttributes = new HashMap<>();
-	final byte[] sk = kdf.derive(keySize);
-	modeAttributes.put(IBlockCipher.KEY_MATERIAL, sk);
-	modeAttributes.put(IMode.IV, realIV);
-	final HashMap<Object, Object> attributes = new HashMap<>();
-	attributes.put(Assembly.DIRECTION, dir);
-	attributes.put(modeNdx, modeAttributes);
-	try
-	{
-	    assembly.init(attributes);
+
+	/**
+	 * Encrypts or decrypts, depending on the mode already set, a designated array
+	 * of bytes and returns the result.
+	 *
+	 * @param data
+	 *            the data to encrypt/decrypt.
+	 * @return the decrypted/encrypted result.
+	 * @throws ConfidentialityException
+	 *             if an exception occurs duirng the process.
+	 */
+	public byte[] doFinal(final byte[] data) throws ConfidentialityException {
+		return doFinal(data, 0, data.length);
 	}
-	catch (TransformerException x)
-	{
-	    throw new SaslException("getInstance()", x);
+
+	/**
+	 * Encrypts or decrypts, depending on the mode already set, a designated array
+	 * of bytes and returns the result.
+	 *
+	 * @param data
+	 *            the data to encrypt/decrypt.
+	 * @param offset
+	 *            where to start in <code>data</code>.
+	 * @param length
+	 *            how many bytes to consider in <code>data</code>.
+	 * @return the decrypted/encrypted result.
+	 * @throws ConfidentialityException
+	 *             if an exception occurs duirng the process.
+	 */
+	public byte[] doFinal(final byte[] data, final int offset, final int length) throws ConfidentialityException {
+		final byte[] result;
+		try {
+			result = assembly.lastUpdate(data, offset, length);
+		} catch (TransformerException x) {
+			throw new ConfidentialityException("doFinal()", x);
+		}
+		return result;
 	}
-    }
+
+	/**
+	 * Initialises a SASL-SRP CALG implementation.
+	 *
+	 * @param kdf
+	 *            the key derivation function.
+	 * @param iv
+	 *            the initial vector value to use.
+	 * @param dir
+	 *            whether this CALG is used for encryption or decryption.
+	 */
+	public void init(final KDF kdf, final byte[] iv, final Direction dir) throws SaslException {
+		final byte[] realIV;
+		if (iv.length == blockSize)
+			realIV = iv;
+		else {
+			realIV = new byte[blockSize];
+			if (iv.length > blockSize)
+				System.arraycopy(iv, 0, realIV, 0, blockSize);
+			else // shouldnt happen
+				System.arraycopy(iv, 0, realIV, 0, iv.length);
+		}
+		final HashMap<Object, Object> modeAttributes = new HashMap<>();
+		final byte[] sk = kdf.derive(keySize);
+		modeAttributes.put(IBlockCipher.KEY_MATERIAL, sk);
+		modeAttributes.put(IMode.IV, realIV);
+		final HashMap<Object, Object> attributes = new HashMap<>();
+		attributes.put(Assembly.DIRECTION, dir);
+		attributes.put(modeNdx, modeAttributes);
+		try {
+			assembly.init(attributes);
+		} catch (TransformerException x) {
+			throw new SaslException("getInstance()", x);
+		}
+	}
 }

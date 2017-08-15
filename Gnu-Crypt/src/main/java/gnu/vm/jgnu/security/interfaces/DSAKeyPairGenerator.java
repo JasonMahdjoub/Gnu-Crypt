@@ -51,41 +51,40 @@ import gnu.vm.jgnu.security.SecureRandom;
  *
  * @author Aaron M. Renn (arenn@urbanophile.com)
  */
-public interface DSAKeyPairGenerator
-{
-    /**
-     * Initializes the key generator with the specified DSA parameters and
-     * random bit source
-     *
-     * @param params
-     *            The DSA parameters to use
-     * @param random
-     *            The random bit source to use
-     *
-     * @exception InvalidParameterException
-     *                If the parameters passed are not valid
-     */
-    void initialize(DSAParams params, SecureRandom random) throws InvalidParameterException;
+public interface DSAKeyPairGenerator {
+	/**
+	 * Initializes the key generator with the specified DSA parameters and random
+	 * bit source
+	 *
+	 * @param params
+	 *            The DSA parameters to use
+	 * @param random
+	 *            The random bit source to use
+	 *
+	 * @exception InvalidParameterException
+	 *                If the parameters passed are not valid
+	 */
+	void initialize(DSAParams params, SecureRandom random) throws InvalidParameterException;
 
-    /**
-     * Initializes the key generator to a give modulus. If the
-     * <code>genParams</code> value is <code>true</code> then new base, prime,
-     * and subprime values will be generated for the given modulus. If not, the
-     * pre-calculated values will be used. If no pre-calculated values exist for
-     * the specified modulus, an exception will be thrown. It is guaranteed that
-     * there will always be pre-calculated values for all modulus values between
-     * 512 and 1024 bits inclusives.
-     *
-     * @param modlen
-     *            The modulus length
-     * @param genParams
-     *            <code>true</code> to generate new DSA parameters,
-     *            <code>false</code> otherwise
-     * @param random
-     *            The random bit source to use
-     *
-     * @exception InvalidParameterException
-     *                If a parameter is invalid
-     */
-    void initialize(int modlen, boolean genParams, SecureRandom random) throws InvalidParameterException;
+	/**
+	 * Initializes the key generator to a give modulus. If the
+	 * <code>genParams</code> value is <code>true</code> then new base, prime, and
+	 * subprime values will be generated for the given modulus. If not, the
+	 * pre-calculated values will be used. If no pre-calculated values exist for the
+	 * specified modulus, an exception will be thrown. It is guaranteed that there
+	 * will always be pre-calculated values for all modulus values between 512 and
+	 * 1024 bits inclusives.
+	 *
+	 * @param modlen
+	 *            The modulus length
+	 * @param genParams
+	 *            <code>true</code> to generate new DSA parameters,
+	 *            <code>false</code> otherwise
+	 * @param random
+	 *            The random bit source to use
+	 *
+	 * @exception InvalidParameterException
+	 *                If a parameter is invalid
+	 */
+	void initialize(int modlen, boolean genParams, SecureRandom random) throws InvalidParameterException;
 }

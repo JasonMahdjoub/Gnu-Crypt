@@ -50,41 +50,36 @@ package gnu.jgnux.crypto.assembly;
  * </li>
  * </ol>
  */
-public final class Direction
-{
-    public static final Direction FORWARD = new Direction(1);
+public final class Direction {
+	public static final Direction FORWARD = new Direction(1);
 
-    public static final Direction REVERSED = new Direction(2);
+	public static final Direction REVERSED = new Direction(2);
 
-    public static final Direction reverse(Direction d)
-    {
-	return (d.equals(FORWARD) ? REVERSED : FORWARD);
-    }
+	public static final Direction reverse(Direction d) {
+		return (d.equals(FORWARD) ? REVERSED : FORWARD);
+	}
 
-    private int value;
+	private int value;
 
-    private Direction(int value)
-    {
-	super();
+	private Direction(int value) {
+		super();
 
-	this.value = value;
-    }
+		this.value = value;
+	}
 
-    @Override
-    public boolean equals(Object o)
-    {
-	if (o == this)
-	    return true;
-	if (o == null)
-	    return false;
-	if (o instanceof Direction)
-	    return this.value == ((Direction) o).value;
-	return false;
-    }
+	@Override
+	public boolean equals(Object o) {
+		if (o == this)
+			return true;
+		if (o == null)
+			return false;
+		if (o instanceof Direction)
+			return this.value == ((Direction) o).value;
+		return false;
+	}
 
-    @Override
-    public String toString()
-    {
-	return (this == FORWARD ? "forward" : "reversed");
-    }
+	@Override
+	public String toString() {
+		return (this == FORWARD ? "forward" : "reversed");
+	}
 }

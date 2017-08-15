@@ -40,20 +40,19 @@ package gnu.jgnux.crypto.keyring;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
-public interface PasswordProtectedEntry
-{
-    /** The iteration count for password-based KDFs. */
-    Integer ITERATION_COUNT = Integer.valueOf(1000);
+public interface PasswordProtectedEntry {
+	/** The iteration count for password-based KDFs. */
+	Integer ITERATION_COUNT = Integer.valueOf(1000);
 
-    /**
-     * Encodes this entry, protected by a password.
-     *
-     * @param out
-     *            The output stream to encode to.
-     * @param password
-     *            The password.
-     * @throws IOException
-     *             If an I/O error occurs.
-     */
-    void encode(DataOutputStream out, char[] password) throws IOException;
+	/**
+	 * Encodes this entry, protected by a password.
+	 *
+	 * @param out
+	 *            The output stream to encode to.
+	 * @param password
+	 *            The password.
+	 * @throws IOException
+	 *             If an I/O error occurs.
+	 */
+	void encode(DataOutputStream out, char[] password) throws IOException;
 }

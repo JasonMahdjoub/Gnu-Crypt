@@ -172,35 +172,32 @@ import gnu.vm.jgnu.security.BasicPermission;
  * @since 1.1
  * @status updated to 1.4
  */
-public final class SecurityPermission extends BasicPermission
-{
-    /**
-     * Compatible with JDK 1.1+.
-     */
-    private static final long serialVersionUID = 5236109936224050470L;
+public final class SecurityPermission extends BasicPermission {
+	/**
+	 * Compatible with JDK 1.1+.
+	 */
+	private static final long serialVersionUID = 5236109936224050470L;
 
-    /**
-     * Create a new instance with the specified name.
-     *
-     * @param name
-     *            the name to assign to this permission
-     */
-    public SecurityPermission(String name)
-    {
-	super(name);
-    }
+	/**
+	 * Create a new instance with the specified name.
+	 *
+	 * @param name
+	 *            the name to assign to this permission
+	 */
+	public SecurityPermission(String name) {
+		super(name);
+	}
 
-    /**
-     * Create a new instance with the specified name. As SecurityPermission
-     * carries no actions, the second parameter is ignored.
-     *
-     * @param name
-     *            the name to assign to this permission
-     * @param actions
-     *            ignored
-     */
-    public SecurityPermission(String name, String actions)
-    {
-	super(name);
-    }
+	/**
+	 * Create a new instance with the specified name. As SecurityPermission carries
+	 * no actions, the second parameter is ignored.
+	 *
+	 * @param name
+	 *            the name to assign to this permission
+	 * @param actions
+	 *            ignored
+	 */
+	public SecurityPermission(String name, String actions) {
+		super(name);
+	}
 } // class SecurityPermission

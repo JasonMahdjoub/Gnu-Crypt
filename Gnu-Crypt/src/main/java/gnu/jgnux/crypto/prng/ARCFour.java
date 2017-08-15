@@ -68,72 +68,65 @@ import gnu.jgnu.security.prng.BasePRNG;
  * "http://www.mozilla.org/projects/security/pki/nss/draft-kaukonen-cipher-arcfour-03.txt">draft-kaukonen-cipher-arcfour-03.txt</a></li>
  * </ol>
  */
-public class ARCFour extends BasePRNG implements Cloneable
-{
-    /** The attributes property name for the key bytes. */
-    public static final String ARCFOUR_KEY_MATERIAL = "gnu.crypto.prng.arcfour.key-material";
+public class ARCFour extends BasePRNG implements Cloneable {
+	/** The attributes property name for the key bytes. */
+	public static final String ARCFOUR_KEY_MATERIAL = "gnu.crypto.prng.arcfour.key-material";
 
-    /** The size of the internal S-box. */
-    public static final int ARCFOUR_SBOX_SIZE = 256;
+	/** The size of the internal S-box. */
+	public static final int ARCFOUR_SBOX_SIZE = 256;
 
-    /** The S-box. */
-    private byte[] s;
+	/** The S-box. */
+	private byte[] s;
 
-    private byte m, n;
+	private byte m, n;
 
-    /** Default 0-arguments constructor. */
-    public ARCFour()
-    {
-	super(Registry.ARCFOUR_PRNG);
-    }
-
-    @Override
-    public void fillBlock()
-    {
-	for (int i = 0; i < buffer.length; i++)
-	{
-	    m++;
-	    n = (byte) (n + s[m & 0xff]);
-	    byte temp = s[m & 0xff];
-	    s[m & 0xff] = s[n & 0xff];
-	    s[n & 0xff] = temp;
-	    temp = (byte) (s[m & 0xff] + s[n & 0xff]);
-	    buffer[i] = s[temp & 0xff];
+	/** Default 0-arguments constructor. */
+	public ARCFour() {
+		super(Registry.ARCFOUR_PRNG);
 	}
-    }
 
-    @Override
-    public void setup(Map<Object, ?> attributes)
-    {
-	byte[] kb = (byte[]) attributes.get(ARCFOUR_KEY_MATERIAL);
-	if (kb == null)
-	    throw new IllegalArgumentException("ARCFOUR needs a key");
-	s = new byte[ARCFOUR_SBOX_SIZE];
-	m = n = 0;
-	byte[] k = new byte[ARCFOUR_SBOX_SIZE];
-	for (int i = 0; i < ARCFOUR_SBOX_SIZE; i++)
-	    s[i] = (byte) i;
-	if (kb.length > 0)
-	    for (int i = 0, j = 0; i < ARCFOUR_SBOX_SIZE; i++)
-	    {
-		k[i] = kb[j++];
-		if (j >= kb.length)
-		    j = 0;
-	    }
-	for (int i = 0, j = 0; i < ARCFOUR_SBOX_SIZE; i++)
-	{
-	    j = j + s[i] + k[i];
-	    byte temp = s[i];
-	    s[i] = s[j & 0xff];
-	    s[j & 0xff] = temp;
+	@Override
+	public void fillBlock() {
+		for (int i = 0; i < buffer.length; i++) {
+			m++;
+			n = (byte) (n + s[m & 0xff]);
+			byte temp = s[m & 0xff];
+			s[m & 0xff] = s[n & 0xff];
+			s[n & 0xff] = temp;
+			temp = (byte) (s[m & 0xff] + s[n & 0xff]);
+			buffer[i] = s[temp & 0xff];
+		}
 	}
-	buffer = new byte[ARCFOUR_SBOX_SIZE];
-	/*
-	 * try {
-	 */
-	fillBlock();
-	/*
-	 * } catch (LimitReachedException wontHappen) { }
-	 */
-    }
+
+	@Override
+	public void setup(Map<Object, ?> attributes) {
+		byte[] kb = (byte[]) attributes.get(ARCFOUR_KEY_MATERIAL);
+		if (kb == null)
+			throw new IllegalArgumentException("ARCFOUR needs a key");
+		s = new byte[ARCFOUR_SBOX_SIZE];
+		m = n = 0;
+		byte[] k = new byte[ARCFOUR_SBOX_SIZE];
+		for (int i = 0; i < ARCFOUR_SBOX_SIZE; i++)
+			s[i] = (byte) i;
+		if (kb.length > 0)
+			for (int i = 0, j = 0; i < ARCFOUR_SBOX_SIZE; i++) {
+				k[i] = kb[j++];
+				if (j >= kb.length)
+					j = 0;
+			}
+		for (int i = 0, j = 0; i < ARCFOUR_SBOX_SIZE; i++) {
+			j = j + s[i] + k[i];
+			byte temp = s[i];
+			s[i] = s[j & 0xff];
+			s[j & 0xff] = temp;
+		}
+		buffer = new byte[ARCFOUR_SBOX_SIZE];
+		/*
+		 * try {
+		 */
+		fillBlock();
+		/*
+		 * } catch (LimitReachedException wontHappen) { }
+		 */
+	}
 }

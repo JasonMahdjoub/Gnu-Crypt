@@ -55,117 +55,93 @@ import gnu.vm.jgnu.security.InvalidKeyException;
 /**
  * The CRAM-MD5 SASL client-side mechanism.
  */
-public class CramMD5Client extends ClientMechanism implements SaslClient
-{
-    public CramMD5Client()
-    {
-	super(Registry.SASL_CRAM_MD5_MECHANISM);
-    }
+public class CramMD5Client extends ClientMechanism implements SaslClient {
+	public CramMD5Client() {
+		super(Registry.SASL_CRAM_MD5_MECHANISM);
+	}
 
-    @Override
-    public byte[] evaluateChallenge(final byte[] challenge) throws SaslException
-    {
-	if (challenge == null)
-	    throw new SaslException("null challenge");
-	try
-	{
-	    final String username;
-	    final char[] password;
-	    Callback[] callbacks;
-	    if ((!properties.containsKey(Registry.SASL_USERNAME))
-		    && (!properties.containsKey(Registry.SASL_PASSWORD)))
-	    {
-		callbacks = new Callback[2];
-		final NameCallback nameCB;
-		final String defaultName = System.getProperty("user.name");
-		if (defaultName == null)
-		    nameCB = new NameCallback("username: ");
-		else
-		    nameCB = new NameCallback("username: ", defaultName);
-		final PasswordCallback pwdCB = new PasswordCallback(
-			"password: ", false);
-		callbacks[0] = nameCB;
-		callbacks[1] = pwdCB;
-		this.handler.handle(callbacks);
-		username = nameCB.getName();
-		password = pwdCB.getPassword();
-	    }
-	    else
-	    {
-		if (properties.containsKey(Registry.SASL_USERNAME))
-		    username = (String) properties.get(Registry.SASL_USERNAME);
-		else
-		{
-		    callbacks = new Callback[1];
-		    final NameCallback nameCB;
-		    final String defaultName = System.getProperty("user.name");
-		    if (defaultName == null)
-			nameCB = new NameCallback("username: ");
-		    else
-			nameCB = new NameCallback("username: ", defaultName);
-		    callbacks[0] = nameCB;
-		    this.handler.handle(callbacks);
-		    username = nameCB.getName();
+	@Override
+	public byte[] evaluateChallenge(final byte[] challenge) throws SaslException {
+		if (challenge == null)
+			throw new SaslException("null challenge");
+		try {
+			final String username;
+			final char[] password;
+			Callback[] callbacks;
+			if ((!properties.containsKey(Registry.SASL_USERNAME))
+					&& (!properties.containsKey(Registry.SASL_PASSWORD))) {
+				callbacks = new Callback[2];
+				final NameCallback nameCB;
+				final String defaultName = System.getProperty("user.name");
+				if (defaultName == null)
+					nameCB = new NameCallback("username: ");
+				else
+					nameCB = new NameCallback("username: ", defaultName);
+				final PasswordCallback pwdCB = new PasswordCallback("password: ", false);
+				callbacks[0] = nameCB;
+				callbacks[1] = pwdCB;
+				this.handler.handle(callbacks);
+				username = nameCB.getName();
+				password = pwdCB.getPassword();
+			} else {
+				if (properties.containsKey(Registry.SASL_USERNAME))
+					username = (String) properties.get(Registry.SASL_USERNAME);
+				else {
+					callbacks = new Callback[1];
+					final NameCallback nameCB;
+					final String defaultName = System.getProperty("user.name");
+					if (defaultName == null)
+						nameCB = new NameCallback("username: ");
+					else
+						nameCB = new NameCallback("username: ", defaultName);
+					callbacks[0] = nameCB;
+					this.handler.handle(callbacks);
+					username = nameCB.getName();
+				}
+
+				if (properties.containsKey(Registry.SASL_PASSWORD))
+					password = ((String) properties.get(Registry.SASL_PASSWORD)).toCharArray();
+				else {
+					callbacks = new Callback[1];
+					final PasswordCallback pwdCB = new PasswordCallback("password: ", false);
+					callbacks[0] = pwdCB;
+					this.handler.handle(callbacks);
+					password = pwdCB.getPassword();
+				}
+			}
+			if (password == null)
+				throw new SaslException("null password supplied");
+			final byte[] digest;
+			try {
+				digest = CramMD5Util.createHMac(password, challenge);
+			} catch (InvalidKeyException x) {
+				throw new AuthenticationException("evaluateChallenge()", x);
+			}
+			final String response = username + " " + Util.toString(digest).toLowerCase();
+			this.complete = true;
+			return response.getBytes("UTF-8");
+		} catch (UnsupportedCallbackException x) {
+			throw new AuthenticationException("evaluateChallenge()", x);
+		} catch (IOException x) {
+			throw new AuthenticationException("evaluateChallenge()", x);
 		}
-
-		if (properties.containsKey(Registry.SASL_PASSWORD))
-		    password = ((String) properties.get(Registry.SASL_PASSWORD))
-			    .toCharArray();
-		else
-		{
-		    callbacks = new Callback[1];
-		    final PasswordCallback pwdCB = new PasswordCallback(
-			    "password: ", false);
-		    callbacks[0] = pwdCB;
-		    this.handler.handle(callbacks);
-		    password = pwdCB.getPassword();
-		}
-	    }
-	    if (password == null)
-		throw new SaslException("null password supplied");
-	    final byte[] digest;
-	    try
-	    {
-		digest = CramMD5Util.createHMac(password, challenge);
-	    }
-	    catch (InvalidKeyException x)
-	    {
-		throw new AuthenticationException("evaluateChallenge()", x);
-	    }
-	    final String response = username + " "
-		    + Util.toString(digest).toLowerCase();
-	    this.complete = true;
-	    return response.getBytes("UTF-8");
 	}
-	catch (UnsupportedCallbackException x)
-	{
-	    throw new AuthenticationException("evaluateChallenge()", x);
+
+	@Override
+	protected String getNegotiatedQOP() {
+		return Registry.QOP_AUTH;
 	}
-	catch (IOException x)
-	{
-	    throw new AuthenticationException("evaluateChallenge()", x);
+
+	@Override
+	public boolean hasInitialResponse() {
+		return false;
 	}
-    }
 
-    @Override
-    protected String getNegotiatedQOP()
-    {
-	return Registry.QOP_AUTH;
-    }
+	@Override
+	protected void initMechanism() {
+	}
 
-    @Override
-    public boolean hasInitialResponse()
-    {
-	return false;
-    }
-
-    @Override
-    protected void initMechanism()
-    {
-    }
-
-    @Override
-    protected void resetMechanism()
-    {
-    }
+	@Override
+	protected void resetMechanism() {
+	}
 }

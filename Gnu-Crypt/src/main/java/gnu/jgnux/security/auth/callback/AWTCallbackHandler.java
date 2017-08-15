@@ -62,442 +62,371 @@ import gnu.vm.jgnux.security.auth.callback.PasswordCallback;
 import gnu.vm.jgnux.security.auth.callback.TextInputCallback;
 import gnu.vm.jgnux.security.auth.callback.TextOutputCallback;
 
-public class AWTCallbackHandler extends AbstractCallbackHandler implements ActionListener, WindowListener
-{
+public class AWTCallbackHandler extends AbstractCallbackHandler implements ActionListener, WindowListener {
 
-    // Fields.
-    // -------------------------------------------------------------------------
+	// Fields.
+	// -------------------------------------------------------------------------
 
-    private static final String ACTION_CANCEL = "CANCEL";
+	private static final String ACTION_CANCEL = "CANCEL";
 
-    // private static final String ACTION_NO = "NO";
-    private static final String ACTION_NONE = "NONE";
+	// private static final String ACTION_NO = "NO";
+	private static final String ACTION_NONE = "NONE";
 
-    private static final String ACTION_OK = "OK";
-    // private static final String ACTION_YES = "YES";
+	private static final String ACTION_OK = "OK";
+	// private static final String ACTION_YES = "YES";
 
-    protected String actionCommand;
+	protected String actionCommand;
 
-    // Constructor.
-    // -------------------------------------------------------------------------
+	// Constructor.
+	// -------------------------------------------------------------------------
 
-    public AWTCallbackHandler()
-    {
-	super("AWT");
-	actionCommand = ACTION_NONE;
-    }
+	public AWTCallbackHandler() {
+		super("AWT");
+		actionCommand = ACTION_NONE;
+	}
 
-    // Instance methods.
-    // -------------------------------------------------------------------------
+	// Instance methods.
+	// -------------------------------------------------------------------------
 
-    @Override
-    public synchronized void actionPerformed(ActionEvent ae)
-    {
-	actionCommand = ae.getActionCommand();
-	notifyAll();
-    }
+	@Override
+	public synchronized void actionPerformed(ActionEvent ae) {
+		actionCommand = ae.getActionCommand();
+		notifyAll();
+	}
 
-    @Override
-    protected synchronized void handleChoice(ChoiceCallback c)
-    {
-	Frame ownerFrame = new Frame();
-	Dialog dialog = new Dialog(ownerFrame);
-	String[] choices = c.getChoices();
-	dialog.setTitle(c.getPrompt());
-	Label label = new Label(c.getPrompt());
-	List list = new List(Math.min(5, choices.length),
-		c.allowMultipleSelections());
-	Panel buttons = new Panel();
-	Button ok = new Button(messages.getString("callback.ok"));
-	ok.setActionCommand(ACTION_OK);
-	ok.addActionListener(this);
-	Button cancel = new Button(messages.getString("callback.cancel"));
-	cancel.setActionCommand(ACTION_CANCEL);
-	cancel.addActionListener(this);
-	for (int i = 0; i < choices.length; i++)
-	{
-	    list.add(choices[i]);
+	@Override
+	protected synchronized void handleChoice(ChoiceCallback c) {
+		Frame ownerFrame = new Frame();
+		Dialog dialog = new Dialog(ownerFrame);
+		String[] choices = c.getChoices();
+		dialog.setTitle(c.getPrompt());
+		Label label = new Label(c.getPrompt());
+		List list = new List(Math.min(5, choices.length), c.allowMultipleSelections());
+		Panel buttons = new Panel();
+		Button ok = new Button(messages.getString("callback.ok"));
+		ok.setActionCommand(ACTION_OK);
+		ok.addActionListener(this);
+		Button cancel = new Button(messages.getString("callback.cancel"));
+		cancel.setActionCommand(ACTION_CANCEL);
+		cancel.addActionListener(this);
+		for (int i = 0; i < choices.length; i++) {
+			list.add(choices[i]);
+		}
+		if (c.getDefaultChoice() >= 0 && c.getDefaultChoice() < choices.length) {
+			list.select(c.getDefaultChoice());
+		}
+		dialog.setLayout(new BorderLayout());
+		dialog.add(label, BorderLayout.NORTH);
+		dialog.add(list, BorderLayout.CENTER);
+		buttons.setLayout(new FlowLayout(FlowLayout.RIGHT));
+		buttons.add(cancel);
+		buttons.add(ok);
+		dialog.add(buttons, BorderLayout.SOUTH);
+		dialog.pack();
+		dialog.setVisible(true);
+		try {
+			wait();
+		} catch (InterruptedException ie) {
+		}
+		if (actionCommand.equals(ACTION_OK)) {
+			if (c.allowMultipleSelections()) {
+				c.setSelectedIndexes(list.getSelectedIndexes());
+			} else {
+				c.setSelectedIndex(list.getSelectedIndex());
+			}
+		}
+		dialog.dispose();
+		ownerFrame.dispose();
 	}
-	if (c.getDefaultChoice() >= 0 && c.getDefaultChoice() < choices.length)
-	{
-	    list.select(c.getDefaultChoice());
-	}
-	dialog.setLayout(new BorderLayout());
-	dialog.add(label, BorderLayout.NORTH);
-	dialog.add(list, BorderLayout.CENTER);
-	buttons.setLayout(new FlowLayout(FlowLayout.RIGHT));
-	buttons.add(cancel);
-	buttons.add(ok);
-	dialog.add(buttons, BorderLayout.SOUTH);
-	dialog.pack();
-	dialog.setVisible(true);
-	try
-	{
-	    wait();
-	}
-	catch (InterruptedException ie)
-	{
-	}
-	if (actionCommand.equals(ACTION_OK))
-	{
-	    if (c.allowMultipleSelections())
-	    {
-		c.setSelectedIndexes(list.getSelectedIndexes());
-	    }
-	    else
-	    {
-		c.setSelectedIndex(list.getSelectedIndex());
-	    }
-	}
-	dialog.dispose();
-	ownerFrame.dispose();
-    }
 
-    @Override
-    protected synchronized void handleConfirmation(ConfirmationCallback c)
-    {
-	Frame ownerFrame = new Frame();
-	Dialog dialog = new Dialog(ownerFrame);
-	switch (c.getMessageType())
-	{
-	    case ConfirmationCallback.ERROR:
-		dialog.setTitle(messages.getString("callback.error"));
-		break;
-	    case ConfirmationCallback.INFORMATION:
-		dialog.setTitle(messages.getString("callback.information"));
-		break;
-	    case ConfirmationCallback.WARNING:
-		dialog.setTitle(messages.getString("callback.warning"));
-		break;
-	    default:
-		dialog.setTitle("");
+	@Override
+	protected synchronized void handleConfirmation(ConfirmationCallback c) {
+		Frame ownerFrame = new Frame();
+		Dialog dialog = new Dialog(ownerFrame);
+		switch (c.getMessageType()) {
+		case ConfirmationCallback.ERROR:
+			dialog.setTitle(messages.getString("callback.error"));
+			break;
+		case ConfirmationCallback.INFORMATION:
+			dialog.setTitle(messages.getString("callback.information"));
+			break;
+		case ConfirmationCallback.WARNING:
+			dialog.setTitle(messages.getString("callback.warning"));
+			break;
+		default:
+			dialog.setTitle("");
+		}
+		dialog.setLayout(new GridLayout(2, 1));
+		dialog.add(new Label(c.getPrompt()));
+		Panel buttons = new Panel();
+		buttons.setLayout(new FlowLayout(FlowLayout.RIGHT));
+		dialog.add(buttons);
+		String[] choices = null;
+		int[] values = null;
+		switch (c.getOptionType()) {
+		case ConfirmationCallback.OK_CANCEL_OPTION:
+			choices = new String[] { messages.getString("callback.cancel"), messages.getString("callback.ok") };
+			values = new int[] { ConfirmationCallback.CANCEL, ConfirmationCallback.OK };
+			break;
+		case ConfirmationCallback.YES_NO_CANCEL_OPTION:
+			choices = new String[] { messages.getString("callback.cancel"), messages.getString("callback.no"),
+					messages.getString("callback.yes") };
+			values = new int[] { ConfirmationCallback.CANCEL, ConfirmationCallback.NO, ConfirmationCallback.YES };
+			break;
+		case ConfirmationCallback.YES_NO_OPTION:
+			choices = new String[] { messages.getString("callback.no"), messages.getString("callback.yes") };
+			values = new int[] { ConfirmationCallback.NO, ConfirmationCallback.YES };
+			break;
+		case ConfirmationCallback.UNSPECIFIED_OPTION:
+			choices = c.getOptions();
+			values = new int[choices.length];
+			for (int i = 0; i < values.length; i++)
+				values[i] = i;
+			break;
+		default:
+			throw new IllegalArgumentException();
+		}
+		for (int i = 0; i < choices.length; i++) {
+			Button b = new Button(choices[i]);
+			b.setActionCommand(choices[i]);
+			b.addActionListener(this);
+			buttons.add(b);
+		}
+		dialog.pack();
+		dialog.setVisible(true);
+		try {
+			wait();
+		} catch (InterruptedException ie) {
+		}
+		for (int i = 0; i < choices.length; i++) {
+			if (actionCommand.equals(choices[i])) {
+				c.setSelectedIndex(values[i]);
+				break;
+			}
+		}
+		dialog.dispose();
+		ownerFrame.dispose();
 	}
-	dialog.setLayout(new GridLayout(2, 1));
-	dialog.add(new Label(c.getPrompt()));
-	Panel buttons = new Panel();
-	buttons.setLayout(new FlowLayout(FlowLayout.RIGHT));
-	dialog.add(buttons);
-	String[] choices = null;
-	int[] values = null;
-	switch (c.getOptionType())
-	{
-	    case ConfirmationCallback.OK_CANCEL_OPTION:
-		choices = new String[] { messages.getString("callback.cancel"),
-			messages.getString("callback.ok") };
-		values = new int[] { ConfirmationCallback.CANCEL,
-			ConfirmationCallback.OK };
-		break;
-	    case ConfirmationCallback.YES_NO_CANCEL_OPTION:
-		choices = new String[] { messages.getString("callback.cancel"),
-			messages.getString("callback.no"),
-			messages.getString("callback.yes") };
-		values = new int[] { ConfirmationCallback.CANCEL,
-			ConfirmationCallback.NO, ConfirmationCallback.YES };
-		break;
-	    case ConfirmationCallback.YES_NO_OPTION:
-		choices = new String[] { messages.getString("callback.no"),
-			messages.getString("callback.yes") };
-		values = new int[] { ConfirmationCallback.NO,
-			ConfirmationCallback.YES };
-		break;
-	    case ConfirmationCallback.UNSPECIFIED_OPTION:
-		choices = c.getOptions();
-		values = new int[choices.length];
-		for (int i = 0; i < values.length; i++)
-		    values[i] = i;
-		break;
-	    default:
-		throw new IllegalArgumentException();
-	}
-	for (int i = 0; i < choices.length; i++)
-	{
-	    Button b = new Button(choices[i]);
-	    b.setActionCommand(choices[i]);
-	    b.addActionListener(this);
-	    buttons.add(b);
-	}
-	dialog.pack();
-	dialog.setVisible(true);
-	try
-	{
-	    wait();
-	}
-	catch (InterruptedException ie)
-	{
-	}
-	for (int i = 0; i < choices.length; i++)
-	{
-	    if (actionCommand.equals(choices[i]))
-	    {
-		c.setSelectedIndex(values[i]);
-		break;
-	    }
-	}
-	dialog.dispose();
-	ownerFrame.dispose();
-    }
 
-    @Override
-    protected synchronized void handleLanguage(LanguageCallback c)
-    {
-	Locale[] locales = Locale.getAvailableLocales();
-	String[] languages = new String[locales.length];
-	Locale def = Locale.getDefault();
-	int defind = 0;
-	for (int i = 0; i < locales.length; i++)
-	{
-	    StringBuilder lang = new StringBuilder(
-		    locales[i].getDisplayLanguage(locales[i]));
-	    String country = locales[i].getDisplayCountry(locales[i]);
-	    String variant = locales[i].getDisplayVariant(locales[i]);
-	    if (country.length() > 0 && variant.length() > 0)
-	    {
-		lang.append(" (");
-		lang.append(country);
-		lang.append(", ");
-		lang.append(variant);
-		lang.append(")");
-	    }
-	    else if (country.length() > 0)
-	    {
-		lang.append(" (");
-		lang.append(country);
-		lang.append(")");
-	    }
-	    else if (variant.length() > 0)
-	    {
-		lang.append(" (");
-		lang.append(variant);
-		lang.append(")");
-	    }
-	    languages[i] = lang.toString();
-	    if (locales[i].equals(def))
-		defind = i;
+	@Override
+	protected synchronized void handleLanguage(LanguageCallback c) {
+		Locale[] locales = Locale.getAvailableLocales();
+		String[] languages = new String[locales.length];
+		Locale def = Locale.getDefault();
+		int defind = 0;
+		for (int i = 0; i < locales.length; i++) {
+			StringBuilder lang = new StringBuilder(locales[i].getDisplayLanguage(locales[i]));
+			String country = locales[i].getDisplayCountry(locales[i]);
+			String variant = locales[i].getDisplayVariant(locales[i]);
+			if (country.length() > 0 && variant.length() > 0) {
+				lang.append(" (");
+				lang.append(country);
+				lang.append(", ");
+				lang.append(variant);
+				lang.append(")");
+			} else if (country.length() > 0) {
+				lang.append(" (");
+				lang.append(country);
+				lang.append(")");
+			} else if (variant.length() > 0) {
+				lang.append(" (");
+				lang.append(variant);
+				lang.append(")");
+			}
+			languages[i] = lang.toString();
+			if (locales[i].equals(def))
+				defind = i;
+		}
+		ChoiceCallback c2 = new ChoiceCallback(messages.getString("callback.language"), languages, defind, false);
+		handleChoice(c2);
+		c.setLocale(def);
+		if (c2.getSelectedIndexes() != null && c2.getSelectedIndexes().length > 0) {
+			int index = c2.getSelectedIndexes()[0];
+			if (index >= 0 && index < locales.length)
+				c.setLocale(locales[index]);
+		}
 	}
-	ChoiceCallback c2 = new ChoiceCallback(
-		messages.getString("callback.language"), languages, defind,
-		false);
-	handleChoice(c2);
-	c.setLocale(def);
-	if (c2.getSelectedIndexes() != null
-		&& c2.getSelectedIndexes().length > 0)
-	{
-	    int index = c2.getSelectedIndexes()[0];
-	    if (index >= 0 && index < locales.length)
-		c.setLocale(locales[index]);
-	}
-    }
 
-    @Override
-    protected synchronized void handleName(NameCallback c)
-    {
-	Frame ownerFrame = new Frame();
-	Dialog dialog = new Dialog(ownerFrame);
-	dialog.setTitle(c.getPrompt());
-	dialog.setLayout(new GridLayout(3, 1));
-	Label label = new Label(c.getPrompt());
-	TextField input = new TextField();
-	if (c.getDefaultName() != null)
-	{
-	    input.setText(c.getDefaultName());
+	@Override
+	protected synchronized void handleName(NameCallback c) {
+		Frame ownerFrame = new Frame();
+		Dialog dialog = new Dialog(ownerFrame);
+		dialog.setTitle(c.getPrompt());
+		dialog.setLayout(new GridLayout(3, 1));
+		Label label = new Label(c.getPrompt());
+		TextField input = new TextField();
+		if (c.getDefaultName() != null) {
+			input.setText(c.getDefaultName());
+		}
+		Panel buttons = new Panel();
+		Button ok = new Button(messages.getString("callback.ok"));
+		ok.setActionCommand(ACTION_OK);
+		ok.addActionListener(this);
+		Button cancel = new Button(messages.getString("callback.cancel"));
+		cancel.setActionCommand(ACTION_CANCEL);
+		cancel.addActionListener(this);
+		dialog.add(label);
+		dialog.add(input);
+		buttons.setLayout(new FlowLayout(FlowLayout.RIGHT));
+		buttons.add(ok);
+		buttons.add(cancel);
+		dialog.add(buttons);
+		dialog.pack();
+		dialog.setVisible(true);
+		try {
+			wait();
+		} catch (InterruptedException ie) {
+		}
+		if (actionCommand.equals(ACTION_OK)) {
+			c.setName(input.getText());
+		}
+		dialog.dispose();
+		ownerFrame.dispose();
 	}
-	Panel buttons = new Panel();
-	Button ok = new Button(messages.getString("callback.ok"));
-	ok.setActionCommand(ACTION_OK);
-	ok.addActionListener(this);
-	Button cancel = new Button(messages.getString("callback.cancel"));
-	cancel.setActionCommand(ACTION_CANCEL);
-	cancel.addActionListener(this);
-	dialog.add(label);
-	dialog.add(input);
-	buttons.setLayout(new FlowLayout(FlowLayout.RIGHT));
-	buttons.add(ok);
-	buttons.add(cancel);
-	dialog.add(buttons);
-	dialog.pack();
-	dialog.setVisible(true);
-	try
-	{
-	    wait();
-	}
-	catch (InterruptedException ie)
-	{
-	}
-	if (actionCommand.equals(ACTION_OK))
-	{
-	    c.setName(input.getText());
-	}
-	dialog.dispose();
-	ownerFrame.dispose();
-    }
 
-    @Override
-    protected synchronized void handlePassword(PasswordCallback c)
-    {
-	Frame ownerFrame = new Frame();
-	Dialog dialog = new Dialog(ownerFrame);
-	dialog.setTitle(c.getPrompt());
-	dialog.setLayout(new GridLayout(3, 1));
-	Label label = new Label(c.getPrompt());
-	TextField input = new TextField();
-	if (!c.isEchoOn())
-	{
-	    input.setEchoChar('*');
+	@Override
+	protected synchronized void handlePassword(PasswordCallback c) {
+		Frame ownerFrame = new Frame();
+		Dialog dialog = new Dialog(ownerFrame);
+		dialog.setTitle(c.getPrompt());
+		dialog.setLayout(new GridLayout(3, 1));
+		Label label = new Label(c.getPrompt());
+		TextField input = new TextField();
+		if (!c.isEchoOn()) {
+			input.setEchoChar('*');
+		}
+		Panel buttons = new Panel();
+		Button ok = new Button(messages.getString("callback.ok"));
+		ok.setActionCommand(ACTION_OK);
+		ok.addActionListener(this);
+		Button cancel = new Button(messages.getString("callback.cancel"));
+		cancel.setActionCommand(ACTION_CANCEL);
+		cancel.addActionListener(this);
+		dialog.add(label);
+		dialog.add(input);
+		buttons.setLayout(new FlowLayout(FlowLayout.RIGHT));
+		buttons.add(ok);
+		buttons.add(cancel);
+		dialog.add(buttons);
+		dialog.pack();
+		dialog.setVisible(true);
+		try {
+			wait();
+		} catch (InterruptedException ie) {
+		}
+		if (actionCommand.equals(ACTION_OK)) {
+			c.setPassword(input.getText().toCharArray());
+		}
+		dialog.dispose();
+		ownerFrame.dispose();
 	}
-	Panel buttons = new Panel();
-	Button ok = new Button(messages.getString("callback.ok"));
-	ok.setActionCommand(ACTION_OK);
-	ok.addActionListener(this);
-	Button cancel = new Button(messages.getString("callback.cancel"));
-	cancel.setActionCommand(ACTION_CANCEL);
-	cancel.addActionListener(this);
-	dialog.add(label);
-	dialog.add(input);
-	buttons.setLayout(new FlowLayout(FlowLayout.RIGHT));
-	buttons.add(ok);
-	buttons.add(cancel);
-	dialog.add(buttons);
-	dialog.pack();
-	dialog.setVisible(true);
-	try
-	{
-	    wait();
+
+	@Override
+	protected synchronized void handleTextInput(TextInputCallback c) {
+		Frame ownerFrame = new Frame();
+		Dialog dialog = new Dialog(ownerFrame);
+		dialog.setTitle(c.getPrompt());
+		dialog.setLayout(new BorderLayout());
+		Label label = new Label(c.getPrompt());
+		TextArea text = new TextArea(10, 40);
+		if (c.getDefaultText() != null) {
+			text.setText(c.getDefaultText());
+		}
+		Panel buttons = new Panel();
+		Button ok = new Button(messages.getString("callback.ok"));
+		ok.setActionCommand(ACTION_OK);
+		ok.addActionListener(this);
+		Button cancel = new Button(messages.getString("callback.cancel"));
+		cancel.setActionCommand(ACTION_CANCEL);
+		cancel.addActionListener(this);
+		dialog.add(label, BorderLayout.NORTH);
+		dialog.add(text, BorderLayout.CENTER);
+		buttons.setLayout(new FlowLayout(FlowLayout.RIGHT));
+		buttons.add(ok);
+		buttons.add(cancel);
+		dialog.add(buttons, BorderLayout.SOUTH);
+		dialog.pack();
+		dialog.setVisible(true);
+		try {
+			wait();
+		} catch (InterruptedException ie) {
+		}
+		if (actionCommand.equals(ACTION_OK)) {
+			c.setText(text.getText());
+		}
+		dialog.dispose();
+		ownerFrame.dispose();
 	}
-	catch (InterruptedException ie)
-	{
+
+	// ActionListener interface implementation.
+	// -------------------------------------------------------------------------
+
+	@Override
+	protected synchronized void handleTextOutput(TextOutputCallback c) {
+		Frame ownerFrame = new Frame();
+		Dialog dialog = new Dialog(ownerFrame);
+		dialog.setLayout(new GridLayout(2, 1));
+		switch (c.getMessageType() /* c.getStyle() */) {
+		case ConfirmationCallback.ERROR:
+			dialog.setTitle(messages.getString("callback.error"));
+			break;
+		case ConfirmationCallback.INFORMATION:
+			dialog.setTitle(messages.getString("callback.information"));
+			break;
+		case ConfirmationCallback.WARNING:
+			dialog.setTitle(messages.getString("callback.warning"));
+			break;
+		default:
+			dialog.setTitle("");
+		}
+		Label label = new Label(c.getMessage());
+		Panel buttons = new Panel();
+		Button ok = new Button(messages.getString("callback.ok"));
+		buttons.setLayout(new FlowLayout(FlowLayout.RIGHT));
+		buttons.add(ok);
+		ok.addActionListener(this);
+		dialog.add(label);
+		dialog.add(buttons);
+		dialog.pack();
+		dialog.setVisible(true);
+		try {
+			wait();
+		} catch (InterruptedException ie) {
+		}
+		dialog.dispose();
+		ownerFrame.dispose();
 	}
-	if (actionCommand.equals(ACTION_OK))
-	{
-	    c.setPassword(input.getText().toCharArray());
+
+	// WindowListener interface implementation.
+	// -------------------------------------------------------------------------
+
+	@Override
+	public void windowActivated(WindowEvent we) {
 	}
-	dialog.dispose();
-	ownerFrame.dispose();
-    }
 
-    @Override
-    protected synchronized void handleTextInput(TextInputCallback c)
-    {
-	Frame ownerFrame = new Frame();
-	Dialog dialog = new Dialog(ownerFrame);
-	dialog.setTitle(c.getPrompt());
-	dialog.setLayout(new BorderLayout());
-	Label label = new Label(c.getPrompt());
-	TextArea text = new TextArea(10, 40);
-	if (c.getDefaultText() != null)
-	{
-	    text.setText(c.getDefaultText());
+	@Override
+	public void windowClosed(WindowEvent we) {
 	}
-	Panel buttons = new Panel();
-	Button ok = new Button(messages.getString("callback.ok"));
-	ok.setActionCommand(ACTION_OK);
-	ok.addActionListener(this);
-	Button cancel = new Button(messages.getString("callback.cancel"));
-	cancel.setActionCommand(ACTION_CANCEL);
-	cancel.addActionListener(this);
-	dialog.add(label, BorderLayout.NORTH);
-	dialog.add(text, BorderLayout.CENTER);
-	buttons.setLayout(new FlowLayout(FlowLayout.RIGHT));
-	buttons.add(ok);
-	buttons.add(cancel);
-	dialog.add(buttons, BorderLayout.SOUTH);
-	dialog.pack();
-	dialog.setVisible(true);
-	try
-	{
-	    wait();
+
+	@Override
+	public synchronized void windowClosing(WindowEvent we) {
+		actionCommand = ACTION_NONE;
+		notifyAll();
 	}
-	catch (InterruptedException ie)
-	{
+
+	@Override
+	public void windowDeactivated(WindowEvent we) {
 	}
-	if (actionCommand.equals(ACTION_OK))
-	{
-	    c.setText(text.getText());
+
+	@Override
+	public void windowDeiconified(WindowEvent we) {
 	}
-	dialog.dispose();
-	ownerFrame.dispose();
-    }
 
-    // ActionListener interface implementation.
-    // -------------------------------------------------------------------------
-
-    @Override
-    protected synchronized void handleTextOutput(TextOutputCallback c)
-    {
-	Frame ownerFrame = new Frame();
-	Dialog dialog = new Dialog(ownerFrame);
-	dialog.setLayout(new GridLayout(2, 1));
-	switch (c.getMessageType() /* c.getStyle() */)
-	{
-	    case ConfirmationCallback.ERROR:
-		dialog.setTitle(messages.getString("callback.error"));
-		break;
-	    case ConfirmationCallback.INFORMATION:
-		dialog.setTitle(messages.getString("callback.information"));
-		break;
-	    case ConfirmationCallback.WARNING:
-		dialog.setTitle(messages.getString("callback.warning"));
-		break;
-	    default:
-		dialog.setTitle("");
+	@Override
+	public void windowIconified(WindowEvent we) {
 	}
-	Label label = new Label(c.getMessage());
-	Panel buttons = new Panel();
-	Button ok = new Button(messages.getString("callback.ok"));
-	buttons.setLayout(new FlowLayout(FlowLayout.RIGHT));
-	buttons.add(ok);
-	ok.addActionListener(this);
-	dialog.add(label);
-	dialog.add(buttons);
-	dialog.pack();
-	dialog.setVisible(true);
-	try
-	{
-	    wait();
+
+	@Override
+	public void windowOpened(WindowEvent we) {
 	}
-	catch (InterruptedException ie)
-	{
-	}
-	dialog.dispose();
-	ownerFrame.dispose();
-    }
-
-    // WindowListener interface implementation.
-    // -------------------------------------------------------------------------
-
-    @Override
-    public void windowActivated(WindowEvent we)
-    {
-    }
-
-    @Override
-    public void windowClosed(WindowEvent we)
-    {
-    }
-
-    @Override
-    public synchronized void windowClosing(WindowEvent we)
-    {
-	actionCommand = ACTION_NONE;
-	notifyAll();
-    }
-
-    @Override
-    public void windowDeactivated(WindowEvent we)
-    {
-    }
-
-    @Override
-    public void windowDeiconified(WindowEvent we)
-    {
-    }
-
-    @Override
-    public void windowIconified(WindowEvent we)
-    {
-    }
-
-    @Override
-    public void windowOpened(WindowEvent we)
-    {
-    }
 }

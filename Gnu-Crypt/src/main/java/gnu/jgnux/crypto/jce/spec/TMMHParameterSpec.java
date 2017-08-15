@@ -49,74 +49,68 @@ import gnu.jgnu.security.prng.IRandom;
  * This class is little more than a container for the key stream, tag length,
  * and prefix parameters for the TMMH algorithm.
  */
-public class TMMHParameterSpec implements AlgorithmParameterSpec
-{
-    /** The keystream. */
-    protected IRandom keystream;
+public class TMMHParameterSpec implements AlgorithmParameterSpec {
+	/** The keystream. */
+	protected IRandom keystream;
 
-    /** The tag length. */
-    protected Integer tagLength;
+	/** The tag length. */
+	protected Integer tagLength;
 
-    /** The prefix. */
-    protected byte[] prefix;
+	/** The prefix. */
+	protected byte[] prefix;
 
-    /**
-     * Create a new parameter specification with no prefix.
-     *
-     * @param keystream
-     *            The (PRNG) key stream.
-     * @param tagLength
-     *            The tag length.
-     */
-    public TMMHParameterSpec(IRandom keystream, Integer tagLength)
-    {
-	this(keystream, tagLength, null);
-    }
+	/**
+	 * Create a new parameter specification with no prefix.
+	 *
+	 * @param keystream
+	 *            The (PRNG) key stream.
+	 * @param tagLength
+	 *            The tag length.
+	 */
+	public TMMHParameterSpec(IRandom keystream, Integer tagLength) {
+		this(keystream, tagLength, null);
+	}
 
-    /**
-     * Create a new parameter specification.
-     *
-     * @param keystream
-     *            The (PRNG) key stream.
-     * @param tagLength
-     *            The tag length.
-     * @param prefix
-     *            The prefix.
-     */
-    public TMMHParameterSpec(IRandom keystream, Integer tagLength, byte[] prefix)
-    {
-	this.keystream = keystream;
-	this.tagLength = tagLength;
-	this.prefix = prefix;
-    }
+	/**
+	 * Create a new parameter specification.
+	 *
+	 * @param keystream
+	 *            The (PRNG) key stream.
+	 * @param tagLength
+	 *            The tag length.
+	 * @param prefix
+	 *            The prefix.
+	 */
+	public TMMHParameterSpec(IRandom keystream, Integer tagLength, byte[] prefix) {
+		this.keystream = keystream;
+		this.tagLength = tagLength;
+		this.prefix = prefix;
+	}
 
-    /**
-     * Return the key stream this specification was initialized with.
-     *
-     * @return The key stream.
-     */
-    public IRandom getKeystream()
-    {
-	return keystream;
-    }
+	/**
+	 * Return the key stream this specification was initialized with.
+	 *
+	 * @return The key stream.
+	 */
+	public IRandom getKeystream() {
+		return keystream;
+	}
 
-    /**
-     * Return the prefix, or <code>null</code> if no prefix was specified.
-     *
-     * @return The prefix.
-     */
-    public byte[] getPrefix()
-    {
-	return prefix;
-    }
+	/**
+	 * Return the prefix, or <code>null</code> if no prefix was specified.
+	 *
+	 * @return The prefix.
+	 */
+	public byte[] getPrefix() {
+		return prefix;
+	}
 
-    /**
-     * Return the tag length this specification was initialized with.
-     *
-     * @return The tag length.
-     */
-    public Integer getTagLength()
-    {
-	return tagLength;
-    }
+	/**
+	 * Return the tag length this specification was initialized with.
+	 *
+	 * @return The tag length.
+	 */
+	public Integer getTagLength() {
+		return tagLength;
+	}
 }

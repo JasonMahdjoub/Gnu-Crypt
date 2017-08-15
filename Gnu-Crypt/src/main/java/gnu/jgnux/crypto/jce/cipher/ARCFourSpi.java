@@ -58,123 +58,101 @@ import gnu.jgnux.crypto.prng.PRNGFactory;
  * The <i>Service Provider Interface</i> (<b>SPI</b>) for the ARCFOUR stream
  * cipher.
  */
-public class ARCFourSpi extends CipherSpi
-{
-    private IRandom keystream;
+public class ARCFourSpi extends CipherSpi {
+	private IRandom keystream;
 
-    public ARCFourSpi()
-    {
-	super();
-	keystream = PRNGFactory.getInstance(Registry.ARCFOUR_PRNG);
-    }
-
-    @Override
-    protected byte[] engineDoFinal(byte[] in, int offset, int length)
-    {
-	return engineUpdate(in, offset, length);
-    }
-
-    @Override
-    protected int engineDoFinal(byte[] in, int inOffset, int length, byte[] out, int outOffset) throws ShortBufferException
-    {
-	return engineUpdate(in, inOffset, length, out, outOffset);
-    }
-
-    @Override
-    protected int engineGetBlockSize()
-    {
-	return 0; // stream cipher.
-    }
-
-    @Override
-    protected byte[] engineGetIV()
-    {
-	return null;
-    }
-
-    @Override
-    protected int engineGetOutputSize(int in)
-    {
-	return in;
-    }
-
-    @Override
-    protected AlgorithmParameters engineGetParameters()
-    {
-	return null;
-    }
-
-    @Override
-    protected void engineInit(int mode, Key key, AlgorithmParameters p, SecureRandom r) throws InvalidKeyException
-    {
-	engineInit(mode, key, r);
-    }
-
-    @Override
-    protected void engineInit(int mode, Key key, AlgorithmParameterSpec p, SecureRandom r) throws InvalidKeyException
-    {
-	engineInit(mode, key, r);
-    }
-
-    @Override
-    protected void engineInit(int mode, Key key, SecureRandom r) throws InvalidKeyException
-    {
-	if (mode != Cipher.ENCRYPT_MODE && mode != Cipher.DECRYPT_MODE)
-	    throw new IllegalArgumentException(
-		    "arcfour is for encryption or decryption only");
-	if (key == null || !key.getFormat().equalsIgnoreCase("RAW"))
-	    throw new InvalidKeyException("key must be non-null raw bytes");
-	HashMap<Object, Object> attrib = new HashMap<>();
-	attrib.put(ARCFour.ARCFOUR_KEY_MATERIAL, key.getEncoded());
-	keystream.init(attrib);
-    }
-
-    @Override
-    protected void engineSetMode(String s)
-    {
-	// ignored.
-    }
-
-    @Override
-    protected void engineSetPadding(String s)
-    {
-	// ignored.
-    }
-
-    @Override
-    protected byte[] engineUpdate(byte[] in, int offset, int length)
-    {
-	if (length < 0 || offset < 0 || length + offset > in.length)
-	    throw new ArrayIndexOutOfBoundsException();
-	byte[] result = new byte[length];
-	try
-	{
-	    for (int i = 0; i < length; i++)
-		result[i] = (byte) (in[i + offset] ^ keystream.nextByte());
+	public ARCFourSpi() {
+		super();
+		keystream = PRNGFactory.getInstance(Registry.ARCFOUR_PRNG);
 	}
-	catch (LimitReachedException wontHappen)
-	{
-	}
-	return result;
-    }
 
-    @Override
-    protected int engineUpdate(byte[] in, int inOffset, int length, byte[] out, int outOffset) throws ShortBufferException
-    {
-	if (length < 0 || inOffset < 0 || length + inOffset > in.length
-		|| outOffset < 0)
-	    throw new ArrayIndexOutOfBoundsException();
-	if (outOffset + length > out.length)
-	    throw new ShortBufferException();
-	try
-	{
-	    for (int i = 0; i < length; i++)
-		out[i + outOffset] = (byte) (in[i + inOffset]
-			^ keystream.nextByte());
+	@Override
+	protected byte[] engineDoFinal(byte[] in, int offset, int length) {
+		return engineUpdate(in, offset, length);
 	}
-	catch (LimitReachedException wontHappen)
-	{
+
+	@Override
+	protected int engineDoFinal(byte[] in, int inOffset, int length, byte[] out, int outOffset)
+			throws ShortBufferException {
+		return engineUpdate(in, inOffset, length, out, outOffset);
 	}
-	return length;
-    }
+
+	@Override
+	protected int engineGetBlockSize() {
+		return 0; // stream cipher.
+	}
+
+	@Override
+	protected byte[] engineGetIV() {
+		return null;
+	}
+
+	@Override
+	protected int engineGetOutputSize(int in) {
+		return in;
+	}
+
+	@Override
+	protected AlgorithmParameters engineGetParameters() {
+		return null;
+	}
+
+	@Override
+	protected void engineInit(int mode, Key key, AlgorithmParameters p, SecureRandom r) throws InvalidKeyException {
+		engineInit(mode, key, r);
+	}
+
+	@Override
+	protected void engineInit(int mode, Key key, AlgorithmParameterSpec p, SecureRandom r) throws InvalidKeyException {
+		engineInit(mode, key, r);
+	}
+
+	@Override
+	protected void engineInit(int mode, Key key, SecureRandom r) throws InvalidKeyException {
+		if (mode != Cipher.ENCRYPT_MODE && mode != Cipher.DECRYPT_MODE)
+			throw new IllegalArgumentException("arcfour is for encryption or decryption only");
+		if (key == null || !key.getFormat().equalsIgnoreCase("RAW"))
+			throw new InvalidKeyException("key must be non-null raw bytes");
+		HashMap<Object, Object> attrib = new HashMap<>();
+		attrib.put(ARCFour.ARCFOUR_KEY_MATERIAL, key.getEncoded());
+		keystream.init(attrib);
+	}
+
+	@Override
+	protected void engineSetMode(String s) {
+		// ignored.
+	}
+
+	@Override
+	protected void engineSetPadding(String s) {
+		// ignored.
+	}
+
+	@Override
+	protected byte[] engineUpdate(byte[] in, int offset, int length) {
+		if (length < 0 || offset < 0 || length + offset > in.length)
+			throw new ArrayIndexOutOfBoundsException();
+		byte[] result = new byte[length];
+		try {
+			for (int i = 0; i < length; i++)
+				result[i] = (byte) (in[i + offset] ^ keystream.nextByte());
+		} catch (LimitReachedException wontHappen) {
+		}
+		return result;
+	}
+
+	@Override
+	protected int engineUpdate(byte[] in, int inOffset, int length, byte[] out, int outOffset)
+			throws ShortBufferException {
+		if (length < 0 || inOffset < 0 || length + inOffset > in.length || outOffset < 0)
+			throw new ArrayIndexOutOfBoundsException();
+		if (outOffset + length > out.length)
+			throw new ShortBufferException();
+		try {
+			for (int i = 0; i < length; i++)
+				out[i + outOffset] = (byte) (in[i + inOffset] ^ keystream.nextByte());
+		} catch (LimitReachedException wontHappen) {
+		}
+		return length;
+	}
 }

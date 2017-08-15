@@ -46,14 +46,13 @@ import javax.net.ssl.HandshakeCompletedEvent;
  *
  * @author Casey Marshall (rsdio@metastatic.org)
  */
-public interface HandshakeCompletedListener extends java.util.EventListener
-{
+public interface HandshakeCompletedListener extends java.util.EventListener {
 
-    /**
-     * Called when the handshake phase of the SSL protocol completes.
-     *
-     * @param event
-     *            The event describing the new connection.
-     */
-    void handshakeCompleted(HandshakeCompletedEvent event);
+	/**
+	 * Called when the handshake phase of the SSL protocol completes.
+	 *
+	 * @param event
+	 *            The event describing the new connection.
+	 */
+	void handshakeCompleted(HandshakeCompletedEvent event);
 }

@@ -95,123 +95,118 @@ import gnu.vm.jgnu.security.SignatureException;
  * @since 1.2
  * @see Signature
  */
-public final class SignedObject implements Serializable
-{
-    private static final long serialVersionUID = 720502720485447167L;
+public final class SignedObject implements Serializable {
+	private static final long serialVersionUID = 720502720485447167L;
 
-    /** @serial */
-    private byte[] content;
+	/** @serial */
+	private byte[] content;
 
-    /** @serial */
-    private byte[] signature;
+	/** @serial */
+	private byte[] signature;
 
-    /** @serial */
-    private String thealgorithm;
+	/** @serial */
+	private String thealgorithm;
 
-    /**
-     * Constructs a new instance of <code>SignedObject</code> from a
-     * {@link Serializable} object. The object is signed with a designated
-     * private key and a signature engine.
-     *
-     * @param object
-     *            the object to sign.
-     * @param signingKey
-     *            the key to use.
-     * @param signingEngine
-     *            the signature engine to use.
-     * @throws IOException
-     *             if a serialization error occurred.
-     * @throws InvalidKeyException
-     *             if the key is invalid.
-     * @throws SignatureException
-     *             if a signing error occurs.
-     */
-    public SignedObject(Serializable object, PrivateKey signingKey, Signature signingEngine) throws IOException, InvalidKeyException, SignatureException
-    {
-	thealgorithm = signingEngine.getAlgorithm();
+	/**
+	 * Constructs a new instance of <code>SignedObject</code> from a
+	 * {@link Serializable} object. The object is signed with a designated private
+	 * key and a signature engine.
+	 *
+	 * @param object
+	 *            the object to sign.
+	 * @param signingKey
+	 *            the key to use.
+	 * @param signingEngine
+	 *            the signature engine to use.
+	 * @throws IOException
+	 *             if a serialization error occurred.
+	 * @throws InvalidKeyException
+	 *             if the key is invalid.
+	 * @throws SignatureException
+	 *             if a signing error occurs.
+	 */
+	public SignedObject(Serializable object, PrivateKey signingKey, Signature signingEngine)
+			throws IOException, InvalidKeyException, SignatureException {
+		thealgorithm = signingEngine.getAlgorithm();
 
-	ByteArrayOutputStream ostream = new ByteArrayOutputStream();
-	ObjectOutputStream p = new ObjectOutputStream(ostream);
-	p.writeObject(object);
-	p.flush();
-	p.close();
+		ByteArrayOutputStream ostream = new ByteArrayOutputStream();
+		ObjectOutputStream p = new ObjectOutputStream(ostream);
+		p.writeObject(object);
+		p.flush();
+		p.close();
 
-	content = ostream.toByteArray();
+		content = ostream.toByteArray();
 
-	signingEngine.initSign(signingKey);
-	signingEngine.update(content);
-	signature = signingEngine.sign();
-    }
+		signingEngine.initSign(signingKey);
+		signingEngine.update(content);
+		signature = signingEngine.sign();
+	}
 
-    /**
-     * Returns the name of the signature algorithm.
-     *
-     * @return the name of the signature algorithm.
-     */
-    public String getAlgorithm()
-    {
-	return thealgorithm;
-    }
+	/**
+	 * Returns the name of the signature algorithm.
+	 *
+	 * @return the name of the signature algorithm.
+	 */
+	public String getAlgorithm() {
+		return thealgorithm;
+	}
 
-    /**
-     * Returns the encapsulated object. The object is de-serialized before being
-     * returned.
-     *
-     * @return the encapsulated object.
-     * @throws IOException
-     *             if a de-serialization error occurs.
-     * @throws ClassNotFoundException
-     *             if the encapsulated object's class was not found.
-     */
-    public Object getObject() throws IOException, ClassNotFoundException
-    {
-	ByteArrayInputStream bais = new ByteArrayInputStream(content);
-	ObjectInput oi = new ObjectInputStream(bais);
-	Object obj = oi.readObject();
-	oi.close();
-	bais.close();
+	/**
+	 * Returns the encapsulated object. The object is de-serialized before being
+	 * returned.
+	 *
+	 * @return the encapsulated object.
+	 * @throws IOException
+	 *             if a de-serialization error occurs.
+	 * @throws ClassNotFoundException
+	 *             if the encapsulated object's class was not found.
+	 */
+	public Object getObject() throws IOException, ClassNotFoundException {
+		ByteArrayInputStream bais = new ByteArrayInputStream(content);
+		ObjectInput oi = new ObjectInputStream(bais);
+		Object obj = oi.readObject();
+		oi.close();
+		bais.close();
 
-	return obj;
-    }
+		return obj;
+	}
 
-    /**
-     * Returns the signature bytes of the encapsulated object.
-     *
-     * @return the signature bytes of the encapsulated object.
-     */
-    public byte[] getSignature()
-    {
-	return signature.clone();
+	/**
+	 * Returns the signature bytes of the encapsulated object.
+	 *
+	 * @return the signature bytes of the encapsulated object.
+	 */
+	public byte[] getSignature() {
+		return signature.clone();
 
-    }
+	}
 
-    /** Called to restore the state of the SignedObject from a stream. */
-    private void readObject(ObjectInputStream s) throws IOException, ClassNotFoundException
-    {
-	s.defaultReadObject();
-	content = content.clone();
-	signature = signature.clone();
-    }
+	/** Called to restore the state of the SignedObject from a stream. */
+	private void readObject(ObjectInputStream s) throws IOException, ClassNotFoundException {
+		s.defaultReadObject();
+		content = content.clone();
+		signature = signature.clone();
+	}
 
-    /**
-     * Verifies the encapsulated digital signature by checking that it was
-     * generated by the owner of a designated public key.
-     *
-     * @param verificationKey
-     *            the public key to use.
-     * @param verificationEngine
-     *            the signature engine to use.
-     * @return <code>true</code> if signature is correct, <code>false</code>
-     *         otherwise.
-     * @throws InvalidKeyException
-     *             if the key is invalid.
-     * @throws SignatureException
-     *             if verification fails.
-     */
-    public boolean verify(PublicKey verificationKey, Signature verificationEngine) throws InvalidKeyException, SignatureException
-    {
-	verificationEngine.initVerify(verificationKey);
-	verificationEngine.update(content);
-	return verificationEngine.verify(signature);
-    }
+	/**
+	 * Verifies the encapsulated digital signature by checking that it was generated
+	 * by the owner of a designated public key.
+	 *
+	 * @param verificationKey
+	 *            the public key to use.
+	 * @param verificationEngine
+	 *            the signature engine to use.
+	 * @return <code>true</code> if signature is correct, <code>false</code>
+	 *         otherwise.
+	 * @throws InvalidKeyException
+	 *             if the key is invalid.
+	 * @throws SignatureException
+	 *             if verification fails.
+	 */
+	public boolean verify(PublicKey verificationKey, Signature verificationEngine)
+			throws InvalidKeyException, SignatureException {
+		verificationEngine.initVerify(verificationKey);
+		verificationEngine.update(content);
+		return verificationEngine.verify(signature);
+	}
 }

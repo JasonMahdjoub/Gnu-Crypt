@@ -47,105 +47,90 @@ import gnu.vm.jgnu.security.spec.AlgorithmParameterSpec;
 /**
  * Implementation of the identity cipher.
  */
-final class NullCipherImpl extends CipherSpi
-{
+final class NullCipherImpl extends CipherSpi {
 
-    // Constructor.
-    // -------------------------------------------------------------------------
+	// Constructor.
+	// -------------------------------------------------------------------------
 
-    NullCipherImpl()
-    {
-	super();
-    }
+	NullCipherImpl() {
+		super();
+	}
 
-    // Instance methods.
-    // -------------------------------------------------------------------------
+	// Instance methods.
+	// -------------------------------------------------------------------------
 
-    @Override
-    protected byte[] engineDoFinal(byte[] input, int inputOffset, int inputLen)
-    {
-	return engineUpdate(input, inputOffset, inputLen);
-    }
+	@Override
+	protected byte[] engineDoFinal(byte[] input, int inputOffset, int inputLen) {
+		return engineUpdate(input, inputOffset, inputLen);
+	}
 
-    @Override
-    protected int engineDoFinal(byte[] input, int inputOffset, int inputLen, byte[] output, int outputOffset) throws ShortBufferException
-    {
-	return engineUpdate(input, inputOffset, inputLen, output, outputOffset);
-    }
+	@Override
+	protected int engineDoFinal(byte[] input, int inputOffset, int inputLen, byte[] output, int outputOffset)
+			throws ShortBufferException {
+		return engineUpdate(input, inputOffset, inputLen, output, outputOffset);
+	}
 
-    @Override
-    protected int engineGetBlockSize()
-    {
-	return 1;
-    }
+	@Override
+	protected int engineGetBlockSize() {
+		return 1;
+	}
 
-    @Override
-    protected byte[] engineGetIV()
-    {
-	return null;
-    }
+	@Override
+	protected byte[] engineGetIV() {
+		return null;
+	}
 
-    @Override
-    protected int engineGetOutputSize(int inputLen)
-    {
-	return inputLen;
-    }
+	@Override
+	protected int engineGetOutputSize(int inputLen) {
+		return inputLen;
+	}
 
-    @Override
-    protected AlgorithmParameters engineGetParameters()
-    {
-	return null;
-    }
+	@Override
+	protected AlgorithmParameters engineGetParameters() {
+		return null;
+	}
 
-    @Override
-    protected void engineInit(int mode, Key key, AlgorithmParameters params, SecureRandom random)
-    {
-    }
+	@Override
+	protected void engineInit(int mode, Key key, AlgorithmParameters params, SecureRandom random) {
+	}
 
-    @Override
-    protected void engineInit(int mode, Key key, AlgorithmParameterSpec spec, SecureRandom random)
-    {
-    }
+	@Override
+	protected void engineInit(int mode, Key key, AlgorithmParameterSpec spec, SecureRandom random) {
+	}
 
-    @Override
-    protected void engineInit(int mode, Key key, SecureRandom random)
-    {
-    }
+	@Override
+	protected void engineInit(int mode, Key key, SecureRandom random) {
+	}
 
-    @Override
-    protected void engineSetMode(String mode)
-    {
-    }
+	@Override
+	protected void engineSetMode(String mode) {
+	}
 
-    @Override
-    protected void engineSetPadding(String padding)
-    {
-    }
+	@Override
+	protected void engineSetPadding(String padding) {
+	}
 
-    @Override
-    protected byte[] engineUpdate(byte[] input, int inputOffset, int inputLen)
-    {
-	if (input == null)
-	    return new byte[0];
-	if (inputOffset < 0 || inputLen < 0
-		|| inputOffset + inputLen > input.length)
-	    throw new ArrayIndexOutOfBoundsException();
-	byte[] output = new byte[inputLen];
-	System.arraycopy(input, inputOffset, output, 0, inputLen);
-	return output;
-    }
+	@Override
+	protected byte[] engineUpdate(byte[] input, int inputOffset, int inputLen) {
+		if (input == null)
+			return new byte[0];
+		if (inputOffset < 0 || inputLen < 0 || inputOffset + inputLen > input.length)
+			throw new ArrayIndexOutOfBoundsException();
+		byte[] output = new byte[inputLen];
+		System.arraycopy(input, inputOffset, output, 0, inputLen);
+		return output;
+	}
 
-    @Override
-    protected int engineUpdate(byte[] input, int inputOffset, int inputLen, byte[] output, int outputOffset) throws ShortBufferException
-    {
-	if (input == null)
-	    return 0;
-	if (inputOffset < 0 || inputLen < 0
-		|| inputOffset + inputLen > input.length || outputOffset < 0)
-	    throw new ArrayIndexOutOfBoundsException();
-	if (output.length - outputOffset < inputLen)
-	    throw new ShortBufferException();
-	System.arraycopy(input, inputOffset, output, outputOffset, inputLen);
-	return inputLen;
-    }
+	@Override
+	protected int engineUpdate(byte[] input, int inputOffset, int inputLen, byte[] output, int outputOffset)
+			throws ShortBufferException {
+		if (input == null)
+			return 0;
+		if (inputOffset < 0 || inputLen < 0 || inputOffset + inputLen > input.length || outputOffset < 0)
+			throw new ArrayIndexOutOfBoundsException();
+		if (output.length - outputOffset < inputLen)
+			throw new ShortBufferException();
+		System.arraycopy(input, inputOffset, output, outputOffset, inputLen);
+		return inputLen;
+	}
 }

@@ -60,183 +60,168 @@ import gnu.vm.jgnux.crypto.spec.DHParameterSpec;
  * Eric Rescorla.</li>
  * </ol>
  */
-public class GnuDHKeyPairGenerator implements IKeyPairGenerator
-{
+public class GnuDHKeyPairGenerator implements IKeyPairGenerator {
 
-    /**
-     * Property name of an optional {@link SecureRandom} instance to use. The
-     * default is to use a classloader singleton from {@link PRNG}.
-     */
-    public static final String SOURCE_OF_RANDOMNESS = "gnu.crypto.dh.prng";
+	/**
+	 * Property name of an optional {@link SecureRandom} instance to use. The
+	 * default is to use a classloader singleton from {@link PRNG}.
+	 */
+	public static final String SOURCE_OF_RANDOMNESS = "gnu.crypto.dh.prng";
 
-    /**
-     * Property name of an optional {@link DHGenParameterSpec} or
-     * {@link DHParameterSpec} instance to use for this generator.
-     */
-    public static final String DH_PARAMETERS = "gnu.crypto.dh.params";
+	/**
+	 * Property name of an optional {@link DHGenParameterSpec} or
+	 * {@link DHParameterSpec} instance to use for this generator.
+	 */
+	public static final String DH_PARAMETERS = "gnu.crypto.dh.params";
 
-    /** Property name of the size in bits (Integer) of the public prime (p). */
-    public static final String PRIME_SIZE = "gnu.crypto.dh.L";
+	/** Property name of the size in bits (Integer) of the public prime (p). */
+	public static final String PRIME_SIZE = "gnu.crypto.dh.L";
 
-    /**
-     * Property name of the size in bits (Integer) of the private exponent (x).
-     */
-    public static final String EXPONENT_SIZE = "gnu.crypto.dh.m";
+	/**
+	 * Property name of the size in bits (Integer) of the private exponent (x).
+	 */
+	public static final String EXPONENT_SIZE = "gnu.crypto.dh.m";
 
-    /**
-     * Property name of the preferred encoding format to use when externalizing
-     * generated instance of key-pairs from this generator. The property is
-     * taken to be an {@link Integer} that encapsulates an encoding format
-     * identifier.
-     */
-    public static final String PREFERRED_ENCODING_FORMAT = "gnu.crypto.dh.encoding";
+	/**
+	 * Property name of the preferred encoding format to use when externalizing
+	 * generated instance of key-pairs from this generator. The property is taken to
+	 * be an {@link Integer} that encapsulates an encoding format identifier.
+	 */
+	public static final String PREFERRED_ENCODING_FORMAT = "gnu.crypto.dh.encoding";
 
-    /** Default value for the size in bits of the public prime (p). */
-    public static final int DEFAULT_PRIME_SIZE = 512;
+	/** Default value for the size in bits of the public prime (p). */
+	public static final int DEFAULT_PRIME_SIZE = 512;
 
-    /** Default value for the size in bits of the private exponent (x). */
-    public static final int DEFAULT_EXPONENT_SIZE = 160;
+	/** Default value for the size in bits of the private exponent (x). */
+	public static final int DEFAULT_EXPONENT_SIZE = 160;
 
-    /** Default encoding format to use when none was specified. */
-    private static final int DEFAULT_ENCODING_FORMAT = Registry.RAW_ENCODING_ID;
+	/** Default encoding format to use when none was specified. */
+	private static final int DEFAULT_ENCODING_FORMAT = Registry.RAW_ENCODING_ID;
 
-    /** The optional {@link SecureRandom} instance to use. */
-    private SecureRandom rnd;
+	/** The optional {@link SecureRandom} instance to use. */
+	private SecureRandom rnd;
 
-    /** The desired size in bits of the public prime (p). */
-    private int l;
+	/** The desired size in bits of the public prime (p). */
+	private int l;
 
-    /** The desired size in bits of the private exponent (x). */
-    private int m;
+	/** The desired size in bits of the private exponent (x). */
+	private int m;
 
-    /*
-     * private BigInteger seed; private BigInteger counter;
-     */
-    private BigInteger q;
+	/*
+	 * private BigInteger seed; private BigInteger counter;
+	 */
+	private BigInteger q;
 
-    private BigInteger p;
+	private BigInteger p;
 
-    // private BigInteger j;
-    private BigInteger g;
+	// private BigInteger j;
+	private BigInteger g;
 
-    /** Our default source of randomness. */
-    private PRNG prng = null;
+	/** Our default source of randomness. */
+	private PRNG prng = null;
 
-    /** Preferred encoding format of generated keys. */
-    private int preferredFormat;
+	/** Preferred encoding format of generated keys. */
+	private int preferredFormat;
 
-    // default 0-arguments constructor
+	// default 0-arguments constructor
 
-    @Override
-    public KeyPair generate()
-    {
-	if (p == null)
-	{
-	    BigInteger[] params = new RFC2631(m, l, rnd).generateParameters();
-	    // seed = params[RFC2631.DH_PARAMS_SEED];
-	    // counter = params[RFC2631.DH_PARAMS_COUNTER];
-	    q = params[RFC2631.DH_PARAMS_Q];
-	    p = params[RFC2631.DH_PARAMS_P];
-	    // j = params[RFC2631.DH_PARAMS_J];
-	    g = params[RFC2631.DH_PARAMS_G];
+	@Override
+	public KeyPair generate() {
+		if (p == null) {
+			BigInteger[] params = new RFC2631(m, l, rnd).generateParameters();
+			// seed = params[RFC2631.DH_PARAMS_SEED];
+			// counter = params[RFC2631.DH_PARAMS_COUNTER];
+			q = params[RFC2631.DH_PARAMS_Q];
+			p = params[RFC2631.DH_PARAMS_P];
+			// j = params[RFC2631.DH_PARAMS_J];
+			g = params[RFC2631.DH_PARAMS_G];
+		}
+		// generate a private number x of length m such as: 1 < x < q - 1
+		BigInteger q_minus_1 = null;
+		if (q != null)
+			q_minus_1 = q.subtract(BigInteger.ONE);
+		// We already check if m is modulo 8 in `setup.' This could just
+		// be m >>> 3.
+		byte[] mag = new byte[(m + 7) / 8];
+		BigInteger x;
+		while (true) {
+			nextRandomBytes(mag);
+			x = new BigInteger(1, mag);
+			if (x.bitLength() == m && x.compareTo(BigInteger.ONE) > 0
+					&& (q_minus_1 == null || x.compareTo(q_minus_1) < 0))
+				break;
+		}
+		BigInteger y = g.modPow(x, p);
+		PrivateKey secK = new GnuDHPrivateKey(preferredFormat, q, p, g, x);
+		PublicKey pubK = new GnuDHPublicKey(preferredFormat, q, p, g, y);
+		return new KeyPair(pubK, secK);
 	}
-	// generate a private number x of length m such as: 1 < x < q - 1
-	BigInteger q_minus_1 = null;
-	if (q != null)
-	    q_minus_1 = q.subtract(BigInteger.ONE);
-	// We already check if m is modulo 8 in `setup.' This could just
-	// be m >>> 3.
-	byte[] mag = new byte[(m + 7) / 8];
-	BigInteger x;
-	while (true)
-	{
-	    nextRandomBytes(mag);
-	    x = new BigInteger(1, mag);
-	    if (x.bitLength() == m && x.compareTo(BigInteger.ONE) > 0
-		    && (q_minus_1 == null || x.compareTo(q_minus_1) < 0))
-		break;
+
+	private PRNG getDefaultPRNG() {
+		if (prng == null)
+			prng = PRNG.getInstance();
+
+		return prng;
 	}
-	BigInteger y = g.modPow(x, p);
-	PrivateKey secK = new GnuDHPrivateKey(preferredFormat, q, p, g, x);
-	PublicKey pubK = new GnuDHPublicKey(preferredFormat, q, p, g, y);
-	return new KeyPair(pubK, secK);
-    }
 
-    private PRNG getDefaultPRNG()
-    {
-	if (prng == null)
-	    prng = PRNG.getInstance();
-
-	return prng;
-    }
-
-    @Override
-    public String name()
-    {
-	return Registry.DH_KPG;
-    }
-
-    /**
-     * Fills the designated byte array with random data.
-     *
-     * @param buffer
-     *            the byte array to fill with random data.
-     */
-    private void nextRandomBytes(byte[] buffer)
-    {
-	if (rnd != null)
-	    rnd.nextBytes(buffer);
-	else
-	    getDefaultPRNG().nextBytes(buffer);
-    }
-
-    @Override
-    public void setup(Map<String, ?> attributes)
-    {
-	// do we have a SecureRandom, or should we use our own?
-	rnd = (SecureRandom) attributes.get(SOURCE_OF_RANDOMNESS);
-	// are we given a set of Diffie-Hellman generation parameters or we
-	// shall
-	// use our own?
-	Object params = attributes.get(DH_PARAMETERS);
-	// find out the desired sizes
-	if (params instanceof DHGenParameterSpec)
-	{
-	    DHGenParameterSpec jceSpec = (DHGenParameterSpec) params;
-	    l = jceSpec.getPrimeSize();
-	    m = jceSpec.getExponentSize();
+	@Override
+	public String name() {
+		return Registry.DH_KPG;
 	}
-	else if (params instanceof DHParameterSpec)
-	{
-	    // FIXME: I'm not sure this is correct. It seems to behave the
-	    // same way as Sun's RI, but I don't know if this behavior is
-	    // documented anywhere.
-	    DHParameterSpec jceSpec = (DHParameterSpec) params;
-	    p = jceSpec.getP();
-	    g = jceSpec.getG();
-	    l = p.bitLength();
-	    m = jceSpec.getL();
-	    // If no exponent size was given, generate an exponent as
-	    // large as the prime.
-	    if (m == 0)
-		m = l;
+
+	/**
+	 * Fills the designated byte array with random data.
+	 *
+	 * @param buffer
+	 *            the byte array to fill with random data.
+	 */
+	private void nextRandomBytes(byte[] buffer) {
+		if (rnd != null)
+			rnd.nextBytes(buffer);
+		else
+			getDefaultPRNG().nextBytes(buffer);
 	}
-	else
-	{
-	    Integer bi = (Integer) attributes.get(PRIME_SIZE);
-	    l = (bi == null ? DEFAULT_PRIME_SIZE : bi.intValue());
-	    bi = (Integer) attributes.get(EXPONENT_SIZE);
-	    m = (bi == null ? DEFAULT_EXPONENT_SIZE : bi.intValue());
+
+	@Override
+	public void setup(Map<String, ?> attributes) {
+		// do we have a SecureRandom, or should we use our own?
+		rnd = (SecureRandom) attributes.get(SOURCE_OF_RANDOMNESS);
+		// are we given a set of Diffie-Hellman generation parameters or we
+		// shall
+		// use our own?
+		Object params = attributes.get(DH_PARAMETERS);
+		// find out the desired sizes
+		if (params instanceof DHGenParameterSpec) {
+			DHGenParameterSpec jceSpec = (DHGenParameterSpec) params;
+			l = jceSpec.getPrimeSize();
+			m = jceSpec.getExponentSize();
+		} else if (params instanceof DHParameterSpec) {
+			// FIXME: I'm not sure this is correct. It seems to behave the
+			// same way as Sun's RI, but I don't know if this behavior is
+			// documented anywhere.
+			DHParameterSpec jceSpec = (DHParameterSpec) params;
+			p = jceSpec.getP();
+			g = jceSpec.getG();
+			l = p.bitLength();
+			m = jceSpec.getL();
+			// If no exponent size was given, generate an exponent as
+			// large as the prime.
+			if (m == 0)
+				m = l;
+		} else {
+			Integer bi = (Integer) attributes.get(PRIME_SIZE);
+			l = (bi == null ? DEFAULT_PRIME_SIZE : bi.intValue());
+			bi = (Integer) attributes.get(EXPONENT_SIZE);
+			m = (bi == null ? DEFAULT_EXPONENT_SIZE : bi.intValue());
+		}
+		if ((l % 256) != 0 || l < DEFAULT_PRIME_SIZE)
+			throw new IllegalArgumentException("invalid modulus size");
+		if ((m % 8) != 0 || m < DEFAULT_EXPONENT_SIZE)
+			throw new IllegalArgumentException("invalid exponent size");
+		if (m > l)
+			throw new IllegalArgumentException("exponent size > modulus size");
+		// what is the preferred encoding format
+		Integer formatID = (Integer) attributes.get(PREFERRED_ENCODING_FORMAT);
+		preferredFormat = formatID == null ? DEFAULT_ENCODING_FORMAT : formatID.intValue();
 	}
-	if ((l % 256) != 0 || l < DEFAULT_PRIME_SIZE)
-	    throw new IllegalArgumentException("invalid modulus size");
-	if ((m % 8) != 0 || m < DEFAULT_EXPONENT_SIZE)
-	    throw new IllegalArgumentException("invalid exponent size");
-	if (m > l)
-	    throw new IllegalArgumentException("exponent size > modulus size");
-	// what is the preferred encoding format
-	Integer formatID = (Integer) attributes.get(PREFERRED_ENCODING_FORMAT);
-	preferredFormat = formatID == null ? DEFAULT_ENCODING_FORMAT
-		: formatID.intValue();
-    }
 }

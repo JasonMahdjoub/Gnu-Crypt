@@ -43,64 +43,60 @@ import java.util.Set;
 /**
  * @since 1.4
  */
-public interface PolicyNode
-{
+public interface PolicyNode {
 
-    /**
-     * Get the iterator of the child nodes of this node. The returned iterator
-     * is (naturally) unmodifiable.
-     *
-     * @return An iterator over the child nodes.
-     */
-    Iterator<? extends PolicyNode> getChildren();
+	/**
+	 * Get the iterator of the child nodes of this node. The returned iterator is
+	 * (naturally) unmodifiable.
+	 *
+	 * @return An iterator over the child nodes.
+	 */
+	Iterator<? extends PolicyNode> getChildren();
 
-    /**
-     * Get the depth of this node within the tree, starting at 0 for the root
-     * node.
-     *
-     * @return The depth of this node.
-     */
-    int getDepth();
+	/**
+	 * Get the depth of this node within the tree, starting at 0 for the root node.
+	 *
+	 * @return The depth of this node.
+	 */
+	int getDepth();
 
-    /**
-     * Returns a set of policies (string OIDs) that will satisfy this node's
-     * policy. The root node should always return the singleton set with the
-     * element "any-policy".
-     *
-     * @return The set of expected policies.
-     */
-    Set<String> getExpectedPolicies();
+	/**
+	 * Returns a set of policies (string OIDs) that will satisfy this node's policy.
+	 * The root node should always return the singleton set with the element
+	 * "any-policy".
+	 *
+	 * @return The set of expected policies.
+	 */
+	Set<String> getExpectedPolicies();
 
-    /**
-     * Returns the parent node of this node, or null if this is the root node.
-     *
-     * @return The parent node, or null.
-     */
-    PolicyNode getParent();
+	/**
+	 * Returns the parent node of this node, or null if this is the root node.
+	 *
+	 * @return The parent node, or null.
+	 */
+	PolicyNode getParent();
 
-    /**
-     * Returns a set of {@link PolicyQualifierInfo} objects that qualify the
-     * valid policy of this node. The root node should always return the empty
-     * set.
-     *
-     * @return The set of {@link PolicyQualifierInfo} objects.
-     */
-    Set<? extends PolicyQualifierInfo> getPolicyQualifiers();
+	/**
+	 * Returns a set of {@link PolicyQualifierInfo} objects that qualify the valid
+	 * policy of this node. The root node should always return the empty set.
+	 *
+	 * @return The set of {@link PolicyQualifierInfo} objects.
+	 */
+	Set<? extends PolicyQualifierInfo> getPolicyQualifiers();
 
-    /**
-     * Get the policy OID this node represents. The root node should return the
-     * special value "any-policy".
-     *
-     * @return The policy of this node.
-     */
-    String getValidPolicy();
+	/**
+	 * Get the policy OID this node represents. The root node should return the
+	 * special value "any-policy".
+	 *
+	 * @return The policy of this node.
+	 */
+	String getValidPolicy();
 
-    /**
-     * Return the criticality flag of this policy node. Nodes who return true
-     * for this method should be considered critical. The root node is never
-     * critical.
-     *
-     * @return The criticality flag.
-     */
-    boolean isCritical();
+	/**
+	 * Return the criticality flag of this policy node. Nodes who return true for
+	 * this method should be considered critical. The root node is never critical.
+	 *
+	 * @return The criticality flag.
+	 */
+	boolean isCritical();
 }

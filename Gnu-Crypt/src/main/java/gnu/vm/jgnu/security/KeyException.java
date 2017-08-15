@@ -47,56 +47,51 @@ import gnu.vm.jgnu.security.Key;
  * @see Key
  * @status updated to 1.4
  */
-public class KeyException extends GeneralSecurityException
-{
-    /**
-     * Compatible with JDK 1.1+.
-     */
-    private static final long serialVersionUID = -7483676942812432108L;
+public class KeyException extends GeneralSecurityException {
+	/**
+	 * Compatible with JDK 1.1+.
+	 */
+	private static final long serialVersionUID = -7483676942812432108L;
 
-    /**
-     * This method initializes a new instance of <code>KeyException</code> with
-     * no descriptive message.
-     */
-    public KeyException()
-    {
-    }
+	/**
+	 * This method initializes a new instance of <code>KeyException</code> with no
+	 * descriptive message.
+	 */
+	public KeyException() {
+	}
 
-    /**
-     * This method initializes a new instance of <code>KeyException</code> with
-     * a descriptive message.
-     *
-     * @param msg
-     *            the descriptive message
-     */
-    public KeyException(String msg)
-    {
-	super(msg);
-    }
+	/**
+	 * This method initializes a new instance of <code>KeyException</code> with a
+	 * descriptive message.
+	 *
+	 * @param msg
+	 *            the descriptive message
+	 */
+	public KeyException(String msg) {
+		super(msg);
+	}
 
-    /**
-     * Create a new instance with a descriptive error message and a cause.
-     * 
-     * @param s
-     *            the descriptive error message
-     * @param cause
-     *            the cause
-     * @since 1.5
-     */
-    public KeyException(String s, Throwable cause)
-    {
-	super(s, cause);
-    }
+	/**
+	 * Create a new instance with a descriptive error message and a cause.
+	 * 
+	 * @param s
+	 *            the descriptive error message
+	 * @param cause
+	 *            the cause
+	 * @since 1.5
+	 */
+	public KeyException(String s, Throwable cause) {
+		super(s, cause);
+	}
 
-    /**
-     * Create a new instance with a cause.
-     * 
-     * @param cause
-     *            the cause
-     * @since 1.5
-     */
-    public KeyException(Throwable cause)
-    {
-	super(cause);
-    }
+	/**
+	 * Create a new instance with a cause.
+	 * 
+	 * @param cause
+	 *            the cause
+	 * @since 1.5
+	 */
+	public KeyException(Throwable cause) {
+		super(cause);
+	}
 }

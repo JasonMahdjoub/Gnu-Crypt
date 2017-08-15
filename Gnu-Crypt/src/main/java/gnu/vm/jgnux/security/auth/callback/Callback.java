@@ -63,6 +63,5 @@ package gnu.vm.jgnux.security.auth.callback;
  * @see TextInputCallback
  * @see TextOutputCallback
  */
-public interface Callback
-{
+public interface Callback {
 }

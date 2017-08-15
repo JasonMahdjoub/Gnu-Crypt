@@ -85,31 +85,27 @@ import gnu.jgnux.crypto.key.BaseKeyAgreementParty;
  * Menezes, A., van Oorschot, P. and S. Vanstone.</li>
  * </ol>
  */
-public abstract class ElGamalKeyAgreement extends BaseKeyAgreementParty
-{
-    public static final String SOURCE_OF_RANDOMNESS = "gnu.crypto.elgamal.ka.prng";
+public abstract class ElGamalKeyAgreement extends BaseKeyAgreementParty {
+	public static final String SOURCE_OF_RANDOMNESS = "gnu.crypto.elgamal.ka.prng";
 
-    public static final String KA_ELGAMAL_RECIPIENT_PRIVATE_KEY = "gnu.crypto.elgamal.ka.recipient.private.key";
+	public static final String KA_ELGAMAL_RECIPIENT_PRIVATE_KEY = "gnu.crypto.elgamal.ka.recipient.private.key";
 
-    public static final String KA_ELGAMAL_RECIPIENT_PUBLIC_KEY = "gnu.crypto.elgamal.ka.recipient.public.key";
+	public static final String KA_ELGAMAL_RECIPIENT_PUBLIC_KEY = "gnu.crypto.elgamal.ka.recipient.public.key";
 
-    /** The shared secret key. */
-    protected BigInteger ZZ;
+	/** The shared secret key. */
+	protected BigInteger ZZ;
 
-    protected ElGamalKeyAgreement()
-    {
-	super(Registry.ELGAMAL_KA);
-    }
+	protected ElGamalKeyAgreement() {
+		super(Registry.ELGAMAL_KA);
+	}
 
-    @Override
-    protected void engineReset()
-    {
-	ZZ = null;
-    }
+	@Override
+	protected void engineReset() {
+		ZZ = null;
+	}
 
-    @Override
-    protected byte[] engineSharedSecret()
-    {
-	return Util.trim(ZZ);
-    }
+	@Override
+	protected byte[] engineSharedSecret() {
+		return Util.trim(ZZ);
+	}
 }

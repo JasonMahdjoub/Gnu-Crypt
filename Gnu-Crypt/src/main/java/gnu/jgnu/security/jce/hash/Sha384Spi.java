@@ -43,10 +43,8 @@ import gnu.jgnu.security.Registry;
  * The implementation of the SHA-2-2 (384-bit) <i>Service Provider Interface</i>
  * (<b>SPI</b>) adapter.
  */
-public class Sha384Spi extends MessageDigestAdapter
-{
-    public Sha384Spi()
-    {
-	super(Registry.SHA384_HASH);
-    }
+public class Sha384Spi extends MessageDigestAdapter {
+	public Sha384Spi() {
+		super(Registry.SHA384_HASH);
+	}
 }

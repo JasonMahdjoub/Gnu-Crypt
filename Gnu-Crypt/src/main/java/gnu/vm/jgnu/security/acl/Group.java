@@ -50,47 +50,45 @@ import java.util.Enumeration;
  *
  * @author Aaron M. Renn (arenn@urbanophile.com)
  */
-public interface Group extends Principal
-{
-    /**
-     * This method adds a new <code>Principal</code> to this group.
-     *
-     * @param user
-     *            The new <code>Principal</code> to add
-     *
-     * @return <code>true</code> if the user was successfully added or
-     *         <code>false</code> if the user is already a member
-     */
-    boolean addMember(Principal user);
+public interface Group extends Principal {
+	/**
+	 * This method adds a new <code>Principal</code> to this group.
+	 *
+	 * @param user
+	 *            The new <code>Principal</code> to add
+	 *
+	 * @return <code>true</code> if the user was successfully added or
+	 *         <code>false</code> if the user is already a member
+	 */
+	boolean addMember(Principal user);
 
-    /**
-     * This method tests whether or not a given <code>Principal</code> is a
-     * member of this group.
-     *
-     * @param member
-     *            The <code>Principal</code> to test for membership
-     *
-     * @return <code>true</code> if the user is member, <code>false</code>
-     *         otherwise
-     */
-    boolean isMember(Principal member);
+	/**
+	 * This method tests whether or not a given <code>Principal</code> is a member
+	 * of this group.
+	 *
+	 * @param member
+	 *            The <code>Principal</code> to test for membership
+	 *
+	 * @return <code>true</code> if the user is member, <code>false</code> otherwise
+	 */
+	boolean isMember(Principal member);
 
-    /**
-     * This method returns a list of all members of the group as an
-     * <code>Enumeration</code>.
-     *
-     * @return The list of all members of the group
-     */
-    Enumeration<? extends Principal> members();
+	/**
+	 * This method returns a list of all members of the group as an
+	 * <code>Enumeration</code>.
+	 *
+	 * @return The list of all members of the group
+	 */
+	Enumeration<? extends Principal> members();
 
-    /**
-     * This method deletes a member from the group.
-     *
-     * @param user
-     *            The <code>Principal</code> to delete
-     *
-     * @return <code>true</code> if the user was successfully deleted or
-     *         <code>false</code> if the user is not a member of the group
-     */
-    boolean removeMember(Principal user);
+	/**
+	 * This method deletes a member from the group.
+	 *
+	 * @param user
+	 *            The <code>Principal</code> to delete
+	 *
+	 * @return <code>true</code> if the user was successfully deleted or
+	 *         <code>false</code> if the user is not a member of the group
+	 */
+	boolean removeMember(Principal user);
 }

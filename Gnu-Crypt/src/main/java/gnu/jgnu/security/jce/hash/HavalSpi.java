@@ -43,10 +43,8 @@ import gnu.jgnu.security.Registry;
  * The implementation of the HAVAL <i>Service Provider Interface</i>
  * (<b>SPI</b>) adapter.
  */
-public class HavalSpi extends MessageDigestAdapter
-{
-    public HavalSpi()
-    {
-	super(Registry.HAVAL_HASH);
-    }
+public class HavalSpi extends MessageDigestAdapter {
+	public HavalSpi() {
+		super(Registry.HAVAL_HASH);
+	}
 }

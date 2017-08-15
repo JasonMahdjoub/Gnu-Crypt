@@ -56,10 +56,9 @@ import gnu.vm.jgnu.security.Signature;
  * @since 1.1
  * @status updated to 1.4
  */
-public interface PublicKey extends Key
-{
-    /**
-     * The version identifier used for serialization.
-     */
-    long serialVersionUID = 7187392471159151072L;
+public interface PublicKey extends Key {
+	/**
+	 * The version identifier used for serialization.
+	 */
+	long serialVersionUID = 7187392471159151072L;
 } // interface PublicKey

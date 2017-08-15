@@ -51,120 +51,109 @@ import java.security.GeneralSecurityException;
  * @since 1.4
  * @status updated to 1.4
  */
-public class CertStoreException extends GeneralSecurityException
-{
-    /**
-     * Compatible with JDK 1.4+.
-     */
-    private static final long serialVersionUID = 2395296107471573245L;
+public class CertStoreException extends GeneralSecurityException {
+	/**
+	 * Compatible with JDK 1.4+.
+	 */
+	private static final long serialVersionUID = 2395296107471573245L;
 
-    /**
-     * Create an exception without a message. The cause may be initialized.
-     */
-    public CertStoreException()
-    {
-    }
+	/**
+	 * Create an exception without a message. The cause may be initialized.
+	 */
+	public CertStoreException() {
+	}
 
-    /**
-     * Create an exception with a message. The cause may be initialized.
-     *
-     * @param msg
-     *            a message to display with exception
-     */
-    public CertStoreException(String msg)
-    {
-	super(msg);
-    }
+	/**
+	 * Create an exception with a message. The cause may be initialized.
+	 *
+	 * @param msg
+	 *            a message to display with exception
+	 */
+	public CertStoreException(String msg) {
+		super(msg);
+	}
 
-    /**
-     * Create an exception with a cause and a message.
-     *
-     * @param msg
-     *            the message
-     * @param cause
-     *            the cause
-     */
-    public CertStoreException(String msg, Throwable cause)
-    {
-	super(msg);
-	initCause(cause);
-    }
+	/**
+	 * Create an exception with a cause and a message.
+	 *
+	 * @param msg
+	 *            the message
+	 * @param cause
+	 *            the cause
+	 */
+	public CertStoreException(String msg, Throwable cause) {
+		super(msg);
+		initCause(cause);
+	}
 
-    /**
-     * Create an exception with a cause. The message will be
-     * <code>cause == null ? null : cause.toString()</code>.
-     *
-     * @param cause
-     *            the cause
-     */
-    public CertStoreException(Throwable cause)
-    {
-	this(cause == null ? null : cause.toString(), cause);
-    }
+	/**
+	 * Create an exception with a cause. The message will be
+	 * <code>cause == null ? null : cause.toString()</code>.
+	 *
+	 * @param cause
+	 *            the cause
+	 */
+	public CertStoreException(Throwable cause) {
+		this(cause == null ? null : cause.toString(), cause);
+	}
 
-    /**
-     * Get the cause, null if unknown.
-     *
-     * @return the cause
-     */
-    @Override
-    public Throwable getCause()
-    {
-	return super.getCause();
-    }
+	/**
+	 * Get the cause, null if unknown.
+	 *
+	 * @return the cause
+	 */
+	@Override
+	public Throwable getCause() {
+		return super.getCause();
+	}
 
-    /**
-     * Get the detail message.
-     *
-     * @return the detail message
-     */
-    @Override
-    public String getMessage()
-    {
-	return super.getMessage();
-    }
+	/**
+	 * Get the detail message.
+	 *
+	 * @return the detail message
+	 */
+	@Override
+	public String getMessage() {
+		return super.getMessage();
+	}
 
-    /**
-     * Print the stack trace to <code>System.err</code>.
-     */
-    @Override
-    public void printStackTrace()
-    {
-	super.printStackTrace();
-    }
+	/**
+	 * Print the stack trace to <code>System.err</code>.
+	 */
+	@Override
+	public void printStackTrace() {
+		super.printStackTrace();
+	}
 
-    /**
-     * Print the stack trace to a stream.
-     *
-     * @param stream
-     *            the stream
-     */
-    @Override
-    public void printStackTrace(PrintStream stream)
-    {
-	super.printStackTrace(stream);
-    }
+	/**
+	 * Print the stack trace to a stream.
+	 *
+	 * @param stream
+	 *            the stream
+	 */
+	@Override
+	public void printStackTrace(PrintStream stream) {
+		super.printStackTrace(stream);
+	}
 
-    /**
-     * Print the stack trace to a stream.
-     *
-     * @param stream
-     *            the stream
-     */
-    @Override
-    public void printStackTrace(PrintWriter stream)
-    {
-	super.printStackTrace(stream);
-    }
+	/**
+	 * Print the stack trace to a stream.
+	 *
+	 * @param stream
+	 *            the stream
+	 */
+	@Override
+	public void printStackTrace(PrintWriter stream) {
+		super.printStackTrace(stream);
+	}
 
-    /**
-     * Convert this to a string, including its cause.
-     *
-     * @return the string conversion
-     */
-    @Override
-    public String toString()
-    {
-	return super.toString();
-    }
+	/**
+	 * Convert this to a string, including its cause.
+	 *
+	 * @return the string conversion
+	 */
+	@Override
+	public String toString() {
+		return super.toString();
+	}
 }

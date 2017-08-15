@@ -50,118 +50,98 @@ import gnu.jgnux.crypto.pad.WrongPaddingException;
  * at least one element behind this instance in the constructed chain;
  * otherwise, a {@link TransformerException} is thrown at initialisation time.
  */
-class PaddingTransformer extends Transformer
-{
-    private IPad delegate;
+class PaddingTransformer extends Transformer {
+	private IPad delegate;
 
-    private int outputBlockSize = 1;
+	private int outputBlockSize = 1;
 
-    PaddingTransformer(IPad padding)
-    {
-	super();
+	PaddingTransformer(IPad padding) {
+		super();
 
-	this.delegate = padding;
-    }
-
-    @Override
-    int delegateBlockSize()
-    {
-	return outputBlockSize;
-    }
-
-    @Override
-    void initDelegate(Map<Object, Object> attributes) throws TransformerException
-    {
-	if (tail == null)
-	{
-	    IllegalStateException cause = new IllegalStateException(
-		    "Padding transformer missing its tail!");
-	    throw new TransformerException("initDelegate()", cause);
+		this.delegate = padding;
 	}
-	outputBlockSize = tail.currentBlockSize();
-	delegate.init(outputBlockSize);
-    }
 
-    @Override
-    byte[] lastUpdateDelegate() throws TransformerException
-    {
-	byte[] result;
-	// process multiples of blocksize as much as possible
-	// catenate result from processing inBuffer with last-update( tail )
-	if (wired == Direction.FORWARD) // padding
-	{
-	    result = inBuffer.toByteArray();
-	    byte[] padding = delegate.pad(result, 0, result.length);
-	    inBuffer.write(padding, 0, padding.length);
+	@Override
+	int delegateBlockSize() {
+		return outputBlockSize;
 	}
-	else // unpadding
-	{
-	    byte[] tmp = inBuffer.toByteArray();
-	    inBuffer.reset();
-	    int realLength;
-	    try
-	    {
-		realLength = tmp.length; // should be outputBlockSize
-		realLength -= delegate.unpad(tmp, 0, tmp.length);
-	    }
-	    catch (WrongPaddingException x)
-	    {
-		throw new TransformerException("lastUpdateDelegate()", x);
-	    }
-	    inBuffer.write(tmp, 0, realLength);
-	}
-	result = inBuffer.toByteArray();
-	inBuffer.reset();
-	return result;
-    }
 
-    @Override
-    void resetDelegate()
-    {
-	delegate.reset();
-	outputBlockSize = 1;
-    }
+	@Override
+	void initDelegate(Map<Object, Object> attributes) throws TransformerException {
+		if (tail == null) {
+			IllegalStateException cause = new IllegalStateException("Padding transformer missing its tail!");
+			throw new TransformerException("initDelegate()", cause);
+		}
+		outputBlockSize = tail.currentBlockSize();
+		delegate.init(outputBlockSize);
+	}
 
-    @Override
-    byte[] updateDelegate(byte[] in, int offset, int length)
-    {
-	inBuffer.write(in, offset, length);
-	byte[] tmp = inBuffer.toByteArray();
-	inBuffer.reset();
-	byte[] result;
-	if (wired == Direction.FORWARD) // padding
-	{
-	    // buffers remaining bytes from (inBuffer + in) that are less than 1
-	    // block
-	    if (tmp.length < outputBlockSize)
-	    {
-		inBuffer.write(tmp, 0, tmp.length);
-		result = new byte[0];
-	    }
-	    else
-	    {
-		int newlen = outputBlockSize * (tmp.length / outputBlockSize);
-		inBuffer.write(tmp, newlen, tmp.length - newlen);
-		result = new byte[newlen];
-		System.arraycopy(tmp, 0, result, 0, newlen);
-	    }
+	@Override
+	byte[] lastUpdateDelegate() throws TransformerException {
+		byte[] result;
+		// process multiples of blocksize as much as possible
+		// catenate result from processing inBuffer with last-update( tail )
+		if (wired == Direction.FORWARD) // padding
+		{
+			result = inBuffer.toByteArray();
+			byte[] padding = delegate.pad(result, 0, result.length);
+			inBuffer.write(padding, 0, padding.length);
+		} else // unpadding
+		{
+			byte[] tmp = inBuffer.toByteArray();
+			inBuffer.reset();
+			int realLength;
+			try {
+				realLength = tmp.length; // should be outputBlockSize
+				realLength -= delegate.unpad(tmp, 0, tmp.length);
+			} catch (WrongPaddingException x) {
+				throw new TransformerException("lastUpdateDelegate()", x);
+			}
+			inBuffer.write(tmp, 0, realLength);
+		}
+		result = inBuffer.toByteArray();
+		inBuffer.reset();
+		return result;
 	}
-	else // unpadding
-	{
-	    // always keep in own buffer a max of 1 block to cater for
-	    // lastUpdate
-	    if (tmp.length < outputBlockSize)
-	    {
-		inBuffer.write(tmp, 0, tmp.length);
-		result = new byte[0];
-	    }
-	    else
-	    {
-		result = new byte[tmp.length - outputBlockSize];
-		System.arraycopy(tmp, 0, result, 0, result.length);
-		inBuffer.write(tmp, result.length, outputBlockSize);
-	    }
+
+	@Override
+	void resetDelegate() {
+		delegate.reset();
+		outputBlockSize = 1;
 	}
-	return result;
-    }
+
+	@Override
+	byte[] updateDelegate(byte[] in, int offset, int length) {
+		inBuffer.write(in, offset, length);
+		byte[] tmp = inBuffer.toByteArray();
+		inBuffer.reset();
+		byte[] result;
+		if (wired == Direction.FORWARD) // padding
+		{
+			// buffers remaining bytes from (inBuffer + in) that are less than 1
+			// block
+			if (tmp.length < outputBlockSize) {
+				inBuffer.write(tmp, 0, tmp.length);
+				result = new byte[0];
+			} else {
+				int newlen = outputBlockSize * (tmp.length / outputBlockSize);
+				inBuffer.write(tmp, newlen, tmp.length - newlen);
+				result = new byte[newlen];
+				System.arraycopy(tmp, 0, result, 0, newlen);
+			}
+		} else // unpadding
+		{
+			// always keep in own buffer a max of 1 block to cater for
+			// lastUpdate
+			if (tmp.length < outputBlockSize) {
+				inBuffer.write(tmp, 0, tmp.length);
+				result = new byte[0];
+			} else {
+				result = new byte[tmp.length - outputBlockSize];
+				System.arraycopy(tmp, 0, result, 0, result.length);
+				inBuffer.write(tmp, result.length, outputBlockSize);
+			}
+		}
+		return result;
+	}
 }

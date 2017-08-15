@@ -46,54 +46,49 @@ import gnu.vm.jgnu.security.GeneralSecurityException;
  * @since 1.2
  * @status updated to 1.4
  */
-public class KeyStoreException extends GeneralSecurityException
-{
-    /**
-     * Compatible with JDK 1.2+.
-     */
-    private static final long serialVersionUID = -1119353179322377262L;
+public class KeyStoreException extends GeneralSecurityException {
+	/**
+	 * Compatible with JDK 1.2+.
+	 */
+	private static final long serialVersionUID = -1119353179322377262L;
 
-    /**
-     * Create a new instance detailed error message.
-     */
-    public KeyStoreException()
-    {
-    }
+	/**
+	 * Create a new instance detailed error message.
+	 */
+	public KeyStoreException() {
+	}
 
-    /**
-     * Create a new instance with a detailed error message.
-     *
-     * @param msg
-     *            the descriptive error message
-     */
-    public KeyStoreException(String msg)
-    {
-	super(msg);
-    }
+	/**
+	 * Create a new instance with a detailed error message.
+	 *
+	 * @param msg
+	 *            the descriptive error message
+	 */
+	public KeyStoreException(String msg) {
+		super(msg);
+	}
 
-    /**
-     * Create a new instance with a descriptive error message and a cause.
-     * 
-     * @param s
-     *            the descriptive error message
-     * @param cause
-     *            the cause
-     * @since 1.5
-     */
-    public KeyStoreException(String s, Throwable cause)
-    {
-	super(s, cause);
-    }
+	/**
+	 * Create a new instance with a descriptive error message and a cause.
+	 * 
+	 * @param s
+	 *            the descriptive error message
+	 * @param cause
+	 *            the cause
+	 * @since 1.5
+	 */
+	public KeyStoreException(String s, Throwable cause) {
+		super(s, cause);
+	}
 
-    /**
-     * Create a new instance with a cause.
-     * 
-     * @param cause
-     *            the cause
-     * @since 1.5
-     */
-    public KeyStoreException(Throwable cause)
-    {
-	super(cause);
-    }
+	/**
+	 * Create a new instance with a cause.
+	 * 
+	 * @param cause
+	 *            the cause
+	 * @since 1.5
+	 */
+	public KeyStoreException(Throwable cause) {
+		super(cause);
+	}
 }

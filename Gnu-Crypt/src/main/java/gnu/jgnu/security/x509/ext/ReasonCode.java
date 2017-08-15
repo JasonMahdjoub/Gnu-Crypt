@@ -45,41 +45,37 @@ import gnu.jgnu.security.der.DER;
 import gnu.jgnu.security.der.DERReader;
 import gnu.jgnu.security.der.DERValue;
 
-public class ReasonCode extends Extension.Value
-{
+public class ReasonCode extends Extension.Value {
 
-    // Constants and fields.
-    // -------------------------------------------------------------------------
+	// Constants and fields.
+	// -------------------------------------------------------------------------
 
-    public static final OID ID = new OID("2.5.29.21");
+	public static final OID ID = new OID("2.5.29.21");
 
-    public final int reason;
+	public final int reason;
 
-    // Constructor.
-    // -------------------------------------------------------------------------
+	// Constructor.
+	// -------------------------------------------------------------------------
 
-    public ReasonCode(final byte[] encoded) throws IOException
-    {
-	super(encoded);
-	DERValue val = DERReader.read(encoded);
-	if (val.getTag() != DER.ENUMERATED)
-	    throw new IOException("malformed CRLReason");
-	reason = ((BigInteger) val.getValue()).intValue();
-	if (reason < 0 || reason == 7 || reason > 10)
-	    throw new IOException("illegal reason: " + reason);
-    }
+	public ReasonCode(final byte[] encoded) throws IOException {
+		super(encoded);
+		DERValue val = DERReader.read(encoded);
+		if (val.getTag() != DER.ENUMERATED)
+			throw new IOException("malformed CRLReason");
+		reason = ((BigInteger) val.getValue()).intValue();
+		if (reason < 0 || reason == 7 || reason > 10)
+			throw new IOException("illegal reason: " + reason);
+	}
 
-    // Instance method.
-    // -------------------------------------------------------------------------
+	// Instance method.
+	// -------------------------------------------------------------------------
 
-    public int getReasonCode()
-    {
-	return reason;
-    }
+	public int getReasonCode() {
+		return reason;
+	}
 
-    @Override
-    public String toString()
-    {
-	return ReasonCode.class.getName() + " [ " + reason + " ]";
-    }
+	@Override
+	public String toString() {
+		return ReasonCode.class.getName() + " [ " + reason + " ]";
+	}
 }

@@ -45,102 +45,94 @@ import gnu.vm.jgnu.security.Key;
  * analogous to the {@link gnu.vm.jgnux.crypto.spec.SecretKeySpec} class, but is
  * provided for platforms that do not or cannot contain that class.
  */
-public class GnuSecretKey implements Key
-{
-    /**
-     * 
-     */
-    private static final long serialVersionUID = 5425440779909358061L;
+public class GnuSecretKey implements Key {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 5425440779909358061L;
 
-    private final byte[] key;
+	private final byte[] key;
 
-    private final String algorithm;
+	private final String algorithm;
 
-    /**
-     * Creates a new secret key from a portion of a byte array.
-     *
-     * @param key
-     *            The raw, secret key.
-     * @param offset
-     *            The offset at which the key begins.
-     * @param length
-     *            The number of bytes that comprise the key.
-     * @param algorithm
-     *            The algorithm name, which can be null or empty.
-     */
-    public GnuSecretKey(byte[] key, int offset, int length, String algorithm)
-    {
-	this.key = new byte[length];
-	System.arraycopy(key, offset, this.key, 0, length);
-	this.algorithm = algorithm;
-    }
+	/**
+	 * Creates a new secret key from a portion of a byte array.
+	 *
+	 * @param key
+	 *            The raw, secret key.
+	 * @param offset
+	 *            The offset at which the key begins.
+	 * @param length
+	 *            The number of bytes that comprise the key.
+	 * @param algorithm
+	 *            The algorithm name, which can be null or empty.
+	 */
+	public GnuSecretKey(byte[] key, int offset, int length, String algorithm) {
+		this.key = new byte[length];
+		System.arraycopy(key, offset, this.key, 0, length);
+		this.algorithm = algorithm;
+	}
 
-    /**
-     * Creates a new secret key. The supplied byte array is copied by this
-     * constructor.
-     *
-     * @param key
-     *            The raw, secret key.
-     * @param algorithm
-     *            The algorithm name, which can be null or empty.
-     */
-    public GnuSecretKey(byte[] key, String algorithm)
-    {
-	this(key, 0, key.length, algorithm);
-    }
+	/**
+	 * Creates a new secret key. The supplied byte array is copied by this
+	 * constructor.
+	 *
+	 * @param key
+	 *            The raw, secret key.
+	 * @param algorithm
+	 *            The algorithm name, which can be null or empty.
+	 */
+	public GnuSecretKey(byte[] key, String algorithm) {
+		this(key, 0, key.length, algorithm);
+	}
 
-    @Override
-    public boolean equals(Object o)
-    {
-	if (!(o instanceof GnuSecretKey))
-	    return false;
-	if (key.length != ((GnuSecretKey) o).key.length)
-	    return false;
-	byte[] key2 = ((GnuSecretKey) o).key;
-	for (int i = 0; i < key.length; i++)
-	    if (key[i] != key2[i])
-		return false;
-	return true;
-    }
+	@Override
+	public boolean equals(Object o) {
+		if (!(o instanceof GnuSecretKey))
+			return false;
+		if (key.length != ((GnuSecretKey) o).key.length)
+			return false;
+		byte[] key2 = ((GnuSecretKey) o).key;
+		for (int i = 0; i < key.length; i++)
+			if (key[i] != key2[i])
+				return false;
+		return true;
+	}
 
-    /**
-     * Returns the algorithm name, if any.
-     *
-     * @return The algorithm name.
-     */
-    @Override
-    public String getAlgorithm()
-    {
-	return null;
-    }
+	/**
+	 * Returns the algorithm name, if any.
+	 *
+	 * @return The algorithm name.
+	 */
+	@Override
+	public String getAlgorithm() {
+		return null;
+	}
 
-    /**
-     * Returns the encoded key, which is merely the byte array this class was
-     * created with. A reference to the internal byte array is returned, so the
-     * caller can delete this key from memory by modifying the returned array.
-     *
-     * @return The raw key.
-     */
-    @Override
-    public byte[] getEncoded()
-    {
-	return key;
-    }
+	/**
+	 * Returns the encoded key, which is merely the byte array this class was
+	 * created with. A reference to the internal byte array is returned, so the
+	 * caller can delete this key from memory by modifying the returned array.
+	 *
+	 * @return The raw key.
+	 */
+	@Override
+	public byte[] getEncoded() {
+		return key;
+	}
 
-    /**
-     * Returns the string "RAW".
-     *
-     * @return The string "RAW".
-     */
-    @Override
-    public String getFormat()
-    {
-	return "RAW";
-    }
+	/**
+	 * Returns the string "RAW".
+	 *
+	 * @return The string "RAW".
+	 */
+	@Override
+	public String getFormat() {
+		return "RAW";
+	}
 
-    @Override
-    public String toString()
-    {
-	return "GnuSecretKey [ " + algorithm + " " + Util.toString(key) + " ]";
-    }
+	@Override
+	public String toString() {
+		return "GnuSecretKey [ " + algorithm + " " + Util.toString(key) + " ]";
+	}
 }

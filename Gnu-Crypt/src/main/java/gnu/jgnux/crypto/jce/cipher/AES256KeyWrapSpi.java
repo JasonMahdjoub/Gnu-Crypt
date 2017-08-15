@@ -43,10 +43,8 @@ import gnu.jgnu.security.Registry;
  * The JCE Cipher Adapter implementation over the GNU AES Key Wrapping Algorithm
  * with a 256-bit key-size.
  */
-public final class AES256KeyWrapSpi extends AESKeyWrapSpi
-{
-    public AES256KeyWrapSpi()
-    {
-	super(Registry.AES256_KWA, 256 / 8, Registry.ECB_MODE);
-    }
+public final class AES256KeyWrapSpi extends AESKeyWrapSpi {
+	public AES256KeyWrapSpi() {
+		super(Registry.AES256_KWA, 256 / 8, Registry.ECB_MODE);
+	}
 }

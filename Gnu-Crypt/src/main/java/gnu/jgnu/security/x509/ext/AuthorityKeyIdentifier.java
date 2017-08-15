@@ -46,92 +46,77 @@ import gnu.jgnu.security.der.DERReader;
 import gnu.jgnu.security.der.DERValue;
 import gnu.jgnu.security.x509.Util;
 
-public class AuthorityKeyIdentifier extends Extension.Value
-{
+public class AuthorityKeyIdentifier extends Extension.Value {
 
-    // Constants and fields.
-    // -------------------------------------------------------------------------
+	// Constants and fields.
+	// -------------------------------------------------------------------------
 
-    public static final OID ID = new OID("2.5.29.35");
+	public static final OID ID = new OID("2.5.29.35");
 
-    private final byte[] keyIdentifier;
+	private final byte[] keyIdentifier;
 
-    private final GeneralNames authorityCertIssuer;
+	private final GeneralNames authorityCertIssuer;
 
-    private final BigInteger authorityCertSerialNumber;
+	private final BigInteger authorityCertSerialNumber;
 
-    // Contstructor.
-    // -------------------------------------------------------------------------
+	// Contstructor.
+	// -------------------------------------------------------------------------
 
-    public AuthorityKeyIdentifier(final byte[] encoded) throws IOException
-    {
-	super(encoded);
-	DERReader der = new DERReader(encoded);
+	public AuthorityKeyIdentifier(final byte[] encoded) throws IOException {
+		super(encoded);
+		DERReader der = new DERReader(encoded);
 
-	// AuthorityKeyIdentifier ::= SEQUENCE {
-	DERValue val = der.read();
-	if (!val.isConstructed())
-	    throw new IOException("malformed AuthorityKeyIdentifier");
-	if (val.getLength() > 0)
-	    val = der.read();
+		// AuthorityKeyIdentifier ::= SEQUENCE {
+		DERValue val = der.read();
+		if (!val.isConstructed())
+			throw new IOException("malformed AuthorityKeyIdentifier");
+		if (val.getLength() > 0)
+			val = der.read();
 
-	// keyIdentifier [0] KeyIdentifier OPTIONAL,
-	// KeyIdentifier ::= OCTET STRING
-	if (val.getTagClass() == DER.APPLICATION && val.getTag() == 0)
-	{
-	    keyIdentifier = (byte[]) val.getValue();
-	    val = der.read();
+		// keyIdentifier [0] KeyIdentifier OPTIONAL,
+		// KeyIdentifier ::= OCTET STRING
+		if (val.getTagClass() == DER.APPLICATION && val.getTag() == 0) {
+			keyIdentifier = (byte[]) val.getValue();
+			val = der.read();
+		} else
+			keyIdentifier = null;
+
+		// authorityCertIssuer [1] GeneralNames OPTIONAL,
+		if (val.getTagClass() == DER.APPLICATION && val.getTag() == 1) {
+			byte[] b = val.getEncoded();
+			b[0] = (byte) (DER.CONSTRUCTED | DER.SEQUENCE);
+			authorityCertIssuer = new GeneralNames(b);
+			der.skip(val.getLength());
+			val = der.read();
+		} else
+			authorityCertIssuer = null;
+
+		// authorityCertSerialNumber [2] CertificateSerialNumber OPTIONAL }
+		if (val.getTagClass() == DER.APPLICATION && val.getTag() == 2) {
+			authorityCertSerialNumber = new BigInteger((byte[]) val.getValue());
+		} else
+			authorityCertSerialNumber = null;
 	}
-	else
-	    keyIdentifier = null;
 
-	// authorityCertIssuer [1] GeneralNames OPTIONAL,
-	if (val.getTagClass() == DER.APPLICATION && val.getTag() == 1)
-	{
-	    byte[] b = val.getEncoded();
-	    b[0] = (byte) (DER.CONSTRUCTED | DER.SEQUENCE);
-	    authorityCertIssuer = new GeneralNames(b);
-	    der.skip(val.getLength());
-	    val = der.read();
+	// Instance methods.
+	// -------------------------------------------------------------------------
+
+	public GeneralNames getAuthorityCertIssuer() {
+		return authorityCertIssuer;
 	}
-	else
-	    authorityCertIssuer = null;
 
-	// authorityCertSerialNumber [2] CertificateSerialNumber OPTIONAL }
-	if (val.getTagClass() == DER.APPLICATION && val.getTag() == 2)
-	{
-	    authorityCertSerialNumber = new BigInteger((byte[]) val.getValue());
+	public BigInteger getAuthorityCertSerialNumber() {
+		return authorityCertSerialNumber;
 	}
-	else
-	    authorityCertSerialNumber = null;
-    }
 
-    // Instance methods.
-    // -------------------------------------------------------------------------
+	public byte[] getKeyIdentifier() {
+		return keyIdentifier != null ? (byte[]) keyIdentifier.clone() : null;
+	}
 
-    public GeneralNames getAuthorityCertIssuer()
-    {
-	return authorityCertIssuer;
-    }
-
-    public BigInteger getAuthorityCertSerialNumber()
-    {
-	return authorityCertSerialNumber;
-    }
-
-    public byte[] getKeyIdentifier()
-    {
-	return keyIdentifier != null ? (byte[]) keyIdentifier.clone() : null;
-    }
-
-    @Override
-    public String toString()
-    {
-	return AuthorityKeyIdentifier.class.getName() + " [ keyId="
-		+ (keyIdentifier != null ? Util.toHexString(keyIdentifier, ':')
-			: "nil")
-		+ " authorityCertIssuer=" + authorityCertIssuer
-		+ " authorityCertSerialNumbe=" + authorityCertSerialNumber
-		+ " ]";
-    }
+	@Override
+	public String toString() {
+		return AuthorityKeyIdentifier.class.getName() + " [ keyId="
+				+ (keyIdentifier != null ? Util.toHexString(keyIdentifier, ':') : "nil") + " authorityCertIssuer="
+				+ authorityCertIssuer + " authorityCertSerialNumbe=" + authorityCertSerialNumber + " ]";
+	}
 }

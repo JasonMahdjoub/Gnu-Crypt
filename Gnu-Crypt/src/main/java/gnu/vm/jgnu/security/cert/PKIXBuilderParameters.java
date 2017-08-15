@@ -49,104 +49,100 @@ import gnu.vm.jgnu.security.KeyStoreException;
  * @see CertPathBuilder
  * @since 1.4
  */
-public class PKIXBuilderParameters extends PKIXParameters
-{
+public class PKIXBuilderParameters extends PKIXParameters {
 
-    // Fields.
-    // ------------------------------------------------------------------------
+	// Fields.
+	// ------------------------------------------------------------------------
 
-    /** The maximum path length. */
-    private int maxPathLength;
+	/** The maximum path length. */
+	private int maxPathLength;
 
-    // Constructors.
-    // ------------------------------------------------------------------------
+	// Constructors.
+	// ------------------------------------------------------------------------
 
-    /**
-     * Create a new PKIXBuilderParameters object, populating the trusted
-     * certificates set with all X.509 certificates found in the given key
-     * store. All certificates found in the key store are assumed to be trusted
-     * by this constructor.
-     *
-     * @param keystore
-     *            The key store.
-     * @param targetConstraints
-     *            The target certificate constraints.
-     * @throws KeyStoreException
-     *             If the certificates cannot be retrieved from the key store.
-     * @throws InvalidAlgorithmParameterException
-     *             If there are no certificates in the key store.
-     * @throws NullPointerException
-     *             If <i>keystore</i> is null.
-     */
-    public PKIXBuilderParameters(KeyStore keystore, CertSelector targetConstraints) throws KeyStoreException, InvalidAlgorithmParameterException
-    {
-	super(keystore);
-	setTargetCertConstraints(targetConstraints);
-	maxPathLength = 5;
-    }
+	/**
+	 * Create a new PKIXBuilderParameters object, populating the trusted
+	 * certificates set with all X.509 certificates found in the given key store.
+	 * All certificates found in the key store are assumed to be trusted by this
+	 * constructor.
+	 *
+	 * @param keystore
+	 *            The key store.
+	 * @param targetConstraints
+	 *            The target certificate constraints.
+	 * @throws KeyStoreException
+	 *             If the certificates cannot be retrieved from the key store.
+	 * @throws InvalidAlgorithmParameterException
+	 *             If there are no certificates in the key store.
+	 * @throws NullPointerException
+	 *             If <i>keystore</i> is null.
+	 */
+	public PKIXBuilderParameters(KeyStore keystore, CertSelector targetConstraints)
+			throws KeyStoreException, InvalidAlgorithmParameterException {
+		super(keystore);
+		setTargetCertConstraints(targetConstraints);
+		maxPathLength = 5;
+	}
 
-    /**
-     * Create a new PKIXBuilderParameters object, populating the trusted
-     * certificates set with the elements of the given set, each of which must
-     * be a {@link TrustAnchor}.
-     *
-     * @param trustAnchors
-     *            The set of trust anchors.
-     * @param targetConstraints
-     *            The target certificate constraints.
-     * @throws InvalidAlgorithmParameterException
-     *             If there are no certificates in the set.
-     * @throws NullPointerException
-     *             If <i>trustAnchors</i> is null.
-     * @throws ClassCastException
-     *             If every element in <i>trustAnchors</i> is not a
-     *             {@link TrustAnchor}.
-     */
-    public PKIXBuilderParameters(Set<TrustAnchor> trustAnchors, CertSelector targetConstraints) throws InvalidAlgorithmParameterException
-    {
-	super(trustAnchors);
-	setTargetCertConstraints(targetConstraints);
-	maxPathLength = 5;
-    }
+	/**
+	 * Create a new PKIXBuilderParameters object, populating the trusted
+	 * certificates set with the elements of the given set, each of which must be a
+	 * {@link TrustAnchor}.
+	 *
+	 * @param trustAnchors
+	 *            The set of trust anchors.
+	 * @param targetConstraints
+	 *            The target certificate constraints.
+	 * @throws InvalidAlgorithmParameterException
+	 *             If there are no certificates in the set.
+	 * @throws NullPointerException
+	 *             If <i>trustAnchors</i> is null.
+	 * @throws ClassCastException
+	 *             If every element in <i>trustAnchors</i> is not a
+	 *             {@link TrustAnchor}.
+	 */
+	public PKIXBuilderParameters(Set<TrustAnchor> trustAnchors, CertSelector targetConstraints)
+			throws InvalidAlgorithmParameterException {
+		super(trustAnchors);
+		setTargetCertConstraints(targetConstraints);
+		maxPathLength = 5;
+	}
 
-    // Instance methods.
-    // ------------------------------------------------------------------------
+	// Instance methods.
+	// ------------------------------------------------------------------------
 
-    /**
-     * Returns the maximum length of certificate paths to build.
-     *
-     * <p>
-     * If this value is 0 it is taken to mean that the certificate path should
-     * contain only one certificate. A value of -1 means that the certificate
-     * path length is unconstrained. The default value is 5.
-     *
-     * @return The maximum path length.
-     */
-    public int getMaxPathLength()
-    {
-	return maxPathLength;
-    }
+	/**
+	 * Returns the maximum length of certificate paths to build.
+	 *
+	 * <p>
+	 * If this value is 0 it is taken to mean that the certificate path should
+	 * contain only one certificate. A value of -1 means that the certificate path
+	 * length is unconstrained. The default value is 5.
+	 *
+	 * @return The maximum path length.
+	 */
+	public int getMaxPathLength() {
+		return maxPathLength;
+	}
 
-    /**
-     * Sets the maximum length of certificate paths to build.
-     *
-     * @param maxPathLength
-     *            The new path length.
-     * @throws IllegalArgumentException
-     *             If <i>maxPathLength</i> is less than -1.
-     */
-    public void setMaxPathLength(int maxPathLength)
-    {
-	if (maxPathLength < -1)
-	    throw new IllegalArgumentException();
-	this.maxPathLength = maxPathLength;
-    }
+	/**
+	 * Sets the maximum length of certificate paths to build.
+	 *
+	 * @param maxPathLength
+	 *            The new path length.
+	 * @throws IllegalArgumentException
+	 *             If <i>maxPathLength</i> is less than -1.
+	 */
+	public void setMaxPathLength(int maxPathLength) {
+		if (maxPathLength < -1)
+			throw new IllegalArgumentException();
+		this.maxPathLength = maxPathLength;
+	}
 
-    @Override
-    public String toString()
-    {
-	StringBuilder buf = new StringBuilder(super.toString());
-	buf.insert(buf.length() - 2, "; Max Path Length=" + maxPathLength);
-	return buf.toString();
-    }
+	@Override
+	public String toString() {
+		StringBuilder buf = new StringBuilder(super.toString());
+		buf.insert(buf.length() - 2, "; Max Path Length=" + maxPathLength);
+		return buf.toString();
+	}
 }

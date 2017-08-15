@@ -57,91 +57,68 @@ import gnu.vm.jgnu.security.spec.DSAParameterSpec;
  * call to an <code>initialize()</code> method), the GNU provider uses a default
  * <i>modulus</i> size (keysize) of 1024 bits.
  */
-public class DSSKeyPairGeneratorSpi extends KeyPairGeneratorAdapter implements DSAKeyPairGenerator
-{
-    public DSSKeyPairGeneratorSpi()
-    {
-	super(Registry.DSS_KPG);
-    }
+public class DSSKeyPairGeneratorSpi extends KeyPairGeneratorAdapter implements DSAKeyPairGenerator {
+	public DSSKeyPairGeneratorSpi() {
+		super(Registry.DSS_KPG);
+	}
 
-    @Override
-    public void initialize(AlgorithmParameterSpec params, SecureRandom random) throws InvalidAlgorithmParameterException
-    {
-	HashMap<String, Object> attributes = new HashMap<>();
-	if (params != null)
-	{
-	    if (!(params instanceof DSAParameterSpec))
-		throw new InvalidAlgorithmParameterException(
-			"Parameters argument is not a non-null instance, or "
-				+ "sub-instance, of java.security.spec.DSAParameterSpec");
-	    attributes.put(DSSKeyPairGenerator.DSS_PARAMETERS, params);
-	}
-	if (random != null)
-	    attributes.put(DSSKeyPairGenerator.SOURCE_OF_RANDOMNESS, random);
+	@Override
+	public void initialize(AlgorithmParameterSpec params, SecureRandom random)
+			throws InvalidAlgorithmParameterException {
+		HashMap<String, Object> attributes = new HashMap<>();
+		if (params != null) {
+			if (!(params instanceof DSAParameterSpec))
+				throw new InvalidAlgorithmParameterException("Parameters argument is not a non-null instance, or "
+						+ "sub-instance, of java.security.spec.DSAParameterSpec");
+			attributes.put(DSSKeyPairGenerator.DSS_PARAMETERS, params);
+		}
+		if (random != null)
+			attributes.put(DSSKeyPairGenerator.SOURCE_OF_RANDOMNESS, random);
 
-	attributes.put(DSSKeyPairGenerator.PREFERRED_ENCODING_FORMAT,
-		Integer.valueOf(Registry.ASN1_ENCODING_ID));
-	try
-	{
-	    adaptee.setup(attributes);
+		attributes.put(DSSKeyPairGenerator.PREFERRED_ENCODING_FORMAT, Integer.valueOf(Registry.ASN1_ENCODING_ID));
+		try {
+			adaptee.setup(attributes);
+		} catch (IllegalArgumentException x) {
+			throw new InvalidAlgorithmParameterException(x.getMessage(), x);
+		}
 	}
-	catch (IllegalArgumentException x)
-	{
-	    throw new InvalidAlgorithmParameterException(x.getMessage(), x);
-	}
-    }
 
-    @Override
-    public void initialize(DSAParams params, SecureRandom random) throws InvalidParameterException
-    {
-	if (params == null || !(params instanceof DSAParameterSpec))
-	    throw new InvalidParameterException(
-		    "Parameters argument is either null or is not an instance, or "
-			    + "sub-instance, of java.security.spec.DSAParameterSpec");
-	DSAParameterSpec spec = (DSAParameterSpec) params;
-	try
-	{
-	    this.initialize((AlgorithmParameterSpec) spec, random);
+	@Override
+	public void initialize(DSAParams params, SecureRandom random) throws InvalidParameterException {
+		if (params == null || !(params instanceof DSAParameterSpec))
+			throw new InvalidParameterException("Parameters argument is either null or is not an instance, or "
+					+ "sub-instance, of java.security.spec.DSAParameterSpec");
+		DSAParameterSpec spec = (DSAParameterSpec) params;
+		try {
+			this.initialize((AlgorithmParameterSpec) spec, random);
+		} catch (InvalidAlgorithmParameterException x) {
+			InvalidParameterException y = new InvalidParameterException(x.getMessage());
+			y.initCause(x);
+			throw y;
+		}
 	}
-	catch (InvalidAlgorithmParameterException x)
-	{
-	    InvalidParameterException y = new InvalidParameterException(
-		    x.getMessage());
-	    y.initCause(x);
-	    throw y;
-	}
-    }
 
-    @Override
-    public void initialize(int modlen, boolean genParams, SecureRandom random) throws InvalidParameterException
-    {
-	HashMap<String, Object> attributes = new HashMap<>();
-	attributes.put(DSSKeyPairGenerator.MODULUS_LENGTH,
-		Integer.valueOf(modlen));
-	if (random != null)
-	    attributes.put(DSSKeyPairGenerator.SOURCE_OF_RANDOMNESS, random);
+	@Override
+	public void initialize(int modlen, boolean genParams, SecureRandom random) throws InvalidParameterException {
+		HashMap<String, Object> attributes = new HashMap<>();
+		attributes.put(DSSKeyPairGenerator.MODULUS_LENGTH, Integer.valueOf(modlen));
+		if (random != null)
+			attributes.put(DSSKeyPairGenerator.SOURCE_OF_RANDOMNESS, random);
 
-	attributes.put(DSSKeyPairGenerator.USE_DEFAULTS,
-		Boolean.valueOf(!genParams));
-	attributes.put(DSSKeyPairGenerator.STRICT_DEFAULTS, Boolean.TRUE);
-	attributes.put(DSSKeyPairGenerator.PREFERRED_ENCODING_FORMAT,
-		Integer.valueOf(Registry.ASN1_ENCODING_ID));
-	try
-	{
-	    adaptee.setup(attributes);
+		attributes.put(DSSKeyPairGenerator.USE_DEFAULTS, Boolean.valueOf(!genParams));
+		attributes.put(DSSKeyPairGenerator.STRICT_DEFAULTS, Boolean.TRUE);
+		attributes.put(DSSKeyPairGenerator.PREFERRED_ENCODING_FORMAT, Integer.valueOf(Registry.ASN1_ENCODING_ID));
+		try {
+			adaptee.setup(attributes);
+		} catch (IllegalArgumentException x) {
+			InvalidParameterException y = new InvalidParameterException(x.getMessage());
+			y.initCause(x);
+			throw y;
+		}
 	}
-	catch (IllegalArgumentException x)
-	{
-	    InvalidParameterException y = new InvalidParameterException(
-		    x.getMessage());
-	    y.initCause(x);
-	    throw y;
-	}
-    }
 
-    @Override
-    public void initialize(int keysize, SecureRandom random)
-    {
-	this.initialize(keysize, false, random);
-    }
+	@Override
+	public void initialize(int keysize, SecureRandom random) {
+		this.initialize(keysize, false, random);
+	}
 }

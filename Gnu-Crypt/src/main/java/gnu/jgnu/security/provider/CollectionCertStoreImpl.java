@@ -50,52 +50,45 @@ import gnu.vm.jgnu.security.cert.CertStoreSpi;
 import gnu.vm.jgnu.security.cert.Certificate;
 import gnu.vm.jgnu.security.cert.CollectionCertStoreParameters;
 
-public final class CollectionCertStoreImpl extends CertStoreSpi
-{
+public final class CollectionCertStoreImpl extends CertStoreSpi {
 
-    // Fields.
-    // -------------------------------------------------------------------------
+	// Fields.
+	// -------------------------------------------------------------------------
 
-    private final Collection<?> store;
+	private final Collection<?> store;
 
-    // Constructors.
-    // -------------------------------------------------------------------------
+	// Constructors.
+	// -------------------------------------------------------------------------
 
-    public CollectionCertStoreImpl(CertStoreParameters params) throws InvalidAlgorithmParameterException
-    {
-	super(params);
-	if (!(params instanceof CollectionCertStoreParameters))
-	    throw new InvalidAlgorithmParameterException(
-		    "not a CollectionCertStoreParameters object");
-	store = ((CollectionCertStoreParameters) params).getCollection();
-    }
-
-    // Instance methods.
-    // -------------------------------------------------------------------------
-
-    @Override
-    public Collection<Certificate> engineGetCertificates(CertSelector selector)
-    {
-	LinkedList<Certificate> result = new LinkedList<>();
-	for (Iterator<?> it = store.iterator(); it.hasNext();)
-	{
-	    Object o = it.next();
-	    if ((o instanceof Certificate) && selector.match((Certificate) o))
-		result.add((Certificate) o);
+	public CollectionCertStoreImpl(CertStoreParameters params) throws InvalidAlgorithmParameterException {
+		super(params);
+		if (!(params instanceof CollectionCertStoreParameters))
+			throw new InvalidAlgorithmParameterException("not a CollectionCertStoreParameters object");
+		store = ((CollectionCertStoreParameters) params).getCollection();
 	}
-	return result;
-    }
 
-    @Override
-    public Collection<CRL> engineGetCRLs(CRLSelector selector)
-    {
-	LinkedList<CRL> result = new LinkedList<>();
-	for (Iterator<?> it = store.iterator(); it.hasNext();)
-	{
-	    Object o = it.next();
-	    if ((o instanceof CRL) && selector.match((CRL) o))
-		result.add((CRL) o);
+	// Instance methods.
+	// -------------------------------------------------------------------------
+
+	@Override
+	public Collection<Certificate> engineGetCertificates(CertSelector selector) {
+		LinkedList<Certificate> result = new LinkedList<>();
+		for (Iterator<?> it = store.iterator(); it.hasNext();) {
+			Object o = it.next();
+			if ((o instanceof Certificate) && selector.match((Certificate) o))
+				result.add((Certificate) o);
+		}
+		return result;
 	}
-	return result;
-    }
+
+	@Override
+	public Collection<CRL> engineGetCRLs(CRLSelector selector) {
+		LinkedList<CRL> result = new LinkedList<>();
+		for (Iterator<?> it = store.iterator(); it.hasNext();) {
+			Object o = it.next();
+			if ((o instanceof CRL) && selector.match((CRL) o))
+				result.add((CRL) o);
+		}
+		return result;
+	}
 }

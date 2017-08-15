@@ -50,54 +50,42 @@ import gnu.jgnux.crypto.sasl.IllegalMechanismStateException;
 /**
  * The ANONYMOUS client-side mechanism.
  */
-public class AnonymousClient extends ClientMechanism implements SaslClient
-{
-    public AnonymousClient()
-    {
-	super(Registry.SASL_ANONYMOUS_MECHANISM);
-    }
-
-    @Override
-    public byte[] evaluateChallenge(final byte[] challenge) throws SaslException
-    {
-	if (complete)
-	{
-	    throw new IllegalMechanismStateException("evaluateChallenge()");
+public class AnonymousClient extends ClientMechanism implements SaslClient {
+	public AnonymousClient() {
+		super(Registry.SASL_ANONYMOUS_MECHANISM);
 	}
-	return response();
-    }
 
-    @Override
-    public boolean hasInitialResponse()
-    {
-	return true;
-    }
-
-    @Override
-    protected void initMechanism()
-    {
-    }
-
-    @Override
-    protected void resetMechanism()
-    {
-    }
-
-    private byte[] response() throws SaslException
-    {
-	if (!AnonymousUtil.isValidTraceInformation(authorizationID))
-	    throw new AuthenticationException(
-		    "Authorisation ID is not a valid email address");
-	complete = true;
-	final byte[] result;
-	try
-	{
-	    result = authorizationID.getBytes("UTF-8");
+	@Override
+	public byte[] evaluateChallenge(final byte[] challenge) throws SaslException {
+		if (complete) {
+			throw new IllegalMechanismStateException("evaluateChallenge()");
+		}
+		return response();
 	}
-	catch (UnsupportedEncodingException x)
-	{
-	    throw new AuthenticationException("response()", x);
+
+	@Override
+	public boolean hasInitialResponse() {
+		return true;
 	}
-	return result;
-    }
+
+	@Override
+	protected void initMechanism() {
+	}
+
+	@Override
+	protected void resetMechanism() {
+	}
+
+	private byte[] response() throws SaslException {
+		if (!AnonymousUtil.isValidTraceInformation(authorizationID))
+			throw new AuthenticationException("Authorisation ID is not a valid email address");
+		complete = true;
+		final byte[] result;
+		try {
+			result = authorizationID.getBytes("UTF-8");
+		} catch (UnsupportedEncodingException x) {
+			throw new AuthenticationException("response()", x);
+		}
+		return result;
+	}
 }

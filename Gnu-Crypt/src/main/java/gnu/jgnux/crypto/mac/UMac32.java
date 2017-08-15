@@ -126,314 +126,268 @@ import gnu.vm.jgnu.security.InvalidKeyException;
  * T. Krovetz, J. Black, S. Halevi, A. Hevia, H. Krawczyk, and P. Rogaway.</li>
  * </ol>
  */
-public class UMac32 extends BaseMac
-{
-    /**
-     * Property name of the user-supplied <i>Nonce</i>. The value associated to
-     * this property name is taken to be a byte array.
-     */
-    public static final String NONCE_MATERIAL = "gnu.crypto.umac.nonce.material";
+public class UMac32 extends BaseMac {
+	/**
+	 * Property name of the user-supplied <i>Nonce</i>. The value associated to this
+	 * property name is taken to be a byte array.
+	 */
+	public static final String NONCE_MATERIAL = "gnu.crypto.umac.nonce.material";
 
-    /** Known test vector. */
-    // private static final String TV1 = "3E5A0E09198B0F94";
-    // private static final String TV1 = "5FD764A6D3A9FD9D";
-    // private static final String TV1 = "48658DE1D9A70304";
-    private static final String TV1 = "455ED214A6909F20";
+	/** Known test vector. */
+	// private static final String TV1 = "3E5A0E09198B0F94";
+	// private static final String TV1 = "5FD764A6D3A9FD9D";
+	// private static final String TV1 = "48658DE1D9A70304";
+	private static final String TV1 = "455ED214A6909F20";
 
-    private static final BigInteger MAX_NONCE_ITERATIONS = BigInteger.ONE
-	    .shiftLeft(16 * 8);
+	private static final BigInteger MAX_NONCE_ITERATIONS = BigInteger.ONE.shiftLeft(16 * 8);
 
-    // UMAC32 parameters
-    static final int OUTPUT_LEN = 8;
+	// UMAC32 parameters
+	static final int OUTPUT_LEN = 8;
 
-    static final int L1_KEY_LEN = 1024;
+	static final int L1_KEY_LEN = 1024;
 
-    static final int KEY_LEN = 16;
+	static final int KEY_LEN = 16;
 
-    /** caches the result of the correctness test, once executed. */
-    private static Boolean valid;
+	/** caches the result of the correctness test, once executed. */
+	private static Boolean valid;
 
-    private byte[] nonce;
+	private byte[] nonce;
 
-    private UHash32 uhash32;
+	private UHash32 uhash32;
 
-    private BigInteger nonceReuseCount;
+	private BigInteger nonceReuseCount;
 
-    /** The authentication key for this instance. */
-    private transient byte[] K;
+	/** The authentication key for this instance. */
+	private transient byte[] K;
 
-    /** Trivial 0-arguments constructor. */
-    public UMac32()
-    {
-	super("umac32");
-    }
-
-    /**
-     * Private constructor for cloning purposes.
-     *
-     * @param that
-     *            the instance to clone.
-     */
-    private UMac32(UMac32 that)
-    {
-	this();
-
-	if (that.K != null)
-	    this.K = that.K.clone();
-	if (that.nonce != null)
-	    this.nonce = that.nonce.clone();
-	if (that.uhash32 != null)
-	    this.uhash32 = (UHash32) that.uhash32.clone();
-	this.nonceReuseCount = that.nonceReuseCount;
-    }
-
-    @Override
-    public Object clone()
-    {
-	return new UMac32(this);
-    }
-
-    @Override
-    public byte[] digest()
-    {
-	byte[] result = uhash32.digest();
-	byte[] pad = pdf(); // pdf(K, nonce);
-	for (int i = 0; i < OUTPUT_LEN; i++)
-	    result[i] = (byte) (result[i] ^ pad[i]);
-
-	return result;
-    }
-
-    /**
-     * Initialising a <i>UMAC</i> instance consists of defining values for the
-     * following parameters:
-     * <ol>
-     * <li>Key Material: as the value of the attribute entry keyed by
-     * {@link #MAC_KEY_MATERIAL}. The value is taken to be a byte array
-     * containing the user-specified key material. The length of this array,
-     * if/when defined SHOULD be exactly equal to {@link #KEY_LEN}.</li>
-     * <li>Nonce Material: as the value of the attribute entry keyed by
-     * {@link #NONCE_MATERIAL}. The value is taken to be a byte array containing
-     * the user-specified nonce material. The length of this array, if/when
-     * defined SHOULD be (a) greater than zero, and (b) less or equal to 16 (the
-     * size of the AES block).</li>
-     * </ol>
-     * <p>
-     * For convenience, this implementation accepts that not both parameters be
-     * always specified.
-     * <ul>
-     * <li>If the <i>Key Material</i> is specified, but the <i>Nonce
-     * Material</i> is not, then this implementation, re-uses the previously set
-     * <i>Nonce Material</i> after (a) converting the bytes to an unsigned
-     * integer, (b) incrementing the number by one, and (c) converting it back
-     * to 16 bytes.</li>
-     * <li>If the <i>Nonce Material</i> is specified, but the <i>Key
-     * Material</i> is not, then this implementation re-uses the previously set
-     * <i>Key Material</i>.</li>
-     * </ul>
-     * <p>
-     * This method throws an exception if no <i>Key Material</i> is specified in
-     * the input map, and there is no previously set/defined <i>Key Material</i>
-     * (from an earlier invocation of this method). If a <i>Key Material</i> can
-     * be used, but no <i>Nonce Material</i> is defined or previously
-     * set/defined, then a default value of all-zeroes shall be used.
-     *
-     * @param attributes
-     *            one or both of required parameters.
-     * @throws InvalidKeyException
-     *             the key material specified is not of the correct length.
-     */
-    @Override
-    public void init(Map<Object, Object> attributes) throws InvalidKeyException, IllegalStateException
-    {
-	byte[] key = (byte[]) attributes.get(MAC_KEY_MATERIAL);
-	byte[] n = (byte[]) attributes.get(NONCE_MATERIAL);
-	boolean newKey = (key != null);
-	boolean newNonce = (n != null);
-	if (newKey)
-	{
-	    if (key.length != KEY_LEN)
-		throw new InvalidKeyException(
-			"Key length: " + String.valueOf(key.length));
-	    K = key;
+	/** Trivial 0-arguments constructor. */
+	public UMac32() {
+		super("umac32");
 	}
-	else
-	{
-	    if (K == null)
-		throw new InvalidKeyException("Null Key");
-	}
-	if (newNonce)
-	{
-	    if (n.length < 1 || n.length > 16)
-		throw new IllegalArgumentException(
-			"Invalid Nonce length: " + String.valueOf(n.length));
-	    if (n.length < 16) // pad with zeroes
-	    {
-		byte[] newN = new byte[16];
-		System.arraycopy(n, 0, newN, 0, n.length);
-		nonce = newN;
-	    }
-	    else
-		nonce = n;
 
-	    nonceReuseCount = BigInteger.ZERO;
-	}
-	else if (nonce == null) // use all-0 nonce if 1st time
-	{
-	    nonce = new byte[16];
-	    nonceReuseCount = BigInteger.ZERO;
-	}
-	else if (!newKey) // increment nonce if still below max count
-	{
-	    nonceReuseCount = nonceReuseCount.add(BigInteger.ONE);
-	    if (nonceReuseCount.compareTo(MAX_NONCE_ITERATIONS) >= 0)
-	    {
-		// limit reached. we SHOULD have a key
-		throw new InvalidKeyException(
-			"Null Key and unusable old Nonce");
-	    }
-	    BigInteger N = new BigInteger(1, nonce);
-	    N = N.add(BigInteger.ONE).mod(MAX_NONCE_ITERATIONS);
-	    n = N.toByteArray();
-	    if (n.length == 16)
-		nonce = n;
-	    else if (n.length < 16)
-	    {
-		nonce = new byte[16];
-		System.arraycopy(n, 0, nonce, 16 - n.length, n.length);
-	    }
-	    else
-	    {
-		nonce = new byte[16];
-		System.arraycopy(n, n.length - 16, nonce, 0, 16);
-	    }
-	}
-	else // do nothing, re-use old nonce value
-	    nonceReuseCount = BigInteger.ZERO;
+	/**
+	 * Private constructor for cloning purposes.
+	 *
+	 * @param that
+	 *            the instance to clone.
+	 */
+	private UMac32(UMac32 that) {
+		this();
 
-	if (uhash32 == null)
-	    uhash32 = new UHash32();
-
-	Map<Object, Object> map = new HashMap<>();
-	map.put(MAC_KEY_MATERIAL, K);
-	uhash32.init(map);
-    }
-
-    @Override
-    public int macSize()
-    {
-	return OUTPUT_LEN;
-    }
-
-    /**
-     * @return byte array of length 8 (or OUTPUT_LEN) bytes.
-     */
-    private byte[] pdf()
-    {
-	// Make Nonce 16 bytes by prepending zeroes. done (see init())
-	// one AES invocation is enough for more than one PDF invocation
-	// number of index bits needed = 1
-	// Extract index bits and zero low bits of Nonce
-	BigInteger Nonce = new BigInteger(1, nonce);
-	int nlowbitsnum = Nonce.testBit(0) ? 1 : 0;
-	Nonce = Nonce.clearBit(0);
-	// Generate subkey, AES and extract indexed substring
-	IRandom kdf = new UMacGenerator();
-	Map<Object, Object> map = new HashMap<>();
-	map.put(IBlockCipher.KEY_MATERIAL, K);
-	map.put(UMacGenerator.INDEX, Integer.valueOf(128));
-	kdf.init(map);
-	byte[] Kp = new byte[KEY_LEN];
-	try
-	{
-	    kdf.nextBytes(Kp, 0, KEY_LEN);
+		if (that.K != null)
+			this.K = that.K.clone();
+		if (that.nonce != null)
+			this.nonce = that.nonce.clone();
+		if (that.uhash32 != null)
+			this.uhash32 = (UHash32) that.uhash32.clone();
+		this.nonceReuseCount = that.nonceReuseCount;
 	}
-	catch (IllegalStateException x)
-	{
-	    x.printStackTrace(System.err);
-	    throw new RuntimeException(String.valueOf(x));
-	}
-	catch (LimitReachedException x)
-	{
-	    x.printStackTrace(System.err);
-	    throw new RuntimeException(String.valueOf(x));
-	}
-	IBlockCipher aes = CipherFactory.getInstance(Registry.AES_CIPHER);
-	map.put(IBlockCipher.KEY_MATERIAL, Kp);
-	try
-	{
-	    aes.init(map);
-	}
-	catch (InvalidKeyException x)
-	{
-	    x.printStackTrace(System.err);
-	    throw new RuntimeException(String.valueOf(x));
-	}
-	catch (IllegalStateException x)
-	{
-	    x.printStackTrace(System.err);
-	    throw new RuntimeException(String.valueOf(x));
-	}
-	byte[] T = new byte[16];
-	aes.encryptBlock(nonce, 0, T, 0);
-	byte[] result = new byte[OUTPUT_LEN];
-	System.arraycopy(T, nlowbitsnum, result, 0, OUTPUT_LEN);
-	return result;
-    }
 
-    @Override
-    public void reset()
-    {
-	if (uhash32 != null)
-	    uhash32.reset();
-    }
-
-    @Override
-    public boolean selfTest()
-    {
-	if (valid == null)
-	{
-	    byte[] key;
-	    try
-	    {
-		key = "abcdefghijklmnop".getBytes("ASCII");
-	    }
-	    catch (UnsupportedEncodingException x)
-	    {
-		throw new RuntimeException("ASCII not supported");
-	    }
-	    byte[] nonce = new byte[] { 0, 1, 2, 3, 4, 5, 6, 7 };
-	    UMac32 mac = new UMac32();
-	    Map<Object, Object> attributes = new HashMap<>();
-	    attributes.put(MAC_KEY_MATERIAL, key);
-	    attributes.put(NONCE_MATERIAL, nonce);
-	    try
-	    {
-		mac.init(attributes);
-	    }
-	    catch (InvalidKeyException x)
-	    {
-		x.printStackTrace(System.err);
-		return false;
-	    }
-	    byte[] data = new byte[128];
-	    data[0] = (byte) 0x80;
-	    mac.update(data, 0, 128);
-	    byte[] result = mac.digest();
-	    valid = Boolean.valueOf(TV1.equals(Util.toString(result)));
+	@Override
+	public Object clone() {
+		return new UMac32(this);
 	}
-	return valid.booleanValue();
-    }
 
-    @Override
-    public void update(byte b)
-    {
-	uhash32.update(b);
-    }
+	@Override
+	public byte[] digest() {
+		byte[] result = uhash32.digest();
+		byte[] pad = pdf(); // pdf(K, nonce);
+		for (int i = 0; i < OUTPUT_LEN; i++)
+			result[i] = (byte) (result[i] ^ pad[i]);
 
-    @Override
-    public void update(byte[] b, int offset, int len)
-    {
-	uhash32.update(b, offset, len);
-    }
+		return result;
+	}
+
+	/**
+	 * Initialising a <i>UMAC</i> instance consists of defining values for the
+	 * following parameters:
+	 * <ol>
+	 * <li>Key Material: as the value of the attribute entry keyed by
+	 * {@link #MAC_KEY_MATERIAL}. The value is taken to be a byte array containing
+	 * the user-specified key material. The length of this array, if/when defined
+	 * SHOULD be exactly equal to {@link #KEY_LEN}.</li>
+	 * <li>Nonce Material: as the value of the attribute entry keyed by
+	 * {@link #NONCE_MATERIAL}. The value is taken to be a byte array containing the
+	 * user-specified nonce material. The length of this array, if/when defined
+	 * SHOULD be (a) greater than zero, and (b) less or equal to 16 (the size of the
+	 * AES block).</li>
+	 * </ol>
+	 * <p>
+	 * For convenience, this implementation accepts that not both parameters be
+	 * always specified.
+	 * <ul>
+	 * <li>If the <i>Key Material</i> is specified, but the <i>Nonce Material</i> is
+	 * not, then this implementation, re-uses the previously set <i>Nonce
+	 * Material</i> after (a) converting the bytes to an unsigned integer, (b)
+	 * incrementing the number by one, and (c) converting it back to 16 bytes.</li>
+	 * <li>If the <i>Nonce Material</i> is specified, but the <i>Key Material</i> is
+	 * not, then this implementation re-uses the previously set <i>Key
+	 * Material</i>.</li>
+	 * </ul>
+	 * <p>
+	 * This method throws an exception if no <i>Key Material</i> is specified in the
+	 * input map, and there is no previously set/defined <i>Key Material</i> (from
+	 * an earlier invocation of this method). If a <i>Key Material</i> can be used,
+	 * but no <i>Nonce Material</i> is defined or previously set/defined, then a
+	 * default value of all-zeroes shall be used.
+	 *
+	 * @param attributes
+	 *            one or both of required parameters.
+	 * @throws InvalidKeyException
+	 *             the key material specified is not of the correct length.
+	 */
+	@Override
+	public void init(Map<Object, Object> attributes) throws InvalidKeyException, IllegalStateException {
+		byte[] key = (byte[]) attributes.get(MAC_KEY_MATERIAL);
+		byte[] n = (byte[]) attributes.get(NONCE_MATERIAL);
+		boolean newKey = (key != null);
+		boolean newNonce = (n != null);
+		if (newKey) {
+			if (key.length != KEY_LEN)
+				throw new InvalidKeyException("Key length: " + String.valueOf(key.length));
+			K = key;
+		} else {
+			if (K == null)
+				throw new InvalidKeyException("Null Key");
+		}
+		if (newNonce) {
+			if (n.length < 1 || n.length > 16)
+				throw new IllegalArgumentException("Invalid Nonce length: " + String.valueOf(n.length));
+			if (n.length < 16) // pad with zeroes
+			{
+				byte[] newN = new byte[16];
+				System.arraycopy(n, 0, newN, 0, n.length);
+				nonce = newN;
+			} else
+				nonce = n;
+
+			nonceReuseCount = BigInteger.ZERO;
+		} else if (nonce == null) // use all-0 nonce if 1st time
+		{
+			nonce = new byte[16];
+			nonceReuseCount = BigInteger.ZERO;
+		} else if (!newKey) // increment nonce if still below max count
+		{
+			nonceReuseCount = nonceReuseCount.add(BigInteger.ONE);
+			if (nonceReuseCount.compareTo(MAX_NONCE_ITERATIONS) >= 0) {
+				// limit reached. we SHOULD have a key
+				throw new InvalidKeyException("Null Key and unusable old Nonce");
+			}
+			BigInteger N = new BigInteger(1, nonce);
+			N = N.add(BigInteger.ONE).mod(MAX_NONCE_ITERATIONS);
+			n = N.toByteArray();
+			if (n.length == 16)
+				nonce = n;
+			else if (n.length < 16) {
+				nonce = new byte[16];
+				System.arraycopy(n, 0, nonce, 16 - n.length, n.length);
+			} else {
+				nonce = new byte[16];
+				System.arraycopy(n, n.length - 16, nonce, 0, 16);
+			}
+		} else // do nothing, re-use old nonce value
+			nonceReuseCount = BigInteger.ZERO;
+
+		if (uhash32 == null)
+			uhash32 = new UHash32();
+
+		Map<Object, Object> map = new HashMap<>();
+		map.put(MAC_KEY_MATERIAL, K);
+		uhash32.init(map);
+	}
+
+	@Override
+	public int macSize() {
+		return OUTPUT_LEN;
+	}
+
+	/**
+	 * @return byte array of length 8 (or OUTPUT_LEN) bytes.
+	 */
+	private byte[] pdf() {
+		// Make Nonce 16 bytes by prepending zeroes. done (see init())
+		// one AES invocation is enough for more than one PDF invocation
+		// number of index bits needed = 1
+		// Extract index bits and zero low bits of Nonce
+		BigInteger Nonce = new BigInteger(1, nonce);
+		int nlowbitsnum = Nonce.testBit(0) ? 1 : 0;
+		Nonce = Nonce.clearBit(0);
+		// Generate subkey, AES and extract indexed substring
+		IRandom kdf = new UMacGenerator();
+		Map<Object, Object> map = new HashMap<>();
+		map.put(IBlockCipher.KEY_MATERIAL, K);
+		map.put(UMacGenerator.INDEX, Integer.valueOf(128));
+		kdf.init(map);
+		byte[] Kp = new byte[KEY_LEN];
+		try {
+			kdf.nextBytes(Kp, 0, KEY_LEN);
+		} catch (IllegalStateException x) {
+			x.printStackTrace(System.err);
+			throw new RuntimeException(String.valueOf(x));
+		} catch (LimitReachedException x) {
+			x.printStackTrace(System.err);
+			throw new RuntimeException(String.valueOf(x));
+		}
+		IBlockCipher aes = CipherFactory.getInstance(Registry.AES_CIPHER);
+		map.put(IBlockCipher.KEY_MATERIAL, Kp);
+		try {
+			aes.init(map);
+		} catch (InvalidKeyException x) {
+			x.printStackTrace(System.err);
+			throw new RuntimeException(String.valueOf(x));
+		} catch (IllegalStateException x) {
+			x.printStackTrace(System.err);
+			throw new RuntimeException(String.valueOf(x));
+		}
+		byte[] T = new byte[16];
+		aes.encryptBlock(nonce, 0, T, 0);
+		byte[] result = new byte[OUTPUT_LEN];
+		System.arraycopy(T, nlowbitsnum, result, 0, OUTPUT_LEN);
+		return result;
+	}
+
+	@Override
+	public void reset() {
+		if (uhash32 != null)
+			uhash32.reset();
+	}
+
+	@Override
+	public boolean selfTest() {
+		if (valid == null) {
+			byte[] key;
+			try {
+				key = "abcdefghijklmnop".getBytes("ASCII");
+			} catch (UnsupportedEncodingException x) {
+				throw new RuntimeException("ASCII not supported");
+			}
+			byte[] nonce = new byte[] { 0, 1, 2, 3, 4, 5, 6, 7 };
+			UMac32 mac = new UMac32();
+			Map<Object, Object> attributes = new HashMap<>();
+			attributes.put(MAC_KEY_MATERIAL, key);
+			attributes.put(NONCE_MATERIAL, nonce);
+			try {
+				mac.init(attributes);
+			} catch (InvalidKeyException x) {
+				x.printStackTrace(System.err);
+				return false;
+			}
+			byte[] data = new byte[128];
+			data[0] = (byte) 0x80;
+			mac.update(data, 0, 128);
+			byte[] result = mac.digest();
+			valid = Boolean.valueOf(TV1.equals(Util.toString(result)));
+		}
+		return valid.booleanValue();
+	}
+
+	@Override
+	public void update(byte b) {
+		uhash32.update(b);
+	}
+
+	@Override
+	public void update(byte[] b, int offset, int len) {
+		uhash32.update(b, offset, len);
+	}
 }

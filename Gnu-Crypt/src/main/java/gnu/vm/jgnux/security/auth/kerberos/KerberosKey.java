@@ -49,143 +49,131 @@ import gnu.vm.jgnux.security.auth.Destroyable;
  *
  * @since 1.4
  */
-public class KerberosKey implements Serializable, SecretKey, Destroyable
-{
-    private static final long serialVersionUID = -4625402278148246993L;
+public class KerberosKey implements Serializable, SecretKey, Destroyable {
+	private static final long serialVersionUID = -4625402278148246993L;
 
-    private KerberosPrincipal principal;
+	private KerberosPrincipal principal;
 
-    private int versionNum;
+	private int versionNum;
 
-    private KeyImpl key;
+	private KeyImpl key;
 
-    /**
-     * Construct a new key with the indicated principal and key.
-     * 
-     * @param principal
-     *            the principal
-     * @param key
-     *            the key's data
-     * @param type
-     *            the key's type
-     * @param version
-     *            the key's version number
-     */
-    public KerberosKey(KerberosPrincipal principal, byte[] key, int type, int version)
-    {
-	this.principal = principal;
-	this.versionNum = version;
-	this.key = new KeyImpl(key, type);
-    }
+	/**
+	 * Construct a new key with the indicated principal and key.
+	 * 
+	 * @param principal
+	 *            the principal
+	 * @param key
+	 *            the key's data
+	 * @param type
+	 *            the key's type
+	 * @param version
+	 *            the key's version number
+	 */
+	public KerberosKey(KerberosPrincipal principal, byte[] key, int type, int version) {
+		this.principal = principal;
+		this.versionNum = version;
+		this.key = new KeyImpl(key, type);
+	}
 
-    /**
-     * Construct a new key with the indicated principal and a password.
-     * 
-     * @param principal
-     *            the principal
-     * @param passwd
-     *            the password to use
-     * @param algo
-     *            the algorithm; if null the "DES" algorithm is used
-     */
-    public KerberosKey(KerberosPrincipal principal, char[] passwd, String algo)
-    // Not implemented because KeyImpl really does nothing here.
+	/**
+	 * Construct a new key with the indicated principal and a password.
+	 * 
+	 * @param principal
+	 *            the principal
+	 * @param passwd
+	 *            the password to use
+	 * @param algo
+	 *            the algorithm; if null the "DES" algorithm is used
+	 */
+	public KerberosKey(KerberosPrincipal principal, char[] passwd, String algo)
+	// Not implemented because KeyImpl really does nothing here.
 
-    {
-	this.principal = principal;
-	this.versionNum = 0; // FIXME: correct?
-	this.key = new KeyImpl(passwd, algo);
-    }
+	{
+		this.principal = principal;
+		this.versionNum = 0; // FIXME: correct?
+		this.key = new KeyImpl(passwd, algo);
+	}
 
-    private void checkDestroyed()
-    {
-	if (key == null)
-	    throw new IllegalStateException("key is destroyed");
-    }
+	private void checkDestroyed() {
+		if (key == null)
+			throw new IllegalStateException("key is destroyed");
+	}
 
-    /**
-     * Destroy this key.
-     */
-    @Override
-    public void destroy() throws DestroyFailedException
-    {
-	if (key == null)
-	    throw new DestroyFailedException("already destroyed");
-	key = null;
-    }
+	/**
+	 * Destroy this key.
+	 */
+	@Override
+	public void destroy() throws DestroyFailedException {
+		if (key == null)
+			throw new DestroyFailedException("already destroyed");
+		key = null;
+	}
 
-    /**
-     * Return the name of the algorithm used to create this key.
-     */
-    @Override
-    public final String getAlgorithm()
-    {
-	checkDestroyed();
-	return key.algorithm;
-    }
+	/**
+	 * Return the name of the algorithm used to create this key.
+	 */
+	@Override
+	public final String getAlgorithm() {
+		checkDestroyed();
+		return key.algorithm;
+	}
 
-    /**
-     * Return the encoded form of this key.
-     */
-    @Override
-    public final byte[] getEncoded()
-    {
-	checkDestroyed();
-	return key.key.clone();
-    }
+	/**
+	 * Return the encoded form of this key.
+	 */
+	@Override
+	public final byte[] getEncoded() {
+		checkDestroyed();
+		return key.key.clone();
+	}
 
-    /**
-     * Return the format of this key. This implementation always returns "RAW".
-     */
-    @Override
-    public final String getFormat()
-    {
-	checkDestroyed();
-	// Silly, but specified.
-	return "RAW";
-    }
+	/**
+	 * Return the format of this key. This implementation always returns "RAW".
+	 */
+	@Override
+	public final String getFormat() {
+		checkDestroyed();
+		// Silly, but specified.
+		return "RAW";
+	}
 
-    /**
-     * Return the type of this key.
-     */
-    public final int getKeyType()
-    {
-	checkDestroyed();
-	return key.type;
-    }
+	/**
+	 * Return the type of this key.
+	 */
+	public final int getKeyType() {
+		checkDestroyed();
+		return key.type;
+	}
 
-    /**
-     * Return the principal associated with this key.
-     */
-    public final KerberosPrincipal getPrincipal()
-    {
-	checkDestroyed();
-	return principal;
-    }
+	/**
+	 * Return the principal associated with this key.
+	 */
+	public final KerberosPrincipal getPrincipal() {
+		checkDestroyed();
+		return principal;
+	}
 
-    /**
-     * Return the version number of this key.
-     */
-    public final int getVersionNumber()
-    {
-	checkDestroyed();
-	return versionNum;
-    }
+	/**
+	 * Return the version number of this key.
+	 */
+	public final int getVersionNumber() {
+		checkDestroyed();
+		return versionNum;
+	}
 
-    /**
-     * Return true if this key has been destroyed. After this has been called,
-     * other methods on this object will throw IllegalStateException.
-     */
-    @Override
-    public boolean isDestroyed()
-    {
-	return key == null;
-    }
+	/**
+	 * Return true if this key has been destroyed. After this has been called, other
+	 * methods on this object will throw IllegalStateException.
+	 */
+	@Override
+	public boolean isDestroyed() {
+		return key == null;
+	}
 
-    @Override
-    public String toString()
-    {
-	// FIXME: random choice here.
-	return principal + ":" + versionNum;
-    }
+	@Override
+	public String toString() {
+		// FIXME: random choice here.
+		return principal + ":" + versionNum;
+	}
 }

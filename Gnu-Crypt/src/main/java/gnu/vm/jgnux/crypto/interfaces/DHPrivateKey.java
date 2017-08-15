@@ -56,15 +56,14 @@ import gnu.vm.jgnu.security.PrivateKey;
  * @see DHKey
  * @see DHPublicKey
  */
-public interface DHPrivateKey extends DHKey, PrivateKey
-{
-    /** Compatible with JDK1.4. */
-    long serialVersionUID = 2211791113380396553L;
+public interface DHPrivateKey extends DHKey, PrivateKey {
+	/** Compatible with JDK1.4. */
+	long serialVersionUID = 2211791113380396553L;
 
-    /**
-     * Returns the private value <i>x</i>.
-     *
-     * @return The private value <i>x</i>.
-     */
-    BigInteger getX();
+	/**
+	 * Returns the private value <i>x</i>.
+	 *
+	 * @return The private value <i>x</i>.
+	 */
+	BigInteger getX();
 }

@@ -44,28 +44,25 @@ package gnu.vm.jgnu.security.cert;
  * @since 1.2
  * @status updated to 1.4
  */
-public class CertificateNotYetValidException extends CertificateException
-{
-    /**
-     * Compatible with JDK 1.2+.
-     */
-    private static final long serialVersionUID = 4355919900041064702L;
+public class CertificateNotYetValidException extends CertificateException {
+	/**
+	 * Compatible with JDK 1.2+.
+	 */
+	private static final long serialVersionUID = 4355919900041064702L;
 
-    /**
-     * Constructs an exception without a message string.
-     */
-    public CertificateNotYetValidException()
-    {
-    }
+	/**
+	 * Constructs an exception without a message string.
+	 */
+	public CertificateNotYetValidException() {
+	}
 
-    /**
-     * Constructs an exception with a message string.
-     *
-     * @param msg
-     *            A message to display with exception
-     */
-    public CertificateNotYetValidException(String msg)
-    {
-	super(msg);
-    }
+	/**
+	 * Constructs an exception with a message string.
+	 *
+	 * @param msg
+	 *            A message to display with exception
+	 */
+	public CertificateNotYetValidException(String msg) {
+		super(msg);
+	}
 }

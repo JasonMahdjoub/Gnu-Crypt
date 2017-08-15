@@ -45,55 +45,51 @@ import gnu.vm.jgnu.security.spec.AlgorithmParameterSpec;
  *
  * @author Casey Marshall (csm@gnu.org)
  */
-public class IvParameterSpec implements AlgorithmParameterSpec
-{
+public class IvParameterSpec implements AlgorithmParameterSpec {
 
-    // Fields.
-    // ------------------------------------------------------------------------
+	// Fields.
+	// ------------------------------------------------------------------------
 
-    /** The IV. */
-    private byte[] iv;
+	/** The IV. */
+	private byte[] iv;
 
-    // Constructors.
-    // ------------------------------------------------------------------------
+	// Constructors.
+	// ------------------------------------------------------------------------
 
-    /**
-     * Create a new initialization vector spec from an entire byte array.
-     *
-     * @param iv
-     *            The IV bytes.
-     */
-    public IvParameterSpec(byte[] iv)
-    {
-	this(iv, 0, iv.length);
-    }
+	/**
+	 * Create a new initialization vector spec from an entire byte array.
+	 *
+	 * @param iv
+	 *            The IV bytes.
+	 */
+	public IvParameterSpec(byte[] iv) {
+		this(iv, 0, iv.length);
+	}
 
-    /**
-     * Create a new initialization vector spec from part of a byte array.
-     *
-     * @param iv
-     *            The IV bytes.
-     * @param off
-     *            The offset into the IV bytes.
-     * @param len
-     *            The number of IV bytes.
-     */
-    public IvParameterSpec(byte[] iv, int off, int len)
-    {
-	this.iv = new byte[len];
-	System.arraycopy(iv, off, this.iv, 0, len);
-    }
+	/**
+	 * Create a new initialization vector spec from part of a byte array.
+	 *
+	 * @param iv
+	 *            The IV bytes.
+	 * @param off
+	 *            The offset into the IV bytes.
+	 * @param len
+	 *            The number of IV bytes.
+	 */
+	public IvParameterSpec(byte[] iv, int off, int len) {
+		this.iv = new byte[len];
+		System.arraycopy(iv, off, this.iv, 0, len);
+	}
 
-    // Instance methods.
-    // ------------------------------------------------------------------------
+	// Instance methods.
+	// ------------------------------------------------------------------------
 
-    /**
-     * Returns the IV. This method does not copy the byte array.
-     *
-     * @return The IV.
-     */
-    public byte[] getIV()
-    {
-	return iv;
-    }
+	/**
+	 * Returns the IV. This method does not copy the byte array.
+	 *
+	 * @return The IV.
+	 */
+	public byte[] getIV() {
+		return iv;
+	}
 }

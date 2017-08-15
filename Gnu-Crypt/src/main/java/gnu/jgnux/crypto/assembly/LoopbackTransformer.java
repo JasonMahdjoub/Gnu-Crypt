@@ -43,63 +43,52 @@ import java.util.Map;
  * A trivial {@link Transformer} to allow closing a chain in an
  * {@link Assembly}. This class is not visible outside this package.
  */
-final class LoopbackTransformer extends Transformer
-{
-    /** Trivial package-private constructor. */
-    LoopbackTransformer()
-    {
-	super();
-    }
+final class LoopbackTransformer extends Transformer {
+	/** Trivial package-private constructor. */
+	LoopbackTransformer() {
+		super();
+	}
 
-    @Override
-    int delegateBlockSize()
-    {
-	return 1;
-    }
+	@Override
+	int delegateBlockSize() {
+		return 1;
+	}
 
-    @Override
-    public void init(Map<Object, Object> attributes)
-    {
-    }
+	@Override
+	public void init(Map<Object, Object> attributes) {
+	}
 
-    @Override
-    void initDelegate(Map<Object, Object> attributes)
-    {
-    }
+	@Override
+	void initDelegate(Map<Object, Object> attributes) {
+	}
 
-    @Override
-    public byte[] lastUpdate()
-    {
-	return lastUpdateDelegate();
-    }
+	@Override
+	public byte[] lastUpdate() {
+		return lastUpdateDelegate();
+	}
 
-    @Override
-    byte[] lastUpdateDelegate()
-    {
-	return new byte[0];
-    }
+	@Override
+	byte[] lastUpdateDelegate() {
+		return new byte[0];
+	}
 
-    @Override
-    public void reset()
-    {
-    }
+	@Override
+	public void reset() {
+	}
 
-    @Override
-    void resetDelegate()
-    {
-    }
+	@Override
+	void resetDelegate() {
+	}
 
-    @Override
-    public byte[] update(byte[] in, int offset, int length)
-    {
-	return updateDelegate(in, offset, length);
-    }
+	@Override
+	public byte[] update(byte[] in, int offset, int length) {
+		return updateDelegate(in, offset, length);
+	}
 
-    @Override
-    byte[] updateDelegate(byte[] in, int offset, int length)
-    {
-	byte[] result = new byte[length];
-	System.arraycopy(in, offset, result, 0, length);
-	return result;
-    }
+	@Override
+	byte[] updateDelegate(byte[] in, int offset, int length) {
+		byte[] result = new byte[length];
+		System.arraycopy(in, offset, result, 0, length);
+		return result;
+	}
 }

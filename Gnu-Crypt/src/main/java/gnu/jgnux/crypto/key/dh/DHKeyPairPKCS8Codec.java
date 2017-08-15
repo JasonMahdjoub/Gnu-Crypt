@@ -55,198 +55,180 @@ import gnu.vm.jgnu.security.InvalidParameterException;
 import gnu.vm.jgnu.security.PrivateKey;
 import gnu.vm.jgnu.security.PublicKey;
 
-public class DHKeyPairPKCS8Codec implements IKeyPairCodec
-{
-    private static final OID DH_ALG_OID = new OID(Registry.DH_OID_STRING);
+public class DHKeyPairPKCS8Codec implements IKeyPairCodec {
+	private static final OID DH_ALG_OID = new OID(Registry.DH_OID_STRING);
 
-    // implicit 0-arguments constructor
+	// implicit 0-arguments constructor
 
-    /**
-     * @param input
-     *            the byte array to unmarshall into a valid DH
-     *            {@link PrivateKey} instance. MUST NOT be null.
-     * @return a new instance of a {@link GnuDHPrivateKey} decoded from the
-     *         <i>PrivateKeyInfo</i> material fed as <code>input</code>.
-     * @throw InvalidParameterException if an exception occurs during the
-     *        unmarshalling process.
-     */
-    @Override
-    public PrivateKey decodePrivateKey(byte[] input)
-    {
-	if (input == null)
-	    throw new InvalidParameterException("Input bytes MUST NOT be null");
+	/**
+	 * @param input
+	 *            the byte array to unmarshall into a valid DH {@link PrivateKey}
+	 *            instance. MUST NOT be null.
+	 * @return a new instance of a {@link GnuDHPrivateKey} decoded from the
+	 *         <i>PrivateKeyInfo</i> material fed as <code>input</code>.
+	 * @throw InvalidParameterException if an exception occurs during the
+	 *        unmarshalling process.
+	 */
+	@Override
+	public PrivateKey decodePrivateKey(byte[] input) {
+		if (input == null)
+			throw new InvalidParameterException("Input bytes MUST NOT be null");
 
-	BigInteger version, p, q, g, x;
-	DERReader der = new DERReader(input);
-	try
-	{
-	    DERValue derPKI = der.read();
-	    DerUtil.checkIsConstructed(derPKI, "Wrong PrivateKeyInfo field");
+		BigInteger version, p, q, g, x;
+		DERReader der = new DERReader(input);
+		try {
+			DERValue derPKI = der.read();
+			DerUtil.checkIsConstructed(derPKI, "Wrong PrivateKeyInfo field");
 
-	    DERValue derVersion = der.read();
-	    if (!(derVersion.getValue() instanceof BigInteger))
-		throw new InvalidParameterException("Wrong Version field");
+			DERValue derVersion = der.read();
+			if (!(derVersion.getValue() instanceof BigInteger))
+				throw new InvalidParameterException("Wrong Version field");
 
-	    version = (BigInteger) derVersion.getValue();
-	    if (version.compareTo(BigInteger.ZERO) != 0)
-		throw new InvalidParameterException(
-			"Unexpected Version: " + version);
+			version = (BigInteger) derVersion.getValue();
+			if (version.compareTo(BigInteger.ZERO) != 0)
+				throw new InvalidParameterException("Unexpected Version: " + version);
 
-	    DERValue derAlgoritmID = der.read();
-	    DerUtil.checkIsConstructed(derAlgoritmID,
-		    "Wrong AlgorithmIdentifier field");
+			DERValue derAlgoritmID = der.read();
+			DerUtil.checkIsConstructed(derAlgoritmID, "Wrong AlgorithmIdentifier field");
 
-	    DERValue derOID = der.read();
-	    OID algOID = (OID) derOID.getValue();
-	    if (!algOID.equals(DH_ALG_OID))
-		throw new InvalidParameterException(
-			"Unexpected OID: " + algOID);
+			DERValue derOID = der.read();
+			OID algOID = (OID) derOID.getValue();
+			if (!algOID.equals(DH_ALG_OID))
+				throw new InvalidParameterException("Unexpected OID: " + algOID);
 
-	    DERValue derParams = der.read();
-	    DerUtil.checkIsConstructed(derParams, "Wrong DSS Parameters field");
+			DERValue derParams = der.read();
+			DerUtil.checkIsConstructed(derParams, "Wrong DSS Parameters field");
 
-	    DERValue val = der.read();
-	    DerUtil.checkIsBigInteger(val, "Wrong P field");
-	    p = (BigInteger) val.getValue();
-	    val = der.read();
-	    DerUtil.checkIsBigInteger(val, "Wrong G field");
-	    g = (BigInteger) val.getValue();
-	    val = der.read();
-	    DerUtil.checkIsBigInteger(val, "Wrong Q field");
-	    q = (BigInteger) val.getValue();
-	    if (q.compareTo(BigInteger.ZERO) == 0)
-		q = null;
+			DERValue val = der.read();
+			DerUtil.checkIsBigInteger(val, "Wrong P field");
+			p = (BigInteger) val.getValue();
+			val = der.read();
+			DerUtil.checkIsBigInteger(val, "Wrong G field");
+			g = (BigInteger) val.getValue();
+			val = der.read();
+			DerUtil.checkIsBigInteger(val, "Wrong Q field");
+			q = (BigInteger) val.getValue();
+			if (q.compareTo(BigInteger.ZERO) == 0)
+				q = null;
 
-	    val = der.read();
-	    byte[] xBytes = (byte[]) val.getValue();
-	    x = new BigInteger(1, xBytes);
-	}
-	catch (IOException e)
-	{
-	    InvalidParameterException y = new InvalidParameterException();
-	    y.initCause(e);
-	    throw y;
+			val = der.read();
+			byte[] xBytes = (byte[]) val.getValue();
+			x = new BigInteger(1, xBytes);
+		} catch (IOException e) {
+			InvalidParameterException y = new InvalidParameterException();
+			y.initCause(e);
+			throw y;
+		}
+
+		return new GnuDHPrivateKey(Registry.PKCS8_ENCODING_ID, q, p, g, x);
 	}
 
-	return new GnuDHPrivateKey(Registry.PKCS8_ENCODING_ID, q, p, g, x);
-    }
-
-    /**
-     * @throws InvalidParameterException
-     *             ALWAYS.
-     */
-    @Override
-    public PublicKey decodePublicKey(byte[] input)
-    {
-	throw new InvalidParameterException("Wrong format for public keys");
-    }
-
-    /**
-     * Returns the DER-encoded form of the PKCS#8 ASN.1 <i>PrivateKeyInfo</i>
-     * representation of a DH private key. The ASN.1 specification is as
-     * follows:
-     *
-     * <pre>
-     *   PrivateKeyInfo ::= SEQUENCE {
-     *     version              INTEGER, -- MUST be 0
-     *     privateKeyAlgorithm  AlgorithmIdentifier,
-     *     privateKey           OCTET STRING
-     *   }
-     *
-     *   AlgorithmIdentifier ::= SEQUENCE {
-     *     algorithm   OBJECT IDENTIFIER,
-     *     parameters  ANY DEFINED BY algorithm OPTIONAL
-     *   }
-     *
-     *   DhParams ::= SEQUENCE {
-     *     p  INTEGER, -- odd prime, p=jq +1
-     *     g  INTEGER, -- generator, g
-     *     q  INTEGER  -- factor of p-1
-     *   }
-     * </pre>
-     * <p>
-     * <b>IMPORTANT</b>: with RI's
-     * {@link gnu.vm.jgnux.crypto.spec.DHGenParameterSpec} and
-     * {@link gnu.vm.jgnux.crypto.spec.DHParameterSpec} classes, we may end up
-     * with Diffie-Hellman keys that have a <code>null</code> for the
-     * <code>q</code> parameter. RFC-2631 DOES NOT allow for an <i>optional</i>
-     * value for that parameter, hence we replace such null values with
-     * <code>0</code>, and do the reverse in the corresponding decode method.
-     *
-     * @return the DER encoded form of the ASN.1 representation of the
-     *         <i>PrivateKeyInfo</i> field in an X.509 certificate.
-     * @throw InvalidParameterException if an error occurs during the
-     *        marshalling process.
-     */
-    @Override
-    public byte[] encodePrivateKey(PrivateKey key)
-    {
-	if (!(key instanceof GnuDHPrivateKey))
-	    throw new InvalidParameterException("Wrong key type");
-
-	DERValue derVersion = new DERValue(DER.INTEGER, BigInteger.ZERO);
-
-	DERValue derOID = new DERValue(DER.OBJECT_IDENTIFIER, DH_ALG_OID);
-
-	GnuDHPrivateKey pk = (GnuDHPrivateKey) key;
-	BigInteger p = pk.getParams().getP();
-	BigInteger g = pk.getParams().getG();
-	BigInteger q = pk.getQ();
-	if (q == null)
-	    q = BigInteger.ZERO;
-	BigInteger x = pk.getX();
-
-	ArrayList<DERValue> params = new ArrayList<>(3);
-	params.add(new DERValue(DER.INTEGER, p));
-	params.add(new DERValue(DER.INTEGER, g));
-	params.add(new DERValue(DER.INTEGER, q));
-	DERValue derParams = new DERValue(DER.CONSTRUCTED | DER.SEQUENCE,
-		params);
-
-	ArrayList<DERValue> algorithmID = new ArrayList<>(2);
-	algorithmID.add(derOID);
-	algorithmID.add(derParams);
-	DERValue derAlgorithmID = new DERValue(DER.CONSTRUCTED | DER.SEQUENCE,
-		algorithmID);
-
-	DERValue derPrivateKey = new DERValue(DER.OCTET_STRING, Util.trim(x));
-
-	ArrayList<DERValue> pki = new ArrayList<>(3);
-	pki.add(derVersion);
-	pki.add(derAlgorithmID);
-	pki.add(derPrivateKey);
-	DERValue derPKI = new DERValue(DER.CONSTRUCTED | DER.SEQUENCE, pki);
-
-	byte[] result;
-	ByteArrayOutputStream baos = new ByteArrayOutputStream();
-	try
-	{
-	    DERWriter.write(baos, derPKI);
-	    result = baos.toByteArray();
-	}
-	catch (IOException e)
-	{
-	    InvalidParameterException y = new InvalidParameterException();
-	    y.initCause(e);
-	    throw y;
+	/**
+	 * @throws InvalidParameterException
+	 *             ALWAYS.
+	 */
+	@Override
+	public PublicKey decodePublicKey(byte[] input) {
+		throw new InvalidParameterException("Wrong format for public keys");
 	}
 
-	return result;
-    }
+	/**
+	 * Returns the DER-encoded form of the PKCS#8 ASN.1 <i>PrivateKeyInfo</i>
+	 * representation of a DH private key. The ASN.1 specification is as follows:
+	 *
+	 * <pre>
+	 *   PrivateKeyInfo ::= SEQUENCE {
+	 *     version              INTEGER, -- MUST be 0
+	 *     privateKeyAlgorithm  AlgorithmIdentifier,
+	 *     privateKey           OCTET STRING
+	 *   }
+	 *
+	 *   AlgorithmIdentifier ::= SEQUENCE {
+	 *     algorithm   OBJECT IDENTIFIER,
+	 *     parameters  ANY DEFINED BY algorithm OPTIONAL
+	 *   }
+	 *
+	 *   DhParams ::= SEQUENCE {
+	 *     p  INTEGER, -- odd prime, p=jq +1
+	 *     g  INTEGER, -- generator, g
+	 *     q  INTEGER  -- factor of p-1
+	 *   }
+	 * </pre>
+	 * <p>
+	 * <b>IMPORTANT</b>: with RI's
+	 * {@link gnu.vm.jgnux.crypto.spec.DHGenParameterSpec} and
+	 * {@link gnu.vm.jgnux.crypto.spec.DHParameterSpec} classes, we may end up with
+	 * Diffie-Hellman keys that have a <code>null</code> for the <code>q</code>
+	 * parameter. RFC-2631 DOES NOT allow for an <i>optional</i> value for that
+	 * parameter, hence we replace such null values with <code>0</code>, and do the
+	 * reverse in the corresponding decode method.
+	 *
+	 * @return the DER encoded form of the ASN.1 representation of the
+	 *         <i>PrivateKeyInfo</i> field in an X.509 certificate.
+	 * @throw InvalidParameterException if an error occurs during the marshalling
+	 *        process.
+	 */
+	@Override
+	public byte[] encodePrivateKey(PrivateKey key) {
+		if (!(key instanceof GnuDHPrivateKey))
+			throw new InvalidParameterException("Wrong key type");
 
-    /**
-     * @throws InvalidParameterException
-     *             ALWAYS.
-     */
-    @Override
-    public byte[] encodePublicKey(PublicKey key)
-    {
-	throw new InvalidParameterException("Wrong format for public keys");
-    }
+		DERValue derVersion = new DERValue(DER.INTEGER, BigInteger.ZERO);
 
-    @Override
-    public int getFormatID()
-    {
-	return PKCS8_FORMAT;
-    }
+		DERValue derOID = new DERValue(DER.OBJECT_IDENTIFIER, DH_ALG_OID);
+
+		GnuDHPrivateKey pk = (GnuDHPrivateKey) key;
+		BigInteger p = pk.getParams().getP();
+		BigInteger g = pk.getParams().getG();
+		BigInteger q = pk.getQ();
+		if (q == null)
+			q = BigInteger.ZERO;
+		BigInteger x = pk.getX();
+
+		ArrayList<DERValue> params = new ArrayList<>(3);
+		params.add(new DERValue(DER.INTEGER, p));
+		params.add(new DERValue(DER.INTEGER, g));
+		params.add(new DERValue(DER.INTEGER, q));
+		DERValue derParams = new DERValue(DER.CONSTRUCTED | DER.SEQUENCE, params);
+
+		ArrayList<DERValue> algorithmID = new ArrayList<>(2);
+		algorithmID.add(derOID);
+		algorithmID.add(derParams);
+		DERValue derAlgorithmID = new DERValue(DER.CONSTRUCTED | DER.SEQUENCE, algorithmID);
+
+		DERValue derPrivateKey = new DERValue(DER.OCTET_STRING, Util.trim(x));
+
+		ArrayList<DERValue> pki = new ArrayList<>(3);
+		pki.add(derVersion);
+		pki.add(derAlgorithmID);
+		pki.add(derPrivateKey);
+		DERValue derPKI = new DERValue(DER.CONSTRUCTED | DER.SEQUENCE, pki);
+
+		byte[] result;
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		try {
+			DERWriter.write(baos, derPKI);
+			result = baos.toByteArray();
+		} catch (IOException e) {
+			InvalidParameterException y = new InvalidParameterException();
+			y.initCause(e);
+			throw y;
+		}
+
+		return result;
+	}
+
+	/**
+	 * @throws InvalidParameterException
+	 *             ALWAYS.
+	 */
+	@Override
+	public byte[] encodePublicKey(PublicKey key) {
+		throw new InvalidParameterException("Wrong format for public keys");
+	}
+
+	@Override
+	public int getFormatID() {
+		return PKCS8_FORMAT;
+	}
 }

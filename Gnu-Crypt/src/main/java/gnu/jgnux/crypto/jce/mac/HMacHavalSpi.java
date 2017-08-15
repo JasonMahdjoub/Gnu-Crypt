@@ -43,10 +43,8 @@ import gnu.jgnu.security.Registry;
  * The implementation of the HMAC-HAVAL <i>Service Provider Interface</i>
  * (<b>SPI</b>) Adapter.
  */
-public class HMacHavalSpi extends MacAdapter
-{
-    public HMacHavalSpi()
-    {
-	super(Registry.HMAC_NAME_PREFIX + Registry.HAVAL_HASH);
-    }
+public class HMacHavalSpi extends MacAdapter {
+	public HMacHavalSpi() {
+		super(Registry.HMAC_NAME_PREFIX + Registry.HAVAL_HASH);
+	}
 }

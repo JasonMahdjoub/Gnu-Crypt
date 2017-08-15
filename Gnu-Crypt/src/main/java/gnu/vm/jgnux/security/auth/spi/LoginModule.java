@@ -56,72 +56,70 @@ import gnu.vm.jgnux.security.auth.login.LoginException;
  *
  * @author Casey Marshall (csm@gnu.org)
  */
-public interface LoginModule
-{
-    /**
-     * Abort the current login attempt. This is called after {@link #login()} if
-     * the overall login attempt fails (that is, if one of the other login
-     * modules that is REQUIRED or REQUISITE fails). This method should clean up
-     * this module's saved state, if any.
-     *
-     * @return True if the abort succeeded, or false if this module should be
-     *         ignored.
-     * @throws LoginException
-     *             If the abort fails.
-     */
-    boolean abort() throws LoginException;
+public interface LoginModule {
+	/**
+	 * Abort the current login attempt. This is called after {@link #login()} if the
+	 * overall login attempt fails (that is, if one of the other login modules that
+	 * is REQUIRED or REQUISITE fails). This method should clean up this module's
+	 * saved state, if any.
+	 *
+	 * @return True if the abort succeeded, or false if this module should be
+	 *         ignored.
+	 * @throws LoginException
+	 *             If the abort fails.
+	 */
+	boolean abort() throws LoginException;
 
-    /**
-     * Commit the current login attempt. This is called after {@link #login()}
-     * if the overall login attempt succeeds (that is, all methods have
-     * satisfied all REQUIRED, REQUISITE, SUFFICIENT and OPTIONAL module
-     * requirements).
-     *
-     * @return True if the commit succeeded, or false if this module should be
-     *         ignored.
-     * @throws LoginException
-     *             If the commit fails.
-     */
-    boolean commit() throws LoginException;
+	/**
+	 * Commit the current login attempt. This is called after {@link #login()} if
+	 * the overall login attempt succeeds (that is, all methods have satisfied all
+	 * REQUIRED, REQUISITE, SUFFICIENT and OPTIONAL module requirements).
+	 *
+	 * @return True if the commit succeeded, or false if this module should be
+	 *         ignored.
+	 * @throws LoginException
+	 *             If the commit fails.
+	 */
+	boolean commit() throws LoginException;
 
-    /**
-     * Initializes this login module. This method is called when the instance
-     * implementing this interface is instantiated, and should perform any
-     * initialization based on the given parameters. Implementations should
-     * ignore state variables and options they do not recognize.
-     *
-     * @param subject
-     *            The subject being authenticated.
-     * @param handler
-     *            The callback handler for user input.
-     * @param sharedState
-     *            A mapping that is shared between all login modules.
-     * @param options
-     *            A mapping of options given to this module.
-     */
-    void initialize(Subject subject, CallbackHandler handler, Map<String, ?> sharedState, Map<String, ?> options);
+	/**
+	 * Initializes this login module. This method is called when the instance
+	 * implementing this interface is instantiated, and should perform any
+	 * initialization based on the given parameters. Implementations should ignore
+	 * state variables and options they do not recognize.
+	 *
+	 * @param subject
+	 *            The subject being authenticated.
+	 * @param handler
+	 *            The callback handler for user input.
+	 * @param sharedState
+	 *            A mapping that is shared between all login modules.
+	 * @param options
+	 *            A mapping of options given to this module.
+	 */
+	void initialize(Subject subject, CallbackHandler handler, Map<String, ?> sharedState, Map<String, ?> options);
 
-    /**
-     * Authenticates a subject to the system. This is the primary mechanism by
-     * which subjects are authenticated, and typically implementations will ask
-     * for credentials (for example, a user name and password) which will then
-     * be verified.
-     *
-     * @return True if the subject was authenticated, or false if this module
-     *         should be ignored.
-     * @throws LoginException
-     *             If this method fails.
-     */
-    boolean login() throws LoginException;
+	/**
+	 * Authenticates a subject to the system. This is the primary mechanism by which
+	 * subjects are authenticated, and typically implementations will ask for
+	 * credentials (for example, a user name and password) which will then be
+	 * verified.
+	 *
+	 * @return True if the subject was authenticated, or false if this module should
+	 *         be ignored.
+	 * @throws LoginException
+	 *             If this method fails.
+	 */
+	boolean login() throws LoginException;
 
-    /**
-     * Logs a subject out. This is primarily used for modules that must destroy
-     * or remove the authentication state associated with a logged-in subject.
-     *
-     * @return True if the logout succeeds, or false if this module should be
-     *         ignored.
-     * @throws LoginException
-     *             If this method fails.
-     */
-    boolean logout() throws LoginException;
+	/**
+	 * Logs a subject out. This is primarily used for modules that must destroy or
+	 * remove the authentication state associated with a logged-in subject.
+	 *
+	 * @return True if the logout succeeds, or false if this module should be
+	 *         ignored.
+	 * @throws LoginException
+	 *             If this method fails.
+	 */
+	boolean logout() throws LoginException;
 }

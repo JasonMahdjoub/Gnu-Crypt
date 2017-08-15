@@ -42,24 +42,21 @@ import java.security.BasicPermission;
 /**
  * A permission used for accessing SSL classes.
  */
-public final class SSLPermission extends BasicPermission
-{
+public final class SSLPermission extends BasicPermission {
 
-    // Constant.
-    // -------------------------------------------------------------------------
+	// Constant.
+	// -------------------------------------------------------------------------
 
-    private static final long serialVersionUID = -3456898025505876775L;
+	private static final long serialVersionUID = -3456898025505876775L;
 
-    // Constructors.
-    // -------------------------------------------------------------------------
+	// Constructors.
+	// -------------------------------------------------------------------------
 
-    public SSLPermission(String name)
-    {
-	super(name);
-    }
+	public SSLPermission(String name) {
+		super(name);
+	}
 
-    public SSLPermission(String name, String actions)
-    {
-	super(name, actions);
-    }
+	public SSLPermission(String name, String actions) {
+		super(name, actions);
+	}
 }

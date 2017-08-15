@@ -47,40 +47,36 @@ import gnu.vm.jgnu.security.spec.EncodedKeySpec;
  * 
  * @author Mark Benvenuto
  */
-public class X509EncodedKeySpec extends EncodedKeySpec
-{
+public class X509EncodedKeySpec extends EncodedKeySpec {
 
-    /**
-     * Constructs a new X509EncodedKeySpec with the specified encoded key.
-     * 
-     * @param encodedKey
-     *            A key to store, assumed to be "X.509"
-     */
-    public X509EncodedKeySpec(byte[] encodedKey)
-    {
-	super(encodedKey);
-    }
+	/**
+	 * Constructs a new X509EncodedKeySpec with the specified encoded key.
+	 * 
+	 * @param encodedKey
+	 *            A key to store, assumed to be "X.509"
+	 */
+	public X509EncodedKeySpec(byte[] encodedKey) {
+		super(encodedKey);
+	}
 
-    /**
-     * Gets the encoded key in byte format.
-     * 
-     * @returns the encoded key
-     */
-    @Override
-    public byte[] getEncoded()
-    {
-	return super.getEncoded();
-    }
+	/**
+	 * Gets the encoded key in byte format.
+	 * 
+	 * @returns the encoded key
+	 */
+	@Override
+	public byte[] getEncoded() {
+		return super.getEncoded();
+	}
 
-    /**
-     * Returns the name of the key format used which is "X.509"
-     * 
-     * @return a string representing the name
-     */
-    @Override
-    public final String getFormat()
-    {
-	return "X.509";
-    }
+	/**
+	 * Returns the name of the key format used which is "X.509"
+	 * 
+	 * @return a string representing the name
+	 */
+	@Override
+	public final String getFormat() {
+		return "X.509";
+	}
 
 }

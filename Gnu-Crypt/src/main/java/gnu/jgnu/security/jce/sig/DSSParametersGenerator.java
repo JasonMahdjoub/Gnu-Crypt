@@ -57,71 +57,59 @@ import gnu.vm.jgnu.security.spec.InvalidParameterSpecException;
 /**
  * A JCE Adapter for a generator of DSS parameters.
  */
-public class DSSParametersGenerator extends AlgorithmParameterGeneratorSpi
-{
-    private static final Provider GNU = new Gnu();
+public class DSSParametersGenerator extends AlgorithmParameterGeneratorSpi {
+	private static final Provider GNU = new Gnu();
 
-    /** Size of the public modulus in bits. */
-    private int modulusLength = -1;
+	/** Size of the public modulus in bits. */
+	private int modulusLength = -1;
 
-    /** User specified source of randomness. */
-    private SecureRandom rnd;
+	/** User specified source of randomness. */
+	private SecureRandom rnd;
 
-    /** Our concrete DSS parameters generator. */
-    private FIPS186 fips;
+	/** Our concrete DSS parameters generator. */
+	private FIPS186 fips;
 
-    // default 0-arguments constructor
+	// default 0-arguments constructor
 
-    @Override
-    protected AlgorithmParameters engineGenerateParameters()
-    {
-	if (modulusLength < 1)
-	    modulusLength = DSSKeyPairGenerator.DEFAULT_MODULUS_LENGTH;
+	@Override
+	protected AlgorithmParameters engineGenerateParameters() {
+		if (modulusLength < 1)
+			modulusLength = DSSKeyPairGenerator.DEFAULT_MODULUS_LENGTH;
 
-	fips = new FIPS186(modulusLength, rnd);
-	BigInteger[] params = fips.generateParameters();
-	BigInteger p = params[3];
-	BigInteger q = params[2];
-	BigInteger g = params[5];
-	DSAParameterSpec spec = new DSAParameterSpec(p, q, g);
-	AlgorithmParameters result = null;
-	try
-	{
-	    result = AlgorithmParameters.getInstance(Registry.DSS_KPG, GNU);
-	    result.init(spec);
+		fips = new FIPS186(modulusLength, rnd);
+		BigInteger[] params = fips.generateParameters();
+		BigInteger p = params[3];
+		BigInteger q = params[2];
+		BigInteger g = params[5];
+		DSAParameterSpec spec = new DSAParameterSpec(p, q, g);
+		AlgorithmParameters result = null;
+		try {
+			result = AlgorithmParameters.getInstance(Registry.DSS_KPG, GNU);
+			result.init(spec);
+		} catch (NoSuchAlgorithmException ignore) {
+		} catch (InvalidParameterSpecException ignore) {
+		}
+		return result;
 	}
-	catch (NoSuchAlgorithmException ignore)
-	{
-	}
-	catch (InvalidParameterSpecException ignore)
-	{
-	}
-	return result;
-    }
 
-    @Override
-    protected void engineInit(AlgorithmParameterSpec spec, SecureRandom random) throws InvalidAlgorithmParameterException
-    {
-	if (!(spec instanceof DSAParameterSpec))
-	    throw new InvalidAlgorithmParameterException(
-		    "Wrong AlgorithmParameterSpec type: "
-			    + spec.getClass().getName());
-	DSAParameterSpec dsaSpec = (DSAParameterSpec) spec;
-	BigInteger p = dsaSpec.getP();
-	int size = p.bitLength();
-	this.engineInit(size, random);
-    }
+	@Override
+	protected void engineInit(AlgorithmParameterSpec spec, SecureRandom random)
+			throws InvalidAlgorithmParameterException {
+		if (!(spec instanceof DSAParameterSpec))
+			throw new InvalidAlgorithmParameterException(
+					"Wrong AlgorithmParameterSpec type: " + spec.getClass().getName());
+		DSAParameterSpec dsaSpec = (DSAParameterSpec) spec;
+		BigInteger p = dsaSpec.getP();
+		int size = p.bitLength();
+		this.engineInit(size, random);
+	}
 
-    @Override
-    protected void engineInit(int size, SecureRandom random)
-    {
-	if ((size % 64) != 0 || size < 512 || size > 1024)
-	    throw new InvalidParameterException(
-		    "Modulus size/length (in bits) MUST "
-			    + "be a multiple of 64, greater than "
-			    + "or equal to 512, and less than or "
-			    + "equal to 1024");
-	this.modulusLength = size;
-	this.rnd = random;
-    }
+	@Override
+	protected void engineInit(int size, SecureRandom random) {
+		if ((size % 64) != 0 || size < 512 || size > 1024)
+			throw new InvalidParameterException("Modulus size/length (in bits) MUST "
+					+ "be a multiple of 64, greater than " + "or equal to 512, and less than or " + "equal to 1024");
+		this.modulusLength = size;
+		this.rnd = random;
+	}
 }

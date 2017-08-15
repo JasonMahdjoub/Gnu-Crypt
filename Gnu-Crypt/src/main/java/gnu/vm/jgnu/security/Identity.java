@@ -78,290 +78,263 @@ import gnu.vm.jgnu.security.Signer;
  *             <code>java.security.Principal</code>.
  */
 @Deprecated
-public abstract class Identity implements Principal, Serializable
-{
-    private static final long serialVersionUID = 3609922007826600659L;
+public abstract class Identity implements Principal, Serializable {
+	private static final long serialVersionUID = 3609922007826600659L;
 
-    private String name;
+	private String name;
 
-    private IdentityScope scope;
+	private IdentityScope scope;
 
-    private PublicKey publicKey;
+	private PublicKey publicKey;
 
-    private String info;
+	private String info;
 
-    private Vector<Certificate> certificates;
+	private Vector<Certificate> certificates;
 
-    /** Constructor for serialization only. */
-    protected Identity()
-    {
-    }
-
-    /**
-     * Constructs a new instance of <code>Identity</code> with the specified
-     * name and no scope.
-     *
-     * @param name
-     *            the name to use.
-     */
-    public Identity(String name)
-    {
-	this.name = name;
-	this.scope = null;
-    }
-
-    /**
-     * Constructs a new instance of <code>Identity</code> with the specified
-     * name and scope.
-     *
-     * @param name
-     *            the name to use.
-     * @param scope
-     *            the scope to use.
-     * @throws KeyManagementException
-     *             if the identity is already present.
-     */
-    public Identity(String name, IdentityScope scope) throws KeyManagementException
-    {
-	this.name = name;
-	this.scope = scope;
-    }
-
-    /**
-     * Adds a certificate to the list of ceritificates for this identity. The
-     * public key in this certificate must match the existing public key if it
-     * exists.
-     *
-     * @param certificate
-     *            the certificate to add.
-     * @throws KeyManagementException
-     *             if the certificate is invalid, or the public key conflicts.
-     * @throws SecurityException
-     *             if a {@link SecurityManager} is installed which disallows
-     *             this operation.
-     */
-    public void addCertificate(Certificate certificate) throws KeyManagementException
-    {
-	SecurityManager sm = System.getSecurityManager();
-	if (sm != null)
-	    sm.checkSecurityAccess("addIdentityCertificate");
-
-	// Check public key of this certificate against the first one in the
-	// vector
-	if (certificates.size() > 0)
-	{
-	    if (certificates.firstElement().getPublicKey() != publicKey)
-		throw new KeyManagementException("Public key does not match");
+	/** Constructor for serialization only. */
+	protected Identity() {
 	}
-	certificates.addElement(certificate);
-    }
 
-    /** @return an array of {@link Certificate}s for this identity. */
-    public Certificate[] certificates()
-    {
-	Certificate[] certs = new Certificate[certificates.size()];
-	int max = certificates.size();
-	for (int i = 0; i < max; i++)
-	    certs[i] = certificates.elementAt(i);
-
-	return certs;
-    }
-
-    /**
-     * Checks for equality between this Identity and a specified object. It
-     * first checks if they are the same object, then if the name and scope
-     * match and returns <code>true</code> if successful. If these tests fail,
-     * the {@link #identityEquals(Identity)} method is called.
-     *
-     * @return <code>true</code> if they are equal, <code>false</code>
-     *         otherwise.
-     */
-    @Override
-    public final boolean equals(Object identity)
-    {
-	if (identity instanceof Identity)
-	{
-	    if (identity == this)
-		return true;
-
-	    if ((((Identity) identity).getName().equals(this.name))
-		    && (((Identity) identity).getScope().equals(this.scope)))
-		return true;
-
-	    return identityEquals((Identity) identity);
+	/**
+	 * Constructs a new instance of <code>Identity</code> with the specified name
+	 * and no scope.
+	 *
+	 * @param name
+	 *            the name to use.
+	 */
+	public Identity(String name) {
+		this.name = name;
+		this.scope = null;
 	}
-	return false;
-    }
 
-    /**
-     * @return the general information string of this identity.
-     * @see #setInfo(String)
-     */
-    public String getInfo()
-    {
-	return info;
-    }
-
-    /** @return the name of this identity. */
-    @Override
-    public final String getName()
-    {
-	return name;
-    }
-
-    /**
-     * @return the public key of this identity.
-     * @see #setPublicKey(java.security.PublicKey)
-     */
-    public PublicKey getPublicKey()
-    {
-	return publicKey;
-    }
-
-    /** @return the scope of this identity. */
-    public final IdentityScope getScope()
-    {
-	return scope;
-    }
-
-    /** @return a hashcode of this identity. */
-    @Override
-    public int hashCode()
-    {
-	int ret = name.hashCode();
-	if (publicKey != null)
-	    ret |= publicKey.hashCode();
-	if (scope != null)
-	    ret |= scope.hashCode();
-	if (info != null)
-	    ret |= info.hashCode();
-	if (certificates != null)
-	    ret |= certificates.hashCode();
-
-	return ret;
-    }
-
-    /**
-     * Checks for equality between this Identity and a specified object. A
-     * subclass should override this method. The default behavior is to return
-     * <code>true</code> if the public key and names match.
-     *
-     * @return <code>true</code> if they are equal, <code>false</code>
-     *         otherwise.
-     */
-    protected boolean identityEquals(Identity identity)
-    {
-	return ((identity.getName().equals(this.name))
-		&& (identity.getPublicKey().equals(this.publicKey)));
-    }
-
-    /**
-     * Removes a certificate from the list of ceritificates for this identity.
-     *
-     * @param certificate
-     *            the certificate to remove.
-     * @throws KeyManagementException
-     *             if the certificate is invalid.
-     * @throws SecurityException
-     *             if a {@link SecurityManager} is installed which disallows
-     *             this operation.
-     */
-    public void removeCertificate(Certificate certificate) throws KeyManagementException
-    {
-	SecurityManager sm = System.getSecurityManager();
-	if (sm != null)
-	    sm.checkSecurityAccess("removeIdentityCertificate");
-
-	if (certificates.contains(certificate) == false)
-	    throw new KeyManagementException("Certificate not found");
-
-	certificates.removeElement(certificate);
-    }
-
-    /**
-     * Sets the general information string.
-     *
-     * @param info
-     *            the general information string.
-     * @throws SecurityException
-     *             if a {@link SecurityManager} is installed which disallows
-     *             this operation.
-     */
-    public void setInfo(String info)
-    {
-	SecurityManager sm = System.getSecurityManager();
-	if (sm != null)
-	    sm.checkSecurityAccess("setIdentityInfo");
-
-	this.info = info;
-    }
-
-    /**
-     * Sets the public key for this identity. The old key and all certificates
-     * are removed.
-     *
-     * @param key
-     *            the public key to use.
-     * @throws KeyManagementException
-     *             if this public key is used by another identity in the current
-     *             scope.
-     * @throws SecurityException
-     *             if a {@link SecurityManager} is installed which disallows
-     *             this operation.
-     */
-    public void setPublicKey(PublicKey key) throws KeyManagementException
-    {
-	SecurityManager sm = System.getSecurityManager();
-	if (sm != null)
-	    sm.checkSecurityAccess("setIdentityPublicKey");
-
-	this.publicKey = key;
-    }
-
-    /**
-     * Returns a string representation of this Identity.
-     *
-     * @return a string representation of this Identity.
-     * @throws SecurityException
-     *             if a {@link SecurityManager} is installed which disallows
-     *             this operation.
-     */
-    @Override
-    public String toString()
-    {
-	SecurityManager sm = System.getSecurityManager();
-	if (sm != null)
-	    sm.checkSecurityAccess("printIdentity");
-
-	/* TODO: Insert proper format here */
-	return (name + ":@" + scope + " Public Key: " + publicKey);
-    }
-
-    /**
-     * Returns a detailed string representation of this Identity.
-     *
-     * @param detailed
-     *            indicates whether or detailed information is desired.
-     * @return a string representation of this Identity.
-     * @throws SecurityException
-     *             if a {@link SecurityManager} is installed which disallows
-     *             this operation.
-     */
-    public String toString(boolean detailed)
-    {
-	SecurityManager sm = System.getSecurityManager();
-	if (sm != null)
-	    sm.checkSecurityAccess("printIdentity");
-
-	if (detailed)
-	{
-	    /* TODO: Insert proper detailed format here */
-	    return (name + ":@" + scope + " Public Key: " + publicKey);
+	/**
+	 * Constructs a new instance of <code>Identity</code> with the specified name
+	 * and scope.
+	 *
+	 * @param name
+	 *            the name to use.
+	 * @param scope
+	 *            the scope to use.
+	 * @throws KeyManagementException
+	 *             if the identity is already present.
+	 */
+	public Identity(String name, IdentityScope scope) throws KeyManagementException {
+		this.name = name;
+		this.scope = scope;
 	}
-	else
-	{
-	    /* TODO: Insert proper format here */
-	    return (name + ":@" + scope + " Public Key: " + publicKey);
+
+	/**
+	 * Adds a certificate to the list of ceritificates for this identity. The public
+	 * key in this certificate must match the existing public key if it exists.
+	 *
+	 * @param certificate
+	 *            the certificate to add.
+	 * @throws KeyManagementException
+	 *             if the certificate is invalid, or the public key conflicts.
+	 * @throws SecurityException
+	 *             if a {@link SecurityManager} is installed which disallows this
+	 *             operation.
+	 */
+	public void addCertificate(Certificate certificate) throws KeyManagementException {
+		SecurityManager sm = System.getSecurityManager();
+		if (sm != null)
+			sm.checkSecurityAccess("addIdentityCertificate");
+
+		// Check public key of this certificate against the first one in the
+		// vector
+		if (certificates.size() > 0) {
+			if (certificates.firstElement().getPublicKey() != publicKey)
+				throw new KeyManagementException("Public key does not match");
+		}
+		certificates.addElement(certificate);
 	}
-    }
+
+	/** @return an array of {@link Certificate}s for this identity. */
+	public Certificate[] certificates() {
+		Certificate[] certs = new Certificate[certificates.size()];
+		int max = certificates.size();
+		for (int i = 0; i < max; i++)
+			certs[i] = certificates.elementAt(i);
+
+		return certs;
+	}
+
+	/**
+	 * Checks for equality between this Identity and a specified object. It first
+	 * checks if they are the same object, then if the name and scope match and
+	 * returns <code>true</code> if successful. If these tests fail, the
+	 * {@link #identityEquals(Identity)} method is called.
+	 *
+	 * @return <code>true</code> if they are equal, <code>false</code> otherwise.
+	 */
+	@Override
+	public final boolean equals(Object identity) {
+		if (identity instanceof Identity) {
+			if (identity == this)
+				return true;
+
+			if ((((Identity) identity).getName().equals(this.name))
+					&& (((Identity) identity).getScope().equals(this.scope)))
+				return true;
+
+			return identityEquals((Identity) identity);
+		}
+		return false;
+	}
+
+	/**
+	 * @return the general information string of this identity.
+	 * @see #setInfo(String)
+	 */
+	public String getInfo() {
+		return info;
+	}
+
+	/** @return the name of this identity. */
+	@Override
+	public final String getName() {
+		return name;
+	}
+
+	/**
+	 * @return the public key of this identity.
+	 * @see #setPublicKey(java.security.PublicKey)
+	 */
+	public PublicKey getPublicKey() {
+		return publicKey;
+	}
+
+	/** @return the scope of this identity. */
+	public final IdentityScope getScope() {
+		return scope;
+	}
+
+	/** @return a hashcode of this identity. */
+	@Override
+	public int hashCode() {
+		int ret = name.hashCode();
+		if (publicKey != null)
+			ret |= publicKey.hashCode();
+		if (scope != null)
+			ret |= scope.hashCode();
+		if (info != null)
+			ret |= info.hashCode();
+		if (certificates != null)
+			ret |= certificates.hashCode();
+
+		return ret;
+	}
+
+	/**
+	 * Checks for equality between this Identity and a specified object. A subclass
+	 * should override this method. The default behavior is to return
+	 * <code>true</code> if the public key and names match.
+	 *
+	 * @return <code>true</code> if they are equal, <code>false</code> otherwise.
+	 */
+	protected boolean identityEquals(Identity identity) {
+		return ((identity.getName().equals(this.name)) && (identity.getPublicKey().equals(this.publicKey)));
+	}
+
+	/**
+	 * Removes a certificate from the list of ceritificates for this identity.
+	 *
+	 * @param certificate
+	 *            the certificate to remove.
+	 * @throws KeyManagementException
+	 *             if the certificate is invalid.
+	 * @throws SecurityException
+	 *             if a {@link SecurityManager} is installed which disallows this
+	 *             operation.
+	 */
+	public void removeCertificate(Certificate certificate) throws KeyManagementException {
+		SecurityManager sm = System.getSecurityManager();
+		if (sm != null)
+			sm.checkSecurityAccess("removeIdentityCertificate");
+
+		if (certificates.contains(certificate) == false)
+			throw new KeyManagementException("Certificate not found");
+
+		certificates.removeElement(certificate);
+	}
+
+	/**
+	 * Sets the general information string.
+	 *
+	 * @param info
+	 *            the general information string.
+	 * @throws SecurityException
+	 *             if a {@link SecurityManager} is installed which disallows this
+	 *             operation.
+	 */
+	public void setInfo(String info) {
+		SecurityManager sm = System.getSecurityManager();
+		if (sm != null)
+			sm.checkSecurityAccess("setIdentityInfo");
+
+		this.info = info;
+	}
+
+	/**
+	 * Sets the public key for this identity. The old key and all certificates are
+	 * removed.
+	 *
+	 * @param key
+	 *            the public key to use.
+	 * @throws KeyManagementException
+	 *             if this public key is used by another identity in the current
+	 *             scope.
+	 * @throws SecurityException
+	 *             if a {@link SecurityManager} is installed which disallows this
+	 *             operation.
+	 */
+	public void setPublicKey(PublicKey key) throws KeyManagementException {
+		SecurityManager sm = System.getSecurityManager();
+		if (sm != null)
+			sm.checkSecurityAccess("setIdentityPublicKey");
+
+		this.publicKey = key;
+	}
+
+	/**
+	 * Returns a string representation of this Identity.
+	 *
+	 * @return a string representation of this Identity.
+	 * @throws SecurityException
+	 *             if a {@link SecurityManager} is installed which disallows this
+	 *             operation.
+	 */
+	@Override
+	public String toString() {
+		SecurityManager sm = System.getSecurityManager();
+		if (sm != null)
+			sm.checkSecurityAccess("printIdentity");
+
+		/* TODO: Insert proper format here */
+		return (name + ":@" + scope + " Public Key: " + publicKey);
+	}
+
+	/**
+	 * Returns a detailed string representation of this Identity.
+	 *
+	 * @param detailed
+	 *            indicates whether or detailed information is desired.
+	 * @return a string representation of this Identity.
+	 * @throws SecurityException
+	 *             if a {@link SecurityManager} is installed which disallows this
+	 *             operation.
+	 */
+	public String toString(boolean detailed) {
+		SecurityManager sm = System.getSecurityManager();
+		if (sm != null)
+			sm.checkSecurityAccess("printIdentity");
+
+		if (detailed) {
+			/* TODO: Insert proper detailed format here */
+			return (name + ":@" + scope + " Public Key: " + publicKey);
+		} else {
+			/* TODO: Insert proper format here */
+			return (name + ":@" + scope + " Public Key: " + publicKey);
+		}
+	}
 }

@@ -63,33 +63,31 @@ import gnu.vm.jgnu.security.spec.AlgorithmParameterSpec;
  * default <i>modulus</i> size (keysize) of 1024 bits for the DSS (Digital
  * Signature Standard) a.k.a <i>DSA</i>.
  */
-public abstract class KeyPairGeneratorAdapter extends KeyPairGenerator
-{
-    /** Our underlying keypair instance. */
-    protected IKeyPairGenerator adaptee;
+public abstract class KeyPairGeneratorAdapter extends KeyPairGenerator {
+	/** Our underlying keypair instance. */
+	protected IKeyPairGenerator adaptee;
 
-    /**
-     * Trivial protected constructor.
-     *
-     * @param kpgName
-     *            the canonical name of the keypair generator algorithm.
-     */
-    protected KeyPairGeneratorAdapter(String kpgName)
-    {
-	super(kpgName);
+	/**
+	 * Trivial protected constructor.
+	 *
+	 * @param kpgName
+	 *            the canonical name of the keypair generator algorithm.
+	 */
+	protected KeyPairGeneratorAdapter(String kpgName) {
+		super(kpgName);
 
-	this.adaptee = KeyPairGeneratorFactory.getInstance(kpgName);
-    }
+		this.adaptee = KeyPairGeneratorFactory.getInstance(kpgName);
+	}
 
-    @Override
-    public KeyPair generateKeyPair()
-    {
-	return adaptee.generate();
-    }
+	@Override
+	public KeyPair generateKeyPair() {
+		return adaptee.generate();
+	}
 
-    @Override
-    public abstract void initialize(AlgorithmParameterSpec params, SecureRandom random) throws InvalidAlgorithmParameterException;
+	@Override
+	public abstract void initialize(AlgorithmParameterSpec params, SecureRandom random)
+			throws InvalidAlgorithmParameterException;
 
-    @Override
-    public abstract void initialize(int keysize, SecureRandom random);
+	@Override
+	public abstract void initialize(int keysize, SecureRandom random);
 }

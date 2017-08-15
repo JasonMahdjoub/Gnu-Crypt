@@ -46,95 +46,84 @@ import gnu.jgnu.security.Registry;
 /**
  * A <i>Factory</i> to instantiate message digest algorithm instances.
  */
-public class HashFactory
-{
-    /**
-     * Return an instance of a hash algorithm given its name.
-     *
-     * @param name
-     *            the name of the hash algorithm.
-     * @return an instance of the hash algorithm, or null if none found.
-     * @exception InternalError
-     *                if the implementation does not pass its self- test.
-     */
-    public static IMessageDigest getInstance(String name)
-    {
-	if (name == null)
-	    throw new NullPointerException();
+public class HashFactory {
+	/**
+	 * Return an instance of a hash algorithm given its name.
+	 *
+	 * @param name
+	 *            the name of the hash algorithm.
+	 * @return an instance of the hash algorithm, or null if none found.
+	 * @exception InternalError
+	 *                if the implementation does not pass its self- test.
+	 */
+	public static IMessageDigest getInstance(String name) {
+		if (name == null)
+			throw new NullPointerException();
 
-	name = name.trim();
-	IMessageDigest result = null;
+		name = name.trim();
+		IMessageDigest result = null;
 
-	if (name.equalsIgnoreCase(Registry.WHIRLPOOL_HASH))
-	    result = new Whirlpool();
-	else if (name.equalsIgnoreCase(Registry.RIPEMD128_HASH)
-		|| name.equalsIgnoreCase(Registry.RIPEMD_128_HASH))
-	    result = new RipeMD128();
-	else if (name.equalsIgnoreCase(Registry.RIPEMD160_HASH)
-		|| name.equalsIgnoreCase(Registry.RIPEMD_160_HASH))
-	    result = new RipeMD160();
-	else if (name.equalsIgnoreCase(Registry.SHA160_HASH)
-		|| name.equalsIgnoreCase(Registry.SHA_1_HASH)
-		|| name.equalsIgnoreCase(Registry.SHA1_HASH)
-		|| name.equalsIgnoreCase(Registry.SHA_HASH)
-		|| name.equalsIgnoreCase(Registry.SHA160_HASH2))
-	    result = new Sha160();
-	else if (name.equalsIgnoreCase(Registry.SHA256_HASH)
-		|| name.equalsIgnoreCase(Registry.SHA256_HASH2))
-	    result = new Sha256();
-	else if (name.equalsIgnoreCase(Registry.SHA384_HASH)
-		|| name.equalsIgnoreCase(Registry.SHA384_HASH2))
-	    result = new Sha384();
-	else if (name.equalsIgnoreCase(Registry.SHA512_HASH)
-		|| name.equalsIgnoreCase(Registry.SHA512_HASH2))
-	    result = new Sha512();
-	else if (name.equalsIgnoreCase(Registry.TIGER_HASH))
-	    result = new Tiger();
-	else if (name.equalsIgnoreCase(Registry.HAVAL_HASH))
-	    result = new Haval();
-	else if (name.equalsIgnoreCase(Registry.MD5_HASH))
-	    result = new MD5();
-	else if (name.equalsIgnoreCase(Registry.MD4_HASH))
-	    result = new MD4();
-	else if (name.equalsIgnoreCase(Registry.MD2_HASH))
-	    result = new MD2();
-	else if (name.equalsIgnoreCase(Registry.HAVAL_HASH))
-	    result = new Haval();
+		if (name.equalsIgnoreCase(Registry.WHIRLPOOL_HASH))
+			result = new Whirlpool();
+		else if (name.equalsIgnoreCase(Registry.RIPEMD128_HASH) || name.equalsIgnoreCase(Registry.RIPEMD_128_HASH))
+			result = new RipeMD128();
+		else if (name.equalsIgnoreCase(Registry.RIPEMD160_HASH) || name.equalsIgnoreCase(Registry.RIPEMD_160_HASH))
+			result = new RipeMD160();
+		else if (name.equalsIgnoreCase(Registry.SHA160_HASH) || name.equalsIgnoreCase(Registry.SHA_1_HASH)
+				|| name.equalsIgnoreCase(Registry.SHA1_HASH) || name.equalsIgnoreCase(Registry.SHA_HASH)
+				|| name.equalsIgnoreCase(Registry.SHA160_HASH2))
+			result = new Sha160();
+		else if (name.equalsIgnoreCase(Registry.SHA256_HASH) || name.equalsIgnoreCase(Registry.SHA256_HASH2))
+			result = new Sha256();
+		else if (name.equalsIgnoreCase(Registry.SHA384_HASH) || name.equalsIgnoreCase(Registry.SHA384_HASH2))
+			result = new Sha384();
+		else if (name.equalsIgnoreCase(Registry.SHA512_HASH) || name.equalsIgnoreCase(Registry.SHA512_HASH2))
+			result = new Sha512();
+		else if (name.equalsIgnoreCase(Registry.TIGER_HASH))
+			result = new Tiger();
+		else if (name.equalsIgnoreCase(Registry.HAVAL_HASH))
+			result = new Haval();
+		else if (name.equalsIgnoreCase(Registry.MD5_HASH))
+			result = new MD5();
+		else if (name.equalsIgnoreCase(Registry.MD4_HASH))
+			result = new MD4();
+		else if (name.equalsIgnoreCase(Registry.MD2_HASH))
+			result = new MD2();
+		else if (name.equalsIgnoreCase(Registry.HAVAL_HASH))
+			result = new Haval();
 
-	if (result != null && !result.selfTest())
-	    throw new InternalError(result.name());
+		if (result != null && !result.selfTest())
+			throw new InternalError(result.name());
 
-	return result;
-    }
+		return result;
+	}
 
-    /**
-     * Returns a {@link Set} of names of hash algorithms supported by this
-     * <i>Factory</i>.
-     *
-     * @return a {@link Set} of hash names (Strings).
-     */
-    public static final Set<String> getNames()
-    {
-	HashSet<String> hs = new HashSet<>();
-	hs.add(Registry.WHIRLPOOL_HASH);
-	hs.add(Registry.RIPEMD128_HASH);
-	hs.add(Registry.RIPEMD160_HASH);
-	hs.add(Registry.SHA160_HASH);
-	hs.add(Registry.SHA256_HASH);
-	hs.add(Registry.SHA384_HASH);
-	hs.add(Registry.SHA512_HASH);
-	hs.add(Registry.TIGER_HASH);
-	hs.add(Registry.HAVAL_HASH);
-	hs.add(Registry.MD5_HASH);
-	hs.add(Registry.MD4_HASH);
-	hs.add(Registry.MD2_HASH);
+	/**
+	 * Returns a {@link Set} of names of hash algorithms supported by this
+	 * <i>Factory</i>.
+	 *
+	 * @return a {@link Set} of hash names (Strings).
+	 */
+	public static final Set<String> getNames() {
+		HashSet<String> hs = new HashSet<>();
+		hs.add(Registry.WHIRLPOOL_HASH);
+		hs.add(Registry.RIPEMD128_HASH);
+		hs.add(Registry.RIPEMD160_HASH);
+		hs.add(Registry.SHA160_HASH);
+		hs.add(Registry.SHA256_HASH);
+		hs.add(Registry.SHA384_HASH);
+		hs.add(Registry.SHA512_HASH);
+		hs.add(Registry.TIGER_HASH);
+		hs.add(Registry.HAVAL_HASH);
+		hs.add(Registry.MD5_HASH);
+		hs.add(Registry.MD4_HASH);
+		hs.add(Registry.MD2_HASH);
 
-	return Collections.unmodifiableSet(hs);
-    }
+		return Collections.unmodifiableSet(hs);
+	}
 
-    /** Trivial constructor to enforce <i>Singleton</i> pattern. */
-    private HashFactory()
-    {
-	super();
-    }
+	/** Trivial constructor to enforce <i>Singleton</i> pattern. */
+	private HashFactory() {
+		super();
+	}
 }

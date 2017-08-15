@@ -46,66 +46,58 @@ import gnu.jgnu.security.Registry;
 /**
  * A Factory class for the Key Wrapping Algorithm implementations.
  */
-public class KeyWrappingAlgorithmFactory
-{
-    /** Names of Key Wrapping Algorihms cached for speed. */
-    private static Set<String> names;
+public class KeyWrappingAlgorithmFactory {
+	/** Names of Key Wrapping Algorihms cached for speed. */
+	private static Set<String> names;
 
-    /**
-     * Returns an instance of a key-wrapping algorithm given its name.
-     *
-     * @param name
-     *            the case-insensitive name of the key-wrapping algorithm.
-     * @return an instance of the designated key-wrapping algorithm, or
-     *         <code>null</code> if none was found.
-     * @exception InternalError
-     *                if the implementation does not pass its self-test.
-     */
-    public static final IKeyWrappingAlgorithm getInstance(String name)
-    {
-	if (name == null)
-	    return null;
-	name = name.trim();
-	IKeyWrappingAlgorithm result = null;
-	if (name.equalsIgnoreCase(Registry.AES_KWA)
-		|| name.equalsIgnoreCase(Registry.AES128_KWA)
-		|| name.equalsIgnoreCase(Registry.AES192_KWA)
-		|| name.equalsIgnoreCase(Registry.AES256_KWA)
-		|| name.equalsIgnoreCase(Registry.RIJNDAEL_KWA))
-	    result = new AESKeyWrap();
-	else if (name.equalsIgnoreCase(Registry.TRIPLEDES_KWA)
-		|| name.equalsIgnoreCase(Registry.DESEDE_KWA))
-	    result = new TripleDESKeyWrap();
+	/**
+	 * Returns an instance of a key-wrapping algorithm given its name.
+	 *
+	 * @param name
+	 *            the case-insensitive name of the key-wrapping algorithm.
+	 * @return an instance of the designated key-wrapping algorithm, or
+	 *         <code>null</code> if none was found.
+	 * @exception InternalError
+	 *                if the implementation does not pass its self-test.
+	 */
+	public static final IKeyWrappingAlgorithm getInstance(String name) {
+		if (name == null)
+			return null;
+		name = name.trim();
+		IKeyWrappingAlgorithm result = null;
+		if (name.equalsIgnoreCase(Registry.AES_KWA) || name.equalsIgnoreCase(Registry.AES128_KWA)
+				|| name.equalsIgnoreCase(Registry.AES192_KWA) || name.equalsIgnoreCase(Registry.AES256_KWA)
+				|| name.equalsIgnoreCase(Registry.RIJNDAEL_KWA))
+			result = new AESKeyWrap();
+		else if (name.equalsIgnoreCase(Registry.TRIPLEDES_KWA) || name.equalsIgnoreCase(Registry.DESEDE_KWA))
+			result = new TripleDESKeyWrap();
 
-	return result;
-    }
-
-    /**
-     * Returns a {@link Set} of key wrapping algorithm names supported by this
-     * <i>Factory</i>.
-     *
-     * @return a {@link Set} of key wrapping algorithm names (Strings).
-     */
-    public static synchronized final Set<String> getNames()
-    {
-	if (names == null)
-	{
-	    HashSet<String> hs = new HashSet<>();
-	    hs.add(Registry.AES_KWA);
-	    hs.add(Registry.AES128_KWA);
-	    hs.add(Registry.AES192_KWA);
-	    hs.add(Registry.AES256_KWA);
-	    hs.add(Registry.RIJNDAEL_KWA);
-	    hs.add(Registry.TRIPLEDES_KWA);
-	    hs.add(Registry.DESEDE_KWA);
-	    names = Collections.unmodifiableSet(hs);
+		return result;
 	}
-	return names;
-    }
 
-    /** Trivial constructor to enforce Singleton pattern. */
-    private KeyWrappingAlgorithmFactory()
-    {
-	super();
-    }
+	/**
+	 * Returns a {@link Set} of key wrapping algorithm names supported by this
+	 * <i>Factory</i>.
+	 *
+	 * @return a {@link Set} of key wrapping algorithm names (Strings).
+	 */
+	public static synchronized final Set<String> getNames() {
+		if (names == null) {
+			HashSet<String> hs = new HashSet<>();
+			hs.add(Registry.AES_KWA);
+			hs.add(Registry.AES128_KWA);
+			hs.add(Registry.AES192_KWA);
+			hs.add(Registry.AES256_KWA);
+			hs.add(Registry.RIJNDAEL_KWA);
+			hs.add(Registry.TRIPLEDES_KWA);
+			hs.add(Registry.DESEDE_KWA);
+			names = Collections.unmodifiableSet(hs);
+		}
+		return names;
+	}
+
+	/** Trivial constructor to enforce Singleton pattern. */
+	private KeyWrappingAlgorithmFactory() {
+		super();
+	}
 }

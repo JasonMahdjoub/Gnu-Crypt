@@ -46,94 +46,84 @@ import gnu.vm.jgnu.security.InvalidKeyException;
  * A base abstract class to facilitate <i>MAC</i> (Message Authentication Code)
  * implementations.
  */
-public abstract class BaseMac implements IMac
-{
-    /** The canonical name prefix of the <i>MAC</i>. */
-    protected String name;
+public abstract class BaseMac implements IMac {
+	/** The canonical name prefix of the <i>MAC</i>. */
+	protected String name;
 
-    /** Reference to the underlying hash algorithm instance. */
-    protected IMessageDigest underlyingHash;
+	/** Reference to the underlying hash algorithm instance. */
+	protected IMessageDigest underlyingHash;
 
-    /** The length of the truncated output in bytes. */
-    protected int truncatedSize;
+	/** The length of the truncated output in bytes. */
+	protected int truncatedSize;
 
-    /**
-     * Trivial constructor for use by concrete subclasses.
-     *
-     * @param name
-     *            the canonical name of this instance.
-     */
-    protected BaseMac(String name)
-    {
-	super();
+	/**
+	 * Trivial constructor for use by concrete subclasses.
+	 *
+	 * @param name
+	 *            the canonical name of this instance.
+	 */
+	protected BaseMac(String name) {
+		super();
 
-	this.name = name;
-    }
+		this.name = name;
+	}
 
-    /**
-     * Trivial constructor for use by concrete subclasses.
-     *
-     * @param name
-     *            the canonical name of this instance.
-     * @param underlyingHash
-     *            the underlying message digest algorithm instance.
-     */
-    protected BaseMac(String name, IMessageDigest underlyingHash)
-    {
-	this(name);
+	/**
+	 * Trivial constructor for use by concrete subclasses.
+	 *
+	 * @param name
+	 *            the canonical name of this instance.
+	 * @param underlyingHash
+	 *            the underlying message digest algorithm instance.
+	 */
+	protected BaseMac(String name, IMessageDigest underlyingHash) {
+		this(name);
 
-	if (underlyingHash != null)
-	    truncatedSize = underlyingHash.hashSize();
-	this.underlyingHash = underlyingHash;
-    }
+		if (underlyingHash != null)
+			truncatedSize = underlyingHash.hashSize();
+		this.underlyingHash = underlyingHash;
+	}
 
-    @Override
-    public Object clone() throws CloneNotSupportedException
-    {
-	BaseMac result = (BaseMac) super.clone();
-	if (this.underlyingHash != null)
-	    result.underlyingHash = (IMessageDigest) this.underlyingHash
-		    .clone();
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+		BaseMac result = (BaseMac) super.clone();
+		if (this.underlyingHash != null)
+			result.underlyingHash = (IMessageDigest) this.underlyingHash.clone();
 
-	return result;
-    }
+		return result;
+	}
 
-    @Override
-    public abstract byte[] digest();
+	@Override
+	public abstract byte[] digest();
 
-    @Override
-    public abstract void init(Map<Object, Object> attributes) throws InvalidKeyException, IllegalStateException;
+	@Override
+	public abstract void init(Map<Object, Object> attributes) throws InvalidKeyException, IllegalStateException;
 
-    @Override
-    public int macSize()
-    {
-	return truncatedSize;
-    }
+	@Override
+	public int macSize() {
+		return truncatedSize;
+	}
 
-    @Override
-    public String name()
-    {
-	return name;
-    }
+	@Override
+	public String name() {
+		return name;
+	}
 
-    @Override
-    public void reset()
-    {
-	underlyingHash.reset();
-    }
+	@Override
+	public void reset() {
+		underlyingHash.reset();
+	}
 
-    @Override
-    public abstract boolean selfTest();
+	@Override
+	public abstract boolean selfTest();
 
-    @Override
-    public void update(byte b)
-    {
-	underlyingHash.update(b);
-    }
+	@Override
+	public void update(byte b) {
+		underlyingHash.update(b);
+	}
 
-    @Override
-    public void update(byte[] b, int offset, int len)
-    {
-	underlyingHash.update(b, offset, len);
-    }
+	@Override
+	public void update(byte[] b, int offset, int len) {
+		underlyingHash.update(b, offset, len);
+	}
 }

@@ -43,16 +43,14 @@ import javax.net.ssl.SSLException;
  * An exception signaling a problem using a public or private key in an SSL
  * communication.
  */
-public class SSLKeyException extends SSLException
-{
+public class SSLKeyException extends SSLException {
 
-    /**
-     * 
-     */
-    private static final long serialVersionUID = 6466542602092761078L;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 6466542602092761078L;
 
-    public SSLKeyException(String message)
-    {
-	super(message);
-    }
+	public SSLKeyException(String message) {
+		super(message);
+	}
 }

@@ -45,66 +45,58 @@ import gnu.vm.jgnux.crypto.SecretKey;
  * Note that the name of this class is fixed by the serialization spec, even
  * though the class itself is not public.
  */
-final class KeyImpl implements Serializable, SecretKey
-{
-    // Enable this when serialization works.
-    // private static final long serialVersionUID = -7889313790214321193L;
+final class KeyImpl implements Serializable, SecretKey {
+	// Enable this when serialization works.
+	// private static final long serialVersionUID = -7889313790214321193L;
 
-    /**
-     * 
-     */
-    private static final long serialVersionUID = -4260439854441315853L;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -4260439854441315853L;
 
-    public String algorithm;
+	public String algorithm;
 
-    public int type;
+	public int type;
 
-    public byte[] key;
+	public byte[] key;
 
-    public KeyImpl(byte[] key, int type)
-    {
-	// From kerberos spec.
-	if (type == 0)
-	    this.algorithm = null;
-	else if (type == 1)
-	    this.algorithm = "DES";
-	else
-	    this.algorithm = "FIXME";
-	this.type = type;
-	this.key = key.clone();
-    }
+	public KeyImpl(byte[] key, int type) {
+		// From kerberos spec.
+		if (type == 0)
+			this.algorithm = null;
+		else if (type == 1)
+			this.algorithm = "DES";
+		else
+			this.algorithm = "FIXME";
+		this.type = type;
+		this.key = key.clone();
+	}
 
-    public KeyImpl(char[] passwd, String algo)
-    {
-	this.algorithm = (algo == null) ? "DES" : algo;
-	this.type = 0; // FIXME
-	this.key = null; // double FIXME
-    }
+	public KeyImpl(char[] passwd, String algo) {
+		this.algorithm = (algo == null) ? "DES" : algo;
+		this.type = 0; // FIXME
+		this.key = null; // double FIXME
+	}
 
-    @Override
-    public String getAlgorithm()
-    {
-	return algorithm;
-    }
+	@Override
+	public String getAlgorithm() {
+		return algorithm;
+	}
 
-    @Override
-    public byte[] getEncoded()
-    {
-	return key;
-    }
+	@Override
+	public byte[] getEncoded() {
+		return key;
+	}
 
-    @Override
-    public String getFormat()
-    {
-	// FIXME.
-	return null;
-    }
+	@Override
+	public String getFormat() {
+		// FIXME.
+		return null;
+	}
 
-    @Override
-    public String toString()
-    {
-	return getClass().getName() + "[type=" + type + ",algorithm="
-		+ algorithm + "]";
-    }
+	@Override
+	public String toString() {
+		return getClass().getName() + "[type=" + type + ",algorithm=" + algorithm + "]";
+	}
 
 }

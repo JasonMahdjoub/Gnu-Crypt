@@ -46,53 +46,44 @@ import gnu.vm.jgnu.security.InvalidKeyException;
 /**
  * A Cascade <i>Stage</i> in a Cascade Cipher.
  */
-class CascadeStage extends Stage
-{
-    private Cascade delegate;
+class CascadeStage extends Stage {
+	private Cascade delegate;
 
-    CascadeStage(Cascade cascade, Direction forwardDirection)
-    {
-	super(forwardDirection);
+	CascadeStage(Cascade cascade, Direction forwardDirection) {
+		super(forwardDirection);
 
-	this.delegate = cascade;
-    }
+		this.delegate = cascade;
+	}
 
-    @Override
-    public Set<Integer> blockSizes()
-    {
-	return Collections.unmodifiableSet(delegate.blockSizes());
-    }
+	@Override
+	public Set<Integer> blockSizes() {
+		return Collections.unmodifiableSet(delegate.blockSizes());
+	}
 
-    @Override
-    public int currentBlockSize() throws IllegalStateException
-    {
-	return delegate.currentBlockSize();
-    }
+	@Override
+	public int currentBlockSize() throws IllegalStateException {
+		return delegate.currentBlockSize();
+	}
 
-    @Override
-    void initDelegate(Map<Object, Object> attributes) throws InvalidKeyException
-    {
-	Direction flow = (Direction) attributes.get(DIRECTION);
-	attributes.put(DIRECTION,
-		flow.equals(forward) ? forward : Direction.reverse(forward));
-	delegate.init(attributes);
-    }
+	@Override
+	void initDelegate(Map<Object, Object> attributes) throws InvalidKeyException {
+		Direction flow = (Direction) attributes.get(DIRECTION);
+		attributes.put(DIRECTION, flow.equals(forward) ? forward : Direction.reverse(forward));
+		delegate.init(attributes);
+	}
 
-    @Override
-    void resetDelegate()
-    {
-	delegate.reset();
-    }
+	@Override
+	void resetDelegate() {
+		delegate.reset();
+	}
 
-    @Override
-    public boolean selfTest()
-    {
-	return delegate.selfTest();
-    }
+	@Override
+	public boolean selfTest() {
+		return delegate.selfTest();
+	}
 
-    @Override
-    void updateDelegate(byte[] in, int inOffset, byte[] out, int outOffset)
-    {
-	delegate.update(in, inOffset, out, outOffset);
-    }
+	@Override
+	void updateDelegate(byte[] in, int inOffset, byte[] out, int outOffset) {
+		delegate.update(in, inOffset, out, outOffset);
+	}
 }

@@ -82,260 +82,243 @@ import gnu.vm.jgnu.security.SecurityPermission;
  * @since 1.1
  * @status updated to 1.4
  */
-public abstract class BasicPermission extends Permission implements Serializable
-{
-    /**
-     * Implements AllPermission.newPermissionCollection, and obeys serialization
-     * of JDK.
-     *
-     * @author Eric Blake (ebb9@email.byu.edu)
-     */
-    private static final class BasicPermissionCollection extends PermissionCollection
-    {
+public abstract class BasicPermission extends Permission implements Serializable {
+	/**
+	 * Implements AllPermission.newPermissionCollection, and obeys serialization of
+	 * JDK.
+	 *
+	 * @author Eric Blake (ebb9@email.byu.edu)
+	 */
+	private static final class BasicPermissionCollection extends PermissionCollection {
+		/**
+		 * Compatible with JDK 1.1+.
+		 */
+		private static final long serialVersionUID = 739301742472979399L;
+
+		/**
+		 * The permissions in the collection.
+		 *
+		 * @serial a hash mapping name to permissions, all of type permClass
+		 */
+		private final Hashtable<String, Permission> permissions = new Hashtable<>();
+
+		/**
+		 * If "*" is in the collection.
+		 *
+		 * @serial true if a permission named "*" is in the collection
+		 */
+		private boolean all_allowed;
+
+		/**
+		 * The runtime class which all entries in the table must belong to.
+		 *
+		 * @serial the limiting subclass of this collection
+		 */
+		private final Class<?> permClass;
+
+		/**
+		 * Construct a collection over the given runtime class.
+		 *
+		 * @param c
+		 *            the class
+		 */
+		BasicPermissionCollection(Class<?> c) {
+			permClass = c;
+		}
+
+		/**
+		 * Add a Permission. It must be of the same type as the permission which created
+		 * this collection.
+		 *
+		 * @param perm
+		 *            the permission to add
+		 * @throws IllegalArgumentException
+		 *             if perm is not the correct type
+		 * @throws SecurityException
+		 *             if the collection is read-only
+		 */
+		@Override
+		public void add(Permission perm) {
+			if (isReadOnly())
+				throw new SecurityException("readonly");
+			if (!permClass.isInstance(perm))
+				throw new IllegalArgumentException("Expecting instance of " + permClass);
+			BasicPermission bp = (BasicPermission) perm;
+			String name = bp.getName();
+			if (name.equals("*"))
+				all_allowed = true;
+			permissions.put(name, bp);
+		}
+
+		/**
+		 * Enumerate over the collection.
+		 *
+		 * @return an enumeration of the collection contents
+		 */
+		@Override
+		public Enumeration<Permission> elements() {
+			return permissions.elements();
+		}
+
+		/**
+		 * Returns true if this collection implies the given permission.
+		 *
+		 * @param permission
+		 *            the permission to check
+		 * @return true if it is implied by this
+		 */
+		@Override
+		public boolean implies(Permission permission) {
+			if (!permClass.isInstance(permission))
+				return false;
+			if (all_allowed)
+				return true;
+			BasicPermission toImply = (BasicPermission) permission;
+			String name = toImply.getName();
+			if (name.equals("*"))
+				return false;
+			int prefixLength = name.length();
+			if (name.endsWith("*"))
+				prefixLength -= 2;
+
+			while (true) {
+				if (permissions.get(name) != null)
+					return true;
+				prefixLength = name.lastIndexOf('.', prefixLength);
+				if (prefixLength < 0)
+					return false;
+				name = name.substring(0, prefixLength + 1) + '*';
+			}
+		}
+	} // class BasicPermissionCollection
+
 	/**
 	 * Compatible with JDK 1.1+.
 	 */
-	private static final long serialVersionUID = 739301742472979399L;
+	private static final long serialVersionUID = 6279438298436773498L;
 
 	/**
-	 * The permissions in the collection.
+	 * Create a new instance with the specified permission name. If the name is
+	 * empty an exception is thrown.
 	 *
-	 * @serial a hash mapping name to permissions, all of type permClass
+	 * @param name
+	 *            the name of this permission
+	 * @throws NullPointerException
+	 *             if name is null
+	 * @throws IllegalArgumentException
+	 *             if name is invalid
 	 */
-	private final Hashtable<String, Permission> permissions = new Hashtable<>();
+	public BasicPermission(String name) {
+		super(name);
 
-	/**
-	 * If "*" is in the collection.
-	 *
-	 * @serial true if a permission named "*" is in the collection
-	 */
-	private boolean all_allowed;
+		// This routine used to check for illegal wildcards, but no such
+		// requirement exists in the specification and Sun's runtime
+		// doesn't appear to do it.
 
-	/**
-	 * The runtime class which all entries in the table must belong to.
-	 *
-	 * @serial the limiting subclass of this collection
-	 */
-	private final Class<?> permClass;
-
-	/**
-	 * Construct a collection over the given runtime class.
-	 *
-	 * @param c
-	 *            the class
-	 */
-	BasicPermissionCollection(Class<?> c)
-	{
-	    permClass = c;
+		if (name.equals(""))
+			throw new IllegalArgumentException("Empty name");
 	}
 
 	/**
-	 * Add a Permission. It must be of the same type as the permission which
-	 * created this collection.
+	 * Create a new instance with the specified permission name. If the name is
+	 * empty, or contains an illegal wildcard character, an exception is thrown. The
+	 * actions parameter is ignored.
+	 *
+	 * @param name
+	 *            the name of this permission
+	 * @param actions
+	 *            ignored
+	 * @throws NullPointerException
+	 *             if name is null
+	 * @throws IllegalArgumentException
+	 *             if name is invalid
+	 */
+	public BasicPermission(String name, String actions) {
+		this(name);
+	}
+
+	/**
+	 * This method tests to see if this object is equal to the specified
+	 * <code>Object</code>. This will be true if and only if the specified object
+	 * meets the following conditions:
+	 * <ul>
+	 * <li>It is an instance of the same class as this.</li>
+	 * <li>It has the same name as this permission.</li>
+	 * </ul>
+	 *
+	 * @param obj
+	 *            the <code>Object</code> to test for equality
+	 * @return true if obj is semantically equal to this
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		return getClass().isInstance(obj) && getName().equals(((BasicPermission) obj).getName());
+	}
+
+	/**
+	 * This method returns a list of the actions associated with this permission.
+	 * This method always returns the empty string ("") since this class ignores
+	 * actions.
+	 *
+	 * @return the action list
+	 */
+	@Override
+	public String getActions() {
+		return "";
+	}
+
+	/**
+	 * This method returns a hash code for this permission object. The hash code
+	 * returned is the value returned by calling the <code>hashCode</code> method on
+	 * the <code>String</code> that is the name of this permission.
+	 *
+	 * @return a hash value for this object
+	 */
+	@Override
+	public int hashCode() {
+		return getName().hashCode();
+	}
+
+	/**
+	 * This method tests to see if the specified permission is implied by this
+	 * permission. This will be true if the following conditions are met:
+	 * <ul>
+	 * <li>The specified object is an instance of the same class as this
+	 * object.</li>
+	 * <li>The name of the specified permission is implied by this permission's name
+	 * based on wildcard matching. For example, "a.*" implies "a.b".</li>
+	 * </ul>
 	 *
 	 * @param perm
-	 *            the permission to add
-	 * @throws IllegalArgumentException
-	 *             if perm is not the correct type
-	 * @throws SecurityException
-	 *             if the collection is read-only
+	 *            the <code>Permission</code> object to test against
+	 * @return true if the specified permission is implied
 	 */
 	@Override
-	public void add(Permission perm)
-	{
-	    if (isReadOnly())
-		throw new SecurityException("readonly");
-	    if (!permClass.isInstance(perm))
-		throw new IllegalArgumentException(
-			"Expecting instance of " + permClass);
-	    BasicPermission bp = (BasicPermission) perm;
-	    String name = bp.getName();
-	    if (name.equals("*"))
-		all_allowed = true;
-	    permissions.put(name, bp);
+	public boolean implies(Permission perm) {
+		if (!getClass().isInstance(perm))
+			return false;
+
+		String otherName = perm.getName();
+		String name = getName();
+
+		if (name.equals(otherName))
+			return true;
+
+		int last = name.length() - 1;
+		return name.charAt(last) == '*' && otherName.startsWith(name.substring(0, last));
 	}
 
 	/**
-	 * Enumerate over the collection.
+	 * This method returns an instance of <code>PermissionCollection</code> suitable
+	 * for storing <code>BasicPermission</code> objects. The collection returned can
+	 * only store objects of the same type as this. Subclasses which use actions
+	 * must override this method; but a class with no actions will work fine with
+	 * this.
 	 *
-	 * @return an enumeration of the collection contents
+	 * @return a new empty <code>PermissionCollection</code> object
 	 */
 	@Override
-	public Enumeration<Permission> elements()
-	{
-	    return permissions.elements();
+	public PermissionCollection newPermissionCollection() {
+		return new BasicPermissionCollection(getClass());
 	}
-
-	/**
-	 * Returns true if this collection implies the given permission.
-	 *
-	 * @param permission
-	 *            the permission to check
-	 * @return true if it is implied by this
-	 */
-	@Override
-	public boolean implies(Permission permission)
-	{
-	    if (!permClass.isInstance(permission))
-		return false;
-	    if (all_allowed)
-		return true;
-	    BasicPermission toImply = (BasicPermission) permission;
-	    String name = toImply.getName();
-	    if (name.equals("*"))
-		return false;
-	    int prefixLength = name.length();
-	    if (name.endsWith("*"))
-		prefixLength -= 2;
-
-	    while (true)
-	    {
-		if (permissions.get(name) != null)
-		    return true;
-		prefixLength = name.lastIndexOf('.', prefixLength);
-		if (prefixLength < 0)
-		    return false;
-		name = name.substring(0, prefixLength + 1) + '*';
-	    }
-	}
-    } // class BasicPermissionCollection
-
-    /**
-     * Compatible with JDK 1.1+.
-     */
-    private static final long serialVersionUID = 6279438298436773498L;
-
-    /**
-     * Create a new instance with the specified permission name. If the name is
-     * empty an exception is thrown.
-     *
-     * @param name
-     *            the name of this permission
-     * @throws NullPointerException
-     *             if name is null
-     * @throws IllegalArgumentException
-     *             if name is invalid
-     */
-    public BasicPermission(String name)
-    {
-	super(name);
-
-	// This routine used to check for illegal wildcards, but no such
-	// requirement exists in the specification and Sun's runtime
-	// doesn't appear to do it.
-
-	if (name.equals(""))
-	    throw new IllegalArgumentException("Empty name");
-    }
-
-    /**
-     * Create a new instance with the specified permission name. If the name is
-     * empty, or contains an illegal wildcard character, an exception is thrown.
-     * The actions parameter is ignored.
-     *
-     * @param name
-     *            the name of this permission
-     * @param actions
-     *            ignored
-     * @throws NullPointerException
-     *             if name is null
-     * @throws IllegalArgumentException
-     *             if name is invalid
-     */
-    public BasicPermission(String name, String actions)
-    {
-	this(name);
-    }
-
-    /**
-     * This method tests to see if this object is equal to the specified
-     * <code>Object</code>. This will be true if and only if the specified
-     * object meets the following conditions:
-     * <ul>
-     * <li>It is an instance of the same class as this.</li>
-     * <li>It has the same name as this permission.</li>
-     * </ul>
-     *
-     * @param obj
-     *            the <code>Object</code> to test for equality
-     * @return true if obj is semantically equal to this
-     */
-    @Override
-    public boolean equals(Object obj)
-    {
-	return getClass().isInstance(obj)
-		&& getName().equals(((BasicPermission) obj).getName());
-    }
-
-    /**
-     * This method returns a list of the actions associated with this
-     * permission. This method always returns the empty string ("") since this
-     * class ignores actions.
-     *
-     * @return the action list
-     */
-    @Override
-    public String getActions()
-    {
-	return "";
-    }
-
-    /**
-     * This method returns a hash code for this permission object. The hash code
-     * returned is the value returned by calling the <code>hashCode</code>
-     * method on the <code>String</code> that is the name of this permission.
-     *
-     * @return a hash value for this object
-     */
-    @Override
-    public int hashCode()
-    {
-	return getName().hashCode();
-    }
-
-    /**
-     * This method tests to see if the specified permission is implied by this
-     * permission. This will be true if the following conditions are met:
-     * <ul>
-     * <li>The specified object is an instance of the same class as this
-     * object.</li>
-     * <li>The name of the specified permission is implied by this permission's
-     * name based on wildcard matching. For example, "a.*" implies "a.b".</li>
-     * </ul>
-     *
-     * @param perm
-     *            the <code>Permission</code> object to test against
-     * @return true if the specified permission is implied
-     */
-    @Override
-    public boolean implies(Permission perm)
-    {
-	if (!getClass().isInstance(perm))
-	    return false;
-
-	String otherName = perm.getName();
-	String name = getName();
-
-	if (name.equals(otherName))
-	    return true;
-
-	int last = name.length() - 1;
-	return name.charAt(last) == '*'
-		&& otherName.startsWith(name.substring(0, last));
-    }
-
-    /**
-     * This method returns an instance of <code>PermissionCollection</code>
-     * suitable for storing <code>BasicPermission</code> objects. The collection
-     * returned can only store objects of the same type as this. Subclasses
-     * which use actions must override this method; but a class with no actions
-     * will work fine with this.
-     *
-     * @return a new empty <code>PermissionCollection</code> object
-     */
-    @Override
-    public PermissionCollection newPermissionCollection()
-    {
-	return new BasicPermissionCollection(getClass());
-    }
 } // class BasicPermission

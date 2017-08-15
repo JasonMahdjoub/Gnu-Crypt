@@ -74,86 +74,72 @@ import gnu.jgnux.crypto.cipher.IBlockCipher;
  * Techniques</a>, Morris Dworkin.</li>
  * </ol>
  */
-public class CFB extends BaseMode
-{
-    /** The shift register, the input block to the block cipher. */
-    private byte[] shiftRegister;
+public class CFB extends BaseMode {
+	/** The shift register, the input block to the block cipher. */
+	private byte[] shiftRegister;
 
-    /** The output block from the block cipher. */
-    private byte[] scratch;
+	/** The output block from the block cipher. */
+	private byte[] scratch;
 
-    /**
-     * Cloneing constructor.
-     *
-     * @param that
-     *            The instance being cloned.
-     */
-    private CFB(CFB that)
-    {
-	this((IBlockCipher) that.cipher.clone(), that.cipherBlockSize);
-    }
+	/**
+	 * Cloneing constructor.
+	 *
+	 * @param that
+	 *            The instance being cloned.
+	 */
+	private CFB(CFB that) {
+		this((IBlockCipher) that.cipher.clone(), that.cipherBlockSize);
+	}
 
-    /**
-     * Package-private constructor for the factory class.
-     *
-     * @param underlyingCipher
-     *            The cipher implementation.
-     * @param cipherBlockSize
-     *            The cipher's block size.
-     */
-    CFB(IBlockCipher underlyingCipher, int cipherBlockSize)
-    {
-	super(Registry.CFB_MODE, underlyingCipher, cipherBlockSize);
-    }
+	/**
+	 * Package-private constructor for the factory class.
+	 *
+	 * @param underlyingCipher
+	 *            The cipher implementation.
+	 * @param cipherBlockSize
+	 *            The cipher's block size.
+	 */
+	CFB(IBlockCipher underlyingCipher, int cipherBlockSize) {
+		super(Registry.CFB_MODE, underlyingCipher, cipherBlockSize);
+	}
 
-    @Override
-    public Object clone()
-    {
-	return new CFB(this);
-    }
+	@Override
+	public Object clone() {
+		return new CFB(this);
+	}
 
-    @Override
-    public void decryptBlock(byte[] in, int inOffset, byte[] out, int outOffset)
-    {
-	cipher.encryptBlock(shiftRegister, 0, scratch, 0);
-	for (int i = 0; i < modeBlockSize; i++)
-	    out[outOffset + i] = (byte) (in[inOffset + i] ^ scratch[i]);
-	System.arraycopy(shiftRegister, modeBlockSize, shiftRegister, 0,
-		cipherBlockSize - modeBlockSize);
-	System.arraycopy(in, inOffset, shiftRegister,
-		cipherBlockSize - modeBlockSize, modeBlockSize);
-    }
+	@Override
+	public void decryptBlock(byte[] in, int inOffset, byte[] out, int outOffset) {
+		cipher.encryptBlock(shiftRegister, 0, scratch, 0);
+		for (int i = 0; i < modeBlockSize; i++)
+			out[outOffset + i] = (byte) (in[inOffset + i] ^ scratch[i]);
+		System.arraycopy(shiftRegister, modeBlockSize, shiftRegister, 0, cipherBlockSize - modeBlockSize);
+		System.arraycopy(in, inOffset, shiftRegister, cipherBlockSize - modeBlockSize, modeBlockSize);
+	}
 
-    @Override
-    public void encryptBlock(byte[] in, int inOffset, byte[] out, int outOffset)
-    {
-	cipher.encryptBlock(shiftRegister, 0, scratch, 0);
-	for (int i = 0; i < modeBlockSize; i++)
-	    out[outOffset + i] = (byte) (in[inOffset + i] ^ scratch[i]);
-	System.arraycopy(shiftRegister, modeBlockSize, shiftRegister, 0,
-		cipherBlockSize - modeBlockSize);
-	System.arraycopy(out, outOffset, shiftRegister,
-		cipherBlockSize - modeBlockSize, modeBlockSize);
-    }
+	@Override
+	public void encryptBlock(byte[] in, int inOffset, byte[] out, int outOffset) {
+		cipher.encryptBlock(shiftRegister, 0, scratch, 0);
+		for (int i = 0; i < modeBlockSize; i++)
+			out[outOffset + i] = (byte) (in[inOffset + i] ^ scratch[i]);
+		System.arraycopy(shiftRegister, modeBlockSize, shiftRegister, 0, cipherBlockSize - modeBlockSize);
+		System.arraycopy(out, outOffset, shiftRegister, cipherBlockSize - modeBlockSize, modeBlockSize);
+	}
 
-    @Override
-    public void setup()
-    {
-	if (modeBlockSize > cipherBlockSize)
-	    throw new IllegalArgumentException(
-		    "CFB block size cannot be larger than the cipher block size");
-	shiftRegister = new byte[cipherBlockSize];
-	scratch = new byte[cipherBlockSize];
-	System.arraycopy(iv, 0, shiftRegister, 0,
-		Math.min(iv.length, cipherBlockSize));
-    }
+	@Override
+	public void setup() {
+		if (modeBlockSize > cipherBlockSize)
+			throw new IllegalArgumentException("CFB block size cannot be larger than the cipher block size");
+		shiftRegister = new byte[cipherBlockSize];
+		scratch = new byte[cipherBlockSize];
+		System.arraycopy(iv, 0, shiftRegister, 0, Math.min(iv.length, cipherBlockSize));
+	}
 
-    @Override
-    public void teardown()
-    {
-	if (shiftRegister != null)
-	    for (int i = 0; i < shiftRegister.length; i++)
-		shiftRegister[i] = 0;
-	shiftRegister = null;
-    }
+	@Override
+	public void teardown() {
+		if (shiftRegister != null)
+			for (int i = 0; i < shiftRegister.length; i++)
+				shiftRegister[i] = 0;
+		shiftRegister = null;
+	}
 }

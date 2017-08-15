@@ -51,79 +51,68 @@ import gnu.jgnu.security.hash.IMessageDigest;
  * SHA-160 algorithm is used as the underlying hash function. Also, if no
  * <code>seed</code> is given, an empty octet sequence is used.
  */
-public class MDGenerator extends BasePRNG implements Cloneable
-{
-    /** Property name of underlying hash algorithm for this generator. */
-    public static final String MD_NAME = "gnu.crypto.prng.md.hash.name";
+public class MDGenerator extends BasePRNG implements Cloneable {
+	/** Property name of underlying hash algorithm for this generator. */
+	public static final String MD_NAME = "gnu.crypto.prng.md.hash.name";
 
-    /** Property name of seed material. */
-    public static final String SEEED = "gnu.crypto.prng.md.seed";
+	/** Property name of seed material. */
+	public static final String SEEED = "gnu.crypto.prng.md.seed";
 
-    /** The underlying hash instance. */
-    private IMessageDigest md;
+	/** The underlying hash instance. */
+	private IMessageDigest md;
 
-    /** Trivial 0-arguments constructor. */
-    public MDGenerator()
-    {
-	super(Registry.MD_PRNG);
-    }
-
-    @Override
-    public void addRandomByte(final byte b)
-    {
-	if (md == null)
-	    throw new IllegalStateException("not initialized");
-	md.update(b);
-    }
-
-    @Override
-    public void addRandomBytes(final byte[] buf, final int off, final int len)
-    {
-	if (md == null)
-	    throw new IllegalStateException("not initialized");
-	md.update(buf, off, len);
-    }
-
-    @Override
-    public Object clone() throws CloneNotSupportedException
-    {
-	MDGenerator result = (MDGenerator) super.clone();
-	if (this.md != null)
-	    result.md = (IMessageDigest) this.md.clone();
-
-	return result;
-    }
-
-    @Override
-    public void fillBlock()
-    {
-	IMessageDigest mdc = (IMessageDigest) md.clone();
-	buffer = mdc.digest();
-	md.update(buffer, 0, buffer.length);
-    }
-
-    @Override
-    public void setup(Map<Object, ?> attributes)
-    {
-	// find out which hash to use
-	String underlyingMD = (String) attributes.get(MD_NAME);
-	if (underlyingMD == null)
-	{
-	    if (md == null)
-	    { // happy birthday
-	      // ensure we have a reliable implementation of this hash
-		md = HashFactory.getInstance(Registry.SHA160_HASH);
-	    }
-	    else // a clone. reset it for reuse
-		md.reset();
+	/** Trivial 0-arguments constructor. */
+	public MDGenerator() {
+		super(Registry.MD_PRNG);
 	}
-	else // ensure we have a reliable implementation of this hash
-	    md = HashFactory.getInstance(underlyingMD);
-	// get the seeed
-	byte[] seed = (byte[]) attributes.get(SEEED);
-	if (seed == null)
-	    seed = new byte[0];
 
-	md.update(seed, 0, seed.length);
-    }
+	@Override
+	public void addRandomByte(final byte b) {
+		if (md == null)
+			throw new IllegalStateException("not initialized");
+		md.update(b);
+	}
+
+	@Override
+	public void addRandomBytes(final byte[] buf, final int off, final int len) {
+		if (md == null)
+			throw new IllegalStateException("not initialized");
+		md.update(buf, off, len);
+	}
+
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+		MDGenerator result = (MDGenerator) super.clone();
+		if (this.md != null)
+			result.md = (IMessageDigest) this.md.clone();
+
+		return result;
+	}
+
+	@Override
+	public void fillBlock() {
+		IMessageDigest mdc = (IMessageDigest) md.clone();
+		buffer = mdc.digest();
+		md.update(buffer, 0, buffer.length);
+	}
+
+	@Override
+	public void setup(Map<Object, ?> attributes) {
+		// find out which hash to use
+		String underlyingMD = (String) attributes.get(MD_NAME);
+		if (underlyingMD == null) {
+			if (md == null) { // happy birthday
+								// ensure we have a reliable implementation of this hash
+				md = HashFactory.getInstance(Registry.SHA160_HASH);
+			} else // a clone. reset it for reuse
+				md.reset();
+		} else // ensure we have a reliable implementation of this hash
+			md = HashFactory.getInstance(underlyingMD);
+		// get the seeed
+		byte[] seed = (byte[]) attributes.get(SEEED);
+		if (seed == null)
+			seed = new byte[0];
+
+		md.update(seed, 0, seed.length);
+	}
 }

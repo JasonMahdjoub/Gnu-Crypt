@@ -43,99 +43,86 @@ import java.util.LinkedList;
 /**
  * A monotonic sequence of integers in the finite field 2<sup>32</sup>.
  */
-public final class Sequence extends AbstractList<Integer>
-{
-    private final Integer[] sequence;
+public final class Sequence extends AbstractList<Integer> {
+	private final Integer[] sequence;
 
-    /**
-     * Create a sequence of integers from 0 to <i>end</i>, with an increment of
-     * 1. If <i>end</i> is less than 0, then the sequence will wrap around
-     * through all positive integers then negative integers until the end value
-     * is reached. Naturally, this will result in an enormous object, so don't
-     * do this.
-     *
-     * @param end
-     *            The ending value.
-     */
-    public Sequence(int end)
-    {
-	this(0, end, 1);
-    }
-
-    /**
-     * Create a sequence of integers from <i>start</i> to <i>end</i>, with an
-     * increment of 1. If <i>end</i> is less than <i>start</i>, then the
-     * sequence will wrap around until the end value is reached. Naturally, this
-     * will result in an enormous object, so don't do this.
-     *
-     * @param start
-     *            The starting value.
-     * @param end
-     *            The ending value.
-     */
-    public Sequence(int start, int end)
-    {
-	this(start, end, 1);
-    }
-
-    /**
-     * Create a sequence of integers from <i>start</i> to <i>end</i>, with an
-     * increment of <i>span</i>. If <i>end</i> is less than <i>start</i>, then
-     * the sequence will wrap around until the end value is reached. Naturally,
-     * this will result in an enormous object, so don't do this.
-     * <p>
-     * <i>span</i> can be negative, resulting in a decresing sequence.
-     * <p>
-     * If <i>span</i> is 0, then the sequence will contain {<i>start</i>,
-     * <i>end</i>} if <i>start</i> != <i>end</i>, or just the singleton
-     * <i>start</i> if <i>start</i> == <i>end</i>.
-     *
-     * @param start
-     *            The starting value.
-     * @param end
-     *            The ending value.
-     * @param span
-     *            The increment value.
-     */
-    public Sequence(int start, int end, int span)
-    {
-	if (span == 0)
-	{
-	    if (start != end)
-		sequence = new Integer[] { Integer.valueOf(start),
-			Integer.valueOf(end) };
-	    else
-		sequence = new Integer[] { Integer.valueOf(start) };
+	/**
+	 * Create a sequence of integers from 0 to <i>end</i>, with an increment of 1.
+	 * If <i>end</i> is less than 0, then the sequence will wrap around through all
+	 * positive integers then negative integers until the end value is reached.
+	 * Naturally, this will result in an enormous object, so don't do this.
+	 *
+	 * @param end
+	 *            The ending value.
+	 */
+	public Sequence(int end) {
+		this(0, end, 1);
 	}
-	else
-	{
-	    LinkedList<Integer> l = new LinkedList<>();
-	    for (int i = start; i != end; i += span)
-		l.add(Integer.valueOf(i));
 
-	    l.add(Integer.valueOf(end));
-	    sequence = l.toArray(new Integer[l.size()]);
+	/**
+	 * Create a sequence of integers from <i>start</i> to <i>end</i>, with an
+	 * increment of 1. If <i>end</i> is less than <i>start</i>, then the sequence
+	 * will wrap around until the end value is reached. Naturally, this will result
+	 * in an enormous object, so don't do this.
+	 *
+	 * @param start
+	 *            The starting value.
+	 * @param end
+	 *            The ending value.
+	 */
+	public Sequence(int start, int end) {
+		this(start, end, 1);
 	}
-    }
 
-    @Override
-    public Integer get(int index)
-    {
-	if (index < 0 || index >= size())
-	    throw new IndexOutOfBoundsException(
-		    "index=" + index + ", size=" + size());
-	return sequence[index];
-    }
+	/**
+	 * Create a sequence of integers from <i>start</i> to <i>end</i>, with an
+	 * increment of <i>span</i>. If <i>end</i> is less than <i>start</i>, then the
+	 * sequence will wrap around until the end value is reached. Naturally, this
+	 * will result in an enormous object, so don't do this.
+	 * <p>
+	 * <i>span</i> can be negative, resulting in a decresing sequence.
+	 * <p>
+	 * If <i>span</i> is 0, then the sequence will contain {<i>start</i>,
+	 * <i>end</i>} if <i>start</i> != <i>end</i>, or just the singleton <i>start</i>
+	 * if <i>start</i> == <i>end</i>.
+	 *
+	 * @param start
+	 *            The starting value.
+	 * @param end
+	 *            The ending value.
+	 * @param span
+	 *            The increment value.
+	 */
+	public Sequence(int start, int end, int span) {
+		if (span == 0) {
+			if (start != end)
+				sequence = new Integer[] { Integer.valueOf(start), Integer.valueOf(end) };
+			else
+				sequence = new Integer[] { Integer.valueOf(start) };
+		} else {
+			LinkedList<Integer> l = new LinkedList<>();
+			for (int i = start; i != end; i += span)
+				l.add(Integer.valueOf(i));
 
-    @Override
-    public int size()
-    {
-	return sequence.length;
-    }
+			l.add(Integer.valueOf(end));
+			sequence = l.toArray(new Integer[l.size()]);
+		}
+	}
 
-    @Override
-    public Object[] toArray()
-    {
-	return sequence.clone();
-    }
+	@Override
+	public Integer get(int index) {
+		if (index < 0 || index >= size())
+			throw new IndexOutOfBoundsException("index=" + index + ", size=" + size());
+		return sequence[index];
+	}
+
+	@Override
+	public int size() {
+		return sequence.length;
+	}
+
+	@Override
+	public Object[] toArray() {
+		return sequence.clone();
+	}
 }

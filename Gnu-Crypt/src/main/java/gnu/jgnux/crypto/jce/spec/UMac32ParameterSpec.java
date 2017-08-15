@@ -44,29 +44,26 @@ import java.security.spec.AlgorithmParameterSpec;
  * code algorithm. In practice this means the <i>Nonce</i> material used to
  * initialize the algorithm.
  */
-public class UMac32ParameterSpec implements AlgorithmParameterSpec
-{
-    /** The <i>Nonce</i> material. */
-    protected byte[] nonce;
+public class UMac32ParameterSpec implements AlgorithmParameterSpec {
+	/** The <i>Nonce</i> material. */
+	protected byte[] nonce;
 
-    /**
-     * Create a new parameter instance.
-     *
-     * @param nonce
-     *            The nonce material.
-     */
-    public UMac32ParameterSpec(byte[] nonce)
-    {
-	this.nonce = nonce;
-    }
+	/**
+	 * Create a new parameter instance.
+	 *
+	 * @param nonce
+	 *            The nonce material.
+	 */
+	public UMac32ParameterSpec(byte[] nonce) {
+		this.nonce = nonce;
+	}
 
-    /**
-     * Return the nonce material.
-     *
-     * @return The nonce material.
-     */
-    public byte[] getNonce()
-    {
-	return nonce;
-    }
+	/**
+	 * Return the nonce material.
+	 *
+	 * @return The nonce material.
+	 */
+	public byte[] getNonce() {
+		return nonce;
+	}
 }

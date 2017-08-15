@@ -47,6 +47,5 @@ import javax.net.ssl.TrustManagerFactory;
  *
  * @author Casey Marshall (rsdio@metastatic.org)
  */
-public interface ManagerFactoryParameters
-{
+public interface ManagerFactoryParameters {
 }

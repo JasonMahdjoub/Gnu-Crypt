@@ -56,37 +56,31 @@ package gnu.jgnux.crypto.pad;
  * the plaintext a multiple of the block size minus one, plus one additional
  * byte for the padding length. The padding can be any arbitrary data.
  */
-public class SSL3 extends BasePad
-{
-    public SSL3()
-    {
-	super("ssl3");
-    }
+public class SSL3 extends BasePad {
+	public SSL3() {
+		super("ssl3");
+	}
 
-    @Override
-    public byte[] pad(final byte[] in, final int off, final int len)
-    {
-	int padlen = blockSize - (len % blockSize);
-	byte[] pad = new byte[padlen];
-	for (int i = 0; i < padlen; i++)
-	    pad[i] = (byte) (padlen - 1);
-	return pad;
-    }
+	@Override
+	public byte[] pad(final byte[] in, final int off, final int len) {
+		int padlen = blockSize - (len % blockSize);
+		byte[] pad = new byte[padlen];
+		for (int i = 0; i < padlen; i++)
+			pad[i] = (byte) (padlen - 1);
+		return pad;
+	}
 
-    @Override
-    public void setup()
-    {
-	if (blockSize <= 0 || blockSize > 255)
-	    throw new IllegalArgumentException(
-		    "invalid block size: " + blockSize);
-    }
+	@Override
+	public void setup() {
+		if (blockSize <= 0 || blockSize > 255)
+			throw new IllegalArgumentException("invalid block size: " + blockSize);
+	}
 
-    @Override
-    public int unpad(final byte[] in, final int off, final int len) throws WrongPaddingException
-    {
-	int padlen = in[off + len - 1] & 0xFF;
-	if (padlen >= blockSize)
-	    throw new WrongPaddingException();
-	return padlen + 1;
-    }
+	@Override
+	public int unpad(final byte[] in, final int off, final int len) throws WrongPaddingException {
+		int padlen = in[off + len - 1] & 0xFF;
+		if (padlen >= blockSize)
+			throw new WrongPaddingException();
+		return padlen + 1;
+	}
 }

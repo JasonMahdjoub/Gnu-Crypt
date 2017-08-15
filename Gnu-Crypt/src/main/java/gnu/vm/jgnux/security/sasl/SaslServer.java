@@ -62,8 +62,7 @@ import javax.security.sasl.SaslServerFactory;
  * </p>
  *
  * <pre>
- * SaslServer ss = Sasl.createSaslServer(mechanism, "ldap", myFQDN, props,
- * 	callbackHandler);
+ * SaslServer ss = Sasl.createSaslServer(mechanism, "ldap", myFQDN, props, callbackHandler);
  * </pre>
  *
  * <p>
@@ -74,39 +73,28 @@ import javax.security.sasl.SaslServerFactory;
  * </p>
  *
  * <pre>
- * while (!ss.isComplete())
- * {
- *     try
- *     {
- * 	byte[] challenge = ss.evaluateResponse(response);
- * 	if (ss.isComplete())
- * 	{
- * 	    status = ldap.sendBindResponse(mechanism, challenge, SUCCESS);
+ * while (!ss.isComplete()) {
+ * 	try {
+ * 		byte[] challenge = ss.evaluateResponse(response);
+ * 		if (ss.isComplete()) {
+ * 			status = ldap.sendBindResponse(mechanism, challenge, SUCCESS);
+ * 		} else {
+ * 			status = ldap.sendBindResponse(mechanism, challenge, SASL_BIND_IN_PROGRESS);
+ * 			response = ldap.readBindRequest();
+ * 		}
+ * 	} catch (SaslException x) {
+ * 		status = ldap.sendErrorResponse(x);
+ * 		break;
  * 	}
- * 	else
- * 	{
- * 	    status = ldap.sendBindResponse(mechanism, challenge,
- * 		    SASL_BIND_IN_PROGRESS);
- * 	    response = ldap.readBindRequest();
- * 	}
- *     }
- *     catch (SaslException x)
- *     {
- * 	status = ldap.sendErrorResponse(x);
- * 	break;
- *     }
  * }
- * if (ss.isComplete() && (status == SUCCESS))
- * {
- *     String qop = (String) sc.getNegotiatedProperty(Sasl.QOP);
- *     if (qop != null && (qop.equalsIgnoreCase("auth-int")
- * 	    || qop.equalsIgnoreCase("auth-conf")))
- *     {
- * 	// Use SaslServer.wrap() and SaslServer.unwrap() for future
- * 	// communication with client
- * 	ldap.in = new SecureInputStream(ss, ldap.in);
- * 	ldap.out = new SecureOutputStream(ss, ldap.out);
- *     }
+ * if (ss.isComplete() && (status == SUCCESS)) {
+ * 	String qop = (String) sc.getNegotiatedProperty(Sasl.QOP);
+ * 	if (qop != null && (qop.equalsIgnoreCase("auth-int") || qop.equalsIgnoreCase("auth-conf"))) {
+ * 		// Use SaslServer.wrap() and SaslServer.unwrap() for future
+ * 		// communication with client
+ * 		ldap.in = new SecureInputStream(ss, ldap.in);
+ * 		ldap.out = new SecureOutputStream(ss, ldap.out);
+ * 	}
  * }
  * </pre>
  *
@@ -115,153 +103,146 @@ import javax.security.sasl.SaslServerFactory;
  *
  * @since 1.5
  */
-public interface SaslServer
-{
+public interface SaslServer {
 
-    /**
-     * Disposes of any system resources or security-sensitive information the
-     * <code>SaslServer</code> might be using. Invoking this method invalidates
-     * the <code>SaslServer</code> instance. This method is idempotent.
-     *
-     * @throws SaslException
-     *             if a problem was encountered while disposing of the
-     *             resources.
-     */
-    void dispose() throws SaslException;
+	/**
+	 * Disposes of any system resources or security-sensitive information the
+	 * <code>SaslServer</code> might be using. Invoking this method invalidates the
+	 * <code>SaslServer</code> instance. This method is idempotent.
+	 *
+	 * @throws SaslException
+	 *             if a problem was encountered while disposing of the resources.
+	 */
+	void dispose() throws SaslException;
 
-    /**
-     * Evaluates the response data and generates a challenge. If a response is
-     * received from the client during the authentication process, this method
-     * is called to prepare an appropriate next challenge to submit to the
-     * client. The challenge is <code>null</code> if the authentication has
-     * succeeded and no more challenge data is to be sent to the client. It is
-     * non-null if the authentication must be continued by sending a challenge
-     * to the client, or if the authentication has succeeded but challenge data
-     * needs to be processed by the client. {@link #isComplete()} should be
-     * called after each call to <code>evaluateResponse()</code>,to determine if
-     * any further response is needed from the client.
-     *
-     * @param response
-     *            the non-null (but possibly empty) response sent by the client.
-     * @return the possibly <code>null</code> challenge to send to the client.
-     *         It is <code>null</code> if the authentication has succeeded and
-     *         there is no more challenge data to be sent to the client.
-     * @throws SaslException
-     *             if an error occurred while processing the response or
-     *             generating a challenge.
-     */
-    byte[] evaluateResponse(byte[] response) throws SaslException;
+	/**
+	 * Evaluates the response data and generates a challenge. If a response is
+	 * received from the client during the authentication process, this method is
+	 * called to prepare an appropriate next challenge to submit to the client. The
+	 * challenge is <code>null</code> if the authentication has succeeded and no
+	 * more challenge data is to be sent to the client. It is non-null if the
+	 * authentication must be continued by sending a challenge to the client, or if
+	 * the authentication has succeeded but challenge data needs to be processed by
+	 * the client. {@link #isComplete()} should be called after each call to
+	 * <code>evaluateResponse()</code>,to determine if any further response is
+	 * needed from the client.
+	 *
+	 * @param response
+	 *            the non-null (but possibly empty) response sent by the client.
+	 * @return the possibly <code>null</code> challenge to send to the client. It is
+	 *         <code>null</code> if the authentication has succeeded and there is no
+	 *         more challenge data to be sent to the client.
+	 * @throws SaslException
+	 *             if an error occurred while processing the response or generating
+	 *             a challenge.
+	 */
+	byte[] evaluateResponse(byte[] response) throws SaslException;
 
-    /**
-     * Reports the authorization ID in effect for the client of this session
-     * This method can only be called if {@link #isComplete()} returns
-     * <code>true</code>.
-     *
-     * @return the authorization ID of the client.
-     * @throws IllegalStateException
-     *             if this authentication session has not completed.
-     */
-    String getAuthorizationID();
+	/**
+	 * Reports the authorization ID in effect for the client of this session This
+	 * method can only be called if {@link #isComplete()} returns <code>true</code>.
+	 *
+	 * @return the authorization ID of the client.
+	 * @throws IllegalStateException
+	 *             if this authentication session has not completed.
+	 */
+	String getAuthorizationID();
 
-    /**
-     * Returns the IANA-registered mechanism name of this SASL server (e.g.
-     * "CRAM-MD5", "GSSAPI").
-     *
-     * @return a non-null string representing the IANA-registered mechanism
-     *         name.
-     */
-    String getMechanismName();
+	/**
+	 * Returns the IANA-registered mechanism name of this SASL server (e.g.
+	 * "CRAM-MD5", "GSSAPI").
+	 *
+	 * @return a non-null string representing the IANA-registered mechanism name.
+	 */
+	String getMechanismName();
 
-    /**
-     * Retrieves the negotiated property. This method can be called only after
-     * the authentication exchange has completed (i.e., when
-     * {@link #isComplete()} returns <code>true</code>); otherwise, an
-     * {@link IllegalStateException} is thrown.
-     *
-     * @return the value of the negotiated property. If <code>null</code>, the
-     *         property was not negotiated or is not applicable to this
-     *         mechanism.
-     * @throws IllegalStateException
-     *             if this authentication exchange has not completed.
-     */
-    Object getNegotiatedProperty(String propName);
+	/**
+	 * Retrieves the negotiated property. This method can be called only after the
+	 * authentication exchange has completed (i.e., when {@link #isComplete()}
+	 * returns <code>true</code>); otherwise, an {@link IllegalStateException} is
+	 * thrown.
+	 *
+	 * @return the value of the negotiated property. If <code>null</code>, the
+	 *         property was not negotiated or is not applicable to this mechanism.
+	 * @throws IllegalStateException
+	 *             if this authentication exchange has not completed.
+	 */
+	Object getNegotiatedProperty(String propName);
 
-    /**
-     * Determines if the authentication exchange has completed. This method is
-     * typically called after each invocation of
-     * {@link #evaluateResponse(byte[])} to determine whether the authentication
-     * has completed successfully or should be continued.
-     *
-     * @return <code>true</code> if the authentication exchange has completed;
-     *         <code>false</code> otherwise.
-     */
-    boolean isComplete();
+	/**
+	 * Determines if the authentication exchange has completed. This method is
+	 * typically called after each invocation of {@link #evaluateResponse(byte[])}
+	 * to determine whether the authentication has completed successfully or should
+	 * be continued.
+	 *
+	 * @return <code>true</code> if the authentication exchange has completed;
+	 *         <code>false</code> otherwise.
+	 */
+	boolean isComplete();
 
-    /**
-     * <p>
-     * Unwraps a byte array received from the client. This method can be called
-     * only after the authentication exchange has completed (i.e., when
-     * {@link #isComplete()} returns <code>true</code>) and only if the
-     * authentication exchange has negotiated integrity and/or privacy as the
-     * quality of protection; otherwise, an {@link IllegalStateException} is
-     * thrown.
-     * </p>
-     *
-     * <p>
-     * <code>incoming</code> is the contents of the SASL buffer as defined in
-     * RFC 2222 without the leading four octet field that represents the length.
-     * <code>offset</code> and <code>len</code> specify the portion of incoming
-     * to use.
-     * </p>
-     *
-     * @param incoming
-     *            a non-null byte array containing the encoded bytes from the
-     *            client.
-     * @param offset
-     *            the starting position at <code>incoming</code> of the bytes to
-     *            use.
-     * @param len
-     *            the number of bytes from <code>incoming</code> to use.
-     * @return a non-null byte array containing the decoded bytes.
-     * @throws SaslException
-     *             if <code>incoming</code> cannot be successfully unwrapped.
-     * @throws IllegalStateException
-     *             if the authentication exchange has not completed, or if the
-     *             negotiated quality of protection has neither integrity nor
-     *             privacy.
-     */
-    byte[] unwrap(byte[] incoming, int offset, int len) throws SaslException;
+	/**
+	 * <p>
+	 * Unwraps a byte array received from the client. This method can be called only
+	 * after the authentication exchange has completed (i.e., when
+	 * {@link #isComplete()} returns <code>true</code>) and only if the
+	 * authentication exchange has negotiated integrity and/or privacy as the
+	 * quality of protection; otherwise, an {@link IllegalStateException} is thrown.
+	 * </p>
+	 *
+	 * <p>
+	 * <code>incoming</code> is the contents of the SASL buffer as defined in RFC
+	 * 2222 without the leading four octet field that represents the length.
+	 * <code>offset</code> and <code>len</code> specify the portion of incoming to
+	 * use.
+	 * </p>
+	 *
+	 * @param incoming
+	 *            a non-null byte array containing the encoded bytes from the
+	 *            client.
+	 * @param offset
+	 *            the starting position at <code>incoming</code> of the bytes to
+	 *            use.
+	 * @param len
+	 *            the number of bytes from <code>incoming</code> to use.
+	 * @return a non-null byte array containing the decoded bytes.
+	 * @throws SaslException
+	 *             if <code>incoming</code> cannot be successfully unwrapped.
+	 * @throws IllegalStateException
+	 *             if the authentication exchange has not completed, or if the
+	 *             negotiated quality of protection has neither integrity nor
+	 *             privacy.
+	 */
+	byte[] unwrap(byte[] incoming, int offset, int len) throws SaslException;
 
-    /**
-     * <p>
-     * Wraps a byte array to be sent to the client. This method can be called
-     * only after the authentication exchange has completed (i.e., when
-     * {@link #isComplete()} returns <code>true</code>) and only if the
-     * authentication exchange has negotiated integrity and/or privacy as the
-     * quality of protection; otherwise, an {@link IllegalStateException} is
-     * thrown.
-     * </p>
-     *
-     * <p>
-     * The result of this method will make up the contents of the SASL buffer as
-     * defined in RFC 2222 without the leading four octet field that represents
-     * the length. <code>offset</code> and <code>len</code> specify the portion
-     * of <code>outgoing</code> to use.
-     *
-     * @param outgoing
-     *            a non-null byte array containing the bytes to encode.
-     * @param offset
-     *            the starting position at <code>outgoing</code> of the bytes to
-     *            use.
-     * @param len
-     *            the number of bytes from <code>outgoing</code> to use.
-     * @return a non-null byte array containing the encoded bytes.
-     * @throws SaslException
-     *             if <code>outgoing</code> cannot be successfully wrapped.
-     * @throws IllegalStateException
-     *             if the authentication exchange has not completed, or if the
-     *             negotiated quality of protection has neither integrity nor
-     *             privacy.
-     */
-    byte[] wrap(byte[] outgoing, int offset, int len) throws SaslException;
+	/**
+	 * <p>
+	 * Wraps a byte array to be sent to the client. This method can be called only
+	 * after the authentication exchange has completed (i.e., when
+	 * {@link #isComplete()} returns <code>true</code>) and only if the
+	 * authentication exchange has negotiated integrity and/or privacy as the
+	 * quality of protection; otherwise, an {@link IllegalStateException} is thrown.
+	 * </p>
+	 *
+	 * <p>
+	 * The result of this method will make up the contents of the SASL buffer as
+	 * defined in RFC 2222 without the leading four octet field that represents the
+	 * length. <code>offset</code> and <code>len</code> specify the portion of
+	 * <code>outgoing</code> to use.
+	 *
+	 * @param outgoing
+	 *            a non-null byte array containing the bytes to encode.
+	 * @param offset
+	 *            the starting position at <code>outgoing</code> of the bytes to
+	 *            use.
+	 * @param len
+	 *            the number of bytes from <code>outgoing</code> to use.
+	 * @return a non-null byte array containing the encoded bytes.
+	 * @throws SaslException
+	 *             if <code>outgoing</code> cannot be successfully wrapped.
+	 * @throws IllegalStateException
+	 *             if the authentication exchange has not completed, or if the
+	 *             negotiated quality of protection has neither integrity nor
+	 *             privacy.
+	 */
+	byte[] wrap(byte[] outgoing, int offset, int len) throws SaslException;
 }

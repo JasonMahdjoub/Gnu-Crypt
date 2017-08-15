@@ -42,24 +42,20 @@ import gnu.jgnux.crypto.cipher.DES;
 import gnu.vm.jgnux.crypto.SecretKey;
 import gnu.vm.jgnux.crypto.spec.SecretKeySpec;
 
-public class DESKeyGeneratorImpl extends SecretKeyGeneratorImpl
-{
-    public DESKeyGeneratorImpl()
-    {
-	super(Registry.DES_CIPHER);
-    }
+public class DESKeyGeneratorImpl extends SecretKeyGeneratorImpl {
+	public DESKeyGeneratorImpl() {
+		super(Registry.DES_CIPHER);
+	}
 
-    @Override
-    protected SecretKey engineGenerateKey()
-    {
-	if (!init)
-	    throw new IllegalStateException("not initialized");
-	byte[] buf = new byte[currentKeySize];
-	do
-	{
-	    random.nextBytes(buf);
-	} while (DES.isWeak(buf) || DES.isSemiWeak(buf));
-	DES.adjustParity(buf, 0);
-	return new SecretKeySpec(buf, algorithm);
-    }
+	@Override
+	protected SecretKey engineGenerateKey() {
+		if (!init)
+			throw new IllegalStateException("not initialized");
+		byte[] buf = new byte[currentKeySize];
+		do {
+			random.nextBytes(buf);
+		} while (DES.isWeak(buf) || DES.isSemiWeak(buf));
+		DES.adjustParity(buf, 0);
+		return new SecretKeySpec(buf, algorithm);
+	}
 }

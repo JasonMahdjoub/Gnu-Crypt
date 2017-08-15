@@ -43,11 +43,9 @@ import gnu.jgnu.security.Registry;
  * The implementation of the MD4 <i>Service Provider Interface</i> (<b>SPI</b>)
  * adapter.
  */
-public class MD4Spi extends MessageDigestAdapter
-{
-    /** Trivial 0-arguments constructor. */
-    public MD4Spi()
-    {
-	super(Registry.MD4_HASH);
-    }
+public class MD4Spi extends MessageDigestAdapter {
+	/** Trivial 0-arguments constructor. */
+	public MD4Spi() {
+		super(Registry.MD4_HASH);
+	}
 }

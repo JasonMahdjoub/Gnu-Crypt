@@ -49,46 +49,39 @@ import java.security.Security;
  * String passwd = AccessController.doPrivileged(action);
  * </code>
  */
-public class GetSecurityPropertyAction implements PrivilegedAction<String>
-{
-    private String name;
+public class GetSecurityPropertyAction implements PrivilegedAction<String> {
+	private String name;
 
-    private String value;
+	private String value;
 
-    public GetSecurityPropertyAction()
-    {
-    }
+	public GetSecurityPropertyAction() {
+	}
 
-    public GetSecurityPropertyAction(String propName)
-    {
-	setParameters(propName);
-    }
+	public GetSecurityPropertyAction(String propName) {
+		setParameters(propName);
+	}
 
-    public GetSecurityPropertyAction(String propName, String defaultValue)
-    {
-	setParameters(propName, defaultValue);
-    }
+	public GetSecurityPropertyAction(String propName, String defaultValue) {
+		setParameters(propName, defaultValue);
+	}
 
-    @Override
-    public String run()
-    {
-	String val = Security.getProperty(name);
-	if (val == null)
-	    val = value;
-	return val;
-    }
+	@Override
+	public String run() {
+		String val = Security.getProperty(name);
+		if (val == null)
+			val = value;
+		return val;
+	}
 
-    public GetSecurityPropertyAction setParameters(String propName)
-    {
-	this.name = propName;
-	this.value = null;
-	return this;
-    }
+	public GetSecurityPropertyAction setParameters(String propName) {
+		this.name = propName;
+		this.value = null;
+		return this;
+	}
 
-    public GetSecurityPropertyAction setParameters(String propName, String defaultValue)
-    {
-	this.name = propName;
-	this.value = defaultValue;
-	return this;
-    }
+	public GetSecurityPropertyAction setParameters(String propName, String defaultValue) {
+		this.name = propName;
+		this.value = defaultValue;
+		return this;
+	}
 }

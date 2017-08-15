@@ -47,43 +47,40 @@ import gnu.vm.jgnu.security.spec.AlgorithmParameterSpec;
  * @see AlgorithmParameterSpec
  * @see java.security.Signature
  */
-public class PSSParameterSpec implements AlgorithmParameterSpec
-{
-    // Constants and fields
-    // --------------------------------------------------------------------------
+public class PSSParameterSpec implements AlgorithmParameterSpec {
+	// Constants and fields
+	// --------------------------------------------------------------------------
 
-    private int saltLen;
+	private int saltLen;
 
-    // Constructor(s)
-    // --------------------------------------------------------------------------
+	// Constructor(s)
+	// --------------------------------------------------------------------------
 
-    /**
-     * Construct a new instance of <code>PSSParameterSpec</code> given a salt
-     * length.
-     *
-     * @param saltLen
-     *            the length in bits of the salt.
-     * @throws IllegalArgumentException
-     *             if <code>saltLen</code> is less than <code>0</code>.
-     */
-    public PSSParameterSpec(int saltLen)
-    {
-	super();
+	/**
+	 * Construct a new instance of <code>PSSParameterSpec</code> given a salt
+	 * length.
+	 *
+	 * @param saltLen
+	 *            the length in bits of the salt.
+	 * @throws IllegalArgumentException
+	 *             if <code>saltLen</code> is less than <code>0</code>.
+	 */
+	public PSSParameterSpec(int saltLen) {
+		super();
 
-	if (saltLen < 0)
-	    throw new IllegalArgumentException();
-	this.saltLen = saltLen;
-    }
+		if (saltLen < 0)
+			throw new IllegalArgumentException();
+		this.saltLen = saltLen;
+	}
 
-    // Class methods
-    // --------------------------------------------------------------------------
+	// Class methods
+	// --------------------------------------------------------------------------
 
-    // Instance methods
-    // --------------------------------------------------------------------------
+	// Instance methods
+	// --------------------------------------------------------------------------
 
-    /** @return the length (in bits) of the salt. */
-    public int getSaltLength()
-    {
-	return this.saltLen;
-    }
+	/** @return the length (in bits) of the salt. */
+	public int getSaltLength() {
+		return this.saltLen;
+	}
 }

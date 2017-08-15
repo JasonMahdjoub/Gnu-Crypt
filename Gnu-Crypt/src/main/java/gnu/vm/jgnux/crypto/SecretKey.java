@@ -64,7 +64,6 @@ import gnu.vm.jgnu.security.Key;
  * @see gnu.vm.jgnux.crypto.SecretKeyFactory
  * @see gnu.vm.jgnux.crypto.Cipher
  */
-public interface SecretKey extends Key
-{
-    long serialVersionUID = -4795878709595146952L;
+public interface SecretKey extends Key {
+	long serialVersionUID = -4795878709595146952L;
 }

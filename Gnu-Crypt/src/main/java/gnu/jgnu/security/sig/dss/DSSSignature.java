@@ -109,166 +109,148 @@ import gnu.vm.jgnu.security.PublicKey;
  * National Institute of Standards and Technology.</li>
  * </ol>
  */
-public class DSSSignature extends BaseSignature
-{
-    public static final BigInteger[] sign(final DSAPrivateKey k, final byte[] h)
-    {
-	final DSSSignature sig = new DSSSignature();
-	final Map<String, Object> attributes = new HashMap<>();
-	attributes.put(ISignature.SIGNER_KEY, k);
-	sig.setupSign(attributes);
-	return sig.computeRS(h);
-    }
-
-    public static final BigInteger[] sign(final DSAPrivateKey k, final byte[] h, IRandom irnd)
-    {
-	final DSSSignature sig = new DSSSignature();
-	final Map<String, Object> attributes = new HashMap<>();
-	attributes.put(ISignature.SIGNER_KEY, k);
-	if (irnd != null)
-	    attributes.put(ISignature.SOURCE_OF_RANDOMNESS, irnd);
-
-	sig.setupSign(attributes);
-	return sig.computeRS(h);
-    }
-
-    public static final BigInteger[] sign(final DSAPrivateKey k, final byte[] h, Random rnd)
-    {
-	final DSSSignature sig = new DSSSignature();
-	final Map<String, Object> attributes = new HashMap<>();
-	attributes.put(ISignature.SIGNER_KEY, k);
-	if (rnd != null)
-	    attributes.put(ISignature.SOURCE_OF_RANDOMNESS, rnd);
-
-	sig.setupSign(attributes);
-	return sig.computeRS(h);
-    }
-
-    public static final boolean verify(final DSAPublicKey k, final byte[] h, final BigInteger[] rs)
-    {
-	final DSSSignature sig = new DSSSignature();
-	final Map<String, Object> attributes = new HashMap<>();
-	attributes.put(ISignature.VERIFIER_KEY, k);
-	sig.setupVerify(attributes);
-	return sig.checkRS(rs, h);
-    }
-
-    /** Trivial 0-arguments constructor. */
-    public DSSSignature()
-    {
-	super(Registry.DSS_SIG, new Sha160());
-    }
-
-    /** Private constructor for cloning purposes. */
-    private DSSSignature(DSSSignature that)
-    {
-	this();
-
-	this.publicKey = that.publicKey;
-	this.privateKey = that.privateKey;
-	this.md = (IMessageDigest) that.md.clone();
-    }
-
-    private boolean checkRS(final BigInteger[] rs, final byte[] digestBytes)
-    {
-	final BigInteger r = rs[0];
-	final BigInteger s = rs[1];
-	final BigInteger g = ((DSAPublicKey) publicKey).getParams().getG();
-	final BigInteger p = ((DSAPublicKey) publicKey).getParams().getP();
-	final BigInteger q = ((DSAPublicKey) publicKey).getParams().getQ();
-	final BigInteger y = ((DSAPublicKey) publicKey).getY();
-	final BigInteger w = s.modInverse(q);
-	final BigInteger u1 = w.multiply(new BigInteger(1, digestBytes)).mod(q);
-	final BigInteger u2 = r.multiply(w).mod(q);
-	final BigInteger v = g.modPow(u1, p).multiply(y.modPow(u2, p)).mod(p)
-		.mod(q);
-	return v.equals(r);
-    }
-
-    @Override
-    public Object clone()
-    {
-	return new DSSSignature(this);
-    }
-
-    private BigInteger[] computeRS(final byte[] digestBytes)
-    {
-	final BigInteger p = ((DSAPrivateKey) privateKey).getParams().getP();
-	final BigInteger q = ((DSAPrivateKey) privateKey).getParams().getQ();
-	final BigInteger g = ((DSAPrivateKey) privateKey).getParams().getG();
-	final BigInteger x = ((DSAPrivateKey) privateKey).getX();
-	final BigInteger m = new BigInteger(1, digestBytes);
-	BigInteger k, r, s;
-	final byte[] kb = new byte[20]; // we'll use 159 bits only
-	while (true)
-	{
-	    this.nextRandomBytes(kb);
-	    k = new BigInteger(1, kb);
-	    k.clearBit(159);
-	    r = g.modPow(k, p).mod(q);
-	    if (r.equals(BigInteger.ZERO))
-		continue;
-
-	    s = m.add(x.multiply(r)).multiply(k.modInverse(q)).mod(q);
-	    if (s.equals(BigInteger.ZERO))
-		continue;
-
-	    break;
+public class DSSSignature extends BaseSignature {
+	public static final BigInteger[] sign(final DSAPrivateKey k, final byte[] h) {
+		final DSSSignature sig = new DSSSignature();
+		final Map<String, Object> attributes = new HashMap<>();
+		attributes.put(ISignature.SIGNER_KEY, k);
+		sig.setupSign(attributes);
+		return sig.computeRS(h);
 	}
-	return new BigInteger[] { r, s };
-    }
 
-    /**
-     * Returns the output of a previously generated signature object as a pair
-     * of {@link java.math.BigInteger}.
-     *
-     * @return the DSS signature pair <code>r</code> and <code>s</code>.
-     */
-    private BigInteger[] decodeSignature(Object signature)
-    {
-	return (BigInteger[]) signature;
-    }
+	public static final BigInteger[] sign(final DSAPrivateKey k, final byte[] h, IRandom irnd) {
+		final DSSSignature sig = new DSSSignature();
+		final Map<String, Object> attributes = new HashMap<>();
+		attributes.put(ISignature.SIGNER_KEY, k);
+		if (irnd != null)
+			attributes.put(ISignature.SOURCE_OF_RANDOMNESS, irnd);
 
-    /**
-     * Returns the output of a signature generation phase.
-     *
-     * @return an object encapsulating the DSS signature pair <code>r</code> and
-     *         <code>s</code>.
-     */
-    private Object encodeSignature(BigInteger r, BigInteger s)
-    {
-	return new BigInteger[] { r, s };
-    }
+		sig.setupSign(attributes);
+		return sig.computeRS(h);
+	}
 
-    @Override
-    protected Object generateSignature() throws IllegalStateException
-    {
-	final BigInteger[] rs = computeRS(md.digest());
-	return encodeSignature(rs[0], rs[1]);
-    }
+	public static final BigInteger[] sign(final DSAPrivateKey k, final byte[] h, Random rnd) {
+		final DSSSignature sig = new DSSSignature();
+		final Map<String, Object> attributes = new HashMap<>();
+		attributes.put(ISignature.SIGNER_KEY, k);
+		if (rnd != null)
+			attributes.put(ISignature.SOURCE_OF_RANDOMNESS, rnd);
 
-    @Override
-    protected void setupForSigning(PrivateKey k) throws IllegalArgumentException
-    {
-	if (!(k instanceof DSAPrivateKey))
-	    throw new IllegalArgumentException();
+		sig.setupSign(attributes);
+		return sig.computeRS(h);
+	}
 
-	this.privateKey = k;
-    }
+	public static final boolean verify(final DSAPublicKey k, final byte[] h, final BigInteger[] rs) {
+		final DSSSignature sig = new DSSSignature();
+		final Map<String, Object> attributes = new HashMap<>();
+		attributes.put(ISignature.VERIFIER_KEY, k);
+		sig.setupVerify(attributes);
+		return sig.checkRS(rs, h);
+	}
 
-    @Override
-    protected void setupForVerification(PublicKey k) throws IllegalArgumentException
-    {
-	if (!(k instanceof DSAPublicKey))
-	    throw new IllegalArgumentException();
+	/** Trivial 0-arguments constructor. */
+	public DSSSignature() {
+		super(Registry.DSS_SIG, new Sha160());
+	}
 
-	this.publicKey = k;
-    }
+	/** Private constructor for cloning purposes. */
+	private DSSSignature(DSSSignature that) {
+		this();
 
-    @Override
-    protected boolean verifySignature(Object sig) throws IllegalStateException
-    {
-	final BigInteger[] rs = decodeSignature(sig);
-	return checkRS(rs, md.digest());
-    }
+		this.publicKey = that.publicKey;
+		this.privateKey = that.privateKey;
+		this.md = (IMessageDigest) that.md.clone();
+	}
+
+	private boolean checkRS(final BigInteger[] rs, final byte[] digestBytes) {
+		final BigInteger r = rs[0];
+		final BigInteger s = rs[1];
+		final BigInteger g = ((DSAPublicKey) publicKey).getParams().getG();
+		final BigInteger p = ((DSAPublicKey) publicKey).getParams().getP();
+		final BigInteger q = ((DSAPublicKey) publicKey).getParams().getQ();
+		final BigInteger y = ((DSAPublicKey) publicKey).getY();
+		final BigInteger w = s.modInverse(q);
+		final BigInteger u1 = w.multiply(new BigInteger(1, digestBytes)).mod(q);
+		final BigInteger u2 = r.multiply(w).mod(q);
+		final BigInteger v = g.modPow(u1, p).multiply(y.modPow(u2, p)).mod(p).mod(q);
+		return v.equals(r);
+	}
+
+	@Override
+	public Object clone() {
+		return new DSSSignature(this);
+	}
+
+	private BigInteger[] computeRS(final byte[] digestBytes) {
+		final BigInteger p = ((DSAPrivateKey) privateKey).getParams().getP();
+		final BigInteger q = ((DSAPrivateKey) privateKey).getParams().getQ();
+		final BigInteger g = ((DSAPrivateKey) privateKey).getParams().getG();
+		final BigInteger x = ((DSAPrivateKey) privateKey).getX();
+		final BigInteger m = new BigInteger(1, digestBytes);
+		BigInteger k, r, s;
+		final byte[] kb = new byte[20]; // we'll use 159 bits only
+		while (true) {
+			this.nextRandomBytes(kb);
+			k = new BigInteger(1, kb);
+			k.clearBit(159);
+			r = g.modPow(k, p).mod(q);
+			if (r.equals(BigInteger.ZERO))
+				continue;
+
+			s = m.add(x.multiply(r)).multiply(k.modInverse(q)).mod(q);
+			if (s.equals(BigInteger.ZERO))
+				continue;
+
+			break;
+		}
+		return new BigInteger[] { r, s };
+	}
+
+	/**
+	 * Returns the output of a previously generated signature object as a pair of
+	 * {@link java.math.BigInteger}.
+	 *
+	 * @return the DSS signature pair <code>r</code> and <code>s</code>.
+	 */
+	private BigInteger[] decodeSignature(Object signature) {
+		return (BigInteger[]) signature;
+	}
+
+	/**
+	 * Returns the output of a signature generation phase.
+	 *
+	 * @return an object encapsulating the DSS signature pair <code>r</code> and
+	 *         <code>s</code>.
+	 */
+	private Object encodeSignature(BigInteger r, BigInteger s) {
+		return new BigInteger[] { r, s };
+	}
+
+	@Override
+	protected Object generateSignature() throws IllegalStateException {
+		final BigInteger[] rs = computeRS(md.digest());
+		return encodeSignature(rs[0], rs[1]);
+	}
+
+	@Override
+	protected void setupForSigning(PrivateKey k) throws IllegalArgumentException {
+		if (!(k instanceof DSAPrivateKey))
+			throw new IllegalArgumentException();
+
+		this.privateKey = k;
+	}
+
+	@Override
+	protected void setupForVerification(PublicKey k) throws IllegalArgumentException {
+		if (!(k instanceof DSAPublicKey))
+			throw new IllegalArgumentException();
+
+		this.publicKey = k;
+	}
+
+	@Override
+	protected boolean verifySignature(Object sig) throws IllegalStateException {
+		final BigInteger[] rs = decodeSignature(sig);
+		return checkRS(rs, md.digest());
+	}
 }

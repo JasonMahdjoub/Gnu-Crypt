@@ -70,386 +70,327 @@ import gnu.jgnu.security.der.DERValue;
  * @author Casey Marshall (csm@gnu.org)
  * @since 1.4
  */
-public class X509CRLSelector implements CRLSelector, Cloneable
-{
+public class X509CRLSelector implements CRLSelector, Cloneable {
 
-    // Fields.
-    // -------------------------------------------------------------------------
+	// Fields.
+	// -------------------------------------------------------------------------
 
-    private static final String CRL_NUMBER_ID = "2.5.29.20";
+	private static final String CRL_NUMBER_ID = "2.5.29.20";
 
-    private List<X500Principal> issuerNames;
+	private List<X500Principal> issuerNames;
 
-    private BigInteger maxCrlNumber;
+	private BigInteger maxCrlNumber;
 
-    private BigInteger minCrlNumber;
+	private BigInteger minCrlNumber;
 
-    private Date date;
+	private Date date;
 
-    private X509Certificate cert;
+	private X509Certificate cert;
 
-    // Constructor.
-    // -------------------------------------------------------------------------
+	// Constructor.
+	// -------------------------------------------------------------------------
 
-    /**
-     * Creates a new CRL selector with no criteria enabled; i.e., every CRL will
-     * be matched.
-     */
-    public X509CRLSelector()
-    {
-    }
-
-    // Instance methods.
-    // -------------------------------------------------------------------------
-
-    /**
-     * Add an issuer name to the set of issuer names criteria, as the DER
-     * encoded form.
-     *
-     * @param name
-     *            The name to add, as DER bytes.
-     * @throws IOException
-     *             If the argument is not a valid DER-encoding.
-     */
-    public void addIssuerName(byte[] name) throws IOException
-    {
-	X500Principal p = null;
-	try
-	{
-	    p = new X500Principal(name);
+	/**
+	 * Creates a new CRL selector with no criteria enabled; i.e., every CRL will be
+	 * matched.
+	 */
+	public X509CRLSelector() {
 	}
-	catch (IllegalArgumentException iae)
-	{
-	    IOException ioe = new IOException("malformed name");
-	    ioe.initCause(iae);
-	    throw ioe;
+
+	// Instance methods.
+	// -------------------------------------------------------------------------
+
+	/**
+	 * Add an issuer name to the set of issuer names criteria, as the DER encoded
+	 * form.
+	 *
+	 * @param name
+	 *            The name to add, as DER bytes.
+	 * @throws IOException
+	 *             If the argument is not a valid DER-encoding.
+	 */
+	public void addIssuerName(byte[] name) throws IOException {
+		X500Principal p = null;
+		try {
+			p = new X500Principal(name);
+		} catch (IllegalArgumentException iae) {
+			IOException ioe = new IOException("malformed name");
+			ioe.initCause(iae);
+			throw ioe;
+		}
+		if (issuerNames == null)
+			issuerNames = new LinkedList<>();
+		issuerNames.add(p);
 	}
-	if (issuerNames == null)
-	    issuerNames = new LinkedList<>();
-	issuerNames.add(p);
-    }
 
-    /**
-     * Add an issuer name to the set of issuer names criteria, as a String
-     * representation.
-     *
-     * @param name
-     *            The name to add.
-     * @throws IOException
-     *             If the argument is not a valid name.
-     */
-    public void addIssuerName(String name) throws IOException
-    {
-	X500Principal p = null;
-	try
-	{
-	    p = new X500Principal(name);
+	/**
+	 * Add an issuer name to the set of issuer names criteria, as a String
+	 * representation.
+	 *
+	 * @param name
+	 *            The name to add.
+	 * @throws IOException
+	 *             If the argument is not a valid name.
+	 */
+	public void addIssuerName(String name) throws IOException {
+		X500Principal p = null;
+		try {
+			p = new X500Principal(name);
+		} catch (IllegalArgumentException iae) {
+			IOException ioe = new IOException("malformed name: " + name);
+			ioe.initCause(iae);
+			throw ioe;
+		}
+		if (issuerNames == null)
+			issuerNames = new LinkedList<>();
+		issuerNames.add(p);
 	}
-	catch (IllegalArgumentException iae)
-	{
-	    IOException ioe = new IOException("malformed name: " + name);
-	    ioe.initCause(iae);
-	    throw ioe;
+
+	/**
+	 * Returns a copy of this object.
+	 *
+	 * @return The copy.
+	 */
+	@Override
+	public Object clone() {
+		try {
+			return super.clone();
+		} catch (CloneNotSupportedException shouldNotHappen) {
+			throw new Error(shouldNotHappen);
+		}
 	}
-	if (issuerNames == null)
-	    issuerNames = new LinkedList<>();
-	issuerNames.add(p);
-    }
 
-    /**
-     * Returns a copy of this object.
-     *
-     * @return The copy.
-     */
-    @Override
-    public Object clone()
-    {
-	try
-	{
-	    return super.clone();
+	/**
+	 * Returns the certificate being checked, or <code>null</code> if this value is
+	 * not set.
+	 *
+	 * @return The certificate.
+	 */
+	public X509Certificate getCertificateChecking() {
+		return cert;
 	}
-	catch (CloneNotSupportedException shouldNotHappen)
-	{
-	    throw new Error(shouldNotHappen);
+
+	/**
+	 * Returns the date when this CRL must be valid; that is, the date must be after
+	 * the thisUpdate date, but before the nextUpdate date. Returns
+	 * <code>null</code> if this criterion is not set.
+	 *
+	 * @return The date.
+	 */
+	public Date getDateAndTime() {
+		return date != null ? (Date) date.clone() : null;
 	}
-    }
 
-    /**
-     * Returns the certificate being checked, or <code>null</code> if this value
-     * is not set.
-     *
-     * @return The certificate.
-     */
-    public X509Certificate getCertificateChecking()
-    {
-	return cert;
-    }
-
-    /**
-     * Returns the date when this CRL must be valid; that is, the date must be
-     * after the thisUpdate date, but before the nextUpdate date. Returns
-     * <code>null</code> if this criterion is not set.
-     *
-     * @return The date.
-     */
-    public Date getDateAndTime()
-    {
-	return date != null ? (Date) date.clone() : null;
-    }
-
-    /**
-     * Returns the set of issuer names that are matched by this selector, or
-     * <code>null</code> if this criteria is not set. The returned collection is
-     * not modifiable.
-     *
-     * @return The set of issuer names.
-     */
-    public Collection<X500Principal> getIssuerNames()
-    {
-	if (issuerNames != null)
-	    return Collections.unmodifiableList(issuerNames);
-	else
-	    return null;
-    }
-
-    /**
-     * Returns the maximum value of the CRLNumber extension present in CRLs
-     * matched by this selector, or <code>null</code> if this criteria is not
-     * set.
-     *
-     * @return The maximum CRL number.
-     */
-    public BigInteger getMaxCRL()
-    {
-	return maxCrlNumber;
-    }
-
-    /**
-     * Returns the minimum value of the CRLNumber extension present in CRLs
-     * matched by this selector, or <code>null</code> if this criteria is not
-     * set.
-     *
-     * @return The minimum CRL number.
-     */
-    public BigInteger getMinCRL()
-    {
-	return minCrlNumber;
-    }
-
-    /**
-     * Checks a CRL against the criteria of this selector, returning
-     * <code>true</code> if the given CRL matches all the criteria.
-     *
-     * @param _crl
-     *            The CRL being checked.
-     * @return True if the CRL matches, false otherwise.
-     */
-    @Override
-    public boolean match(CRL _crl)
-    {
-	if (!(_crl instanceof X509CRL))
-	    return false;
-	X509CRL crl = (X509CRL) _crl;
-	if (issuerNames != null)
-	{
-	    if (!issuerNames.contains(crl.getIssuerX500Principal()))
-		return false;
+	/**
+	 * Returns the set of issuer names that are matched by this selector, or
+	 * <code>null</code> if this criteria is not set. The returned collection is not
+	 * modifiable.
+	 *
+	 * @return The set of issuer names.
+	 */
+	public Collection<X500Principal> getIssuerNames() {
+		if (issuerNames != null)
+			return Collections.unmodifiableList(issuerNames);
+		else
+			return null;
 	}
-	BigInteger crlNumber = null;
-	if (maxCrlNumber != null)
-	{
-	    byte[] b = crl.getExtensionValue(CRL_NUMBER_ID);
-	    if (b == null)
-		return false;
-	    try
-	    {
-		DERValue val = DERReader.read(b);
-		if (!(val.getValue() instanceof BigInteger))
-		    return false;
-		crlNumber = (BigInteger) val.getValue();
-	    }
-	    catch (IOException ioe)
-	    {
-		return false;
-	    }
-	    if (maxCrlNumber.compareTo(crlNumber) < 0)
-		return false;
+
+	/**
+	 * Returns the maximum value of the CRLNumber extension present in CRLs matched
+	 * by this selector, or <code>null</code> if this criteria is not set.
+	 *
+	 * @return The maximum CRL number.
+	 */
+	public BigInteger getMaxCRL() {
+		return maxCrlNumber;
 	}
-	if (minCrlNumber != null)
-	{
-	    if (crlNumber == null)
-	    {
-		byte[] b = crl.getExtensionValue(CRL_NUMBER_ID);
-		if (b == null)
-		    return false;
-		try
-		{
-		    DERValue val = DERReader.read(b);
-		    if (!(val.getValue() instanceof BigInteger))
+
+	/**
+	 * Returns the minimum value of the CRLNumber extension present in CRLs matched
+	 * by this selector, or <code>null</code> if this criteria is not set.
+	 *
+	 * @return The minimum CRL number.
+	 */
+	public BigInteger getMinCRL() {
+		return minCrlNumber;
+	}
+
+	/**
+	 * Checks a CRL against the criteria of this selector, returning
+	 * <code>true</code> if the given CRL matches all the criteria.
+	 *
+	 * @param _crl
+	 *            The CRL being checked.
+	 * @return True if the CRL matches, false otherwise.
+	 */
+	@Override
+	public boolean match(CRL _crl) {
+		if (!(_crl instanceof X509CRL))
 			return false;
-		    crlNumber = (BigInteger) val.getValue();
+		X509CRL crl = (X509CRL) _crl;
+		if (issuerNames != null) {
+			if (!issuerNames.contains(crl.getIssuerX500Principal()))
+				return false;
 		}
-		catch (IOException ioe)
-		{
-		    return false;
+		BigInteger crlNumber = null;
+		if (maxCrlNumber != null) {
+			byte[] b = crl.getExtensionValue(CRL_NUMBER_ID);
+			if (b == null)
+				return false;
+			try {
+				DERValue val = DERReader.read(b);
+				if (!(val.getValue() instanceof BigInteger))
+					return false;
+				crlNumber = (BigInteger) val.getValue();
+			} catch (IOException ioe) {
+				return false;
+			}
+			if (maxCrlNumber.compareTo(crlNumber) < 0)
+				return false;
 		}
-	    }
-	    if (minCrlNumber.compareTo(crlNumber) > 0)
-		return false;
+		if (minCrlNumber != null) {
+			if (crlNumber == null) {
+				byte[] b = crl.getExtensionValue(CRL_NUMBER_ID);
+				if (b == null)
+					return false;
+				try {
+					DERValue val = DERReader.read(b);
+					if (!(val.getValue() instanceof BigInteger))
+						return false;
+					crlNumber = (BigInteger) val.getValue();
+				} catch (IOException ioe) {
+					return false;
+				}
+			}
+			if (minCrlNumber.compareTo(crlNumber) > 0)
+				return false;
+		}
+		if (date != null) {
+			if (date.compareTo(crl.getThisUpdate()) < 0 || date.compareTo(crl.getNextUpdate()) > 0)
+				return false;
+		}
+		return true;
 	}
-	if (date != null)
-	{
-	    if (date.compareTo(crl.getThisUpdate()) < 0
-		    || date.compareTo(crl.getNextUpdate()) > 0)
-		return false;
+
+	/**
+	 * Sets the certificate being checked. This is not a criterion, but info used by
+	 * certificate store implementations to aid in searching.
+	 *
+	 * @param cert
+	 *            The certificate.
+	 */
+	public void setCertificateChecking(X509Certificate cert) {
+		this.cert = cert;
 	}
-	return true;
-    }
 
-    /**
-     * Sets the certificate being checked. This is not a criterion, but info
-     * used by certificate store implementations to aid in searching.
-     *
-     * @param cert
-     *            The certificate.
-     */
-    public void setCertificateChecking(X509Certificate cert)
-    {
-	this.cert = cert;
-    }
-
-    /**
-     * Sets the date at which this CRL must be valid. Specify <code>null</code>
-     * to clear this criterion.
-     *
-     * @param date
-     *            The date.
-     */
-    public void setDateAndTime(Date date)
-    {
-	this.date = date != null ? (Date) date.clone() : null;
-    }
-
-    /**
-     * Sets the issuer names criterion. Pass <code>null</code> to clear this
-     * value. CRLs matched by this selector must have an issuer name in this
-     * set.
-     *
-     * @param names
-     *            The issuer names.
-     * @throws IOException
-     *             If any of the elements in the collection is not a valid name.
-     */
-    public void setIssuerNames(Collection<?> names) throws IOException
-    {
-	if (names == null)
-	{
-	    issuerNames = null;
-	    return;
+	/**
+	 * Sets the date at which this CRL must be valid. Specify <code>null</code> to
+	 * clear this criterion.
+	 *
+	 * @param date
+	 *            The date.
+	 */
+	public void setDateAndTime(Date date) {
+		this.date = date != null ? (Date) date.clone() : null;
 	}
-	List<X500Principal> l = new ArrayList<>(names.size());
-	for (Iterator<?> it = names.iterator(); it.hasNext();)
-	{
-	    Object o = it.next();
-	    if (o instanceof X500Principal)
-		l.add((X500Principal) o);
-	    else if (o instanceof String)
-	    {
-		try
-		{
-		    l.add(new X500Principal((String) o));
-		}
-		catch (IllegalArgumentException iae)
-		{
-		    IOException ioe = new IOException("malformed name: " + o);
-		    ioe.initCause(iae);
-		    throw ioe;
-		}
-	    }
-	    else if (o instanceof byte[])
-	    {
-		try
-		{
-		    l.add(new X500Principal((byte[]) o));
-		}
-		catch (IllegalArgumentException iae)
-		{
-		    IOException ioe = new IOException("malformed name");
-		    ioe.initCause(iae);
-		    throw ioe;
-		}
-	    }
-	    else if (o instanceof InputStream)
-	    {
-		try
-		{
-		    l.add(new X500Principal((InputStream) o));
-		}
-		catch (IllegalArgumentException iae)
-		{
-		    IOException ioe = new IOException("malformed name");
-		    ioe.initCause(iae);
-		    throw ioe;
-		}
-	    }
-	    else
-		throw new IOException("not a valid name: "
-			+ (o != null ? o.getClass().getName() : "null"));
 
+	/**
+	 * Sets the issuer names criterion. Pass <code>null</code> to clear this value.
+	 * CRLs matched by this selector must have an issuer name in this set.
+	 *
+	 * @param names
+	 *            The issuer names.
+	 * @throws IOException
+	 *             If any of the elements in the collection is not a valid name.
+	 */
+	public void setIssuerNames(Collection<?> names) throws IOException {
+		if (names == null) {
+			issuerNames = null;
+			return;
+		}
+		List<X500Principal> l = new ArrayList<>(names.size());
+		for (Iterator<?> it = names.iterator(); it.hasNext();) {
+			Object o = it.next();
+			if (o instanceof X500Principal)
+				l.add((X500Principal) o);
+			else if (o instanceof String) {
+				try {
+					l.add(new X500Principal((String) o));
+				} catch (IllegalArgumentException iae) {
+					IOException ioe = new IOException("malformed name: " + o);
+					ioe.initCause(iae);
+					throw ioe;
+				}
+			} else if (o instanceof byte[]) {
+				try {
+					l.add(new X500Principal((byte[]) o));
+				} catch (IllegalArgumentException iae) {
+					IOException ioe = new IOException("malformed name");
+					ioe.initCause(iae);
+					throw ioe;
+				}
+			} else if (o instanceof InputStream) {
+				try {
+					l.add(new X500Principal((InputStream) o));
+				} catch (IllegalArgumentException iae) {
+					IOException ioe = new IOException("malformed name");
+					ioe.initCause(iae);
+					throw ioe;
+				}
+			} else
+				throw new IOException("not a valid name: " + (o != null ? o.getClass().getName() : "null"));
+
+		}
+		issuerNames = l;
 	}
-	issuerNames = l;
-    }
 
-    /**
-     * Sets the maximum value of the CRLNumber extension present in CRLs matched
-     * by this selector. Specify <code>null</code> to clear this criterion.
-     *
-     * @param maxCrlNumber
-     *            The maximum CRL number.
-     */
-    public void setMaxCRLNumber(BigInteger maxCrlNumber)
-    {
-	this.maxCrlNumber = maxCrlNumber;
-    }
+	/**
+	 * Sets the maximum value of the CRLNumber extension present in CRLs matched by
+	 * this selector. Specify <code>null</code> to clear this criterion.
+	 *
+	 * @param maxCrlNumber
+	 *            The maximum CRL number.
+	 */
+	public void setMaxCRLNumber(BigInteger maxCrlNumber) {
+		this.maxCrlNumber = maxCrlNumber;
+	}
 
-    /**
-     * Sets the minimum value of the CRLNumber extension present in CRLs matched
-     * by this selector. Specify <code>null</code> to clear this criterion.
-     *
-     * @param minCrlNumber
-     *            The minimum CRL number.
-     */
-    public void setMinCRLNumber(BigInteger minCrlNumber)
-    {
-	this.minCrlNumber = minCrlNumber;
-    }
+	/**
+	 * Sets the minimum value of the CRLNumber extension present in CRLs matched by
+	 * this selector. Specify <code>null</code> to clear this criterion.
+	 *
+	 * @param minCrlNumber
+	 *            The minimum CRL number.
+	 */
+	public void setMinCRLNumber(BigInteger minCrlNumber) {
+		this.minCrlNumber = minCrlNumber;
+	}
 
-    /**
-     * Returns a string representation of this selector. The string will only
-     * describe the enabled criteria, so if none are enabled this will return a
-     * string that contains little else besides the class name.
-     *
-     * @return The string.
-     */
-    @Override
-    public String toString()
-    {
-	StringBuilder str = new StringBuilder(X509CRLSelector.class.getName());
-	String nl = System.getProperty("line.separator");
-	String eol = ";" + nl;
+	/**
+	 * Returns a string representation of this selector. The string will only
+	 * describe the enabled criteria, so if none are enabled this will return a
+	 * string that contains little else besides the class name.
+	 *
+	 * @return The string.
+	 */
+	@Override
+	public String toString() {
+		StringBuilder str = new StringBuilder(X509CRLSelector.class.getName());
+		String nl = System.getProperty("line.separator");
+		String eol = ";" + nl;
 
-	str.append(" {").append(nl);
-	if (issuerNames != null)
-	    str.append("  issuer names = ").append(issuerNames).append(eol);
-	if (maxCrlNumber != null)
-	    str.append("  max CRL = ").append(maxCrlNumber).append(eol);
-	if (minCrlNumber != null)
-	    str.append("  min CRL = ").append(minCrlNumber).append(eol);
-	if (date != null)
-	    str.append("  date = ").append(date).append(eol);
-	if (cert != null)
-	    str.append("  certificate = ").append(cert).append(eol);
-	str.append("}").append(nl);
-	return str.toString();
-    }
+		str.append(" {").append(nl);
+		if (issuerNames != null)
+			str.append("  issuer names = ").append(issuerNames).append(eol);
+		if (maxCrlNumber != null)
+			str.append("  max CRL = ").append(maxCrlNumber).append(eol);
+		if (minCrlNumber != null)
+			str.append("  min CRL = ").append(minCrlNumber).append(eol);
+		if (date != null)
+			str.append("  date = ").append(date).append(eol);
+		if (cert != null)
+			str.append("  certificate = ").append(cert).append(eol);
+		str.append("}").append(nl);
+		return str.toString();
+	}
 }

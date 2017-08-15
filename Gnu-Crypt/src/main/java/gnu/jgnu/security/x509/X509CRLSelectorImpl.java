@@ -53,85 +53,71 @@ import gnu.vm.jgnux.security.auth.x500.X500Principal;
 /**
  * Sun's implementation of X509CRLSelector sucks. This one tries to work better.
  */
-public class X509CRLSelectorImpl implements CRLSelector
-{
+public class X509CRLSelectorImpl implements CRLSelector {
 
-    // Fields.
-    // -------------------------------------------------------------------------
+	// Fields.
+	// -------------------------------------------------------------------------
 
-    private Set<Principal> issuerNames;
+	private Set<Principal> issuerNames;
 
-    // Constructor.
-    // -------------------------------------------------------------------------
+	// Constructor.
+	// -------------------------------------------------------------------------
 
-    public X509CRLSelectorImpl()
-    {
-	issuerNames = new HashSet<>();
-    }
-
-    // Instance methods.
-    // -------------------------------------------------------------------------
-
-    public void addIssuerName(byte[] issuerName) throws IOException
-    {
-	issuerNames.add(new X500DistinguishedName(issuerName));
-    }
-
-    public void addIssuerName(Principal issuerName) throws IOException
-    {
-	if (issuerName instanceof X500DistinguishedName)
-	    issuerNames.add(issuerName);
-	else if (issuerName instanceof X500Principal)
-	    issuerNames.add(new X500DistinguishedName(
-		    ((X500Principal) issuerName).getEncoded()));
-	else
-	    issuerNames.add(new X500DistinguishedName(issuerName.getName()));
-    }
-
-    public void addIssuerName(String issuerName)
-    {
-	issuerNames.add(new X500DistinguishedName(issuerName));
-    }
-
-    @Override
-    public Object clone()
-    {
-	X509CRLSelectorImpl copy = new X509CRLSelectorImpl();
-	copy.issuerNames.addAll(issuerNames);
-	return copy;
-    }
-
-    public Collection<Principal> getIssuerNames()
-    {
-	return Collections.unmodifiableSet(issuerNames);
-    }
-
-    @Override
-    public boolean match(CRL crl)
-    {
-	if (!(crl instanceof X509CRL))
-	    return false;
-	try
-	{
-	    Principal p = ((X509CRL) crl).getIssuerDN();
-	    X500DistinguishedName thisName = null;
-	    if (p instanceof X500DistinguishedName)
-		thisName = (X500DistinguishedName) p;
-	    else if (p instanceof X500Principal)
-		thisName = new X500DistinguishedName(
-			((X500Principal) p).getEncoded());
-	    else
-		thisName = new X500DistinguishedName(p.getName());
-	    for (Iterator<Principal> it = issuerNames.iterator(); it.hasNext();)
-	    {
-		X500DistinguishedName name = (X500DistinguishedName) it.next();
-		if (thisName.equals(name))
-		    return true;
-	    }
+	public X509CRLSelectorImpl() {
+		issuerNames = new HashSet<>();
 	}
-	catch (Exception x)
-	{
+
+	// Instance methods.
+	// -------------------------------------------------------------------------
+
+	public void addIssuerName(byte[] issuerName) throws IOException {
+		issuerNames.add(new X500DistinguishedName(issuerName));
 	}
-	return false;
-    }
+
+	public void addIssuerName(Principal issuerName) throws IOException {
+		if (issuerName instanceof X500DistinguishedName)
+			issuerNames.add(issuerName);
+		else if (issuerName instanceof X500Principal)
+			issuerNames.add(new X500DistinguishedName(((X500Principal) issuerName).getEncoded()));
+		else
+			issuerNames.add(new X500DistinguishedName(issuerName.getName()));
+	}
+
+	public void addIssuerName(String issuerName) {
+		issuerNames.add(new X500DistinguishedName(issuerName));
+	}
+
+	@Override
+	public Object clone() {
+		X509CRLSelectorImpl copy = new X509CRLSelectorImpl();
+		copy.issuerNames.addAll(issuerNames);
+		return copy;
+	}
+
+	public Collection<Principal> getIssuerNames() {
+		return Collections.unmodifiableSet(issuerNames);
+	}
+
+	@Override
+	public boolean match(CRL crl) {
+		if (!(crl instanceof X509CRL))
+			return false;
+		try {
+			Principal p = ((X509CRL) crl).getIssuerDN();
+			X500DistinguishedName thisName = null;
+			if (p instanceof X500DistinguishedName)
+				thisName = (X500DistinguishedName) p;
+			else if (p instanceof X500Principal)
+				thisName = new X500DistinguishedName(((X500Principal) p).getEncoded());
+			else
+				thisName = new X500DistinguishedName(p.getName());
+			for (Iterator<Principal> it = issuerNames.iterator(); it.hasNext();) {
+				X500DistinguishedName name = (X500DistinguishedName) it.next();
+				if (thisName.equals(name))
+					return true;
+			}
+		} catch (Exception x) {
+		}
+		return false;
+	}
 }

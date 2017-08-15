@@ -45,40 +45,34 @@ import gnu.vm.jgnu.security.KeyPairGeneratorSpi;
 import gnu.vm.jgnu.security.SecureRandom;
 import gnu.vm.jgnu.security.spec.AlgorithmParameterSpec;
 
-final class DummyKeyPairGenerator extends KeyPairGenerator
-{
-    private KeyPairGeneratorSpi kpgSpi = null;
+final class DummyKeyPairGenerator extends KeyPairGenerator {
+	private KeyPairGeneratorSpi kpgSpi = null;
 
-    public DummyKeyPairGenerator(KeyPairGeneratorSpi kpgSpi, String algorithm)
-    {
-	super(algorithm);
-	this.kpgSpi = kpgSpi;
-    }
+	public DummyKeyPairGenerator(KeyPairGeneratorSpi kpgSpi, String algorithm) {
+		super(algorithm);
+		this.kpgSpi = kpgSpi;
+	}
 
-    @Override
-    public Object clone() throws CloneNotSupportedException
-    {
-	KeyPairGenerator result = new DummyKeyPairGenerator(
-		(KeyPairGeneratorSpi) kpgSpi.clone(), this.getAlgorithm());
-	result.provider = this.getProvider();
-	return result;
-    }
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+		KeyPairGenerator result = new DummyKeyPairGenerator((KeyPairGeneratorSpi) kpgSpi.clone(), this.getAlgorithm());
+		result.provider = this.getProvider();
+		return result;
+	}
 
-    @Override
-    public KeyPair generateKeyPair()
-    {
-	return kpgSpi.generateKeyPair();
-    }
+	@Override
+	public KeyPair generateKeyPair() {
+		return kpgSpi.generateKeyPair();
+	}
 
-    @Override
-    public void initialize(AlgorithmParameterSpec params, SecureRandom random) throws InvalidAlgorithmParameterException
-    {
-	kpgSpi.initialize(params, random);
-    }
+	@Override
+	public void initialize(AlgorithmParameterSpec params, SecureRandom random)
+			throws InvalidAlgorithmParameterException {
+		kpgSpi.initialize(params, random);
+	}
 
-    @Override
-    public void initialize(int keysize, SecureRandom random)
-    {
-	kpgSpi.initialize(keysize, random);
-    }
+	@Override
+	public void initialize(int keysize, SecureRandom random) {
+		kpgSpi.initialize(keysize, random);
+	}
 }

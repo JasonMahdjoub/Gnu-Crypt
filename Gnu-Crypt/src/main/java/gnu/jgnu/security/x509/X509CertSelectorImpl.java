@@ -54,153 +54,124 @@ import gnu.vm.jgnux.security.auth.x500.X500Principal;
  * Sun's implementation of X509CertSelector sucks. This one tries to work
  * better.
  */
-public class X509CertSelectorImpl implements CertSelector
-{
+public class X509CertSelectorImpl implements CertSelector {
 
-    // Fields.
-    // -------------------------------------------------------------------------
+	// Fields.
+	// -------------------------------------------------------------------------
 
-    private Set<Principal> issuerNames;
+	private Set<Principal> issuerNames;
 
-    private Set<Principal> subjectNames;
+	private Set<Principal> subjectNames;
 
-    // Constructor.
-    // -------------------------------------------------------------------------
+	// Constructor.
+	// -------------------------------------------------------------------------
 
-    public X509CertSelectorImpl()
-    {
-	issuerNames = new HashSet<>();
-	subjectNames = new HashSet<>();
-    }
-
-    // Instance methods.
-    // -------------------------------------------------------------------------
-
-    public void addIssuerName(byte[] issuerName) throws IOException
-    {
-	issuerNames.add(new X500DistinguishedName(issuerName));
-    }
-
-    public void addIssuerName(Principal issuerName) throws IOException
-    {
-	if (issuerName instanceof X500DistinguishedName)
-	    issuerNames.add(issuerName);
-	else if (issuerName instanceof X500Principal)
-	    issuerNames.add(new X500DistinguishedName(
-		    ((X500Principal) issuerName).getEncoded()));
-	else
-	    issuerNames.add(new X500DistinguishedName(issuerName.getName()));
-    }
-
-    public void addIssuerName(String issuerName)
-    {
-	issuerNames.add(new X500DistinguishedName(issuerName));
-    }
-
-    public void addSubjectName(byte[] subjectName) throws IOException
-    {
-	subjectNames.add(new X500DistinguishedName(subjectName));
-    }
-
-    public void addSubjectName(Principal subjectName) throws IOException
-    {
-	if (subjectName instanceof X500DistinguishedName)
-	    subjectNames.add(subjectName);
-	else if (subjectName instanceof X500Principal)
-	    subjectNames.add(new X500DistinguishedName(
-		    ((X500Principal) subjectName).getEncoded()));
-	else
-	    subjectNames.add(new X500DistinguishedName(subjectName.getName()));
-    }
-
-    public void addSubjectName(String subjectName)
-    {
-	subjectNames.add(new X500DistinguishedName(subjectName));
-    }
-
-    @Override
-    public Object clone()
-    {
-	X509CertSelectorImpl copy = new X509CertSelectorImpl();
-	copy.issuerNames.addAll(issuerNames);
-	copy.subjectNames.addAll(subjectNames);
-	return copy;
-    }
-
-    public Collection<Principal> getIssuerNames()
-    {
-	return Collections.unmodifiableSet(issuerNames);
-    }
-
-    public Collection<Principal> getSubjectNames()
-    {
-	return Collections.unmodifiableSet(subjectNames);
-    }
-
-    @Override
-    public boolean match(Certificate cert)
-    {
-	if (!(cert instanceof X509Certificate))
-	    return false;
-	boolean matchIssuer = false;
-	boolean matchSubject = false;
-	try
-	{
-	    Principal p = ((X509Certificate) cert).getIssuerDN();
-	    X500DistinguishedName thisName = null;
-	    if (p instanceof X500DistinguishedName)
-		thisName = (X500DistinguishedName) p;
-	    else if (p instanceof X500Principal)
-		thisName = new X500DistinguishedName(
-			((X500Principal) p).getEncoded());
-	    else
-		thisName = new X500DistinguishedName(p.getName());
-	    if (issuerNames.isEmpty())
-		matchIssuer = true;
-	    else
-	    {
-		for (Iterator<Principal> it = issuerNames.iterator(); it
-			.hasNext();)
-		{
-		    X500DistinguishedName name = (X500DistinguishedName) it
-			    .next();
-		    if (thisName.equals(name))
-		    {
-			matchIssuer = true;
-			break;
-		    }
-		}
-	    }
-
-	    p = ((X509Certificate) cert).getSubjectDN();
-	    thisName = null;
-	    if (p instanceof X500DistinguishedName)
-		thisName = (X500DistinguishedName) p;
-	    else if (p instanceof X500Principal)
-		thisName = new X500DistinguishedName(
-			((X500Principal) p).getEncoded());
-	    else
-		thisName = new X500DistinguishedName(p.getName());
-	    if (subjectNames.isEmpty())
-		matchSubject = true;
-	    else
-	    {
-		for (Iterator<Principal> it = subjectNames.iterator(); it
-			.hasNext();)
-		{
-		    X500DistinguishedName name = (X500DistinguishedName) it
-			    .next();
-		    if (thisName.equals(name))
-		    {
-			matchSubject = true;
-			break;
-		    }
-		}
-	    }
+	public X509CertSelectorImpl() {
+		issuerNames = new HashSet<>();
+		subjectNames = new HashSet<>();
 	}
-	catch (Exception x)
-	{
+
+	// Instance methods.
+	// -------------------------------------------------------------------------
+
+	public void addIssuerName(byte[] issuerName) throws IOException {
+		issuerNames.add(new X500DistinguishedName(issuerName));
 	}
-	return matchIssuer && matchSubject;
-    }
+
+	public void addIssuerName(Principal issuerName) throws IOException {
+		if (issuerName instanceof X500DistinguishedName)
+			issuerNames.add(issuerName);
+		else if (issuerName instanceof X500Principal)
+			issuerNames.add(new X500DistinguishedName(((X500Principal) issuerName).getEncoded()));
+		else
+			issuerNames.add(new X500DistinguishedName(issuerName.getName()));
+	}
+
+	public void addIssuerName(String issuerName) {
+		issuerNames.add(new X500DistinguishedName(issuerName));
+	}
+
+	public void addSubjectName(byte[] subjectName) throws IOException {
+		subjectNames.add(new X500DistinguishedName(subjectName));
+	}
+
+	public void addSubjectName(Principal subjectName) throws IOException {
+		if (subjectName instanceof X500DistinguishedName)
+			subjectNames.add(subjectName);
+		else if (subjectName instanceof X500Principal)
+			subjectNames.add(new X500DistinguishedName(((X500Principal) subjectName).getEncoded()));
+		else
+			subjectNames.add(new X500DistinguishedName(subjectName.getName()));
+	}
+
+	public void addSubjectName(String subjectName) {
+		subjectNames.add(new X500DistinguishedName(subjectName));
+	}
+
+	@Override
+	public Object clone() {
+		X509CertSelectorImpl copy = new X509CertSelectorImpl();
+		copy.issuerNames.addAll(issuerNames);
+		copy.subjectNames.addAll(subjectNames);
+		return copy;
+	}
+
+	public Collection<Principal> getIssuerNames() {
+		return Collections.unmodifiableSet(issuerNames);
+	}
+
+	public Collection<Principal> getSubjectNames() {
+		return Collections.unmodifiableSet(subjectNames);
+	}
+
+	@Override
+	public boolean match(Certificate cert) {
+		if (!(cert instanceof X509Certificate))
+			return false;
+		boolean matchIssuer = false;
+		boolean matchSubject = false;
+		try {
+			Principal p = ((X509Certificate) cert).getIssuerDN();
+			X500DistinguishedName thisName = null;
+			if (p instanceof X500DistinguishedName)
+				thisName = (X500DistinguishedName) p;
+			else if (p instanceof X500Principal)
+				thisName = new X500DistinguishedName(((X500Principal) p).getEncoded());
+			else
+				thisName = new X500DistinguishedName(p.getName());
+			if (issuerNames.isEmpty())
+				matchIssuer = true;
+			else {
+				for (Iterator<Principal> it = issuerNames.iterator(); it.hasNext();) {
+					X500DistinguishedName name = (X500DistinguishedName) it.next();
+					if (thisName.equals(name)) {
+						matchIssuer = true;
+						break;
+					}
+				}
+			}
+
+			p = ((X509Certificate) cert).getSubjectDN();
+			thisName = null;
+			if (p instanceof X500DistinguishedName)
+				thisName = (X500DistinguishedName) p;
+			else if (p instanceof X500Principal)
+				thisName = new X500DistinguishedName(((X500Principal) p).getEncoded());
+			else
+				thisName = new X500DistinguishedName(p.getName());
+			if (subjectNames.isEmpty())
+				matchSubject = true;
+			else {
+				for (Iterator<Principal> it = subjectNames.iterator(); it.hasNext();) {
+					X500DistinguishedName name = (X500DistinguishedName) it.next();
+					if (thisName.equals(name)) {
+						matchSubject = true;
+						break;
+					}
+				}
+			}
+		} catch (Exception x) {
+		}
+		return matchIssuer && matchSubject;
+	}
 }

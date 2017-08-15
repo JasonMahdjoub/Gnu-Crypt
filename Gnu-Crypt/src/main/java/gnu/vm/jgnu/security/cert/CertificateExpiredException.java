@@ -44,28 +44,25 @@ package gnu.vm.jgnu.security.cert;
  * @since 1.2
  * @status updated to 1.4
  */
-public class CertificateExpiredException extends CertificateException
-{
-    /**
-     * Compatible with JDK 1.2+.
-     */
-    private static final long serialVersionUID = 9071001339691533771L;
+public class CertificateExpiredException extends CertificateException {
+	/**
+	 * Compatible with JDK 1.2+.
+	 */
+	private static final long serialVersionUID = 9071001339691533771L;
 
-    /**
-     * Constructs an exception without a message string.
-     */
-    public CertificateExpiredException()
-    {
-    }
+	/**
+	 * Constructs an exception without a message string.
+	 */
+	public CertificateExpiredException() {
+	}
 
-    /**
-     * Constructs an exception with a message string.
-     *
-     * @param msg
-     *            a message to display with exception
-     */
-    public CertificateExpiredException(String msg)
-    {
-	super(msg);
-    }
+	/**
+	 * Constructs an exception with a message string.
+	 *
+	 * @param msg
+	 *            a message to display with exception
+	 */
+	public CertificateExpiredException(String msg) {
+		super(msg);
+	}
 }

@@ -39,20 +39,17 @@ package gnu.jgnux.crypto.keyring;
 
 import java.io.IOException;
 
-public class MalformedKeyringException extends IOException
-{
-    /**
-     * 
-     */
-    private static final long serialVersionUID = -7137215218226547448L;
+public class MalformedKeyringException extends IOException {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -7137215218226547448L;
 
-    public MalformedKeyringException()
-    {
-	super();
-    }
+	public MalformedKeyringException() {
+		super();
+	}
 
-    public MalformedKeyringException(String msg)
-    {
-	super(msg);
-    }
+	public MalformedKeyringException(String msg) {
+		super(msg);
+	}
 }

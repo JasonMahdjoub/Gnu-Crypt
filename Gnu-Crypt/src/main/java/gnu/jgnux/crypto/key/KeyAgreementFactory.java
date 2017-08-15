@@ -56,88 +56,83 @@ import gnu.jgnux.crypto.key.srp6.SRP6User;
 /**
  * A <i>Factory</i> class to generate key agreement protocol handlers.
  */
-public class KeyAgreementFactory
-{
-    /**
-     * Returns a {@link Set} of key agreement protocol names supported by this
-     * <i>Factory</i>.
-     *
-     * @return a {@link Set} of key agreement protocol names (Strings).
-     */
-    public static final Set<String> getNames()
-    {
-	HashSet<String> hs = new HashSet<>();
-	hs.add(Registry.DH_KA);
-	hs.add(Registry.ELGAMAL_KA);
-	hs.add(Registry.SRP6_KA);
-	hs.add(Registry.SRP_SASL_KA);
-	hs.add(Registry.SRP_TLS_KA);
+public class KeyAgreementFactory {
+	/**
+	 * Returns a {@link Set} of key agreement protocol names supported by this
+	 * <i>Factory</i>.
+	 *
+	 * @return a {@link Set} of key agreement protocol names (Strings).
+	 */
+	public static final Set<String> getNames() {
+		HashSet<String> hs = new HashSet<>();
+		hs.add(Registry.DH_KA);
+		hs.add(Registry.ELGAMAL_KA);
+		hs.add(Registry.SRP6_KA);
+		hs.add(Registry.SRP_SASL_KA);
+		hs.add(Registry.SRP_TLS_KA);
 
-	return Collections.unmodifiableSet(hs);
-    }
+		return Collections.unmodifiableSet(hs);
+	}
 
-    /**
-     * Returns an instance of a key agreeent protocol handler, for party
-     * <code>A</code> in a two-party <code>A..B</code> exchange, given the
-     * canonical name of this protocol. Party <code>A</code> is usually the
-     * initiator of the exchange.
-     *
-     * @param name
-     *            the case-insensitive key agreement protocol name.
-     * @return an instance of the key agreement protocol handler for party
-     *         <code>A</code>, or <code>null</code> if none found.
-     */
-    public static IKeyAgreementParty getPartyAInstance(String name)
-    {
-	if (name == null)
-	    return null;
-	name = name.trim();
-	IKeyAgreementParty result = null;
-	if (name.equalsIgnoreCase(Registry.DH_KA))
-	    result = new DiffieHellmanSender();
-	else if (name.equalsIgnoreCase(Registry.ELGAMAL_KA))
-	    result = new ElGamalSender();
-	else if (name.equalsIgnoreCase(Registry.SRP6_KA))
-	    result = new SRP6User();
-	else if (name.equalsIgnoreCase(Registry.SRP_SASL_KA))
-	    result = new SRP6SaslClient();
-	else if (name.equalsIgnoreCase(Registry.SRP_TLS_KA))
-	    result = new SRP6TLSClient();
-	return result;
-    }
+	/**
+	 * Returns an instance of a key agreeent protocol handler, for party
+	 * <code>A</code> in a two-party <code>A..B</code> exchange, given the canonical
+	 * name of this protocol. Party <code>A</code> is usually the initiator of the
+	 * exchange.
+	 *
+	 * @param name
+	 *            the case-insensitive key agreement protocol name.
+	 * @return an instance of the key agreement protocol handler for party
+	 *         <code>A</code>, or <code>null</code> if none found.
+	 */
+	public static IKeyAgreementParty getPartyAInstance(String name) {
+		if (name == null)
+			return null;
+		name = name.trim();
+		IKeyAgreementParty result = null;
+		if (name.equalsIgnoreCase(Registry.DH_KA))
+			result = new DiffieHellmanSender();
+		else if (name.equalsIgnoreCase(Registry.ELGAMAL_KA))
+			result = new ElGamalSender();
+		else if (name.equalsIgnoreCase(Registry.SRP6_KA))
+			result = new SRP6User();
+		else if (name.equalsIgnoreCase(Registry.SRP_SASL_KA))
+			result = new SRP6SaslClient();
+		else if (name.equalsIgnoreCase(Registry.SRP_TLS_KA))
+			result = new SRP6TLSClient();
+		return result;
+	}
 
-    /**
-     * Returns an instance of a key agreeent protocol handler, for party
-     * <code>B</code> in a two-party <code>A..B</code> exchange, given the
-     * canonical name of this protocol.
-     *
-     * @param name
-     *            the case-insensitive key agreement protocol name.
-     * @return an instance of the key agreement protocol handler for party
-     *         <code>B</code>, or <code>null</code> if none found.
-     */
-    public static IKeyAgreementParty getPartyBInstance(String name)
-    {
-	if (name == null)
-	    return null;
-	name = name.trim();
-	IKeyAgreementParty result = null;
-	if (name.equalsIgnoreCase(Registry.DH_KA))
-	    result = new DiffieHellmanReceiver();
-	else if (name.equalsIgnoreCase(Registry.ELGAMAL_KA))
-	    result = new ElGamalReceiver();
-	else if (name.equalsIgnoreCase(Registry.SRP6_KA))
-	    result = new SRP6Host();
-	else if (name.equalsIgnoreCase(Registry.SRP_SASL_KA))
-	    result = new SRP6SaslServer();
-	else if (name.equalsIgnoreCase(Registry.SRP_TLS_KA))
-	    result = new SRP6TLSServer();
-	return result;
-    }
+	/**
+	 * Returns an instance of a key agreeent protocol handler, for party
+	 * <code>B</code> in a two-party <code>A..B</code> exchange, given the canonical
+	 * name of this protocol.
+	 *
+	 * @param name
+	 *            the case-insensitive key agreement protocol name.
+	 * @return an instance of the key agreement protocol handler for party
+	 *         <code>B</code>, or <code>null</code> if none found.
+	 */
+	public static IKeyAgreementParty getPartyBInstance(String name) {
+		if (name == null)
+			return null;
+		name = name.trim();
+		IKeyAgreementParty result = null;
+		if (name.equalsIgnoreCase(Registry.DH_KA))
+			result = new DiffieHellmanReceiver();
+		else if (name.equalsIgnoreCase(Registry.ELGAMAL_KA))
+			result = new ElGamalReceiver();
+		else if (name.equalsIgnoreCase(Registry.SRP6_KA))
+			result = new SRP6Host();
+		else if (name.equalsIgnoreCase(Registry.SRP_SASL_KA))
+			result = new SRP6SaslServer();
+		else if (name.equalsIgnoreCase(Registry.SRP_TLS_KA))
+			result = new SRP6TLSServer();
+		return result;
+	}
 
-    /** Trivial constructor to enforce <i>Singleton</i> pattern. */
-    private KeyAgreementFactory()
-    {
-	super();
-    }
+	/** Trivial constructor to enforce <i>Singleton</i> pattern. */
+	private KeyAgreementFactory() {
+		super();
+	}
 }

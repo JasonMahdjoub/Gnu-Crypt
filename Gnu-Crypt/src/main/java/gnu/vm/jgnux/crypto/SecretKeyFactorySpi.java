@@ -58,56 +58,53 @@ import gnu.vm.jgnu.security.spec.KeySpec;
  * @since 1.4
  * @see SecretKeyFactory
  */
-public abstract class SecretKeyFactorySpi
-{
+public abstract class SecretKeyFactorySpi {
 
-    // Constructor.
-    // ------------------------------------------------------------------------
+	// Constructor.
+	// ------------------------------------------------------------------------
 
-    /**
-     * Create a new secret key factory SPI.
-     */
-    public SecretKeyFactorySpi()
-    {
-    }
+	/**
+	 * Create a new secret key factory SPI.
+	 */
+	public SecretKeyFactorySpi() {
+	}
 
-    // Abstract instance methods.
-    // ------------------------------------------------------------------------
+	// Abstract instance methods.
+	// ------------------------------------------------------------------------
 
-    /**
-     * Translate a {@link java.security.KeySpec} into a {@link SecretKey}.
-     *
-     * @param keySpec
-     *            The key specification.
-     * @return The secret key.
-     * @throws java.security.spec.InvalidKeySpecException
-     *             If the key specification cannot be translated into a secret
-     *             key.
-     */
-    protected abstract SecretKey engineGenerateSecret(KeySpec keySpec) throws InvalidKeySpecException;
+	/**
+	 * Translate a {@link java.security.KeySpec} into a {@link SecretKey}.
+	 *
+	 * @param keySpec
+	 *            The key specification.
+	 * @return The secret key.
+	 * @throws java.security.spec.InvalidKeySpecException
+	 *             If the key specification cannot be translated into a secret key.
+	 */
+	protected abstract SecretKey engineGenerateSecret(KeySpec keySpec) throws InvalidKeySpecException;
 
-    /**
-     * Translate a {@link SecretKey} into a {@link java.security.KeySpec}.
-     *
-     * @param key
-     *            The secret key.
-     * @param keySpec
-     *            The desired key specification class.
-     * @return The key specification.
-     * @throws java.security.spec.InvalidKeySpecException
-     *             If the secret key cannot be translated into the desired key
-     *             specification.
-     */
-    protected abstract KeySpec engineGetKeySpec(SecretKey key, Class<?> keySpec) throws InvalidKeySpecException;
+	/**
+	 * Translate a {@link SecretKey} into a {@link java.security.KeySpec}.
+	 *
+	 * @param key
+	 *            The secret key.
+	 * @param keySpec
+	 *            The desired key specification class.
+	 * @return The key specification.
+	 * @throws java.security.spec.InvalidKeySpecException
+	 *             If the secret key cannot be translated into the desired key
+	 *             specification.
+	 */
+	protected abstract KeySpec engineGetKeySpec(SecretKey key, Class<?> keySpec) throws InvalidKeySpecException;
 
-    /**
-     * Translate a secret key into a different representation.
-     *
-     * @param key
-     *            The secret key to translate.
-     * @return The translated key.
-     * @throws java.security.InvalidKeyException
-     *             If the specified secret key cannot be translated.
-     */
-    protected abstract SecretKey engineTranslateKey(SecretKey key) throws InvalidKeyException;
+	/**
+	 * Translate a secret key into a different representation.
+	 *
+	 * @param key
+	 *            The secret key to translate.
+	 * @return The translated key.
+	 * @throws java.security.InvalidKeyException
+	 *             If the specified secret key cannot be translated.
+	 */
+	protected abstract SecretKey engineTranslateKey(SecretKey key) throws InvalidKeyException;
 }

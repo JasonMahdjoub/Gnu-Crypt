@@ -70,253 +70,233 @@ import gnu.vm.jgnu.security.SignatureException;
  * @author Mark Benvenuto
  * @author Casey Marshall
  */
-public abstract class Certificate implements Serializable
-{
-    /**
-     * Certificate.CertificateRep is an inner class used to provide an alternate
-     * storage mechanism for serialized Certificates.
-     */
-    protected static class CertificateRep implements java.io.Serializable
-    {
+public abstract class Certificate implements Serializable {
+	/**
+	 * Certificate.CertificateRep is an inner class used to provide an alternate
+	 * storage mechanism for serialized Certificates.
+	 */
+	protected static class CertificateRep implements java.io.Serializable {
 
-	/** From JDK1.4. */
-	private static final long serialVersionUID = -8563758940495660020L;
+		/** From JDK1.4. */
+		private static final long serialVersionUID = -8563758940495660020L;
 
-	/** The certificate type, e.g. "X.509". */
+		/** The certificate type, e.g. "X.509". */
+		private String type;
+
+		/** The encoded certificate data. */
+		private byte[] data;
+
+		/**
+		 * Create an alternative representation of this certificate. The
+		 * <code>(type, data)</code> pair is typically the certificate's type as
+		 * returned by {@link Certificate#getType()} (i.e. the canonical name of the
+		 * certificate type) and the encoded form as returned by
+		 * {@link Certificate#getEncoded()}.
+		 *
+		 * <p>
+		 * For example, X.509 certificates would create an instance of this class with
+		 * the parameters "X.509" and the ASN.1 representation of the certificate,
+		 * encoded as DER bytes.
+		 *
+		 * @param type
+		 *            The certificate type.
+		 * @param data
+		 *            The encoded certificate data.
+		 */
+		protected CertificateRep(String type, byte[] data) {
+			this.type = type;
+			this.data = data;
+		}
+
+		/**
+		 * Deserialize this certificate replacement into the appropriate certificate
+		 * object. That is, this method attempts to create a {@link CertificateFactory}
+		 * for this certificate's type, then attempts to parse the encoded data with
+		 * that factory, returning the resulting certificate.
+		 *
+		 * @return The deserialized certificate.
+		 * @throws ObjectStreamException
+		 *             If there is no appropriate certificate factory for the given
+		 *             type, or if the encoded form cannot be parsed.
+		 */
+		protected Object readResolve() throws ObjectStreamException {
+			try {
+				CertificateFactory fact = CertificateFactory.getInstance(type);
+				return fact.generateCertificate(new ByteArrayInputStream(data));
+			} catch (Exception e) {
+				throw new InvalidObjectException(e.toString());
+			}
+		}
+	}
+
+	private static final long serialVersionUID = -3585440601605666277L;
+
 	private String type;
 
-	/** The encoded certificate data. */
-	private byte[] data;
+	/**
+	 * Constructs a new certificate of the specified type. An example is "X.509".
+	 * 
+	 * @param type
+	 *            a valid standard name for a certificate.
+	 */
+	protected Certificate(String type) {
+		this.type = type;
+	}
 
 	/**
-	 * Create an alternative representation of this certificate. The
-	 * <code>(type, data)</code> pair is typically the certificate's type as
-	 * returned by {@link Certificate#getType()} (i.e. the canonical name of
-	 * the certificate type) and the encoded form as returned by
-	 * {@link Certificate#getEncoded()}.
+	 * Compares this Certificate to other. It checks if the object if instanceOf
+	 * Certificate and then checks if the encoded form matches.
+	 * 
+	 * @param other
+	 *            An Object to test for equality
+	 * 
+	 * @return true if equal, false otherwise
+	 */
+	@Override
+	public boolean equals(Object other) {
+		if (other instanceof Certificate) {
+			try {
+				Certificate x = (Certificate) other;
+				if (getEncoded().length != x.getEncoded().length)
+					return false;
+
+				byte[] b1 = getEncoded();
+				byte[] b2 = x.getEncoded();
+
+				for (int i = 0; i < b1.length; i++)
+					if (b1[i] != b2[i])
+						return false;
+
+			} catch (CertificateEncodingException cee) {
+				return false;
+			}
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * Gets the DER ASN.1 encoded format for this Certificate. It assumes each
+	 * certificate has only one encoding format. Ex: X.509 is encoded as ASN.1 DER
+	 * 
+	 * @return byte array containg encoded form
+	 * 
+	 * @throws CertificateEncodingException
+	 *             if an error occurs
+	 */
+	public abstract byte[] getEncoded() throws CertificateEncodingException;
+
+	/**
+	 * Returns the public key stored in the Certificate.
+	 * 
+	 * @return The public key
+	 */
+	public abstract PublicKey getPublicKey();
+
+	/**
+	 * Returns the Certificate type.
+	 * 
+	 * @return a string representing the Certificate type
+	 */
+	public final String getType() {
+		return type;
+	}
+
+	/**
+	 * Returns a hash code for this Certificate in its encoded form.
+	 * 
+	 * @return A hash code of this class
+	 */
+	@Override
+	public int hashCode() {
+		return super.hashCode();
+	}
+
+	/**
+	 * Returns a string representing the Certificate.
+	 * 
+	 * @return a string representing the Certificate.
+	 */
+	@Override
+	public abstract String toString();
+
+	/**
+	 * Verifies that this Certificate was properly signed with the PublicKey that
+	 * corresponds to its private key.
+	 * 
+	 * @param key
+	 *            PublicKey to verify with
+	 * 
+	 * @throws CertificateException
+	 *             encoding error
+	 * @throws NoSuchAlgorithmException
+	 *             unsupported algorithm
+	 * @throws InvalidKeyException
+	 *             incorrect key
+	 * @throws NoSuchProviderException
+	 *             no provider
+	 * @throws SignatureException
+	 *             signature error
+	 */
+	public abstract void verify(PublicKey key) throws CertificateException, NoSuchAlgorithmException,
+			InvalidKeyException, NoSuchProviderException, SignatureException;
+
+	// Protected methods.
+	// ------------------------------------------------------------------------
+
+	/**
+	 * Verifies that this Certificate was properly signed with the PublicKey that
+	 * corresponds to its private key and uses the signature engine provided by the
+	 * provider.
+	 * 
+	 * @param key
+	 *            PublicKey to verify with
+	 * @param sigProvider
+	 *            Provider to use for signature algorithm
+	 * 
+	 * @throws CertificateException
+	 *             encoding error
+	 * @throws NoSuchAlgorithmException
+	 *             unsupported algorithm
+	 * @throws InvalidKeyException
+	 *             incorrect key
+	 * @throws NoSuchProviderException
+	 *             incorrect provider
+	 * @throws SignatureException
+	 *             signature error
+	 */
+	public abstract void verify(PublicKey key, String sigProvider) throws CertificateException,
+			NoSuchAlgorithmException, InvalidKeyException, NoSuchProviderException, SignatureException;
+
+	// Inner class.
+	// ------------------------------------------------------------------------
+
+	/**
+	 * Returns a replacement for this certificate to be serialized. This method
+	 * returns the equivalent to the following for this class:
+	 *
+	 * <blockquote>
+	 * 
+	 * <pre>
+	 * new CertificateRep(getType(), getEncoded());
+	 * </pre>
+	 * 
+	 * </blockquote>
 	 *
 	 * <p>
-	 * For example, X.509 certificates would create an instance of this
-	 * class with the parameters "X.509" and the ASN.1 representation of the
-	 * certificate, encoded as DER bytes.
+	 * This thusly replaces the certificate with its name and its encoded form,
+	 * which can be deserialized later with the {@link CertificateFactory}
+	 * implementation for this certificate's type.
 	 *
-	 * @param type
-	 *            The certificate type.
-	 * @param data
-	 *            The encoded certificate data.
-	 */
-	protected CertificateRep(String type, byte[] data)
-	{
-	    this.type = type;
-	    this.data = data;
-	}
-
-	/**
-	 * Deserialize this certificate replacement into the appropriate
-	 * certificate object. That is, this method attempts to create a
-	 * {@link CertificateFactory} for this certificate's type, then attempts
-	 * to parse the encoded data with that factory, returning the resulting
-	 * certificate.
-	 *
-	 * @return The deserialized certificate.
+	 * @return The replacement object to be serialized.
 	 * @throws ObjectStreamException
-	 *             If there is no appropriate certificate factory for the
-	 *             given type, or if the encoded form cannot be parsed.
+	 *             If the replacement could not be created.
 	 */
-	protected Object readResolve() throws ObjectStreamException
-	{
-	    try
-	    {
-		CertificateFactory fact = CertificateFactory.getInstance(type);
-		return fact.generateCertificate(new ByteArrayInputStream(data));
-	    }
-	    catch (Exception e)
-	    {
-		throw new InvalidObjectException(e.toString());
-	    }
+	protected Object writeReplace() throws ObjectStreamException {
+		try {
+			return new CertificateRep(getType(), getEncoded());
+		} catch (CertificateEncodingException cee) {
+			throw new InvalidObjectException(cee.toString());
+		}
 	}
-    }
-
-    private static final long serialVersionUID = -3585440601605666277L;
-
-    private String type;
-
-    /**
-     * Constructs a new certificate of the specified type. An example is
-     * "X.509".
-     * 
-     * @param type
-     *            a valid standard name for a certificate.
-     */
-    protected Certificate(String type)
-    {
-	this.type = type;
-    }
-
-    /**
-     * Compares this Certificate to other. It checks if the object if instanceOf
-     * Certificate and then checks if the encoded form matches.
-     * 
-     * @param other
-     *            An Object to test for equality
-     * 
-     * @return true if equal, false otherwise
-     */
-    @Override
-    public boolean equals(Object other)
-    {
-	if (other instanceof Certificate)
-	{
-	    try
-	    {
-		Certificate x = (Certificate) other;
-		if (getEncoded().length != x.getEncoded().length)
-		    return false;
-
-		byte[] b1 = getEncoded();
-		byte[] b2 = x.getEncoded();
-
-		for (int i = 0; i < b1.length; i++)
-		    if (b1[i] != b2[i])
-			return false;
-
-	    }
-	    catch (CertificateEncodingException cee)
-	    {
-		return false;
-	    }
-	    return true;
-	}
-	return false;
-    }
-
-    /**
-     * Gets the DER ASN.1 encoded format for this Certificate. It assumes each
-     * certificate has only one encoding format. Ex: X.509 is encoded as ASN.1
-     * DER
-     * 
-     * @return byte array containg encoded form
-     * 
-     * @throws CertificateEncodingException
-     *             if an error occurs
-     */
-    public abstract byte[] getEncoded() throws CertificateEncodingException;
-
-    /**
-     * Returns the public key stored in the Certificate.
-     * 
-     * @return The public key
-     */
-    public abstract PublicKey getPublicKey();
-
-    /**
-     * Returns the Certificate type.
-     * 
-     * @return a string representing the Certificate type
-     */
-    public final String getType()
-    {
-	return type;
-    }
-
-    /**
-     * Returns a hash code for this Certificate in its encoded form.
-     * 
-     * @return A hash code of this class
-     */
-    @Override
-    public int hashCode()
-    {
-	return super.hashCode();
-    }
-
-    /**
-     * Returns a string representing the Certificate.
-     * 
-     * @return a string representing the Certificate.
-     */
-    @Override
-    public abstract String toString();
-
-    /**
-     * Verifies that this Certificate was properly signed with the PublicKey
-     * that corresponds to its private key.
-     * 
-     * @param key
-     *            PublicKey to verify with
-     * 
-     * @throws CertificateException
-     *             encoding error
-     * @throws NoSuchAlgorithmException
-     *             unsupported algorithm
-     * @throws InvalidKeyException
-     *             incorrect key
-     * @throws NoSuchProviderException
-     *             no provider
-     * @throws SignatureException
-     *             signature error
-     */
-    public abstract void verify(PublicKey key) throws CertificateException, NoSuchAlgorithmException, InvalidKeyException, NoSuchProviderException, SignatureException;
-
-    // Protected methods.
-    // ------------------------------------------------------------------------
-
-    /**
-     * Verifies that this Certificate was properly signed with the PublicKey
-     * that corresponds to its private key and uses the signature engine
-     * provided by the provider.
-     * 
-     * @param key
-     *            PublicKey to verify with
-     * @param sigProvider
-     *            Provider to use for signature algorithm
-     * 
-     * @throws CertificateException
-     *             encoding error
-     * @throws NoSuchAlgorithmException
-     *             unsupported algorithm
-     * @throws InvalidKeyException
-     *             incorrect key
-     * @throws NoSuchProviderException
-     *             incorrect provider
-     * @throws SignatureException
-     *             signature error
-     */
-    public abstract void verify(PublicKey key, String sigProvider) throws CertificateException, NoSuchAlgorithmException, InvalidKeyException, NoSuchProviderException, SignatureException;
-
-    // Inner class.
-    // ------------------------------------------------------------------------
-
-    /**
-     * Returns a replacement for this certificate to be serialized. This method
-     * returns the equivalent to the following for this class:
-     *
-     * <blockquote>
-     * 
-     * <pre>
-     * new CertificateRep(getType(), getEncoded());
-     * </pre>
-     * 
-     * </blockquote>
-     *
-     * <p>
-     * This thusly replaces the certificate with its name and its encoded form,
-     * which can be deserialized later with the {@link CertificateFactory}
-     * implementation for this certificate's type.
-     *
-     * @return The replacement object to be serialized.
-     * @throws ObjectStreamException
-     *             If the replacement could not be created.
-     */
-    protected Object writeReplace() throws ObjectStreamException
-    {
-	try
-	{
-	    return new CertificateRep(getType(), getEncoded());
-	}
-	catch (CertificateEncodingException cee)
-	{
-	    throw new InvalidObjectException(cee.toString());
-	}
-    }
 }

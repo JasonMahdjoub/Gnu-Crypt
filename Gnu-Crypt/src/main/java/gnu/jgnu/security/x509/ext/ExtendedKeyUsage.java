@@ -47,49 +47,44 @@ import gnu.jgnu.security.der.DER;
 import gnu.jgnu.security.der.DERReader;
 import gnu.jgnu.security.der.DERValue;
 
-public class ExtendedKeyUsage extends Extension.Value
-{
+public class ExtendedKeyUsage extends Extension.Value {
 
-    // Constants and fields.
-    // -------------------------------------------------------------------------
+	// Constants and fields.
+	// -------------------------------------------------------------------------
 
-    public static final OID ID = new OID("2.5.29.37");
+	public static final OID ID = new OID("2.5.29.37");
 
-    private final List<OID> purposeIds;
+	private final List<OID> purposeIds;
 
-    // Constructor.
-    // -------------------------------------------------------------------------
+	// Constructor.
+	// -------------------------------------------------------------------------
 
-    public ExtendedKeyUsage(final byte[] encoded) throws IOException
-    {
-	super(encoded);
-	DERReader der = new DERReader(encoded);
-	DERValue usageList = der.read();
-	if (!usageList.isConstructed())
-	    throw new IOException("malformed ExtKeyUsageSyntax");
-	int len = 0;
-	purposeIds = new LinkedList<OID>();
-	while (len < usageList.getLength())
-	{
-	    DERValue val = der.read();
-	    if (val.getTag() != DER.OBJECT_IDENTIFIER)
-		throw new IOException("malformed KeyPurposeId");
-	    purposeIds.add((OID) val.getValue());
-	    len += val.getEncodedLength();
+	public ExtendedKeyUsage(final byte[] encoded) throws IOException {
+		super(encoded);
+		DERReader der = new DERReader(encoded);
+		DERValue usageList = der.read();
+		if (!usageList.isConstructed())
+			throw new IOException("malformed ExtKeyUsageSyntax");
+		int len = 0;
+		purposeIds = new LinkedList<OID>();
+		while (len < usageList.getLength()) {
+			DERValue val = der.read();
+			if (val.getTag() != DER.OBJECT_IDENTIFIER)
+				throw new IOException("malformed KeyPurposeId");
+			purposeIds.add((OID) val.getValue());
+			len += val.getEncodedLength();
+		}
 	}
-    }
 
-    // Instance method.
-    // -------------------------------------------------------------------------
+	// Instance method.
+	// -------------------------------------------------------------------------
 
-    public List<OID> getPurposeIds()
-    {
-	return Collections.unmodifiableList(purposeIds);
-    }
+	public List<OID> getPurposeIds() {
+		return Collections.unmodifiableList(purposeIds);
+	}
 
-    @Override
-    public String toString()
-    {
-	return ExtendedKeyUsage.class.getName() + " [ " + purposeIds + " ]";
-    }
+	@Override
+	public String toString() {
+		return ExtendedKeyUsage.class.getName() + " [ " + purposeIds + " ]";
+	}
 }

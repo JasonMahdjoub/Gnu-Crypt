@@ -44,16 +44,14 @@ import javax.net.ssl.SSLException;
  * exception usually indicates some serious problem with the local or remote SSL
  * implementation.
  */
-public class SSLProtocolException extends SSLException
-{
+public class SSLProtocolException extends SSLException {
 
-    /**
-     * 
-     */
-    private static final long serialVersionUID = -2388880100934362625L;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -2388880100934362625L;
 
-    public SSLProtocolException(String message)
-    {
-	super(message);
-    }
+	public SSLProtocolException(String message) {
+		super(message);
+	}
 }

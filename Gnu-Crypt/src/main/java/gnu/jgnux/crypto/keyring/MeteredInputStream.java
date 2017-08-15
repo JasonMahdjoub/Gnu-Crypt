@@ -41,95 +41,83 @@ import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-final class MeteredInputStream extends FilterInputStream
-{
-    private int count;
+final class MeteredInputStream extends FilterInputStream {
+	private int count;
 
-    private final int limit;
+	private final int limit;
 
-    MeteredInputStream(InputStream in, int limit)
-    {
-	super(in);
-	if (limit < 0)
-	    throw new IllegalArgumentException("limit must be nonnegative");
-	this.limit = limit;
-	count = 0;
-    }
+	MeteredInputStream(InputStream in, int limit) {
+		super(in);
+		if (limit < 0)
+			throw new IllegalArgumentException("limit must be nonnegative");
+		this.limit = limit;
+		count = 0;
+	}
 
-    @Override
-    public int available() throws IOException
-    {
-	return Math.min(in.available(), limit - count);
-    }
+	@Override
+	public int available() throws IOException {
+		return Math.min(in.available(), limit - count);
+	}
 
-    @Override
-    public void close() throws IOException
-    {
-	in.close();
-    }
+	@Override
+	public void close() throws IOException {
+		in.close();
+	}
 
-    /**
-     * Tests if the number of bytes read has reached the limit.
-     *
-     * @return True if the limit has been reached.
-     */
-    public boolean limitReached()
-    {
-	return count == limit;
-    }
+	/**
+	 * Tests if the number of bytes read has reached the limit.
+	 *
+	 * @return True if the limit has been reached.
+	 */
+	public boolean limitReached() {
+		return count == limit;
+	}
 
-    @Override
-    public void mark(int readLimit)
-    {
-    }
+	@Override
+	public void mark(int readLimit) {
+	}
 
-    @Override
-    public boolean markSupported()
-    {
-	return false;
-    }
+	@Override
+	public boolean markSupported() {
+		return false;
+	}
 
-    @Override
-    public int read() throws IOException
-    {
-	if (limitReached())
-	    return -1;
-	int i = in.read();
-	if (i != -1)
-	    count++;
-	return i;
-    }
+	@Override
+	public int read() throws IOException {
+		if (limitReached())
+			return -1;
+		int i = in.read();
+		if (i != -1)
+			count++;
+		return i;
+	}
 
-    @Override
-    public int read(byte[] buf) throws IOException
-    {
-	return read(buf, 0, buf.length);
-    }
+	@Override
+	public int read(byte[] buf) throws IOException {
+		return read(buf, 0, buf.length);
+	}
 
-    @Override
-    public int read(byte[] buf, int off, int len) throws IOException
-    {
-	if (limitReached())
-	    return -1;
-	int i = in.read(buf, off, Math.min(len, limit - count));
-	if (i != -1)
-	    count += i;
-	return i;
-    }
+	@Override
+	public int read(byte[] buf, int off, int len) throws IOException {
+		if (limitReached())
+			return -1;
+		int i = in.read(buf, off, Math.min(len, limit - count));
+		if (i != -1)
+			count += i;
+		return i;
+	}
 
-    @Override
-    public void reset()
-    {
-    }
+	@Override
+	public void reset() {
+	}
 
-    @Override
-    public long skip(long len) throws IOException
-    {
-	if (limitReached())
-	    return 0L;
-	len = Math.min(len, limit - count);
-	len = in.skip(len);
-	count += (int) len;
-	return len;
-    }
+	@Override
+	public long skip(long len) throws IOException {
+		if (limitReached())
+			return 0L;
+		len = Math.min(len, limit - count);
+		len = in.skip(len);
+		count += (int) len;
+		return len;
+	}
 }

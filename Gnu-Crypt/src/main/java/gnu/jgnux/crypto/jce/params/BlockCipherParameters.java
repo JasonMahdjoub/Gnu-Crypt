@@ -51,98 +51,86 @@ import gnu.vm.jgnux.crypto.spec.IvParameterSpec;
  * encompasses the cipher's block size, its key size, and an optional
  * initialization vector (IV).
  */
-public class BlockCipherParameters extends AlgorithmParametersSpi
-{
-    private static final String DEFAULT_FORMAT = "ASN.1";
+public class BlockCipherParameters extends AlgorithmParametersSpi {
+	private static final String DEFAULT_FORMAT = "ASN.1";
 
-    /** The underlying block cipher specification. */
-    protected BlockCipherParameterSpec cipherSpec;
+	/** The underlying block cipher specification. */
+	protected BlockCipherParameterSpec cipherSpec;
 
-    /**
-     * Return these parameters encoded in ASN.1 (DER).
-     * <p>
-     * For GNU block ciphers we will define these parameters as
-     * 
-     * <pre>
-     * BlockCipherParameters ::= SEQUENCE {
-     *    blockSize            INTEGER,
-     *    keySize              INTEGER,
-     *    initializationVector OCTET STRING OPTIONAL }
-     * </pre>
-     *
-     * @return The parameters, encoded an an ASN.1 DER sequence.
-     * @throws java.io.IOException
-     *             If encoding these parameters fails.
-     */
-    @Override
-    protected byte[] engineGetEncoded() throws IOException
-    {
-	return engineGetEncoded(DEFAULT_FORMAT);
-    }
-
-    @Override
-    protected byte[] engineGetEncoded(String format) throws IOException
-    {
-	if (!format.equalsIgnoreCase(DEFAULT_FORMAT)
-		&& !format.equalsIgnoreCase("asn1"))
-	    throw new IOException("unknown format \"" + format + "\"");
-	DERWriter writer = new DERWriter();
-	int cipherBlockSize = cipherSpec.getBlockSize();
-	int cipherKeySize = cipherSpec.getKeySize();
-	byte[] iv = cipherSpec.getIV();
-	return writer.joinarrays(
-		writer.writeBigInteger(BigInteger.valueOf(cipherBlockSize)),
-		writer.writeBigInteger(BigInteger.valueOf(cipherKeySize)),
-		(iv != null) ? writer.writeBigInteger(new BigInteger(iv))
-			: new byte[0]);
-    }
-
-    @Override
-    protected AlgorithmParameterSpec engineGetParameterSpec(Class<? extends AlgorithmParameterSpec> c) throws InvalidParameterSpecException
-    {
-	if (c.isInstance(cipherSpec))
-	    return cipherSpec;
-	if (IvParameterSpec.class.isAssignableFrom(c))
-	{
-	    IvParameterSpec result = new IvParameterSpec(cipherSpec.getIV());
-	    return result;
+	/**
+	 * Return these parameters encoded in ASN.1 (DER).
+	 * <p>
+	 * For GNU block ciphers we will define these parameters as
+	 * 
+	 * <pre>
+	 * BlockCipherParameters ::= SEQUENCE {
+	 *    blockSize            INTEGER,
+	 *    keySize              INTEGER,
+	 *    initializationVector OCTET STRING OPTIONAL }
+	 * </pre>
+	 *
+	 * @return The parameters, encoded an an ASN.1 DER sequence.
+	 * @throws java.io.IOException
+	 *             If encoding these parameters fails.
+	 */
+	@Override
+	protected byte[] engineGetEncoded() throws IOException {
+		return engineGetEncoded(DEFAULT_FORMAT);
 	}
-	throw new InvalidParameterSpecException();
-    }
 
-    @Override
-    protected void engineInit(AlgorithmParameterSpec spec) throws InvalidParameterSpecException
-    {
-	if (spec instanceof BlockCipherParameterSpec)
-	    cipherSpec = (BlockCipherParameterSpec) spec;
-	else
-	    throw new InvalidParameterSpecException();
-    }
+	@Override
+	protected byte[] engineGetEncoded(String format) throws IOException {
+		if (!format.equalsIgnoreCase(DEFAULT_FORMAT) && !format.equalsIgnoreCase("asn1"))
+			throw new IOException("unknown format \"" + format + "\"");
+		DERWriter writer = new DERWriter();
+		int cipherBlockSize = cipherSpec.getBlockSize();
+		int cipherKeySize = cipherSpec.getKeySize();
+		byte[] iv = cipherSpec.getIV();
+		return writer.joinarrays(writer.writeBigInteger(BigInteger.valueOf(cipherBlockSize)),
+				writer.writeBigInteger(BigInteger.valueOf(cipherKeySize)),
+				(iv != null) ? writer.writeBigInteger(new BigInteger(iv)) : new byte[0]);
+	}
 
-    @Override
-    protected void engineInit(byte[] encoded) throws IOException
-    {
-	DERReader reader = new DERReader(encoded);
-	int bs = reader.getBigInteger().intValue();
-	int ks = reader.getBigInteger().intValue();
-	byte[] iv = null;
-	if (reader.hasMorePrimitives())
-	    iv = reader.getBigInteger().toByteArray();
-	cipherSpec = new BlockCipherParameterSpec(iv, bs, ks);
-    }
+	@Override
+	protected AlgorithmParameterSpec engineGetParameterSpec(Class<? extends AlgorithmParameterSpec> c)
+			throws InvalidParameterSpecException {
+		if (c.isInstance(cipherSpec))
+			return cipherSpec;
+		if (IvParameterSpec.class.isAssignableFrom(c)) {
+			IvParameterSpec result = new IvParameterSpec(cipherSpec.getIV());
+			return result;
+		}
+		throw new InvalidParameterSpecException();
+	}
 
-    @Override
-    protected void engineInit(byte[] encoded, String format) throws IOException
-    {
-	if (!format.equalsIgnoreCase(DEFAULT_FORMAT)
-		&& !format.equalsIgnoreCase("ASN1"))
-	    throw new IOException("invalid format: only accepts ASN.1");
-	engineInit(encoded);
-    }
+	@Override
+	protected void engineInit(AlgorithmParameterSpec spec) throws InvalidParameterSpecException {
+		if (spec instanceof BlockCipherParameterSpec)
+			cipherSpec = (BlockCipherParameterSpec) spec;
+		else
+			throw new InvalidParameterSpecException();
+	}
 
-    @Override
-    protected String engineToString()
-    {
-	return cipherSpec.toString();
-    }
+	@Override
+	protected void engineInit(byte[] encoded) throws IOException {
+		DERReader reader = new DERReader(encoded);
+		int bs = reader.getBigInteger().intValue();
+		int ks = reader.getBigInteger().intValue();
+		byte[] iv = null;
+		if (reader.hasMorePrimitives())
+			iv = reader.getBigInteger().toByteArray();
+		cipherSpec = new BlockCipherParameterSpec(iv, bs, ks);
+	}
+
+	@Override
+	protected void engineInit(byte[] encoded, String format) throws IOException {
+		if (!format.equalsIgnoreCase(DEFAULT_FORMAT) && !format.equalsIgnoreCase("ASN1"))
+			throw new IOException("invalid format: only accepts ASN.1");
+		engineInit(encoded);
+	}
+
+	@Override
+	protected String engineToString() {
+		return cipherSpec.toString();
+	}
 }

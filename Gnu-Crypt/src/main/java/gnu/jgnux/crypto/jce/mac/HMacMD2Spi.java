@@ -43,10 +43,8 @@ import gnu.jgnu.security.Registry;
  * The implementation of the HMAC-MD2 <i>Service Provider Interface</i>
  * (<b>SPI</b>) adapter.
  */
-public final class HMacMD2Spi extends MacAdapter
-{
-    public HMacMD2Spi()
-    {
-	super(Registry.HMAC_NAME_PREFIX + Registry.MD2_HASH);
-    }
+public final class HMacMD2Spi extends MacAdapter {
+	public HMacMD2Spi() {
+		super(Registry.HMAC_NAME_PREFIX + Registry.MD2_HASH);
+	}
 }

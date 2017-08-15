@@ -49,113 +49,112 @@ import java.net.UnknownHostException;
  *
  * @author Casey Marshall (rsdio@metastatic.org)
  */
-public abstract class SocketFactory
-{
+public abstract class SocketFactory {
 
-    // Constructor.
-    // -------------------------------------------------------------------
+	// Constructor.
+	// -------------------------------------------------------------------
 
-    /**
-     * Default 0-arguments constructor.
-     */
-    protected SocketFactory()
-    {
-	super();
-    }
+	/**
+	 * Default 0-arguments constructor.
+	 */
+	protected SocketFactory() {
+		super();
+	}
 
-    // Class methods.
-    // -------------------------------------------------------------------
+	// Class methods.
+	// -------------------------------------------------------------------
 
-    /**
-     * Returns the default socket factory. The type of factory returned may
-     * depend upon the installation.
-     *
-     * @return The default socket factory.
-     */
-    /*
-     * public static synchronized SocketFactory getDefault() { try { String s =
-     * Security.getProperty("gnu.defaultSocketFactory"); if (s != null) { Class
-     * c = Class.forName(s); return (SocketFactory) c.newInstance(); } } catch
-     * (Exception e) { } return new VanillaSocketFactory(); }
-     */
+	/**
+	 * Returns the default socket factory. The type of factory returned may depend
+	 * upon the installation.
+	 *
+	 * @return The default socket factory.
+	 */
+	/*
+	 * public static synchronized SocketFactory getDefault() { try { String s =
+	 * Security.getProperty("gnu.defaultSocketFactory"); if (s != null) { Class c =
+	 * Class.forName(s); return (SocketFactory) c.newInstance(); } } catch
+	 * (Exception e) { } return new VanillaSocketFactory(); }
+	 */
 
-    // Instance methods.
-    // -------------------------------------------------------------------
+	// Instance methods.
+	// -------------------------------------------------------------------
 
-    /**
-     * Returns an unbound client socket.
-     *
-     * @return The new, unbound socket.
-     */
-    @SuppressWarnings("unused")
-    public Socket createSocket() throws IOException
-    {
-	throw new UnsupportedOperationException();
-    }
+	/**
+	 * Returns an unbound client socket.
+	 *
+	 * @return The new, unbound socket.
+	 */
+	@SuppressWarnings("unused")
+	public Socket createSocket() throws IOException {
+		throw new UnsupportedOperationException();
+	}
 
-    /**
-     * Creates a socket connected to a given host on a given port.
-     *
-     * @param host
-     *            The host address to connect to.
-     * @param port
-     *            The port on <i>host</i> to connect to.
-     * @return A socket connected to <i>host</i> on <i>port</i>.
-     * @throws IOException
-     *             If a network error occurs.
-     */
-    public abstract Socket createSocket(InetAddress host, int port) throws IOException;
+	/**
+	 * Creates a socket connected to a given host on a given port.
+	 *
+	 * @param host
+	 *            The host address to connect to.
+	 * @param port
+	 *            The port on <i>host</i> to connect to.
+	 * @return A socket connected to <i>host</i> on <i>port</i>.
+	 * @throws IOException
+	 *             If a network error occurs.
+	 */
+	public abstract Socket createSocket(InetAddress host, int port) throws IOException;
 
-    /**
-     * Creates a socket connected to a given host on a given port, connecting
-     * locally to the interface with the given address and port.
-     *
-     * @param host
-     *            The host address to connect to.
-     * @param port
-     *            The port on <i>host</i> to connect to.
-     * @param localHost
-     *            The address of the local interface to bind to.
-     * @param localPort
-     *            The local port to bind to.
-     * @return A socket connected to <i>host</i> on <i>port</i>.
-     * @throws IOException
-     *             If a network error occurs.
-     */
-    public abstract Socket createSocket(InetAddress hast, int port, InetAddress localHost, int localPort) throws IOException;
+	/**
+	 * Creates a socket connected to a given host on a given port, connecting
+	 * locally to the interface with the given address and port.
+	 *
+	 * @param host
+	 *            The host address to connect to.
+	 * @param port
+	 *            The port on <i>host</i> to connect to.
+	 * @param localHost
+	 *            The address of the local interface to bind to.
+	 * @param localPort
+	 *            The local port to bind to.
+	 * @return A socket connected to <i>host</i> on <i>port</i>.
+	 * @throws IOException
+	 *             If a network error occurs.
+	 */
+	public abstract Socket createSocket(InetAddress hast, int port, InetAddress localHost, int localPort)
+			throws IOException;
 
-    /**
-     * Creates a socket connected to a given host on a given port.
-     *
-     * @param host
-     *            The hostname to connect to.
-     * @param port
-     *            The port on <i>host</i> to connect to.
-     * @return A socket connected to <i>host</i> on <i>port</i>.
-     * @throws IOException
-     *             If a network error occurs.
-     * @throws UnknownHostException
-     *             If <i>host</i> cannot be resolved.
-     */
-    public abstract Socket createSocket(String host, int port) throws IOException, UnknownHostException;
+	/**
+	 * Creates a socket connected to a given host on a given port.
+	 *
+	 * @param host
+	 *            The hostname to connect to.
+	 * @param port
+	 *            The port on <i>host</i> to connect to.
+	 * @return A socket connected to <i>host</i> on <i>port</i>.
+	 * @throws IOException
+	 *             If a network error occurs.
+	 * @throws UnknownHostException
+	 *             If <i>host</i> cannot be resolved.
+	 */
+	public abstract Socket createSocket(String host, int port) throws IOException, UnknownHostException;
 
-    /**
-     * Creates a socket connected to a given host on a given port, connecting
-     * locally to the interface with the given address and port.
-     *
-     * @param host
-     *            The hostname to connect to.
-     * @param port
-     *            The port on <i>host</i> to connect to.
-     * @param localHost
-     *            The address of the local interface to bind to.
-     * @param localPort
-     *            The local port to bind to.
-     * @return A socket connected to <i>host</i> on <i>port</i>.
-     * @throws IOException
-     *             If a network error occurs.
-     * @throws UnknownHostException
-     *             If <i>host</i> cannot be resolved.
-     */
-    public abstract Socket createSocket(String host, int port, InetAddress localHost, int localPort) throws IOException, UnknownHostException;
+	/**
+	 * Creates a socket connected to a given host on a given port, connecting
+	 * locally to the interface with the given address and port.
+	 *
+	 * @param host
+	 *            The hostname to connect to.
+	 * @param port
+	 *            The port on <i>host</i> to connect to.
+	 * @param localHost
+	 *            The address of the local interface to bind to.
+	 * @param localPort
+	 *            The local port to bind to.
+	 * @return A socket connected to <i>host</i> on <i>port</i>.
+	 * @throws IOException
+	 *             If a network error occurs.
+	 * @throws UnknownHostException
+	 *             If <i>host</i> cannot be resolved.
+	 */
+	public abstract Socket createSocket(String host, int port, InetAddress localHost, int localPort)
+			throws IOException, UnknownHostException;
 }

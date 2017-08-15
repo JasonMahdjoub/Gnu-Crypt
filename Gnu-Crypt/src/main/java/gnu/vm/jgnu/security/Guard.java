@@ -48,17 +48,16 @@ import gnu.vm.jgnu.security.GuardedObject;
  * @since 1.1
  * @status updated to 1.4
  */
-public interface Guard
-{
-    /**
-     * This method tests whether or not access is allowed to the specified
-     * guarded object. Access is allowed if this method returns silently. If
-     * access is denied, an exception is generated.
-     *
-     * @param obj
-     *            the <code>Object</code> to test
-     * @throws SecurityException
-     *             if access to the object is denied
-     */
-    // void checkGuard(Object obj);
+public interface Guard {
+	/**
+	 * This method tests whether or not access is allowed to the specified guarded
+	 * object. Access is allowed if this method returns silently. If access is
+	 * denied, an exception is generated.
+	 *
+	 * @param obj
+	 *            the <code>Object</code> to test
+	 * @throws SecurityException
+	 *             if access to the object is denied
+	 */
+	// void checkGuard(Object obj);
 } // interface Guard

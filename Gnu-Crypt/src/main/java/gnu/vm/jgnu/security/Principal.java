@@ -46,43 +46,42 @@ package gnu.vm.jgnu.security;
  * @since 1.1
  * @status updated to 1.4
  */
-public interface Principal
-{
-    /**
-     * This method tests another <code>Principal</code> object for equality with
-     * this one.
-     *
-     * @param obj
-     *            the Object to test for equality
-     * @return true if the specified <code>Principal</code> is equal
-     */
-    @Override
-    boolean equals(Object obj);
+public interface Principal {
+	/**
+	 * This method tests another <code>Principal</code> object for equality with
+	 * this one.
+	 *
+	 * @param obj
+	 *            the Object to test for equality
+	 * @return true if the specified <code>Principal</code> is equal
+	 */
+	@Override
+	boolean equals(Object obj);
 
-    /**
-     * This method returns a <code>String</code> that names this
-     * <code>Principal</code>.
-     *
-     * @return the name of this <code>Principal</code>
-     */
-    String getName();
+	/**
+	 * This method returns a <code>String</code> that names this
+	 * <code>Principal</code>.
+	 *
+	 * @return the name of this <code>Principal</code>
+	 */
+	String getName();
 
-    /**
-     * This method returns a hash code value for this <code>Principal</code>.
-     * Remember the contract of hashCode - two objects which compare as equals()
-     * must have the same hashCode().
-     *
-     * @return a hash value
-     */
-    @Override
-    int hashCode();
+	/**
+	 * This method returns a hash code value for this <code>Principal</code>.
+	 * Remember the contract of hashCode - two objects which compare as equals()
+	 * must have the same hashCode().
+	 *
+	 * @return a hash value
+	 */
+	@Override
+	int hashCode();
 
-    /**
-     * This method returns a <code>String</code> representation of this
-     * <code>Principal</code>.
-     *
-     * @return this <code>Principal</code> represented as a <code>String</code>
-     */
-    @Override
-    String toString();
+	/**
+	 * This method returns a <code>String</code> representation of this
+	 * <code>Principal</code>.
+	 *
+	 * @return this <code>Principal</code> represented as a <code>String</code>
+	 */
+	@Override
+	String toString();
 } // interface Principal

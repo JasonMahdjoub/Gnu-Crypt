@@ -48,54 +48,49 @@ import gnu.vm.jgnu.security.KeyException;
  * @see Key
  * @status updated to 1.4
  */
-public class KeyManagementException extends KeyException
-{
-    /**
-     * Compatible with JDK 1.1+.
-     */
-    private static final long serialVersionUID = 947674216157062695L;
+public class KeyManagementException extends KeyException {
+	/**
+	 * Compatible with JDK 1.1+.
+	 */
+	private static final long serialVersionUID = 947674216157062695L;
 
-    /**
-     * Create a new instance with no descriptive error message.
-     */
-    public KeyManagementException()
-    {
-    }
+	/**
+	 * Create a new instance with no descriptive error message.
+	 */
+	public KeyManagementException() {
+	}
 
-    /**
-     * Create a new instance with a descriptive error message.
-     *
-     * @param msg
-     *            the descriptive error message
-     */
-    public KeyManagementException(String msg)
-    {
-	super(msg);
-    }
+	/**
+	 * Create a new instance with a descriptive error message.
+	 *
+	 * @param msg
+	 *            the descriptive error message
+	 */
+	public KeyManagementException(String msg) {
+		super(msg);
+	}
 
-    /**
-     * Create a new instance with a descriptive error message and a cause.
-     * 
-     * @param s
-     *            the descriptive error message
-     * @param cause
-     *            the cause
-     * @since 1.5
-     */
-    public KeyManagementException(String s, Throwable cause)
-    {
-	super(s, cause);
-    }
+	/**
+	 * Create a new instance with a descriptive error message and a cause.
+	 * 
+	 * @param s
+	 *            the descriptive error message
+	 * @param cause
+	 *            the cause
+	 * @since 1.5
+	 */
+	public KeyManagementException(String s, Throwable cause) {
+		super(s, cause);
+	}
 
-    /**
-     * Create a new instance with a cause.
-     * 
-     * @param cause
-     *            the cause
-     * @since 1.5
-     */
-    public KeyManagementException(Throwable cause)
-    {
-	super(cause);
-    }
+	/**
+	 * Create a new instance with a cause.
+	 * 
+	 * @param cause
+	 *            the cause
+	 * @since 1.5
+	 */
+	public KeyManagementException(Throwable cause) {
+		super(cause);
+	}
 }

@@ -64,201 +64,163 @@ import gnu.vm.jgnu.security.InvalidKeyException;
 /**
  * An envelope that is encrypted with a password-derived key.
  */
-public class PasswordEncryptedEntry extends MaskableEnvelopeEntry implements PasswordProtectedEntry, Registry
-{
-    public static final int TYPE = 1;
+public class PasswordEncryptedEntry extends MaskableEnvelopeEntry implements PasswordProtectedEntry, Registry {
+	public static final int TYPE = 1;
 
-    public static PasswordEncryptedEntry decode(DataInputStream in) throws IOException
-    {
-	PasswordEncryptedEntry entry = new PasswordEncryptedEntry();
-	entry.defaultDecode(in);
-	return entry;
-    }
+	public static PasswordEncryptedEntry decode(DataInputStream in) throws IOException {
+		PasswordEncryptedEntry entry = new PasswordEncryptedEntry();
+		entry.defaultDecode(in);
+		return entry;
+	}
 
-    public static PasswordEncryptedEntry decode(DataInputStream in, char[] password) throws IOException
-    {
-	PasswordEncryptedEntry entry = decode(in);
-	try
-	{
-	    entry.decrypt(password);
+	public static PasswordEncryptedEntry decode(DataInputStream in, char[] password) throws IOException {
+		PasswordEncryptedEntry entry = decode(in);
+		try {
+			entry.decrypt(password);
+		} catch (WrongPaddingException wpe) {
+			throw new MalformedKeyringException("wrong padding in decrypted data");
+		}
+		return entry;
 	}
-	catch (WrongPaddingException wpe)
-	{
-	    throw new MalformedKeyringException(
-		    "wrong padding in decrypted data");
-	}
-	return entry;
-    }
 
-    private PasswordEncryptedEntry()
-    {
-	super(TYPE);
-	setMasked(true);
-    }
+	private PasswordEncryptedEntry() {
+		super(TYPE);
+		setMasked(true);
+	}
 
-    public PasswordEncryptedEntry(String cipher, String mode, int keylen, Properties properties)
-    {
-	super(TYPE, properties);
-	if ((cipher == null || cipher.length() == 0)
-		|| (mode == null || mode.length() == 0))
-	    throw new IllegalArgumentException("cipher nor mode can be empty");
-	this.properties.put("cipher", cipher);
-	this.properties.put("mode", mode);
-	this.properties.put("keylen", String.valueOf(keylen));
-	setMasked(false);
-    }
+	public PasswordEncryptedEntry(String cipher, String mode, int keylen, Properties properties) {
+		super(TYPE, properties);
+		if ((cipher == null || cipher.length() == 0) || (mode == null || mode.length() == 0))
+			throw new IllegalArgumentException("cipher nor mode can be empty");
+		this.properties.put("cipher", cipher);
+		this.properties.put("mode", mode);
+		this.properties.put("keylen", String.valueOf(keylen));
+		setMasked(false);
+	}
 
-    public void decrypt(char[] password) throws IllegalArgumentException, WrongPaddingException
-    {
-	if (isMasked() && payload != null)
-	{
-	    // long tt = -System.currentTimeMillis();
-	    IMode mode = getMode(password, IMode.DECRYPTION);
-	    IPad padding = PadFactory.getInstance("PKCS7");
-	    padding.init(mode.currentBlockSize());
-	    byte[] buf = new byte[payload.length];
-	    int count = 0;
-	    while (count + mode.currentBlockSize() <= payload.length)
-	    {
-		mode.update(payload, count, buf, count);
-		count += mode.currentBlockSize();
-	    }
-	    int padlen = padding.unpad(buf, 0, buf.length);
-	    setMasked(false);
-	    int len = buf.length - padlen;
-	    ByteArrayInputStream baos = new ByteArrayInputStream(buf, 0, len);
-	    DataInputStream in = new DataInputStream(baos);
-	    try
-	    {
-		decodeEnvelope(in);
-	    }
-	    catch (IOException ioe)
-	    {
-		throw new IllegalArgumentException("decryption failed");
-	    }
-	    // tt += System.currentTimeMillis();
+	public void decrypt(char[] password) throws IllegalArgumentException, WrongPaddingException {
+		if (isMasked() && payload != null) {
+			// long tt = -System.currentTimeMillis();
+			IMode mode = getMode(password, IMode.DECRYPTION);
+			IPad padding = PadFactory.getInstance("PKCS7");
+			padding.init(mode.currentBlockSize());
+			byte[] buf = new byte[payload.length];
+			int count = 0;
+			while (count + mode.currentBlockSize() <= payload.length) {
+				mode.update(payload, count, buf, count);
+				count += mode.currentBlockSize();
+			}
+			int padlen = padding.unpad(buf, 0, buf.length);
+			setMasked(false);
+			int len = buf.length - padlen;
+			ByteArrayInputStream baos = new ByteArrayInputStream(buf, 0, len);
+			DataInputStream in = new DataInputStream(baos);
+			try {
+				decodeEnvelope(in);
+			} catch (IOException ioe) {
+				throw new IllegalArgumentException("decryption failed");
+			}
+			// tt += System.currentTimeMillis();
+		}
 	}
-    }
 
-    @Override
-    public void encode(DataOutputStream out, char[] password) throws IOException
-    {
-	encrypt(password);
-	encode(out);
-    }
+	@Override
+	public void encode(DataOutputStream out, char[] password) throws IOException {
+		encrypt(password);
+		encode(out);
+	}
 
-    @Override
-    protected void encodePayload()
-    {
-	if (payload == null)
-	{
-	    throw new IllegalStateException("not encrypted");
+	@Override
+	protected void encodePayload() {
+		if (payload == null) {
+			throw new IllegalStateException("not encrypted");
+		}
 	}
-    }
 
-    public void encrypt(char[] password) throws IOException
-    {
-	// long tt = -System.currentTimeMillis();
-	// long t1 = -System.currentTimeMillis();
-	byte[] salt = new byte[8];
-	PRNG.getInstance().nextBytes(salt);
-	// t1 += System.currentTimeMillis();
-	properties.put("salt", Util.toString(salt));
-	IMode mode = getMode(password, IMode.ENCRYPTION);
-	IPad pad = PadFactory.getInstance("PKCS7");
-	pad.init(mode.currentBlockSize());
-	ByteArrayOutputStream bout = new ByteArrayOutputStream(1024);
-	DataOutputStream out2 = new DataOutputStream(bout);
-	for (Iterator<Entry> it = entries.iterator(); it.hasNext();)
-	{
-	    Entry entry = it.next();
-	    // t1 = -System.currentTimeMillis();
-	    entry.encode(out2);
-	    // t1 += System.currentTimeMillis();
+	public void encrypt(char[] password) throws IOException {
+		// long tt = -System.currentTimeMillis();
+		// long t1 = -System.currentTimeMillis();
+		byte[] salt = new byte[8];
+		PRNG.getInstance().nextBytes(salt);
+		// t1 += System.currentTimeMillis();
+		properties.put("salt", Util.toString(salt));
+		IMode mode = getMode(password, IMode.ENCRYPTION);
+		IPad pad = PadFactory.getInstance("PKCS7");
+		pad.init(mode.currentBlockSize());
+		ByteArrayOutputStream bout = new ByteArrayOutputStream(1024);
+		DataOutputStream out2 = new DataOutputStream(bout);
+		for (Iterator<Entry> it = entries.iterator(); it.hasNext();) {
+			Entry entry = it.next();
+			// t1 = -System.currentTimeMillis();
+			entry.encode(out2);
+			// t1 += System.currentTimeMillis();
+		}
+		byte[] plaintext = bout.toByteArray();
+		byte[] padding = pad.pad(plaintext, 0, plaintext.length);
+		payload = new byte[plaintext.length + padding.length];
+		byte[] lastBlock = new byte[mode.currentBlockSize()];
+		int l = mode.currentBlockSize() - padding.length;
+		System.arraycopy(plaintext, plaintext.length - l, lastBlock, 0, l);
+		System.arraycopy(padding, 0, lastBlock, l, padding.length);
+		int count = 0;
+		while (count + mode.currentBlockSize() < plaintext.length) {
+			mode.update(plaintext, count, payload, count);
+			count += mode.currentBlockSize();
+		}
+		mode.update(lastBlock, 0, payload, count);
+		setMasked(true);
+		// tt += System.currentTimeMillis();
 	}
-	byte[] plaintext = bout.toByteArray();
-	byte[] padding = pad.pad(plaintext, 0, plaintext.length);
-	payload = new byte[plaintext.length + padding.length];
-	byte[] lastBlock = new byte[mode.currentBlockSize()];
-	int l = mode.currentBlockSize() - padding.length;
-	System.arraycopy(plaintext, plaintext.length - l, lastBlock, 0, l);
-	System.arraycopy(padding, 0, lastBlock, l, padding.length);
-	int count = 0;
-	while (count + mode.currentBlockSize() < plaintext.length)
-	{
-	    mode.update(plaintext, count, payload, count);
-	    count += mode.currentBlockSize();
-	}
-	mode.update(lastBlock, 0, payload, count);
-	setMasked(true);
-	// tt += System.currentTimeMillis();
-    }
 
-    private IMode getMode(char[] password, int state)
-    {
-	String s = properties.get("salt");
-	if (s == null)
-	    throw new IllegalArgumentException("no salt");
-	byte[] salt = Util.toBytesFromString(s);
-	IBlockCipher cipher = CipherFactory
-		.getInstance(properties.get("cipher"));
-	if (cipher == null)
-	    throw new IllegalArgumentException(
-		    "no such cipher: " + properties.get("cipher"));
-	int blockSize = cipher.defaultBlockSize();
-	if (properties.containsKey("block-size"))
-	    try
-	    {
-		blockSize = Integer.parseInt(properties.get("block-size"));
-	    }
-	    catch (NumberFormatException nfe)
-	    {
-		throw new IllegalArgumentException(
-			"bad block size: " + nfe.getMessage());
-	    }
-	String modeName = properties.get("mode");
-	IMode mode = ModeFactory.getInstance(modeName, cipher, blockSize);
-	if (mode == null)
-	    throw new IllegalArgumentException("no such mode: " + modeName);
-	HashMap<Object, Object> pbAttr = new HashMap<>();
-	pbAttr.put(IPBE.PASSWORD, password);
-	pbAttr.put(IPBE.SALT, salt);
-	pbAttr.put(IPBE.ITERATION_COUNT, ITERATION_COUNT);
-	IRandom kdf = PRNGFactory.getInstance("PBKDF2-HMAC-SHA");
-	kdf.init(pbAttr);
-	int keylen = 0;
-	if (!properties.containsKey("keylen"))
-	    throw new IllegalArgumentException("no key length");
-	try
-	{
-	    keylen = Integer.parseInt(properties.get("keylen"));
+	private IMode getMode(char[] password, int state) {
+		String s = properties.get("salt");
+		if (s == null)
+			throw new IllegalArgumentException("no salt");
+		byte[] salt = Util.toBytesFromString(s);
+		IBlockCipher cipher = CipherFactory.getInstance(properties.get("cipher"));
+		if (cipher == null)
+			throw new IllegalArgumentException("no such cipher: " + properties.get("cipher"));
+		int blockSize = cipher.defaultBlockSize();
+		if (properties.containsKey("block-size"))
+			try {
+				blockSize = Integer.parseInt(properties.get("block-size"));
+			} catch (NumberFormatException nfe) {
+				throw new IllegalArgumentException("bad block size: " + nfe.getMessage());
+			}
+		String modeName = properties.get("mode");
+		IMode mode = ModeFactory.getInstance(modeName, cipher, blockSize);
+		if (mode == null)
+			throw new IllegalArgumentException("no such mode: " + modeName);
+		HashMap<Object, Object> pbAttr = new HashMap<>();
+		pbAttr.put(IPBE.PASSWORD, password);
+		pbAttr.put(IPBE.SALT, salt);
+		pbAttr.put(IPBE.ITERATION_COUNT, ITERATION_COUNT);
+		IRandom kdf = PRNGFactory.getInstance("PBKDF2-HMAC-SHA");
+		kdf.init(pbAttr);
+		int keylen = 0;
+		if (!properties.containsKey("keylen"))
+			throw new IllegalArgumentException("no key length");
+		try {
+			keylen = Integer.parseInt(properties.get("keylen"));
+		} catch (NumberFormatException nfe) {
+		}
+		byte[] dk = new byte[keylen];
+		byte[] iv = new byte[blockSize];
+		try {
+			kdf.nextBytes(dk, 0, keylen);
+			kdf.nextBytes(iv, 0, blockSize);
+		} catch (LimitReachedException shouldNotHappen) {
+			throw new Error(shouldNotHappen.toString());
+		}
+		HashMap<Object, Object> modeAttr = new HashMap<>();
+		modeAttr.put(IBlockCipher.KEY_MATERIAL, dk);
+		modeAttr.put(IMode.STATE, Integer.valueOf(state));
+		modeAttr.put(IMode.IV, iv);
+		try {
+			mode.init(modeAttr);
+		} catch (InvalidKeyException ike) {
+			throw new IllegalArgumentException(ike.toString());
+		}
+		return mode;
 	}
-	catch (NumberFormatException nfe)
-	{
-	}
-	byte[] dk = new byte[keylen];
-	byte[] iv = new byte[blockSize];
-	try
-	{
-	    kdf.nextBytes(dk, 0, keylen);
-	    kdf.nextBytes(iv, 0, blockSize);
-	}
-	catch (LimitReachedException shouldNotHappen)
-	{
-	    throw new Error(shouldNotHappen.toString());
-	}
-	HashMap<Object, Object> modeAttr = new HashMap<>();
-	modeAttr.put(IBlockCipher.KEY_MATERIAL, dk);
-	modeAttr.put(IMode.STATE, Integer.valueOf(state));
-	modeAttr.put(IMode.IV, iv);
-	try
-	{
-	    mode.init(modeAttr);
-	}
-	catch (InvalidKeyException ike)
-	{
-	    throw new IllegalArgumentException(ike.toString());
-	}
-	return mode;
-    }
 }

@@ -46,27 +46,25 @@ package gnu.vm.jgnu.security.acl;
  *
  * @author Aaron M. Renn (arenn@urbanophile.com)
  */
-public interface Permission
-{
-    /**
-     * This method tests whether or not a specified <code>Permission</code>
-     * (passed as an <code>Object</code>) is the same as this permission.
-     *
-     * @param perm
-     *            The permission to check for equality
-     *
-     * @return <code>true</code> if the specified permission is the same as this
-     *         one, <code>false</code> otherwise
-     */
-    @Override
-    boolean equals(Object perm);
+public interface Permission {
+	/**
+	 * This method tests whether or not a specified <code>Permission</code> (passed
+	 * as an <code>Object</code>) is the same as this permission.
+	 *
+	 * @param perm
+	 *            The permission to check for equality
+	 *
+	 * @return <code>true</code> if the specified permission is the same as this
+	 *         one, <code>false</code> otherwise
+	 */
+	@Override
+	boolean equals(Object perm);
 
-    /**
-     * This method returns this <code>Permission</code> as a
-     * <code>String</code>.
-     *
-     * @return A <code>String</code> representing this permission.
-     */
-    @Override
-    String toString();
+	/**
+	 * This method returns this <code>Permission</code> as a <code>String</code>.
+	 *
+	 * @return A <code>String</code> representing this permission.
+	 */
+	@Override
+	String toString();
 }

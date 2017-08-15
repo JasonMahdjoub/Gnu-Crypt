@@ -72,135 +72,133 @@ import gnu.vm.jgnu.security.InvalidKeyException;
  * operates with the <b>same block size</b> but without any knowledge of neither
  * key material nor key size.
  */
-public interface IBlockCipher extends Cloneable
-{
-    /**
-     * Property name of the block size in which to operate a block cipher. The
-     * value associated with this property name is taken to be an
-     * {@link Integer}.
-     */
-    String CIPHER_BLOCK_SIZE = "gnu.crypto.cipher.block.size";
+public interface IBlockCipher extends Cloneable {
+	/**
+	 * Property name of the block size in which to operate a block cipher. The value
+	 * associated with this property name is taken to be an {@link Integer}.
+	 */
+	String CIPHER_BLOCK_SIZE = "gnu.crypto.cipher.block.size";
 
-    /**
-     * Property name of the user-supplied key material. The value associated to
-     * this property name is taken to be a byte array.
-     */
-    String KEY_MATERIAL = "gnu.crypto.cipher.key.material";
+	/**
+	 * Property name of the user-supplied key material. The value associated to this
+	 * property name is taken to be a byte array.
+	 */
+	String KEY_MATERIAL = "gnu.crypto.cipher.key.material";
 
-    /**
-     * Returns an {@link Iterator} over the supported block sizes. Each element
-     * returned by this object is an {@link Integer}.
-     *
-     * @return an {@link Iterator} over the supported block sizes.
-     */
-    Iterator<Integer> blockSizes();
+	/**
+	 * Returns an {@link Iterator} over the supported block sizes. Each element
+	 * returned by this object is an {@link Integer}.
+	 *
+	 * @return an {@link Iterator} over the supported block sizes.
+	 */
+	Iterator<Integer> blockSizes();
 
-    /**
-     * Returns a clone of this instance.
-     *
-     * @return a clone copy of this instance.
-     */
-    Object clone();
+	/**
+	 * Returns a clone of this instance.
+	 *
+	 * @return a clone copy of this instance.
+	 */
+	Object clone();
 
-    /**
-     * Returns the currently set block size for this instance.
-     *
-     * @return the current block size for this instance.
-     * @exception IllegalStateException
-     *                if the instance is not initialised.
-     */
-    int currentBlockSize() throws IllegalStateException;
+	/**
+	 * Returns the currently set block size for this instance.
+	 *
+	 * @return the current block size for this instance.
+	 * @exception IllegalStateException
+	 *                if the instance is not initialised.
+	 */
+	int currentBlockSize() throws IllegalStateException;
 
-    /**
-     * Decrypts exactly one block of ciphertext.
-     *
-     * @param in
-     *            the plaintext.
-     * @param inOffset
-     *            index of <code>in</code> from which to start considering data.
-     * @param out
-     *            the ciphertext.
-     * @param outOffset
-     *            index of <code>out</code> from which to store result.
-     * @exception IllegalStateException
-     *                if the instance is not initialised.
-     */
-    void decryptBlock(byte[] in, int inOffset, byte[] out, int outOffset) throws IllegalStateException;
+	/**
+	 * Decrypts exactly one block of ciphertext.
+	 *
+	 * @param in
+	 *            the plaintext.
+	 * @param inOffset
+	 *            index of <code>in</code> from which to start considering data.
+	 * @param out
+	 *            the ciphertext.
+	 * @param outOffset
+	 *            index of <code>out</code> from which to store result.
+	 * @exception IllegalStateException
+	 *                if the instance is not initialised.
+	 */
+	void decryptBlock(byte[] in, int inOffset, byte[] out, int outOffset) throws IllegalStateException;
 
-    /**
-     * Returns the default value, in bytes, of the algorithm's block size.
-     *
-     * @return the default value, in bytes, of the algorithm's block size.
-     */
-    int defaultBlockSize();
+	/**
+	 * Returns the default value, in bytes, of the algorithm's block size.
+	 *
+	 * @return the default value, in bytes, of the algorithm's block size.
+	 */
+	int defaultBlockSize();
 
-    /**
-     * Returns the default value, in bytes, of the algorithm's key size.
-     *
-     * @return the default value, in bytes, of the algorithm's key size.
-     */
-    int defaultKeySize();
+	/**
+	 * Returns the default value, in bytes, of the algorithm's key size.
+	 *
+	 * @return the default value, in bytes, of the algorithm's key size.
+	 */
+	int defaultKeySize();
 
-    /**
-     * Encrypts exactly one block of plaintext.
-     *
-     * @param in
-     *            the plaintext.
-     * @param inOffset
-     *            index of <code>in</code> from which to start considering data.
-     * @param out
-     *            the ciphertext.
-     * @param outOffset
-     *            index of <code>out</code> from which to store result.
-     * @exception IllegalStateException
-     *                if the instance is not initialised.
-     */
-    void encryptBlock(byte[] in, int inOffset, byte[] out, int outOffset) throws IllegalStateException;
+	/**
+	 * Encrypts exactly one block of plaintext.
+	 *
+	 * @param in
+	 *            the plaintext.
+	 * @param inOffset
+	 *            index of <code>in</code> from which to start considering data.
+	 * @param out
+	 *            the ciphertext.
+	 * @param outOffset
+	 *            index of <code>out</code> from which to store result.
+	 * @exception IllegalStateException
+	 *                if the instance is not initialised.
+	 */
+	void encryptBlock(byte[] in, int inOffset, byte[] out, int outOffset) throws IllegalStateException;
 
-    /**
-     * Initialises the algorithm with designated attributes. Permissible names
-     * and values are described in the class documentation above.
-     *
-     * @param attributes
-     *            a set of name-value pairs that describes the desired future
-     *            behaviour of this instance.
-     * @exception InvalidKeyException
-     *                if the key data is invalid.
-     * @exception IllegalStateException
-     *                if the instance is already initialised.
-     * @see #KEY_MATERIAL
-     * @see #CIPHER_BLOCK_SIZE
-     */
-    void init(Map<Object, Object> attributes) throws InvalidKeyException, IllegalStateException;
+	/**
+	 * Initialises the algorithm with designated attributes. Permissible names and
+	 * values are described in the class documentation above.
+	 *
+	 * @param attributes
+	 *            a set of name-value pairs that describes the desired future
+	 *            behaviour of this instance.
+	 * @exception InvalidKeyException
+	 *                if the key data is invalid.
+	 * @exception IllegalStateException
+	 *                if the instance is already initialised.
+	 * @see #KEY_MATERIAL
+	 * @see #CIPHER_BLOCK_SIZE
+	 */
+	void init(Map<Object, Object> attributes) throws InvalidKeyException, IllegalStateException;
 
-    /**
-     * Returns an {@link Iterator} over the supported key sizes. Each element
-     * returned by this object is an {@link Integer}.
-     *
-     * @return an {@link Iterator} over the supported key sizes.
-     */
-    Iterator<Integer> keySizes();
+	/**
+	 * Returns an {@link Iterator} over the supported key sizes. Each element
+	 * returned by this object is an {@link Integer}.
+	 *
+	 * @return an {@link Iterator} over the supported key sizes.
+	 */
+	Iterator<Integer> keySizes();
 
-    /**
-     * Returns the canonical name of this instance.
-     *
-     * @return the canonical name of this instance.
-     */
-    String name();
+	/**
+	 * Returns the canonical name of this instance.
+	 *
+	 * @return the canonical name of this instance.
+	 */
+	String name();
 
-    /**
-     * Resets the algorithm instance for re-initialisation and use with other
-     * characteristics. This method always succeeds.
-     */
-    void reset();
+	/**
+	 * Resets the algorithm instance for re-initialisation and use with other
+	 * characteristics. This method always succeeds.
+	 */
+	void reset();
 
-    /**
-     * A <i>correctness</i> test that consists of basic symmetric encryption /
-     * decryption test(s) for all supported block and key sizes, as well as one
-     * (1) variable key Known Answer Test (KAT).
-     *
-     * @return <code>true</code> if the implementation passes simple
-     *         <i>correctness</i> tests. Returns <code>false</code> otherwise.
-     */
-    boolean selfTest();
+	/**
+	 * A <i>correctness</i> test that consists of basic symmetric encryption /
+	 * decryption test(s) for all supported block and key sizes, as well as one (1)
+	 * variable key Known Answer Test (KAT).
+	 *
+	 * @return <code>true</code> if the implementation passes simple
+	 *         <i>correctness</i> tests. Returns <code>false</code> otherwise.
+	 */
+	boolean selfTest();
 }

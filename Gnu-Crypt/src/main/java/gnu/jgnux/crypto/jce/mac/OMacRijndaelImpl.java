@@ -39,10 +39,8 @@ package gnu.jgnux.crypto.jce.mac;
 
 import gnu.jgnu.security.Registry;
 
-public class OMacRijndaelImpl extends MacAdapter
-{
-    public OMacRijndaelImpl()
-    {
-	super(Registry.OMAC_PREFIX + Registry.RIJNDAEL_CIPHER);
-    }
+public class OMacRijndaelImpl extends MacAdapter {
+	public OMacRijndaelImpl() {
+		super(Registry.OMAC_PREFIX + Registry.RIJNDAEL_CIPHER);
+	}
 }

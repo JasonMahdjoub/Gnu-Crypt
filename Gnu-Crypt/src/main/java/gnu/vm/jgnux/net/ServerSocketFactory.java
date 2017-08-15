@@ -49,64 +49,60 @@ import java.net.ServerSocket;
  *
  * @author Casey Marshall (rsdio@metastatic.org)
  */
-public abstract class ServerSocketFactory
-{
+public abstract class ServerSocketFactory {
 
-    // Constructors.
-    // ------------------------------------------------------------------------
+	// Constructors.
+	// ------------------------------------------------------------------------
 
-    /**
-     * Default 0-argument constructor.
-     */
-    protected ServerSocketFactory()
-    {
-	super();
-    }
+	/**
+	 * Default 0-argument constructor.
+	 */
+	protected ServerSocketFactory() {
+		super();
+	}
 
-    // Class methods.
-    // ------------------------------------------------------------------------
+	// Class methods.
+	// ------------------------------------------------------------------------
 
-    /**
-     * Returns the default server socket factory. The type of factory returned
-     * may depend upon the installation.
-     *
-     * @return The default server socket factory.
-     */
-    /*
-     * public static synchronized ServerSocketFactory getDefault() { try {
-     * String s = Security.getProperty("gnu.defaultServerSocketFactory"); if (s
-     * != null) { Class c = Class.forName(s); return (ServerSocketFactory)
-     * c.newInstance(); } } catch (Exception e) { } return new
-     * VanillaServerSocketFactory(); }
-     */
+	/**
+	 * Returns the default server socket factory. The type of factory returned may
+	 * depend upon the installation.
+	 *
+	 * @return The default server socket factory.
+	 */
+	/*
+	 * public static synchronized ServerSocketFactory getDefault() { try { String s
+	 * = Security.getProperty("gnu.defaultServerSocketFactory"); if (s != null) {
+	 * Class c = Class.forName(s); return (ServerSocketFactory) c.newInstance(); } }
+	 * catch (Exception e) { } return new VanillaServerSocketFactory(); }
+	 */
 
-    // Instance methods.
-    // ------------------------------------------------------------------------
+	// Instance methods.
+	// ------------------------------------------------------------------------
 
-    /**
-     * Create an unbound server socket.
-     *
-     * @return The new server socket.
-     * @throws IOException
-     *             If a networking error occurs.
-     */
-    public ServerSocket createServerSocket() throws IOException
-    {
-	throw new UnsupportedOperationException();
-    }
+	/**
+	 * Create an unbound server socket.
+	 *
+	 * @return The new server socket.
+	 * @throws IOException
+	 *             If a networking error occurs.
+	 */
+	public ServerSocket createServerSocket() throws IOException {
+		throw new UnsupportedOperationException();
+	}
 
-    /**
-     * Create a server socket bound to the given port.
-     *
-     * @param port
-     *            The port to bind the server socket to.
-     * @return A server socket bound to <i>port</i>.
-     * @throws IOException
-     *             If a networking error occurs.
-     */
-    public abstract ServerSocket createServerSocket(int port) throws IOException;
+	/**
+	 * Create a server socket bound to the given port.
+	 *
+	 * @param port
+	 *            The port to bind the server socket to.
+	 * @return A server socket bound to <i>port</i>.
+	 * @throws IOException
+	 *             If a networking error occurs.
+	 */
+	public abstract ServerSocket createServerSocket(int port) throws IOException;
 
-    public abstract ServerSocket createServerSocket(int port, int backlog) throws IOException;
+	public abstract ServerSocket createServerSocket(int port, int backlog) throws IOException;
 
-    public abstract ServerSocket createServerSocket(int port, int backlog, InetAddress bindAddress) throws IOException;
+	public abstract ServerSocket createServerSocket(int port, int backlog, InetAddress bindAddress) throws IOException;
 }

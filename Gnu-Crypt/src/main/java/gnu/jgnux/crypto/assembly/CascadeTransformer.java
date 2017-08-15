@@ -45,82 +45,68 @@ import gnu.vm.jgnu.security.InvalidKeyException;
  * An Adapter to use any {@link Cascade} as a {@link Transformer} in an
  * {@link Assembly}.
  */
-class CascadeTransformer extends Transformer
-{
-    private Cascade delegate;
+class CascadeTransformer extends Transformer {
+	private Cascade delegate;
 
-    private int blockSize;
+	private int blockSize;
 
-    CascadeTransformer(Cascade delegate)
-    {
-	super();
+	CascadeTransformer(Cascade delegate) {
+		super();
 
-	this.delegate = delegate;
-    }
-
-    @Override
-    int delegateBlockSize()
-    {
-	return blockSize;
-    }
-
-    @Override
-    void initDelegate(Map<Object, Object> attributes) throws TransformerException
-    {
-	attributes.put(Cascade.DIRECTION, wired);
-	try
-	{
-	    delegate.init(attributes);
+		this.delegate = delegate;
 	}
-	catch (InvalidKeyException x)
-	{
-	    throw new TransformerException("initDelegate()", x);
+
+	@Override
+	int delegateBlockSize() {
+		return blockSize;
 	}
-	blockSize = delegate.currentBlockSize();
-    }
 
-    @Override
-    byte[] lastUpdateDelegate() throws TransformerException
-    {
-	if (inBuffer.size() != 0)
-	{
-	    IllegalStateException cause = new IllegalStateException(
-		    "Cascade transformer, after last update, must be empty but isn't");
-	    throw new TransformerException("lastUpdateDelegate()", cause);
+	@Override
+	void initDelegate(Map<Object, Object> attributes) throws TransformerException {
+		attributes.put(Cascade.DIRECTION, wired);
+		try {
+			delegate.init(attributes);
+		} catch (InvalidKeyException x) {
+			throw new TransformerException("initDelegate()", x);
+		}
+		blockSize = delegate.currentBlockSize();
 	}
-	return new byte[0];
-    }
 
-    @Override
-    void resetDelegate()
-    {
-	delegate.reset();
-	blockSize = 0;
-    }
-
-    @Override
-    byte[] updateDelegate(byte[] in, int offset, int length)
-    {
-	byte[] result = updateInternal(in, offset, length);
-	return result;
-    }
-
-    private byte[] updateInternal(byte[] in, int offset, int length)
-    {
-	byte[] result;
-	for (int i = 0; i < length; i++)
-	{
-	    inBuffer.write(in[offset++] & 0xFF);
-	    if (inBuffer.size() >= blockSize)
-	    {
-		result = inBuffer.toByteArray();
-		inBuffer.reset();
-		delegate.update(result, 0, result, 0);
-		outBuffer.write(result, 0, blockSize);
-	    }
+	@Override
+	byte[] lastUpdateDelegate() throws TransformerException {
+		if (inBuffer.size() != 0) {
+			IllegalStateException cause = new IllegalStateException(
+					"Cascade transformer, after last update, must be empty but isn't");
+			throw new TransformerException("lastUpdateDelegate()", cause);
+		}
+		return new byte[0];
 	}
-	result = outBuffer.toByteArray();
-	outBuffer.reset();
-	return result;
-    }
+
+	@Override
+	void resetDelegate() {
+		delegate.reset();
+		blockSize = 0;
+	}
+
+	@Override
+	byte[] updateDelegate(byte[] in, int offset, int length) {
+		byte[] result = updateInternal(in, offset, length);
+		return result;
+	}
+
+	private byte[] updateInternal(byte[] in, int offset, int length) {
+		byte[] result;
+		for (int i = 0; i < length; i++) {
+			inBuffer.write(in[offset++] & 0xFF);
+			if (inBuffer.size() >= blockSize) {
+				result = inBuffer.toByteArray();
+				inBuffer.reset();
+				delegate.update(result, 0, result, 0);
+				outBuffer.write(result, 0, blockSize);
+			}
+		}
+		result = outBuffer.toByteArray();
+		outBuffer.reset();
+		return result;
+	}
 }

@@ -39,10 +39,8 @@ package gnu.jgnux.crypto.jce.key;
 
 import gnu.jgnu.security.Registry;
 
-public class KhazadKeyGeneratorImpl extends SecretKeyGeneratorImpl
-{
-    public KhazadKeyGeneratorImpl()
-    {
-	super(Registry.KHAZAD_CIPHER);
-    }
+public class KhazadKeyGeneratorImpl extends SecretKeyGeneratorImpl {
+	public KhazadKeyGeneratorImpl() {
+		super(Registry.KHAZAD_CIPHER);
+	}
 }

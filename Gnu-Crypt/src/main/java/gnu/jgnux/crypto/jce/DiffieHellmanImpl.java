@@ -56,114 +56,102 @@ import gnu.vm.jgnux.crypto.spec.SecretKeySpec;
  *
  * @author Casey Marshall (csm@gnu.org)
  */
-public final class DiffieHellmanImpl extends KeyAgreementSpi
-{
-    /** The private key being used for this agreement. */
-    private DHPrivateKey key;
+public final class DiffieHellmanImpl extends KeyAgreementSpi {
+	/** The private key being used for this agreement. */
+	private DHPrivateKey key;
 
-    /** The current result. */
-    private byte[] result;
+	/** The current result. */
+	private byte[] result;
 
-    /** True if the caller told us we are done. */
-    private boolean last_phase_done;
+	/** True if the caller told us we are done. */
+	private boolean last_phase_done;
 
-    /** Trivial default constructor. */
-    public DiffieHellmanImpl()
-    {
-	super();
+	/** Trivial default constructor. */
+	public DiffieHellmanImpl() {
+		super();
 
-	key = null;
-	result = null;
-	last_phase_done = false;
-    }
-
-    private void checkState()
-    {
-	if (result == null || !last_phase_done)
-	    throw new IllegalStateException("Not finished");
-    }
-
-    @Override
-    protected Key engineDoPhase(Key incoming, boolean lastPhase) throws InvalidKeyException
-    {
-	if (key == null)
-	    throw new IllegalStateException("Not initialized");
-
-	if (last_phase_done)
-	    throw new IllegalStateException("Last phase already done");
-
-	if (!(incoming instanceof DHPublicKey))
-	    throw new InvalidKeyException("Key MUST be a DHPublicKey");
-
-	DHPublicKey pub = (DHPublicKey) incoming;
-	DHParameterSpec s1 = key.getParams();
-	DHParameterSpec s2 = pub.getParams();
-	if (!s1.getG().equals(s2.getG()) || !s1.getP().equals(s2.getP()))
-	    throw new InvalidKeyException("Incompatible key");
-	if (!lastPhase)
-	    throw new IllegalArgumentException(
-		    "This key-agreement MUST be concluded in one step only");
-	BigInteger resultBI = pub.getY().modPow(key.getX(), s1.getP());
-	result = resultBI.toByteArray();
-	if (result[0] == 0x00)
-	{
-	    byte[] buf = new byte[result.length - 1];
-	    System.arraycopy(result, 1, buf, 0, buf.length);
-	    result = buf;
+		key = null;
+		result = null;
+		last_phase_done = false;
 	}
-	last_phase_done = true;
-	return null;
-    }
 
-    @Override
-    protected byte[] engineGenerateSecret()
-    {
-	checkState();
-	byte[] res = result.clone();
-	reset();
-	return res;
-    }
+	private void checkState() {
+		if (result == null || !last_phase_done)
+			throw new IllegalStateException("Not finished");
+	}
 
-    @Override
-    protected int engineGenerateSecret(byte[] secret, int offset) throws ShortBufferException
-    {
-	checkState();
-	if (result.length > secret.length - offset)
-	    throw new ShortBufferException();
-	System.arraycopy(result, 0, secret, offset, result.length);
-	int res = result.length;
-	reset();
-	return res;
-    }
+	@Override
+	protected Key engineDoPhase(Key incoming, boolean lastPhase) throws InvalidKeyException {
+		if (key == null)
+			throw new IllegalStateException("Not initialized");
 
-    @Override
-    protected SecretKey engineGenerateSecret(String algorithm)
-    {
-	checkState();
-	byte[] s = result.clone();
-	SecretKey res = new SecretKeySpec(s, algorithm);
-	reset();
-	return res;
-    }
+		if (last_phase_done)
+			throw new IllegalStateException("Last phase already done");
 
-    @Override
-    protected void engineInit(Key key, AlgorithmParameterSpec params, SecureRandom random) throws InvalidKeyException
-    {
-	engineInit(key, random);
-    }
+		if (!(incoming instanceof DHPublicKey))
+			throw new InvalidKeyException("Key MUST be a DHPublicKey");
 
-    @Override
-    protected void engineInit(Key key, SecureRandom random) throws InvalidKeyException
-    {
-	if (!(key instanceof DHPrivateKey))
-	    throw new InvalidKeyException("Key MUST be a DHPrivateKey");
-	this.key = (DHPrivateKey) key;
-	reset();
-    }
+		DHPublicKey pub = (DHPublicKey) incoming;
+		DHParameterSpec s1 = key.getParams();
+		DHParameterSpec s2 = pub.getParams();
+		if (!s1.getG().equals(s2.getG()) || !s1.getP().equals(s2.getP()))
+			throw new InvalidKeyException("Incompatible key");
+		if (!lastPhase)
+			throw new IllegalArgumentException("This key-agreement MUST be concluded in one step only");
+		BigInteger resultBI = pub.getY().modPow(key.getX(), s1.getP());
+		result = resultBI.toByteArray();
+		if (result[0] == 0x00) {
+			byte[] buf = new byte[result.length - 1];
+			System.arraycopy(result, 1, buf, 0, buf.length);
+			result = buf;
+		}
+		last_phase_done = true;
+		return null;
+	}
 
-    private void reset()
-    {
-	result = null;
-	last_phase_done = false;
-    }
+	@Override
+	protected byte[] engineGenerateSecret() {
+		checkState();
+		byte[] res = result.clone();
+		reset();
+		return res;
+	}
+
+	@Override
+	protected int engineGenerateSecret(byte[] secret, int offset) throws ShortBufferException {
+		checkState();
+		if (result.length > secret.length - offset)
+			throw new ShortBufferException();
+		System.arraycopy(result, 0, secret, offset, result.length);
+		int res = result.length;
+		reset();
+		return res;
+	}
+
+	@Override
+	protected SecretKey engineGenerateSecret(String algorithm) {
+		checkState();
+		byte[] s = result.clone();
+		SecretKey res = new SecretKeySpec(s, algorithm);
+		reset();
+		return res;
+	}
+
+	@Override
+	protected void engineInit(Key key, AlgorithmParameterSpec params, SecureRandom random) throws InvalidKeyException {
+		engineInit(key, random);
+	}
+
+	@Override
+	protected void engineInit(Key key, SecureRandom random) throws InvalidKeyException {
+		if (!(key instanceof DHPrivateKey))
+			throw new InvalidKeyException("Key MUST be a DHPrivateKey");
+		this.key = (DHPrivateKey) key;
+		reset();
+	}
+
+	private void reset() {
+		result = null;
+		last_phase_done = false;
+	}
 }

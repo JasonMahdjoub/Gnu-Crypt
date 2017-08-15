@@ -87,33 +87,29 @@ import gnu.vm.jgnux.crypto.interfaces.DHPrivateKey;
  * Menezes, A., van Oorschot, P. and S. Vanstone.</li>
  * </ol>
  */
-public abstract class DiffieHellmanKeyAgreement extends BaseKeyAgreementParty
-{
-    public static final String SOURCE_OF_RANDOMNESS = "gnu.crypto.dh.ka.prng";
+public abstract class DiffieHellmanKeyAgreement extends BaseKeyAgreementParty {
+	public static final String SOURCE_OF_RANDOMNESS = "gnu.crypto.dh.ka.prng";
 
-    public static final String KA_DIFFIE_HELLMAN_OWNER_PRIVATE_KEY = "gnu.crypto.dh.ka.owner.private.key";
+	public static final String KA_DIFFIE_HELLMAN_OWNER_PRIVATE_KEY = "gnu.crypto.dh.ka.owner.private.key";
 
-    /** The key agreement party's private key. */
-    protected DHPrivateKey ownerKey;
+	/** The key agreement party's private key. */
+	protected DHPrivateKey ownerKey;
 
-    /** The shared secret key. */
-    protected BigInteger ZZ;
+	/** The shared secret key. */
+	protected BigInteger ZZ;
 
-    protected DiffieHellmanKeyAgreement()
-    {
-	super(Registry.DH_KA);
-    }
+	protected DiffieHellmanKeyAgreement() {
+		super(Registry.DH_KA);
+	}
 
-    @Override
-    protected void engineReset()
-    {
-	ownerKey = null;
-	ZZ = null;
-    }
+	@Override
+	protected void engineReset() {
+		ownerKey = null;
+		ZZ = null;
+	}
 
-    @Override
-    protected byte[] engineSharedSecret()
-    {
-	return Util.trim(ZZ);
-    }
+	@Override
+	protected byte[] engineSharedSecret() {
+		return Util.trim(ZZ);
+	}
 }

@@ -54,75 +54,71 @@ import gnu.vm.jgnu.security.Guard;
  * @since 1.1
  * @status updated to 1.4
  */
-public class GuardedObject implements Serializable
-{
-    /**
-     * Compatible with JDK 1.1+.
-     */
-    private static final long serialVersionUID = -5240450096227834308L;
-
-    /**
-     * This is the Guard that is protecting the object.
-     *
-     * @serial the guard
-     */
-    // private final Guard guard;
-
-    /**
-     * This is the object that is being guarded.
-     *
-     * @serial the protected object
-     */
-    private final Object object;
-
-    /**
-     * This method initializes a new instance of <code>GuardedObject</code> that
-     * protects the specified <code>Object</code> using the specified
-     * <code>Guard</code>. A null guard means there are no restrictions on
-     * accessing the object.
-     *
-     * @param object
-     *            the <code>Object</code> to guard
-     * @param guard
-     *            the <code>Guard</code> that is protecting the object
-     */
-    public GuardedObject(Object object, Guard guard)
-    {
-	this.object = object;
-	// this.guard = guard;
-    }
-
-    /**
-     * This method first call the <code>checkGuard</code> method on the
-     * <code>Guard</code> object protecting the guarded object. If the
-     * <code>Guard</code> disallows access, an exception is thrown, otherwise
-     * the <code>Object</code> is returned.
-     *
-     * @return The object being guarded
-     * @throws SecurityException
-     *             if access is denied
-     */
-    public Object getObject()
-    {
-	/*
-	 * if (guard != null) guard.checkGuard(object);
+public class GuardedObject implements Serializable {
+	/**
+	 * Compatible with JDK 1.1+.
 	 */
-	return object;
-    }
+	private static final long serialVersionUID = -5240450096227834308L;
 
-    /**
-     * Ensures that serialization is legal, by checking the guard.
-     *
-     * @param s
-     *            the stream to write to
-     * @throws IOException
-     *             if the underlying stream fails
-     */
-    private void writeObject(ObjectOutputStream s) throws IOException
-    {
-	/*
-	 * if (guard != null) guard.checkGuard(object);
+	/**
+	 * This is the Guard that is protecting the object.
+	 *
+	 * @serial the guard
 	 */
-	s.defaultWriteObject();
-    }
+	// private final Guard guard;
+
+	/**
+	 * This is the object that is being guarded.
+	 *
+	 * @serial the protected object
+	 */
+	private final Object object;
+
+	/**
+	 * This method initializes a new instance of <code>GuardedObject</code> that
+	 * protects the specified <code>Object</code> using the specified
+	 * <code>Guard</code>. A null guard means there are no restrictions on accessing
+	 * the object.
+	 *
+	 * @param object
+	 *            the <code>Object</code> to guard
+	 * @param guard
+	 *            the <code>Guard</code> that is protecting the object
+	 */
+	public GuardedObject(Object object, Guard guard) {
+		this.object = object;
+		// this.guard = guard;
+	}
+
+	/**
+	 * This method first call the <code>checkGuard</code> method on the
+	 * <code>Guard</code> object protecting the guarded object. If the
+	 * <code>Guard</code> disallows access, an exception is thrown, otherwise the
+	 * <code>Object</code> is returned.
+	 *
+	 * @return The object being guarded
+	 * @throws SecurityException
+	 *             if access is denied
+	 */
+	public Object getObject() {
+		/*
+		 * if (guard != null) guard.checkGuard(object);
+		 */
+		return object;
+	}
+
+	/**
+	 * Ensures that serialization is legal, by checking the guard.
+	 *
+	 * @param s
+	 *            the stream to write to
+	 * @throws IOException
+	 *             if the underlying stream fails
+	 */
+	private void writeObject(ObjectOutputStream s) throws IOException {
+		/*
+		 * if (guard != null) guard.checkGuard(object);
+		 */
+		s.defaultWriteObject();
+	}
 } // class GuardedObject

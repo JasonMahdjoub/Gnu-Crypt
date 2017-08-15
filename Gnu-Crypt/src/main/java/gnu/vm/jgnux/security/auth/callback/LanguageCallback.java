@@ -51,59 +51,55 @@ import javax.security.auth.callback.CallbackHandler;
  *
  * @see CallbackHandler
  */
-public class LanguageCallback implements Callback, Serializable
-{
+public class LanguageCallback implements Callback, Serializable {
 
-    // Constants and variables
-    // -------------------------------------------------------------------------
+	// Constants and variables
+	// -------------------------------------------------------------------------
 
-    /**
-     * 
-     */
-    private static final long serialVersionUID = -7848172771810089451L;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -7848172771810089451L;
 
-    /**
-     * @serial
-     * @since 1.4
-     */
-    private Locale locale;
+	/**
+	 * @serial
+	 * @since 1.4
+	 */
+	private Locale locale;
 
-    // Constructor(s)
-    // -------------------------------------------------------------------------
+	// Constructor(s)
+	// -------------------------------------------------------------------------
 
-    /** Construct a <code>LanguageCallback</code>. */
-    public LanguageCallback()
-    {
-	super();
-    }
+	/** Construct a <code>LanguageCallback</code>. */
+	public LanguageCallback() {
+		super();
+	}
 
-    // Class methods
-    // -------------------------------------------------------------------------
+	// Class methods
+	// -------------------------------------------------------------------------
 
-    // Instance methods
-    // -------------------------------------------------------------------------
+	// Instance methods
+	// -------------------------------------------------------------------------
 
-    /**
-     * Get the retrieved Locale.
-     *
-     * @return the retrieved Locale, or <code>null</code> if no Locale could be
-     *         retrieved.
-     * @see #setLocale(Locale)
-     */
-    public Locale getLocale()
-    {
-	return locale;
-    }
+	/**
+	 * Get the retrieved Locale.
+	 *
+	 * @return the retrieved Locale, or <code>null</code> if no Locale could be
+	 *         retrieved.
+	 * @see #setLocale(Locale)
+	 */
+	public Locale getLocale() {
+		return locale;
+	}
 
-    /**
-     * Set the retrieved Locale.
-     *
-     * @param locale
-     *            the retrieved Locale.
-     * @see #getLocale()
-     */
-    public void setLocale(Locale locale)
-    {
-	this.locale = locale;
-    }
+	/**
+	 * Set the retrieved Locale.
+	 *
+	 * @param locale
+	 *            the retrieved Locale.
+	 * @see #getLocale()
+	 */
+	public void setLocale(Locale locale) {
+		this.locale = locale;
+	}
 }

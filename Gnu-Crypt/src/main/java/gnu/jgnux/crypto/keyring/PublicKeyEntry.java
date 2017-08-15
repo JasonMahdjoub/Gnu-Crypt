@@ -50,117 +50,84 @@ import gnu.vm.jgnu.security.KeyFactory;
 import gnu.vm.jgnu.security.PublicKey;
 import gnu.vm.jgnu.security.spec.X509EncodedKeySpec;
 
-public final class PublicKeyEntry extends PrimitiveEntry
-{
-    public static final int TYPE = 6;
+public final class PublicKeyEntry extends PrimitiveEntry {
+	public static final int TYPE = 6;
 
-    public static PublicKeyEntry decode(DataInputStream in) throws IOException
-    {
-	PublicKeyEntry entry = new PublicKeyEntry();
-	entry.defaultDecode(in);
-	String type = entry.properties.get("type");
-	if (type == null)
-	    throw new MalformedKeyringException("no key type");
-	if (type.equalsIgnoreCase("RAW-DSS"))
-	{
-	    IKeyPairCodec coder = KeyPairCodecFactory.getInstance("dss");
-	    entry.key = coder.decodePublicKey(entry.payload);
+	public static PublicKeyEntry decode(DataInputStream in) throws IOException {
+		PublicKeyEntry entry = new PublicKeyEntry();
+		entry.defaultDecode(in);
+		String type = entry.properties.get("type");
+		if (type == null)
+			throw new MalformedKeyringException("no key type");
+		if (type.equalsIgnoreCase("RAW-DSS")) {
+			IKeyPairCodec coder = KeyPairCodecFactory.getInstance("dss");
+			entry.key = coder.decodePublicKey(entry.payload);
+		} else if (type.equalsIgnoreCase("RAW-RSA")) {
+			IKeyPairCodec coder = KeyPairCodecFactory.getInstance("rsa");
+			entry.key = coder.decodePublicKey(entry.payload);
+		} else if (type.equalsIgnoreCase("RAW-DH")) {
+			IKeyPairCodec coder = KeyPairCodecFactory.getInstance("dh");
+			entry.key = coder.decodePublicKey(entry.payload);
+		} else if (type.equalsIgnoreCase("X.509")) {
+			try {
+				KeyFactory kf = KeyFactory.getInstance("RSA");
+				entry.key = kf.generatePublic(new X509EncodedKeySpec(entry.payload));
+			} catch (Exception x) {
+			}
+			if (entry.key == null) {
+				try {
+					KeyFactory kf = KeyFactory.getInstance("DSA");
+					entry.key = kf.generatePublic(new X509EncodedKeySpec(entry.payload));
+				} catch (Exception x) {
+				}
+				if (entry.key == null)
+					throw new MalformedKeyringException("could not decode X.509 key");
+			}
+		} else
+			throw new MalformedKeyringException("unsupported public key type: " + type);
+		return entry;
 	}
-	else if (type.equalsIgnoreCase("RAW-RSA"))
-	{
-	    IKeyPairCodec coder = KeyPairCodecFactory.getInstance("rsa");
-	    entry.key = coder.decodePublicKey(entry.payload);
-	}
-	else if (type.equalsIgnoreCase("RAW-DH"))
-	{
-	    IKeyPairCodec coder = KeyPairCodecFactory.getInstance("dh");
-	    entry.key = coder.decodePublicKey(entry.payload);
-	}
-	else if (type.equalsIgnoreCase("X.509"))
-	{
-	    try
-	    {
-		KeyFactory kf = KeyFactory.getInstance("RSA");
-		entry.key = kf
-			.generatePublic(new X509EncodedKeySpec(entry.payload));
-	    }
-	    catch (Exception x)
-	    {
-	    }
-	    if (entry.key == null)
-	    {
-		try
-		{
-		    KeyFactory kf = KeyFactory.getInstance("DSA");
-		    entry.key = kf.generatePublic(
-			    new X509EncodedKeySpec(entry.payload));
-		}
-		catch (Exception x)
-		{
-		}
-		if (entry.key == null)
-		    throw new MalformedKeyringException(
-			    "could not decode X.509 key");
-	    }
-	}
-	else
-	    throw new MalformedKeyringException(
-		    "unsupported public key type: " + type);
-	return entry;
-    }
 
-    private PublicKey key;
+	private PublicKey key;
 
-    private PublicKeyEntry()
-    {
-	super(TYPE);
-    }
+	private PublicKeyEntry() {
+		super(TYPE);
+	}
 
-    public PublicKeyEntry(PublicKey key, Date creationDate, Properties properties)
-    {
-	super(TYPE, creationDate, properties);
-	if (key == null)
-	    throw new IllegalArgumentException("no key specified");
-	this.key = key;
-    }
+	public PublicKeyEntry(PublicKey key, Date creationDate, Properties properties) {
+		super(TYPE, creationDate, properties);
+		if (key == null)
+			throw new IllegalArgumentException("no key specified");
+		this.key = key;
+	}
 
-    @Override
-    protected void encodePayload()
-    {
-	if (key instanceof DSSPublicKey)
-	{
-	    properties.put("type", "RAW-DSS");
-	    IKeyPairCodec coder = KeyPairCodecFactory.getInstance("dss");
-	    payload = coder.encodePublicKey(key);
+	@Override
+	protected void encodePayload() {
+		if (key instanceof DSSPublicKey) {
+			properties.put("type", "RAW-DSS");
+			IKeyPairCodec coder = KeyPairCodecFactory.getInstance("dss");
+			payload = coder.encodePublicKey(key);
+		} else if (key instanceof GnuRSAPublicKey) {
+			properties.put("type", "RAW-RSA");
+			IKeyPairCodec coder = KeyPairCodecFactory.getInstance("rsa");
+			payload = coder.encodePublicKey(key);
+		} else if (key instanceof GnuDHPublicKey) {
+			properties.put("type", "RAW-DH");
+			IKeyPairCodec coder = KeyPairCodecFactory.getInstance("dh");
+			payload = coder.encodePublicKey(key);
+		} else if (key.getFormat() != null && key.getFormat().equals("X.509")) {
+			properties.put("type", "X.509");
+			payload = key.getEncoded();
+		} else
+			throw new IllegalArgumentException("cannot encode public key");
 	}
-	else if (key instanceof GnuRSAPublicKey)
-	{
-	    properties.put("type", "RAW-RSA");
-	    IKeyPairCodec coder = KeyPairCodecFactory.getInstance("rsa");
-	    payload = coder.encodePublicKey(key);
-	}
-	else if (key instanceof GnuDHPublicKey)
-	{
-	    properties.put("type", "RAW-DH");
-	    IKeyPairCodec coder = KeyPairCodecFactory.getInstance("dh");
-	    payload = coder.encodePublicKey(key);
-	}
-	else if (key.getFormat() != null && key.getFormat().equals("X.509"))
-	{
-	    properties.put("type", "X.509");
-	    payload = key.getEncoded();
-	}
-	else
-	    throw new IllegalArgumentException("cannot encode public key");
-    }
 
-    /**
-     * Returns the public key.
-     *
-     * @return The public key.
-     */
-    public PublicKey getKey()
-    {
-	return key;
-    }
+	/**
+	 * Returns the public key.
+	 *
+	 * @return The public key.
+	 */
+	public PublicKey getKey() {
+		return key;
+	}
 }

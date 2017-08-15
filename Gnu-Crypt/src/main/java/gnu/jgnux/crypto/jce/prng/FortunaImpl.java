@@ -44,63 +44,48 @@ import gnu.jgnu.security.jce.prng.SecureRandomAdapter;
 import gnu.jgnu.security.prng.LimitReachedException;
 import gnu.jgnux.crypto.prng.Fortuna;
 
-public final class FortunaImpl extends SecureRandomSpi
-{
-    /**
-     * 
-     */
-    private static final long serialVersionUID = 1775586315455187633L;
+public final class FortunaImpl extends SecureRandomSpi {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1775586315455187633L;
 
-    private boolean virgin = true;
+	private boolean virgin = true;
 
-    private final Fortuna adaptee;
+	private final Fortuna adaptee;
 
-    public FortunaImpl()
-    {
-	adaptee = new Fortuna();
-    }
-
-    @Override
-    protected byte[] engineGenerateSeed(int numBytes)
-    {
-	return SecureRandomAdapter.getSeed(numBytes);
-    }
-
-    @Override
-    protected void engineNextBytes(byte[] buffer)
-    {
-	synchronized (adaptee)
-	{
-	    if (virgin)
-	    {
-		this.engineSetSeed(engineGenerateSeed(32));
-	    }
-	    try
-	    {
-		adaptee.nextBytes(buffer);
-	    }
-	    catch (LimitReachedException shouldNotHappen)
-	    {
-		throw new Error(shouldNotHappen);
-	    }
+	public FortunaImpl() {
+		adaptee = new Fortuna();
 	}
-    }
 
-    @Override
-    protected void engineSetSeed(byte[] seed)
-    {
-	synchronized (adaptee)
-	{
-	    if (virgin)
-	    {
-		adaptee.init(
-			Collections.singletonMap((Object) Fortuna.SEED, seed));
-		virgin = false;
-	    }
-	    else
-	    {
-		adaptee.addRandomBytes(seed);
-	    }
+	@Override
+	protected byte[] engineGenerateSeed(int numBytes) {
+		return SecureRandomAdapter.getSeed(numBytes);
 	}
-    }
+
+	@Override
+	protected void engineNextBytes(byte[] buffer) {
+		synchronized (adaptee) {
+			if (virgin) {
+				this.engineSetSeed(engineGenerateSeed(32));
+			}
+			try {
+				adaptee.nextBytes(buffer);
+			} catch (LimitReachedException shouldNotHappen) {
+				throw new Error(shouldNotHappen);
+			}
+		}
+	}
+
+	@Override
+	protected void engineSetSeed(byte[] seed) {
+		synchronized (adaptee) {
+			if (virgin) {
+				adaptee.init(Collections.singletonMap((Object) Fortuna.SEED, seed));
+				virgin = false;
+			} else {
+				adaptee.addRandomBytes(seed);
+			}
+		}
+	}
 }

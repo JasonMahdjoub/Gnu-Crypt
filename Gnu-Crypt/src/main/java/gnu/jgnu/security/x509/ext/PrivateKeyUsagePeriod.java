@@ -45,62 +45,52 @@ import gnu.jgnu.security.der.DER;
 import gnu.jgnu.security.der.DERReader;
 import gnu.jgnu.security.der.DERValue;
 
-public class PrivateKeyUsagePeriod extends Extension.Value
-{
+public class PrivateKeyUsagePeriod extends Extension.Value {
 
-    // Constants and fields.
-    // -------------------------------------------------------------------------
+	// Constants and fields.
+	// -------------------------------------------------------------------------
 
-    public static final OID ID = new OID("2.5.29.16");
+	public static final OID ID = new OID("2.5.29.16");
 
-    private final Date notBefore;
+	private final Date notBefore;
 
-    private final Date notAfter;
+	private final Date notAfter;
 
-    // Constructor.
-    // -------------------------------------------------------------------------
+	// Constructor.
+	// -------------------------------------------------------------------------
 
-    public PrivateKeyUsagePeriod(final byte[] encoded) throws IOException
-    {
-	super(encoded);
-	DERReader der = new DERReader(encoded);
-	DERValue val = der.read();
-	if (!val.isConstructed())
-	    throw new IOException("malformed PrivateKeyUsagePeriod");
-	if (val.getLength() > 0)
-	    val = der.read();
-	if (val.getTagClass() == DER.APPLICATION || val.getTag() == 0)
-	{
-	    notBefore = (Date) val.getValueAs(DER.GENERALIZED_TIME);
-	    val = der.read();
+	public PrivateKeyUsagePeriod(final byte[] encoded) throws IOException {
+		super(encoded);
+		DERReader der = new DERReader(encoded);
+		DERValue val = der.read();
+		if (!val.isConstructed())
+			throw new IOException("malformed PrivateKeyUsagePeriod");
+		if (val.getLength() > 0)
+			val = der.read();
+		if (val.getTagClass() == DER.APPLICATION || val.getTag() == 0) {
+			notBefore = (Date) val.getValueAs(DER.GENERALIZED_TIME);
+			val = der.read();
+		} else
+			notBefore = null;
+		if (val.getTagClass() == DER.APPLICATION || val.getTag() == 1) {
+			notAfter = (Date) val.getValueAs(DER.GENERALIZED_TIME);
+		} else
+			notAfter = null;
 	}
-	else
-	    notBefore = null;
-	if (val.getTagClass() == DER.APPLICATION || val.getTag() == 1)
-	{
-	    notAfter = (Date) val.getValueAs(DER.GENERALIZED_TIME);
+
+	// Instance methods.
+	// -------------------------------------------------------------------------
+
+	public Date getNotAfter() {
+		return notAfter != null ? (Date) notAfter.clone() : null;
 	}
-	else
-	    notAfter = null;
-    }
 
-    // Instance methods.
-    // -------------------------------------------------------------------------
+	public Date getNotBefore() {
+		return notBefore != null ? (Date) notBefore.clone() : null;
+	}
 
-    public Date getNotAfter()
-    {
-	return notAfter != null ? (Date) notAfter.clone() : null;
-    }
-
-    public Date getNotBefore()
-    {
-	return notBefore != null ? (Date) notBefore.clone() : null;
-    }
-
-    @Override
-    public String toString()
-    {
-	return PrivateKeyUsagePeriod.class.getName() + " [ notBefore="
-		+ notBefore + " notAfter=" + notAfter + " ]";
-    }
+	@Override
+	public String toString() {
+		return PrivateKeyUsagePeriod.class.getName() + " [ notBefore=" + notBefore + " notAfter=" + notAfter + " ]";
+	}
 }

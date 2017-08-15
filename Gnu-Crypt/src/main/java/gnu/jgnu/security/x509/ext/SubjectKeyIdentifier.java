@@ -45,40 +45,35 @@ import gnu.jgnu.security.der.DERReader;
 import gnu.jgnu.security.der.DERValue;
 import gnu.jgnu.security.x509.Util;
 
-public class SubjectKeyIdentifier extends Extension.Value
-{
+public class SubjectKeyIdentifier extends Extension.Value {
 
-    // Constant.
-    // -------------------------------------------------------------------------
+	// Constant.
+	// -------------------------------------------------------------------------
 
-    public static final OID ID = new OID("2.5.29.14");
+	public static final OID ID = new OID("2.5.29.14");
 
-    private final byte[] keyIdentifier;
+	private final byte[] keyIdentifier;
 
-    // Constructor.
-    // -------------------------------------------------------------------------
+	// Constructor.
+	// -------------------------------------------------------------------------
 
-    public SubjectKeyIdentifier(final byte[] encoded) throws IOException
-    {
-	super(encoded);
-	DERValue val = DERReader.read(encoded);
-	if (val.getTag() != DER.OCTET_STRING)
-	    throw new IOException("malformed SubjectKeyIdentifier");
-	keyIdentifier = (byte[]) val.getValue();
-    }
+	public SubjectKeyIdentifier(final byte[] encoded) throws IOException {
+		super(encoded);
+		DERValue val = DERReader.read(encoded);
+		if (val.getTag() != DER.OCTET_STRING)
+			throw new IOException("malformed SubjectKeyIdentifier");
+		keyIdentifier = (byte[]) val.getValue();
+	}
 
-    // Instance methods.
-    // -------------------------------------------------------------------------
+	// Instance methods.
+	// -------------------------------------------------------------------------
 
-    public byte[] getKeyIdentifier()
-    {
-	return keyIdentifier.clone();
-    }
+	public byte[] getKeyIdentifier() {
+		return keyIdentifier.clone();
+	}
 
-    @Override
-    public String toString()
-    {
-	return SubjectKeyIdentifier.class.getName() + " [ "
-		+ Util.toHexString(keyIdentifier, ':') + " ]";
-    }
+	@Override
+	public String toString() {
+		return SubjectKeyIdentifier.class.getName() + " [ " + Util.toHexString(keyIdentifier, ':') + " ]";
+	}
 }

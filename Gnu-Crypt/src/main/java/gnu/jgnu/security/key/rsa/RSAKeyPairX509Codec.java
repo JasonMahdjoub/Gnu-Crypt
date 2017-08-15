@@ -59,197 +59,176 @@ import gnu.vm.jgnu.security.PublicKey;
  * An implementation of an {@link IKeyPairCodec} that knows how to encode /
  * decode X.509 ASN.1 external representation of RSA public keys.
  */
-public class RSAKeyPairX509Codec implements IKeyPairCodec
-{
+public class RSAKeyPairX509Codec implements IKeyPairCodec {
 
-    private static final OID RSA_ALG_OID = new OID(Registry.RSA_OID_STRING);
+	private static final OID RSA_ALG_OID = new OID(Registry.RSA_OID_STRING);
 
-    // implicit 0-arguments constructor
+	// implicit 0-arguments constructor
 
-    /**
-     * @throws InvalidParameterException
-     *             ALWAYS.
-     */
-    @Override
-    public PrivateKey decodePrivateKey(byte[] input)
-    {
-	throw new InvalidParameterException("Wrong format for private keys");
-    }
-
-    /**
-     * @param input
-     *            the byte array to unmarshall into a valid RSA
-     *            {@link PublicKey} instance. MUST NOT be null.
-     * @return a new instance of a {@link GnuRSAPublicKey} decoded from the
-     *         <i>SubjectPublicKeyInfo</i> material in an X.509 certificate.
-     * @throw InvalidParameterException if an exception occurs during the
-     *        unmarshalling process.
-     */
-    @Override
-    public PublicKey decodePublicKey(byte[] input)
-    {
-	if (input == null)
-	    throw new InvalidParameterException("Input bytes MUST NOT be null");
-
-	BigInteger n, e;
-	DERReader der = new DERReader(input);
-	try
-	{
-	    DERValue derSPKI = der.read();
-	    DerUtil.checkIsConstructed(derSPKI,
-		    "Wrong SubjectPublicKeyInfo field");
-
-	    DERValue derAlgorithmID = der.read();
-	    DerUtil.checkIsConstructed(derAlgorithmID,
-		    "Wrong AlgorithmIdentifier field");
-
-	    DERValue derOID = der.read();
-	    if (!(derOID.getValue() instanceof OID))
-		throw new InvalidParameterException("Wrong Algorithm field");
-
-	    OID algOID = (OID) derOID.getValue();
-	    if (!algOID.equals(RSA_ALG_OID))
-		throw new InvalidParameterException(
-			"Unexpected OID: " + algOID);
-
-	    // rfc-2459 states that this field is OPTIONAL but NULL if/when
-	    // present
-	    DERValue val = der.read();
-	    if (val.getTag() == DER.NULL)
-		val = der.read();
-
-	    if (!(val.getValue() instanceof BitString))
-		throw new InvalidParameterException(
-			"Wrong SubjectPublicKey field");
-
-	    byte[] spkBytes = ((BitString) val.getValue()).toByteArray();
-
-	    der = new DERReader(spkBytes);
-	    val = der.read();
-	    DerUtil.checkIsConstructed(derAlgorithmID,
-		    "Wrong subjectPublicKey field");
-
-	    val = der.read();
-	    DerUtil.checkIsBigInteger(val, "Wrong modulus field");
-	    n = (BigInteger) val.getValue();
-	    val = der.read();
-	    DerUtil.checkIsBigInteger(val, "Wrong publicExponent field");
-	    e = (BigInteger) val.getValue();
+	/**
+	 * @throws InvalidParameterException
+	 *             ALWAYS.
+	 */
+	@Override
+	public PrivateKey decodePrivateKey(byte[] input) {
+		throw new InvalidParameterException("Wrong format for private keys");
 	}
-	catch (IOException x)
-	{
-	    InvalidParameterException y = new InvalidParameterException(
-		    x.getMessage());
-	    y.initCause(x);
-	    throw y;
+
+	/**
+	 * @param input
+	 *            the byte array to unmarshall into a valid RSA {@link PublicKey}
+	 *            instance. MUST NOT be null.
+	 * @return a new instance of a {@link GnuRSAPublicKey} decoded from the
+	 *         <i>SubjectPublicKeyInfo</i> material in an X.509 certificate.
+	 * @throw InvalidParameterException if an exception occurs during the
+	 *        unmarshalling process.
+	 */
+	@Override
+	public PublicKey decodePublicKey(byte[] input) {
+		if (input == null)
+			throw new InvalidParameterException("Input bytes MUST NOT be null");
+
+		BigInteger n, e;
+		DERReader der = new DERReader(input);
+		try {
+			DERValue derSPKI = der.read();
+			DerUtil.checkIsConstructed(derSPKI, "Wrong SubjectPublicKeyInfo field");
+
+			DERValue derAlgorithmID = der.read();
+			DerUtil.checkIsConstructed(derAlgorithmID, "Wrong AlgorithmIdentifier field");
+
+			DERValue derOID = der.read();
+			if (!(derOID.getValue() instanceof OID))
+				throw new InvalidParameterException("Wrong Algorithm field");
+
+			OID algOID = (OID) derOID.getValue();
+			if (!algOID.equals(RSA_ALG_OID))
+				throw new InvalidParameterException("Unexpected OID: " + algOID);
+
+			// rfc-2459 states that this field is OPTIONAL but NULL if/when
+			// present
+			DERValue val = der.read();
+			if (val.getTag() == DER.NULL)
+				val = der.read();
+
+			if (!(val.getValue() instanceof BitString))
+				throw new InvalidParameterException("Wrong SubjectPublicKey field");
+
+			byte[] spkBytes = ((BitString) val.getValue()).toByteArray();
+
+			der = new DERReader(spkBytes);
+			val = der.read();
+			DerUtil.checkIsConstructed(derAlgorithmID, "Wrong subjectPublicKey field");
+
+			val = der.read();
+			DerUtil.checkIsBigInteger(val, "Wrong modulus field");
+			n = (BigInteger) val.getValue();
+			val = der.read();
+			DerUtil.checkIsBigInteger(val, "Wrong publicExponent field");
+			e = (BigInteger) val.getValue();
+		} catch (IOException x) {
+			InvalidParameterException y = new InvalidParameterException(x.getMessage());
+			y.initCause(x);
+			throw y;
+		}
+		PublicKey result = new GnuRSAPublicKey(Registry.X509_ENCODING_ID, n, e);
+		return result;
 	}
-	PublicKey result = new GnuRSAPublicKey(Registry.X509_ENCODING_ID, n, e);
-	return result;
-    }
 
-    /**
-     * @throws InvalidParameterException
-     *             ALWAYS.
-     */
-    @Override
-    public byte[] encodePrivateKey(PrivateKey key)
-    {
-	throw new InvalidParameterException("Wrong format for private keys");
-    }
-
-    /**
-     * Returns the X.509 ASN.1 <i>SubjectPublicKeyInfo</i> representation of an
-     * RSA public key. The ASN.1 specification, as defined in RFC-3280, and
-     * RFC-2459, is as follows:
-     *
-     * <pre>
-     *   SubjectPublicKeyInfo ::= SEQUENCE {
-     *     algorithm         AlgorithmIdentifier,
-     *     subjectPublicKey  BIT STRING
-     *   }
-     *
-     *   AlgorithmIdentifier ::= SEQUENCE {
-     *     algorithm   OBJECT IDENTIFIER,
-     *     parameters  ANY DEFINED BY algorithm OPTIONAL
-     *   }
-     * </pre>
-     * <p>
-     * As indicated in RFC-2459: "The parameters field shall have ASN.1 type
-     * NULL for this algorithm identifier.".
-     * <p>
-     * The <i>subjectPublicKey</i> field, which is a BIT STRING, contains the
-     * DER-encoded form of the RSA public key defined as:
-     *
-     * <pre>
-     *   RSAPublicKey ::= SEQUENCE {
-     *     modulus         INTEGER, -- n
-     *     publicExponent  INTEGER  -- e
-     *   }
-     * </pre>
-     *
-     * @param key
-     *            the {@link PublicKey} instance to encode. MUST be an instance
-     *            of {@link GnuRSAPublicKey}.
-     * @return the ASN.1 representation of the <i>SubjectPublicKeyInfo</i> in an
-     *         X.509 certificate.
-     * @throw InvalidParameterException if <code>key</code> is not an instance
-     *        of {@link GnuRSAPublicKey} or if an exception occurs during the
-     *        marshalling process.
-     */
-    @Override
-    public byte[] encodePublicKey(PublicKey key)
-    {
-	if (!(key instanceof GnuRSAPublicKey))
-	    throw new InvalidParameterException("key");
-
-	DERValue derOID = new DERValue(DER.OBJECT_IDENTIFIER, RSA_ALG_OID);
-
-	GnuRSAPublicKey rsaKey = (GnuRSAPublicKey) key;
-	BigInteger n = rsaKey.getN();
-	BigInteger e = rsaKey.getE();
-
-	DERValue derN = new DERValue(DER.INTEGER, n);
-	DERValue derE = new DERValue(DER.INTEGER, e);
-
-	ArrayList<DERValue> algorithmID = new ArrayList<>(2);
-	algorithmID.add(derOID);
-	algorithmID.add(new DERValue(DER.NULL, null));
-	DERValue derAlgorithmID = new DERValue(DER.CONSTRUCTED | DER.SEQUENCE,
-		algorithmID);
-
-	ArrayList<DERValue> publicKey = new ArrayList<>(2);
-	publicKey.add(derN);
-	publicKey.add(derE);
-	DERValue derPublicKey = new DERValue(DER.CONSTRUCTED | DER.SEQUENCE,
-		publicKey);
-	byte[] spkBytes = derPublicKey.getEncoded();
-	DERValue derSPK = new DERValue(DER.BIT_STRING, new BitString(spkBytes));
-
-	ArrayList<DERValue> spki = new ArrayList<>(2);
-	spki.add(derAlgorithmID);
-	spki.add(derSPK);
-	DERValue derSPKI = new DERValue(DER.CONSTRUCTED | DER.SEQUENCE, spki);
-
-	byte[] result;
-	ByteArrayOutputStream baos = new ByteArrayOutputStream();
-	try
-	{
-	    DERWriter.write(baos, derSPKI);
-	    result = baos.toByteArray();
+	/**
+	 * @throws InvalidParameterException
+	 *             ALWAYS.
+	 */
+	@Override
+	public byte[] encodePrivateKey(PrivateKey key) {
+		throw new InvalidParameterException("Wrong format for private keys");
 	}
-	catch (IOException x)
-	{
-	    InvalidParameterException y = new InvalidParameterException(
-		    x.getMessage());
-	    y.initCause(x);
-	    throw y;
-	}
-	return result;
-    }
 
-    @Override
-    public int getFormatID()
-    {
-	return X509_FORMAT;
-    }
+	/**
+	 * Returns the X.509 ASN.1 <i>SubjectPublicKeyInfo</i> representation of an RSA
+	 * public key. The ASN.1 specification, as defined in RFC-3280, and RFC-2459, is
+	 * as follows:
+	 *
+	 * <pre>
+	 *   SubjectPublicKeyInfo ::= SEQUENCE {
+	 *     algorithm         AlgorithmIdentifier,
+	 *     subjectPublicKey  BIT STRING
+	 *   }
+	 *
+	 *   AlgorithmIdentifier ::= SEQUENCE {
+	 *     algorithm   OBJECT IDENTIFIER,
+	 *     parameters  ANY DEFINED BY algorithm OPTIONAL
+	 *   }
+	 * </pre>
+	 * <p>
+	 * As indicated in RFC-2459: "The parameters field shall have ASN.1 type NULL
+	 * for this algorithm identifier.".
+	 * <p>
+	 * The <i>subjectPublicKey</i> field, which is a BIT STRING, contains the
+	 * DER-encoded form of the RSA public key defined as:
+	 *
+	 * <pre>
+	 *   RSAPublicKey ::= SEQUENCE {
+	 *     modulus         INTEGER, -- n
+	 *     publicExponent  INTEGER  -- e
+	 *   }
+	 * </pre>
+	 *
+	 * @param key
+	 *            the {@link PublicKey} instance to encode. MUST be an instance of
+	 *            {@link GnuRSAPublicKey}.
+	 * @return the ASN.1 representation of the <i>SubjectPublicKeyInfo</i> in an
+	 *         X.509 certificate.
+	 * @throw InvalidParameterException if <code>key</code> is not an instance of
+	 *        {@link GnuRSAPublicKey} or if an exception occurs during the
+	 *        marshalling process.
+	 */
+	@Override
+	public byte[] encodePublicKey(PublicKey key) {
+		if (!(key instanceof GnuRSAPublicKey))
+			throw new InvalidParameterException("key");
+
+		DERValue derOID = new DERValue(DER.OBJECT_IDENTIFIER, RSA_ALG_OID);
+
+		GnuRSAPublicKey rsaKey = (GnuRSAPublicKey) key;
+		BigInteger n = rsaKey.getN();
+		BigInteger e = rsaKey.getE();
+
+		DERValue derN = new DERValue(DER.INTEGER, n);
+		DERValue derE = new DERValue(DER.INTEGER, e);
+
+		ArrayList<DERValue> algorithmID = new ArrayList<>(2);
+		algorithmID.add(derOID);
+		algorithmID.add(new DERValue(DER.NULL, null));
+		DERValue derAlgorithmID = new DERValue(DER.CONSTRUCTED | DER.SEQUENCE, algorithmID);
+
+		ArrayList<DERValue> publicKey = new ArrayList<>(2);
+		publicKey.add(derN);
+		publicKey.add(derE);
+		DERValue derPublicKey = new DERValue(DER.CONSTRUCTED | DER.SEQUENCE, publicKey);
+		byte[] spkBytes = derPublicKey.getEncoded();
+		DERValue derSPK = new DERValue(DER.BIT_STRING, new BitString(spkBytes));
+
+		ArrayList<DERValue> spki = new ArrayList<>(2);
+		spki.add(derAlgorithmID);
+		spki.add(derSPK);
+		DERValue derSPKI = new DERValue(DER.CONSTRUCTED | DER.SEQUENCE, spki);
+
+		byte[] result;
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		try {
+			DERWriter.write(baos, derSPKI);
+			result = baos.toByteArray();
+		} catch (IOException x) {
+			InvalidParameterException y = new InvalidParameterException(x.getMessage());
+			y.initCause(x);
+			throw y;
+		}
+		return result;
+	}
+
+	@Override
+	public int getFormatID() {
+		return X509_FORMAT;
+	}
 }

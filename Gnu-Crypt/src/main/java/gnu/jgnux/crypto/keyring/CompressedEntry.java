@@ -45,48 +45,42 @@ import java.util.Iterator;
 import java.util.zip.DeflaterOutputStream;
 import java.util.zip.InflaterInputStream;
 
-public class CompressedEntry extends EnvelopeEntry
-{
-    public static final int TYPE = 4;
+public class CompressedEntry extends EnvelopeEntry {
+	public static final int TYPE = 4;
 
-    public static CompressedEntry decode(DataInputStream in) throws IOException
-    {
-	CompressedEntry entry = new CompressedEntry();
-	entry.properties.decode(in);
-	String alg = entry.properties.get("algorithm");
-	if (alg == null)
-	    throw new MalformedKeyringException("no compression algorithm");
-	if (!alg.equalsIgnoreCase("DEFLATE"))
-	    throw new MalformedKeyringException(
-		    "unsupported compression algorithm: " + alg);
-	int len = in.readInt();
-	MeteredInputStream min = new MeteredInputStream(in, len);
-	InflaterInputStream infin = new InflaterInputStream(min);
-	DataInputStream in2 = new DataInputStream(infin);
-	entry.decodeEnvelope(in2);
-	return entry;
-    }
+	public static CompressedEntry decode(DataInputStream in) throws IOException {
+		CompressedEntry entry = new CompressedEntry();
+		entry.properties.decode(in);
+		String alg = entry.properties.get("algorithm");
+		if (alg == null)
+			throw new MalformedKeyringException("no compression algorithm");
+		if (!alg.equalsIgnoreCase("DEFLATE"))
+			throw new MalformedKeyringException("unsupported compression algorithm: " + alg);
+		int len = in.readInt();
+		MeteredInputStream min = new MeteredInputStream(in, len);
+		InflaterInputStream infin = new InflaterInputStream(min);
+		DataInputStream in2 = new DataInputStream(infin);
+		entry.decodeEnvelope(in2);
+		return entry;
+	}
 
-    private CompressedEntry()
-    {
-	this(new Properties());
-    }
+	private CompressedEntry() {
+		this(new Properties());
+	}
 
-    public CompressedEntry(Properties properties)
-    {
-	super(TYPE, properties);
-	this.properties.put("algorithm", "DEFLATE");
-    }
+	public CompressedEntry(Properties properties) {
+		super(TYPE, properties);
+		this.properties.put("algorithm", "DEFLATE");
+	}
 
-    @Override
-    protected void encodePayload() throws IOException
-    {
-	ByteArrayOutputStream buf = new ByteArrayOutputStream(1024);
-	DeflaterOutputStream dout = new DeflaterOutputStream(buf);
-	DataOutputStream out2 = new DataOutputStream(dout);
-	for (Iterator<Entry> it = entries.iterator(); it.hasNext();)
-	    it.next().encode(out2);
-	dout.finish();
-	payload = buf.toByteArray();
-    }
+	@Override
+	protected void encodePayload() throws IOException {
+		ByteArrayOutputStream buf = new ByteArrayOutputStream(1024);
+		DeflaterOutputStream dout = new DeflaterOutputStream(buf);
+		DataOutputStream out2 = new DataOutputStream(dout);
+		for (Iterator<Entry> it = entries.iterator(); it.hasNext();)
+			it.next().encode(out2);
+		dout.finish();
+		payload = buf.toByteArray();
+	}
 }

@@ -59,205 +59,186 @@ import java.util.List;
  * @since 1.4
  * @status updated to 1.4
  */
-public abstract class CertPath implements Serializable
-{
-    /**
-     * The serialized representation of a path.
-     *
-     * @author Eric Blake (ebb9@email.byu.edu)
-     */
-    protected static class CertPathRep implements Serializable
-    {
+public abstract class CertPath implements Serializable {
+	/**
+	 * The serialized representation of a path.
+	 *
+	 * @author Eric Blake (ebb9@email.byu.edu)
+	 */
+	protected static class CertPathRep implements Serializable {
+		/**
+		 * Compatible with JDK 1.4+.
+		 */
+		private static final long serialVersionUID = 3015633072427920915L;
+
+		/**
+		 * The certificate type.
+		 *
+		 * @serial the type of the certificate path
+		 */
+		private final String type;
+
+		/**
+		 * The encoded form of the path.
+		 *
+		 * @serial the encoded form
+		 */
+		private final byte[] data;
+
+		/**
+		 * Create the new serial representation.
+		 *
+		 * @param type
+		 *            the path type
+		 * @param data
+		 *            the encoded path data
+		 */
+		protected CertPathRep(String type, byte[] data) {
+			this.type = type;
+			this.data = data;
+		}
+
+		/**
+		 * Decode the data into an actual {@link CertPath} upon deserialization.
+		 *
+		 * @return the replacement object
+		 * @throws ObjectStreamException
+		 *             if replacement fails
+		 */
+		protected Object readResolve() throws ObjectStreamException {
+			try {
+				return CertificateFactory.getInstance(type).generateCertPath(new ByteArrayInputStream(data));
+			} catch (CertificateException e) {
+				throw (ObjectStreamException) new NotSerializableException("java.security.cert.CertPath: " + type)
+						.initCause(e);
+			}
+		}
+	} // class CertPathRep
+
 	/**
 	 * Compatible with JDK 1.4+.
 	 */
-	private static final long serialVersionUID = 3015633072427920915L;
+	private static final long serialVersionUID = 6068470306649138683L;
 
 	/**
-	 * The certificate type.
+	 * The path type.
 	 *
-	 * @serial the type of the certificate path
+	 * @serial the type of all certificates in this path
 	 */
 	private final String type;
 
 	/**
-	 * The encoded form of the path.
-	 *
-	 * @serial the encoded form
-	 */
-	private final byte[] data;
-
-	/**
-	 * Create the new serial representation.
+	 * Create a certificate path with the given type. Most code should use
+	 * {@link CertificateFactory} to create CertPaths.
 	 *
 	 * @param type
-	 *            the path type
-	 * @param data
-	 *            the encoded path data
+	 *            the type of the path
 	 */
-	protected CertPathRep(String type, byte[] data)
-	{
-	    this.type = type;
-	    this.data = data;
+	protected CertPath(String type) {
+		this.type = type;
 	}
 
 	/**
-	 * Decode the data into an actual {@link CertPath} upon deserialization.
+	 * Compares this path to another for semantic equality. To be equal, both must
+	 * be instances of CertPath, with the same type, and identical certificate
+	 * lists. Overriding classes must not change this behavior.
+	 *
+	 * @param o
+	 *            the object to compare to
+	 * @return true if the two are equal
+	 */
+	@Override
+	public boolean equals(Object o) {
+		if (!(o instanceof CertPath))
+			return false;
+		CertPath cp = (CertPath) o;
+		return type.equals(cp.type) && getCertificates().equals(cp.getCertificates());
+	}
+
+	/**
+	 * Returns the immutable, thread-safe list of certificates in this path.
+	 *
+	 * @return the list of certificates, non-null but possibly empty
+	 */
+	public abstract List<? extends Certificate> getCertificates();
+
+	/**
+	 * Returns the encoded form of this path, via the default encoding.
+	 *
+	 * @return the encoded form
+	 * @throws CertificateEncodingException
+	 *             if encoding fails
+	 */
+	public abstract byte[] getEncoded() throws CertificateEncodingException;
+
+	/**
+	 * Returns the encoded form of this path, via the specified encoding.
+	 *
+	 * @param encoding
+	 *            the encoding to use
+	 * @return the encoded form
+	 * @throws CertificateEncodingException
+	 *             if encoding fails or does not exist
+	 */
+	public abstract byte[] getEncoded(String encoding) throws CertificateEncodingException;
+
+	/**
+	 * Get an immutable iterator over the path encodings (all String names),
+	 * starting with the default encoding. The iterator will throw an
+	 * <code>UnsupportedOperationException</code> if an attempt is made to remove
+	 * items from the list.
+	 *
+	 * @return the iterator of supported encodings in the path
+	 */
+	public abstract Iterator<String> getEncodings();
+
+	/**
+	 * Get the (non-null) type of all certificates in the path.
+	 *
+	 * @return the path certificate type
+	 */
+	public String getType() {
+		return type;
+	}
+
+	/**
+	 * Returns the hashcode of this certificate path. This is defined as:<br>
+	 * <code>31 * getType().hashCode() + getCertificates().hashCode()</code>.
+	 *
+	 * @return the hashcode
+	 */
+	@Override
+	public int hashCode() {
+		return 31 * type.hashCode() + getCertificates().hashCode();
+	}
+
+	@Override
+	public String toString() {
+		List<? extends Certificate> l = getCertificates();
+		int size = l.size();
+		int i = 0;
+		StringBuilder result = new StringBuilder(type);
+		result.append(" Cert Path: length = ").append(size).append(".\n[\n");
+		while (--size >= 0)
+			result.append(l.get(i++)).append('\n');
+		return result.append("\n]").toString();
+	}
+
+	/**
+	 * Serializes the path in its encoded form, to ensure reserialization with the
+	 * appropriate factory object without worrying about list implementation. The
+	 * result will always be an instance of {@link CertPathRep}.
 	 *
 	 * @return the replacement object
 	 * @throws ObjectStreamException
-	 *             if replacement fails
+	 *             if the replacement creation fails
 	 */
-	protected Object readResolve() throws ObjectStreamException
-	{
-	    try
-	    {
-		return CertificateFactory.getInstance(type)
-			.generateCertPath(new ByteArrayInputStream(data));
-	    }
-	    catch (CertificateException e)
-	    {
-		throw (ObjectStreamException) new NotSerializableException(
-			"java.security.cert.CertPath: " + type).initCause(e);
-	    }
+	protected Object writeReplace() throws ObjectStreamException {
+		try {
+			return new CertPathRep(type, getEncoded());
+		} catch (CertificateEncodingException e) {
+			throw (ObjectStreamException) new NotSerializableException("java.security.cert.CertPath: " + type)
+					.initCause(e);
+		}
 	}
-    } // class CertPathRep
-
-    /**
-     * Compatible with JDK 1.4+.
-     */
-    private static final long serialVersionUID = 6068470306649138683L;
-
-    /**
-     * The path type.
-     *
-     * @serial the type of all certificates in this path
-     */
-    private final String type;
-
-    /**
-     * Create a certificate path with the given type. Most code should use
-     * {@link CertificateFactory} to create CertPaths.
-     *
-     * @param type
-     *            the type of the path
-     */
-    protected CertPath(String type)
-    {
-	this.type = type;
-    }
-
-    /**
-     * Compares this path to another for semantic equality. To be equal, both
-     * must be instances of CertPath, with the same type, and identical
-     * certificate lists. Overriding classes must not change this behavior.
-     *
-     * @param o
-     *            the object to compare to
-     * @return true if the two are equal
-     */
-    @Override
-    public boolean equals(Object o)
-    {
-	if (!(o instanceof CertPath))
-	    return false;
-	CertPath cp = (CertPath) o;
-	return type.equals(cp.type)
-		&& getCertificates().equals(cp.getCertificates());
-    }
-
-    /**
-     * Returns the immutable, thread-safe list of certificates in this path.
-     *
-     * @return the list of certificates, non-null but possibly empty
-     */
-    public abstract List<? extends Certificate> getCertificates();
-
-    /**
-     * Returns the encoded form of this path, via the default encoding.
-     *
-     * @return the encoded form
-     * @throws CertificateEncodingException
-     *             if encoding fails
-     */
-    public abstract byte[] getEncoded() throws CertificateEncodingException;
-
-    /**
-     * Returns the encoded form of this path, via the specified encoding.
-     *
-     * @param encoding
-     *            the encoding to use
-     * @return the encoded form
-     * @throws CertificateEncodingException
-     *             if encoding fails or does not exist
-     */
-    public abstract byte[] getEncoded(String encoding) throws CertificateEncodingException;
-
-    /**
-     * Get an immutable iterator over the path encodings (all String names),
-     * starting with the default encoding. The iterator will throw an
-     * <code>UnsupportedOperationException</code> if an attempt is made to
-     * remove items from the list.
-     *
-     * @return the iterator of supported encodings in the path
-     */
-    public abstract Iterator<String> getEncodings();
-
-    /**
-     * Get the (non-null) type of all certificates in the path.
-     *
-     * @return the path certificate type
-     */
-    public String getType()
-    {
-	return type;
-    }
-
-    /**
-     * Returns the hashcode of this certificate path. This is defined as:<br>
-     * <code>31 * getType().hashCode() + getCertificates().hashCode()</code>.
-     *
-     * @return the hashcode
-     */
-    @Override
-    public int hashCode()
-    {
-	return 31 * type.hashCode() + getCertificates().hashCode();
-    }
-
-    @Override
-    public String toString()
-    {
-	List<? extends Certificate> l = getCertificates();
-	int size = l.size();
-	int i = 0;
-	StringBuilder result = new StringBuilder(type);
-	result.append(" Cert Path: length = ").append(size).append(".\n[\n");
-	while (--size >= 0)
-	    result.append(l.get(i++)).append('\n');
-	return result.append("\n]").toString();
-    }
-
-    /**
-     * Serializes the path in its encoded form, to ensure reserialization with
-     * the appropriate factory object without worrying about list
-     * implementation. The result will always be an instance of
-     * {@link CertPathRep}.
-     *
-     * @return the replacement object
-     * @throws ObjectStreamException
-     *             if the replacement creation fails
-     */
-    protected Object writeReplace() throws ObjectStreamException
-    {
-	try
-	{
-	    return new CertPathRep(type, getEncoded());
-	}
-	catch (CertificateEncodingException e)
-	{
-	    throw (ObjectStreamException) new NotSerializableException(
-		    "java.security.cert.CertPath: " + type).initCause(e);
-	}
-    }
 } // class CertPath

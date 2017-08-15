@@ -40,12 +40,10 @@ package gnu.vm.jgnux.net.ssl;
 /**
  * A hostname verifier that always rejects mismatched hostnames.
  */
-class TrivialHostnameVerifier implements HostnameVerifier
-{
+class TrivialHostnameVerifier implements HostnameVerifier {
 
-    @Override
-    public boolean verify(String hostname, SSLSession session)
-    {
-	return false;
-    }
+	@Override
+	public boolean verify(String hostname, SSLSession session) {
+		return false;
+	}
 }

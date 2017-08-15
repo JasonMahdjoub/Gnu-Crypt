@@ -49,134 +49,123 @@ import gnu.vm.jgnux.security.cert.X509Certificate;
  *
  * @author Casey Marshall (rsdio@metastatic.org)
  */
-public class HandshakeCompletedEvent extends java.util.EventObject
-{
-    // Fields.
-    // -------------------------------------------------------------------
+public class HandshakeCompletedEvent extends java.util.EventObject {
+	// Fields.
+	// -------------------------------------------------------------------
 
-    /** Serialization constant. */
-    private static final long serialVersionUID = 7914963744257769778L;
+	/** Serialization constant. */
+	private static final long serialVersionUID = 7914963744257769778L;
 
-    /** The session. */
-    private final transient SSLSession session;
+	/** The session. */
+	private final transient SSLSession session;
 
-    // Constructor.
-    // -------------------------------------------------------------------
+	// Constructor.
+	// -------------------------------------------------------------------
 
-    /**
-     * Creates a new handshake completed event.
-     *
-     * @param socket
-     *            The socket (also the source) creating this event.
-     * @param session
-     *            The associated session object.
-     * @throws NullPointerException
-     *             If <i>session</i> is null.
-     */
-    public HandshakeCompletedEvent(SSLSocket socket, SSLSession session)
-    {
-	super(socket);
-	if (session == null)
-	    throw new NullPointerException();
-	this.session = session;
-    }
+	/**
+	 * Creates a new handshake completed event.
+	 *
+	 * @param socket
+	 *            The socket (also the source) creating this event.
+	 * @param session
+	 *            The associated session object.
+	 * @throws NullPointerException
+	 *             If <i>session</i> is null.
+	 */
+	public HandshakeCompletedEvent(SSLSocket socket, SSLSession session) {
+		super(socket);
+		if (session == null)
+			throw new NullPointerException();
+		this.session = session;
+	}
 
-    // Instance methods.
-    // --------------------------------------------------------------------
+	// Instance methods.
+	// --------------------------------------------------------------------
 
-    /**
-     * Returns the name of the cipher that was negotiated in this connection.
-     *
-     * @return The negotiated cipher name.
-     */
-    public String getCipherSuite()
-    {
-	if (session != null)
-	    return session.getCipherSuite();
-	return null;
-    }
+	/**
+	 * Returns the name of the cipher that was negotiated in this connection.
+	 *
+	 * @return The negotiated cipher name.
+	 */
+	public String getCipherSuite() {
+		if (session != null)
+			return session.getCipherSuite();
+		return null;
+	}
 
-    /**
-     * Returns the local certificates being used in this connection.
-     *
-     * @return The local certificates.
-     */
-    public Certificate[] getLocalCertificates()
-    {
-	if (session != null)
-	    return session.getLocalCertificates();
-	return null;
-    }
+	/**
+	 * Returns the local certificates being used in this connection.
+	 *
+	 * @return The local certificates.
+	 */
+	public Certificate[] getLocalCertificates() {
+		if (session != null)
+			return session.getLocalCertificates();
+		return null;
+	}
 
-    /**
-     * Returns the local identity used in this connection, or <code>null</code>
-     * if there is none.
-     *
-     * @return The local identity.
-     * @since 1.5
-     */
-    public Principal getLocalPrincipal()
-    {
-	if (session != null)
-	    return session.getLocalPrincipal();
-	return null;
-    }
+	/**
+	 * Returns the local identity used in this connection, or <code>null</code> if
+	 * there is none.
+	 *
+	 * @return The local identity.
+	 * @since 1.5
+	 */
+	public Principal getLocalPrincipal() {
+		if (session != null)
+			return session.getLocalPrincipal();
+		return null;
+	}
 
-    public X509Certificate[] getPeerCertificateChain() throws SSLPeerUnverifiedException
-    {
-	if (session != null)
-	    return session.getPeerCertificateChain();
-	return null;
-    }
+	public X509Certificate[] getPeerCertificateChain() throws SSLPeerUnverifiedException {
+		if (session != null)
+			return session.getPeerCertificateChain();
+		return null;
+	}
 
-    /**
-     * Returns the peer's certificates being used in this connection.
-     *
-     * @return The peer's certificates.
-     * @throws SSLPeerUnverifiedException
-     *             If the peer has not been verified.
-     */
-    public Certificate[] getPeerCertificates() throws SSLPeerUnverifiedException
-    {
-	if (session != null)
-	    return session.getPeerCertificates();
-	return null;
-    }
+	/**
+	 * Returns the peer's certificates being used in this connection.
+	 *
+	 * @return The peer's certificates.
+	 * @throws SSLPeerUnverifiedException
+	 *             If the peer has not been verified.
+	 */
+	public Certificate[] getPeerCertificates() throws SSLPeerUnverifiedException {
+		if (session != null)
+			return session.getPeerCertificates();
+		return null;
+	}
 
-    /**
-     * Returns the peer's identity, or <code>null</code> if there is none.
-     *
-     * @return The peer's identity.
-     * @throws SSLPeerUnverifiedException
-     *             If the remote peer's identity could not be verified.
-     * @since 1.5
-     */
-    public Principal getPeerPrincipal() throws SSLPeerUnverifiedException
-    {
-	if (session != null)
-	    return session.getPeerPrincipal();
-	return null;
-    }
+	/**
+	 * Returns the peer's identity, or <code>null</code> if there is none.
+	 *
+	 * @return The peer's identity.
+	 * @throws SSLPeerUnverifiedException
+	 *             If the remote peer's identity could not be verified.
+	 * @since 1.5
+	 */
+	public Principal getPeerPrincipal() throws SSLPeerUnverifiedException {
+		if (session != null)
+			return session.getPeerPrincipal();
+		return null;
+	}
 
-    /**
-     * Returns the SSL session object associated with this connection.
-     *
-     * @return The session object.
-     */
-    public SSLSession getSession()
-    {
-	return session;
-    }
+	/**
+	 * Returns the SSL session object associated with this connection.
+	 *
+	 * @return The session object.
+	 */
+	public SSLSession getSession() {
+		return session;
+	}
 
-    /**
-     * Returns the socket over which this connection is being negotiated. This
-     * method is equivalent to the {@link java.util.EventObject#getSource()}
-     * method.
-     *
-     * @return The socket.
-     */
-    public SSLSocket getSocket()
-    {
-	return (SSLSocket) getSource();
-    }
+	/**
+	 * Returns the socket over which this connection is being negotiated. This
+	 * method is equivalent to the {@link java.util.EventObject#getSource()} method.
+	 *
+	 * @return The socket.
+	 */
+	public SSLSocket getSocket() {
+		return (SSLSocket) getSource();
+	}
 }

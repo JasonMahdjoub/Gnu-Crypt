@@ -43,29 +43,26 @@ import javax.security.sasl.AuthenticationException;
  * A checked exception thrown to indicate that a designated user is unknown to
  * the authentication layer.
  */
-public class NoSuchUserException extends AuthenticationException
-{
-    /**
-     * 
-     */
-    private static final long serialVersionUID = 170625533510290216L;
+public class NoSuchUserException extends AuthenticationException {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 170625533510290216L;
 
-    /** Constructs a <code>NoSuchUserException</code> with no detail message. */
-    public NoSuchUserException()
-    {
-	super();
-    }
+	/** Constructs a <code>NoSuchUserException</code> with no detail message. */
+	public NoSuchUserException() {
+		super();
+	}
 
-    /**
-     * Constructs a <code>NoSuchUserException</code> with the specified detail
-     * message. In the case of this exception, the detail message designates the
-     * offending username.
-     *
-     * @param arg
-     *            the detail message, which in this case is the username.
-     */
-    public NoSuchUserException(String arg)
-    {
-	super(arg);
-    }
+	/**
+	 * Constructs a <code>NoSuchUserException</code> with the specified detail
+	 * message. In the case of this exception, the detail message designates the
+	 * offending username.
+	 *
+	 * @param arg
+	 *            the detail message, which in this case is the username.
+	 */
+	public NoSuchUserException(String arg) {
+		super(arg);
+	}
 }

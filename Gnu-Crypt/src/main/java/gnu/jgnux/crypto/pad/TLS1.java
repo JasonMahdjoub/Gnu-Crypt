@@ -56,38 +56,32 @@ package gnu.jgnux.crypto.pad;
  * padding must be equal to <i>padding_length</i>. That is, the end of the
  * plaintext is <i>n</i> + 1 copies of the unsigned byte <i>n</i>.
  */
-public class TLS1 extends BasePad
-{
-    public TLS1()
-    {
-	super("tls1");
-    }
+public class TLS1 extends BasePad {
+	public TLS1() {
+		super("tls1");
+	}
 
-    @Override
-    public byte[] pad(final byte[] in, final int off, final int len)
-    {
-	int padlen = blockSize - (len % blockSize);
-	byte[] pad = new byte[padlen];
-	for (int i = 0; i < padlen; i++)
-	    pad[i] = (byte) (padlen - 1);
-	return pad;
-    }
+	@Override
+	public byte[] pad(final byte[] in, final int off, final int len) {
+		int padlen = blockSize - (len % blockSize);
+		byte[] pad = new byte[padlen];
+		for (int i = 0; i < padlen; i++)
+			pad[i] = (byte) (padlen - 1);
+		return pad;
+	}
 
-    @Override
-    public void setup()
-    {
-	if (blockSize <= 0 || blockSize > 255)
-	    throw new IllegalArgumentException(
-		    "invalid block size: " + blockSize);
-    }
+	@Override
+	public void setup() {
+		if (blockSize <= 0 || blockSize > 255)
+			throw new IllegalArgumentException("invalid block size: " + blockSize);
+	}
 
-    @Override
-    public int unpad(final byte[] in, final int off, final int len) throws WrongPaddingException
-    {
-	int padlen = in[off + len - 1] & 0xFF;
-	for (int i = off + (len - padlen - 1); i < off + len - 1; i++)
-	    if ((in[i] & 0xFF) != padlen)
-		throw new WrongPaddingException();
-	return padlen + 1;
-    }
+	@Override
+	public int unpad(final byte[] in, final int off, final int len) throws WrongPaddingException {
+		int padlen = in[off + len - 1] & 0xFF;
+		for (int i = off + (len - padlen - 1); i < off + len - 1; i++)
+			if ((in[i] & 0xFF) != padlen)
+				throw new WrongPaddingException();
+		return padlen + 1;
+	}
 }
