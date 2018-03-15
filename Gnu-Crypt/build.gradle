@@ -16,17 +16,6 @@ eclipse {
        downloadSources=true
     }
 }
-
-// In this section you declare where to find the dependencies of your project
-repositories {
-    // Use jcenter for resolving your dependencies.
-    // You can declare any Maven/Ivy/file repository here.
-    jcenter()
-}
-
-dependencies {
-}
-
 def Properties props = new Properties()
 def propFile = file('gradle.properties')
 def artifactory_Url="https://artifactory.distri-mind.fr/artifactory"
@@ -44,12 +33,44 @@ if (propFile.canRead())
 	if (props!=null && props.containsKey('artifactory_password'))
 		pwd="${artifactory_password}"	
 }
+repositories {
+
+
+   	maven {
+       		url "${artifactory_Url}/gradle-release"
+       		if (user!="")
+       		{
+	       		credentials {
+	              username "${artifactory_user}"
+	              password "${artifactory_password}"
+	            }
+	         }
+   	} 
+}
+
+
+dependencies {
+}
+
+
 
 allprojects {
 	group='gnu'
-    repositories {
-        jcenter() 
-    }
+	repositories {
+	
+	
+	   	maven {
+	       		url "${artifactory_Url}/gradle-release"
+	       		if (user!="")
+	       		{
+		       		credentials {
+		              username "${artifactory_user}"
+		              password "${artifactory_password}"
+		            }
+		         }
+	   	} 
+	}
+
     
 	if (propFile.canRead())
 	{
@@ -80,15 +101,15 @@ task sourcesJar(type: Jar, dependsOn: classes) {
     from "../LICENSE"
 }
 
-task javadocJar(type: Jar, dependsOn: javadoc) {
+/*task javadocJar(type: Jar, dependsOn: javadoc) {
     classifier = 'javadoc'
     from javadoc.destinationDir
     from "../LICENSE"
-}
+}*/
 
 artifacts {
     archives sourcesJar
-    archives javadocJar
+    //archives javadocJar
 }
 
 jar {
@@ -105,7 +126,7 @@ publishing {
         mavenJava(MavenPublication) {
             from components.java
             artifact sourcesJar
-            artifact javadocJar
+            //artifact javadocJar
         }
     }
     repositories {
