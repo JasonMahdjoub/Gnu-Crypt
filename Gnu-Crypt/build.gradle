@@ -10,6 +10,7 @@
 apply plugin: 'java-library'
 apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
+apply plugin: 'idea'
 
 eclipse {
     classpath {
@@ -89,9 +90,9 @@ allprojects {
 		}
 	}
 }
-
-sourceCompatibility = 1.7
-targetCompatibility=1.7
+def javaVersion = 1.7
+sourceCompatibility = javaVersion
+targetCompatibility=javaVersion
 
 version = '1.2.1'
 
@@ -99,6 +100,13 @@ task sourcesJar(type: Jar, dependsOn: classes) {
     classifier = 'sources'
     from sourceSets.main.allSource
     from "../LICENSE"
+}
+
+idea {
+	project {
+		jdkName = javaVersion
+		languageLevel = javaVersion
+	}
 }
 
 /*task javadocJar(type: Jar, dependsOn: javadoc) {
