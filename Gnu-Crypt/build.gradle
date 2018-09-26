@@ -54,6 +54,9 @@ dependencies {
 }
 
 
+def javaVersion = 7
+sourceCompatibility = javaVersion
+targetCompatibility=javaVersion
 
 allprojects {
 	group='gnu'
@@ -71,28 +74,13 @@ allprojects {
 		         }
 	   	} 
 	}
+	compileJava.options.compilerArgs.addAll(['--release', javaVersion])
+	if (project.hasProperty('javaHomeVersion') && javaHomeVersion.toFloat()>1.8)
+		javadoc.options.addStringOption("html5", "-quiet")
 
     
-	if (propFile.canRead())
-	{
-	
-	    if (props!=null && props.containsKey('jdk'))
-	    {
-			compileJava.options.fork = true
-			compileJava.options.forkOptions.executable = "${jdk}/bin/javac"
-			compileJava.options.bootClasspath=fileTree(include: ['*.jar'], dir: "${jdk}/jre/lib").join(File.pathSeparator)
-			compileJava.options.extensionDirs = "${jdk}/jre/lib/ext/"
-		
-			compileTestJava.options.fork = true
-			compileTestJava.options.forkOptions.executable = "${jdk}/bin/javac"
-			compileTestJava.options.bootClasspath=fileTree(include: ['*.jar'], dir: "${jdk}/jre/lib").join(File.pathSeparator)
-			compileTestJava.options.extensionDirs = "${jdk}/jre/lib/ext/"
-		}
-	}
 }
-def javaVersion = 1.7
-sourceCompatibility = javaVersion
-targetCompatibility=javaVersion
+
 
 version = '1.2.1'
 
