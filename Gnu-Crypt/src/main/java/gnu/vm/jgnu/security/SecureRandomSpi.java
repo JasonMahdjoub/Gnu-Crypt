@@ -48,14 +48,7 @@ import java.io.Serializable;
  * 
  * @author Mark Benvenuto (ivymccough@worldnet.att.net)
  */
-public abstract class SecureRandomSpi implements Serializable {
-	private static final long serialVersionUID = -2991854161009191830L;
-
-	/**
-	 * Default Constructor for SecureRandomSpi
-	 */
-	public SecureRandomSpi() {
-	}
+public interface SecureRandomSpi extends Serializable {
 
 	/**
 	 * Gets a user specified number of bytes specified by the parameter.
@@ -65,7 +58,7 @@ public abstract class SecureRandomSpi implements Serializable {
 	 * 
 	 * @return an array full of random bytes
 	 */
-	protected abstract byte[] engineGenerateSeed(int numBytes);
+	byte[] engineGenerateSeed(int numBytes);
 
 	/**
 	 * Gets a user specified number of bytes depending on the length of the array?
@@ -73,11 +66,11 @@ public abstract class SecureRandomSpi implements Serializable {
 	 * @param bytes
 	 *            array to fill with random bytes
 	 */
-	protected abstract void engineNextBytes(byte[] bytes);
+	void engineNextBytes(byte[] bytes);
 
 	/**
 	 * Updates the seed for SecureRandomSpi but does not reset seed. It does to this
 	 * so repeated called never decrease randomness.
 	 */
-	protected abstract void engineSetSeed(byte[] seed);
+	void engineSetSeed(byte[] seed);
 }

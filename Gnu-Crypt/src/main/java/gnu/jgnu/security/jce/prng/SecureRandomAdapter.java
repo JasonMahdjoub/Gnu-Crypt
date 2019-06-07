@@ -73,7 +73,7 @@ import gnu.vm.jgnu.security.SecureRandomSpi;
  * by this class and all its sub-classes.
  * </p>
  */
-public abstract class SecureRandomAdapter extends SecureRandomSpi {
+public abstract class SecureRandomAdapter implements SecureRandomSpi {
 
 	/**
 	 * 
