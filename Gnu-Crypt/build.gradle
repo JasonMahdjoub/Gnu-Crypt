@@ -60,7 +60,7 @@ sourceCompatibility = javaVersion
 targetCompatibility=javaVersion
 
 allprojects {
-	group='gnu'
+	group='com.distrimind.gnu'
 	repositories {
 	
 	
