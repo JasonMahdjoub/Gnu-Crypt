@@ -19,7 +19,7 @@ eclipse {
     }
 }
 Properties props = new Properties()
-def propFile = file('gradle.properties')
+def propFile = file('../../credentials.properties')
 def artifactory_Url="https://artifactory.distri-mind.fr/artifactory"
 def user=""
 def pwd=""
@@ -29,11 +29,11 @@ if (propFile.canRead())
 
     
 	if (props!=null && props.containsKey('artifactory_contextUrl'))
-		artifactory_Url="${artifactory_contextUrl}"	
+		artifactory_Url=props.get("artifactory_contextUrl")
 	if (props!=null && props.containsKey('artifactory_user'))
-		user="${artifactory_user}"	
+		user=props.get("artifactory_user")
 	if (props!=null && props.containsKey('artifactory_password'))
-		pwd="${artifactory_password}"	
+		pwd=props.get("artifactory_password")
 }
 repositories {
 
@@ -43,8 +43,8 @@ repositories {
        		if (user!="")
        		{
 	       		credentials {
-	              username "${artifactory_user}"
-	              password "${artifactory_password}"
+	              username "${user}"
+	              password "${pwd}"
 	            }
 	         }
    	} 
@@ -69,8 +69,8 @@ allprojects {
 	       		if (user!="")
 	       		{
 		       		credentials {
-		              username "${artifactory_user}"
-		              password "${artifactory_password}"
+		              username "${user}"
+		              password "${pwd}"
 		            }
 		         }
 	   	} 
