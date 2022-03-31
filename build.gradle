@@ -22,12 +22,11 @@ Properties props = new Properties()
 def propFile = new File(project.getProjectDir().getParentFile(), 'credentials.properties')
 def artifactoryUrl="https://artifactory.distri-mind.fr:443/artifactory"
 def sonatypeStagingUrl = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
-def sonatypeSnapshotsUrl = "https://s01.oss.sonatype.org/content/repositories/snapshots/"
 def artifactoryUser=""
 def artifactoryPwd=""
 def sonatypeUser=""
 def sonatypePwd=""
-archivesBaseName=project.name
+
 if (propFile.canRead())
 {
 	props.load(new FileInputStream(propFile))
@@ -41,8 +40,6 @@ if (propFile.canRead())
 		artifactoryPwd=props.get("artifactory_password")
 	if (props!=null && props.containsKey('sonatype_staging_url'))
 		sonatypeStagingUrl=props.get("sonatype_staging_url")
-	if (props!=null && props.containsKey('sonatype_snapshots_url'))
-		sonatypeSnapshotsUrl=props.get("sonatype_snapshots_url")
 	if (props!=null && props.containsKey('sonatype_user'))
 		sonatypeUser=props.get("sonatype_user")
 	if (props!=null && props.containsKey('sonatype_password'))
@@ -135,7 +132,7 @@ publishing {
 			pom {
 				name = 'GNU Crypt recompiled By DistriMind'
 				description = 'Encryption tools'
-				url = 'https://github.com/JazZ51/Gnu-Crypt'
+				url = 'https://github.com/JasonMahdjoub/Gnu-Crypt'
 				developers {
 					developer {
 						id = 'mahdjoub'
@@ -145,21 +142,21 @@ publishing {
 				}
 				organization {
 					name = 'DistriMind'
-					url = 'https://github.com/JazZ51'
+					url = 'https://github.com/JasonMahdjoub'
 				}
 				issueManagement {
 					system = 'GitHub'
-					url = 'https://github.com/JazZ51/Gnu-Crypt/issues'
+					url = 'https://github.com/JasonMahdjoub/Gnu-Crypt/issues'
 				}
 				scm {
-					connection = 'https://github.com/JazZ51/Gnu-Crypt'
+					connection = 'https://github.com/JasonMahdjoub/Gnu-Crypt'
 					developerConnection = connection
 					url = connection
 				}
 				licenses {
 					license {
 						name = 'GNU General Public License (with a special exception described below)'
-						url = 'https://github.com/JazZ51/Gnu-Crypt/blob/master/LICENSE'
+						url = 'https://github.com/JasonMahdjoub/Gnu-Crypt/blob/master/LICENSE'
 					}
 				}
 
