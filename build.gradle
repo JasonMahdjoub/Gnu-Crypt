@@ -133,16 +133,6 @@ publishing {
 				name = 'GNU Crypt recompiled By DistriMind'
 				description = 'Encryption tools'
 				url = 'https://github.com/JasonMahdjoub/Gnu-Crypt'
-				developers {
-					developer {
-						id = 'jmahdjoub'
-						name = 'Jason Mahdjoub'
-						email = 'jason.mahdjoub@distri-mind.fr'
-						organization = 'DistriMind'
-						roles.add('Entrepreneur')
-						roles.add('Developer')
-					}
-				}
 				organization {
 					name = 'DistriMind'
 					url = 'https://github.com/JasonMahdjoub'
