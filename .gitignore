@@ -1,6 +1,5 @@
 /.gradle/
 /bin/
-/gradle.properties
 /build/
 
 .DS_Store
